@@ -161,7 +161,7 @@ namespace LavaCake {
 
 			InitVkDestroyer(logicalDevice, m_renderPass);
 			if (!LavaCake::RenderPass::CreateRenderPass(logicalDevice, m_attachmentDescriptions, m_subpassParameters, m_dependencies, *m_renderPass)) {
-				ErrorCheck::setError(5, "Cannot compile RenderPass");
+				ErrorCheck::setError("Can't compile RenderPass");
 			}
 
 			for (int i = 0; i < m_pipelines.size(); i++) {

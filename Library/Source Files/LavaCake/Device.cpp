@@ -28,15 +28,15 @@ namespace LavaCake {
 
 		void Device::initDevices(VkPhysicalDeviceFeatures * desired_device_features, int nbComputeQueue, int nbGraphicQueue, WindowParameters	WindowParams) {
 			if (!Loader::ConnectWithVulkanLoaderLibrary(m_vulkanLibrary)) {
-				ErrorCheck::setError(2, "cannot connect with Vulkan");
+				ErrorCheck::setError("Could not connect with Vulkan while initializing the device");
 			}
 
 			if (!Loader::LoadFunctionExportedFromVulkanLoaderLibrary(m_vulkanLibrary)) {
-				ErrorCheck::setError(2, "cannot load Vulkan");
+				ErrorCheck::setError("Could not load Vulkan library while initializing the device");
 			}
 
 			if (!Loader::LoadGlobalLevelFunctions()) {
-				ErrorCheck::setError(2, "cannot load global level Vulkan functions");
+				ErrorCheck::setError("Could not load global level Vulkan functions while initializing the device");
 			}
 
 
@@ -44,16 +44,16 @@ namespace LavaCake {
 			std::vector<char const *> instance_extensions;
 			InitVkDestroyer(m_instance);
 			if (!Instance::CreateVulkanInstanceWithWsiExtensionsEnabled(instance_extensions, "LavaCake", *m_instance)) {
-				ErrorCheck::setError(2, "cannot load Vulkan instance");
+				ErrorCheck::setError("Could not load Vulkan while initializing the device");
 			}
 
 			if (!Loader::LoadInstanceLevelFunctions(*m_instance, instance_extensions)) {
-				ErrorCheck::setError(2, "cannot load instance level Vulkan functions");
+				ErrorCheck::setError("Could not load instance level Vulkan functions while initializing the device");
 			}
 
 			InitVkDestroyer(m_instance, m_presentationSurface);
 			if (!Presentation::CreatePresentationSurface(*m_instance, WindowParams, *m_presentationSurface)) {
-				ErrorCheck::setError(2, "cannot create presentation surface");
+				ErrorCheck::setError("Failed to create presentation surface");
 			}
 
 			std::vector<VkPhysicalDevice> physical_devices;
@@ -153,13 +153,13 @@ namespace LavaCake {
 			}
 
 			if (!m_logical) {
-				ErrorCheck::setError(2, "logical device not created");
+				ErrorCheck::setError("The logical device could not be created");
 			}
 
 
 			InitVkDestroyer(m_logical, m_commandPool);
 			if (!Command::CreateCommandPool(*m_logical, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, m_graphicQueues[0].getIndex(), *m_commandPool)) {
-				ErrorCheck::setError(2, "cannot create commade pool");
+				ErrorCheck::setError("The command pool could not be created");
 			}
 		}
 
@@ -179,16 +179,16 @@ namespace LavaCake {
 				InitVkDestroyer(m_logical, depth_attachment);
 
 				if (!Command::AllocateCommandBuffers(*m_logical, *m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1, command_buffer)) {
-					ErrorCheck::setError(2, "cannot allocate commande buffer");
+					ErrorCheck::setError("Failed to allocate commande buffer");
 				}
 				if (!Semaphore::CreateSemaphore(*m_logical, *image_acquired_semaphore)) {
-					ErrorCheck::setError(2, "cannot create commande semaphore");
+					ErrorCheck::setError("Failed to create commande semaphore");
 				}
 				if (!Semaphore::CreateSemaphore(*m_logical, *ready_to_present_semaphore)) {
-					ErrorCheck::setError(2, "cannot create commande semaphore");
+					ErrorCheck::setError("Failed to create commande semaphore");
 				}
 				if (!Fence::CreateFence(*m_logical, true, *drawing_finished_fence)) {
-					ErrorCheck::setError(2, "cannot create commande dence");
+					ErrorCheck::setError("Failed to create commande fence");
 				}
 
 				framesResources.emplace_back(

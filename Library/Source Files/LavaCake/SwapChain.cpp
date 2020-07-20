@@ -25,17 +25,17 @@ namespace LavaCake {
 			VkDestroyer(VkSwapchainKHR) old_swapchain = std::move(m_handle);
 			InitVkDestroyer(logicalDevice, m_handle);
 			if (!Swapchain::CreateSwapchainWithR8G8B8A8FormatAndMailboxPresentMode(physicalDevice, presentationSurface, logicalDevice, swapchain_image_usage, m_size, m_format, *old_swapchain, *m_handle, m_images)) {
-				ErrorCheck::setError(3, "Cannot create swapchain");
+				ErrorCheck::setError("Can't create swapchain");
 			}
 			if (!m_handle) {
-				ErrorCheck::setError(3, "Swapchain not created");
+				ErrorCheck::setError("Swapchain not created");
 			}
 
 			for (size_t i = 0; i < m_images.size(); ++i) {
 				m_imageViews.emplace_back(VkDestroyer(VkImageView)());
 				InitVkDestroyer(logicalDevice, m_imageViews.back());
 				if (!Image::CreateImageView(logicalDevice, m_images[i], VK_IMAGE_VIEW_TYPE_2D, m_format, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageViews.back())) {
-					ErrorCheck::setError(3, "Cannot create image view");
+					ErrorCheck::setError("Can't create image view");
 				}
 				m_imageViewsRaw.push_back(*m_imageViews.back());
 			}
@@ -54,7 +54,7 @@ namespace LavaCake {
 					if (!Image::Create2DImageAndView(physicalDevice, logicalDevice, m_depthFormat, m_size, 1, 1, VK_SAMPLE_COUNT_1_BIT,
 						VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_ASPECT_DEPTH_BIT, *m_depthImages.back(), *m_depthImagesMemory.back(),
 						*(framesResources)[i].DepthAttachment)) {
-						ErrorCheck::setError(3, "Cannot create frames");
+						ErrorCheck::setError("Can't create frames");
 					}
 				}
 			}

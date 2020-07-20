@@ -90,7 +90,7 @@ namespace LavaCake {
 			}
 
 			if (!Pipeline::CreatePipelineLayout(logical, { *m_descriptorSetLayout }, push_constant_ranges, *m_pipelineLayout)) {
-				ErrorCheck::setError(9, "cannot create pipeline layout");
+				ErrorCheck::setError("Can't create pipeline layout");
 			}
 
 			Pipeline::SpecifyPipelineRasterizationState(false, false, VK_POLYGON_MODE_FILL, m_CullMode, VK_FRONT_FACE_COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f, m_rasterizationStateCreateInfo);
@@ -124,7 +124,7 @@ namespace LavaCake {
 
 			std::vector<VkPipeline> pipelines;
 			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
-				ErrorCheck::setError(9, "Cannot create Graphics piepeline");
+				ErrorCheck::setError("Can't create Graphics piepeline");
 			}
 			InitVkDestroyer(logical, m_pipeline);
 			*m_pipeline = pipelines[0];
@@ -210,7 +210,7 @@ namespace LavaCake {
 
 			InitVkDestroyer(logical, m_descriptorSetLayout);
 			if (!LavaCake::Descriptor::CreateDescriptorSetLayout(logical, m_descriptorSetLayoutBinding, *m_descriptorSetLayout)) {
-				ErrorCheck::setError(9, "cannot create descriptor set layout");
+				ErrorCheck::setError("Can't create descriptor set layout");
 			}
 
 
@@ -232,11 +232,11 @@ namespace LavaCake {
 
 			InitVkDestroyer(logical, m_descriptorPool);
 			if (!LavaCake::Descriptor::CreateDescriptorPool(logical, false, uint32_t(m_uniforms.size()), m_descriptorPoolSize, *m_descriptorPool)) {
-				ErrorCheck::setError(9, "cannot create descriptor pool");
+				ErrorCheck::setError("Can't create descriptor pool");
 			}
 
 			if (!LavaCake::Descriptor::AllocateDescriptorSets(logical, *m_descriptorPool, { *m_descriptorSetLayout }, m_descriptorSets)) {
-				ErrorCheck::setError(9, "cannot allocate descriptor set");
+				ErrorCheck::setError("Can't allocate descriptor set");
 			}
 			m_bufferDescriptorUpdate = { };
 			int descriptorCount = 0;

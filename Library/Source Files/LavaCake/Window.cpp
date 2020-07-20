@@ -87,12 +87,12 @@ namespace LavaCake {
 			m_windowSize = { width ,height };
 
 			if (!RegisterClassEx(&window_class)) {
-        ErrorCheck::setError(1, "Failed to register window class");
+        ErrorCheck::setError("Failed to register window class");
 			}
 
 			m_windowParams.HWnd = CreateWindow("LavaCake", window_title, WS_OVERLAPPEDWINDOW, x, y, width, height, nullptr, nullptr, m_windowParams.HInstance, nullptr);
 			if (!m_windowParams.HWnd) {
-        ErrorCheck::setError(1, "Failed to create window");
+        ErrorCheck::setError("Failed to create window");
 			}
 		}
 

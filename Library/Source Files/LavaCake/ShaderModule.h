@@ -13,12 +13,12 @@ namespace LavaCake {
 				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logicalDevice = d->getLogicalDevice();
 				if (!GetBinaryFileContents(path, m_spirv)) {
-					ErrorCheck::setError(6, "Cannot reed the Shader file ");
+					ErrorCheck::setError("Can't reed the Shader file ");
 				}
 				
 				InitVkDestroyer(logicalDevice, m_module);
 				if (!Shader::CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
-					ErrorCheck::setError(6, "Cannot create the Shader module");
+					ErrorCheck::setError("Can't create the Shader module");
 				}
 				
 				m_stageParameter = {

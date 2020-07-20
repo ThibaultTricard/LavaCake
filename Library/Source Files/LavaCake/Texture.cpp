@@ -7,7 +7,7 @@ namespace LavaCake {
 
 		TextureBuffer::TextureBuffer(char const * filename, int nbChannel, VkFormat f) {
 			if (!Helpers::Texture::LoadTextureDataFromFile(filename, nbChannel, *m_data, &m_width, &m_height)) {
-				ErrorCheck::setError(15, "could not load texture file");
+				ErrorCheck::setError("Could not load texture file");
 			}
 			m_format = f;
 		};
@@ -37,7 +37,7 @@ namespace LavaCake {
 				VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT,
 				VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
 				false, *m_sampler, *m_image, *m_imageMemory, *m_imageView)) {
-				//return false;
+				ErrorCheck::setError("Can't create an image sampler for this TextureBuffer");
 			}
 
 			VkImageSubresourceLayers image_subresource_layer = {
@@ -50,7 +50,7 @@ namespace LavaCake {
 				&(*m_data)[0], *m_image, image_subresource_layer, { 0, 0, 0 }, { (uint32_t)m_width, (uint32_t)m_height, 1 }, VK_IMAGE_LAYOUT_UNDEFINED,
 				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 				VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, graphics_queue, commandbuffer, {})) {
-				//return false;
+				ErrorCheck::setError("Can't send the TextureBuffer data to the GPU");
 			}
 		}
 
@@ -95,7 +95,7 @@ namespace LavaCake {
 				VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
 				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
 				false, *m_sampler, *m_image, *m_imageMemory, *m_imageView)) {
-				//return false;
+				ErrorCheck::setError("Can't create an image sampler for this FrameBuffer");
 			}
 		}
 
@@ -132,7 +132,7 @@ namespace LavaCake {
 			int image_data_size;
 
 			if (!Helpers::Texture::LoadTextureDataFromFile((m_path + m_images[0]).c_str(), 4, cubemap_image_data, &m_width, &m_height, nullptr, &image_data_size)) {
-				//return false;
+				ErrorCheck::setError("Could not locate texture file");
 			}
 		};
 
@@ -146,6 +146,7 @@ namespace LavaCake {
 			VkCommandBuffer commandbuffer = frame.CommandBuffer;
 
 
+
 			InitVkDestroyer(logical, m_image);
 			InitVkDestroyer(logical, m_imageMemory);
 			InitVkDestroyer(logical, m_imageView);
@@ -155,7 +156,7 @@ namespace LavaCake {
 				VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
 				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
 				false, *m_sampler, *m_image, *m_imageMemory, *m_imageView)) {
-				//return false;
+				ErrorCheck::setError("Can't create an image sampler for this CubeMap");
 			}
 
 
@@ -163,7 +164,7 @@ namespace LavaCake {
 				std::vector<unsigned char> cubemap_image_data;
 				int image_data_size;
 				if (!Helpers::Texture::LoadTextureDataFromFile((m_path + m_images[i]).c_str(), m_nbChannel, cubemap_image_data, nullptr, nullptr, nullptr, &image_data_size)) {
-					//return false;
+					ErrorCheck::setError("Could not load all texture file");
 				}
 				VkImageSubresourceLayers image_subresource = {
 					VK_IMAGE_ASPECT_COLOR_BIT,    // VkImageAspectFlags     aspectMask

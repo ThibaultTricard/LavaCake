@@ -47,15 +47,15 @@ namespace LavaCake {
 			VkPhysicalDevice physicalDevice = d->getPhysicalDevice();
 			InitVkDestroyer(logicalDevice, m_buffer);
 			if (!Buffer::CreateBuffer(logicalDevice, sizeof(m_vertices[0]) * m_vertices->size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, *m_buffer)) {
-				ErrorCheck::setError(4, "Cannot create vertices buffer");
+				ErrorCheck::setError("Can't create vertices buffer");
 			}
 			InitVkDestroyer(logicalDevice, m_bufferMemory);
 			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physicalDevice, logicalDevice, *m_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_bufferMemory)) {
-				ErrorCheck::setError(4, "Cannot allocate vertices buffer");
+				ErrorCheck::setError("Can't allocate vertices buffer");
 			}
 			if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(float) * m_vertices->size(), &(*m_vertices)[0], *m_buffer, 0, 0,
 				VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue.getHandle(), commandBuffer, {})) {
-				ErrorCheck::setError(4, "Cannot update buffer memory");
+				ErrorCheck::setError("Can't update buffer memory");
 			}
 		}
 
