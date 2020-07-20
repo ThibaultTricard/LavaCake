@@ -146,7 +146,6 @@ namespace LavaCake {
 			VkCommandBuffer commandbuffer = frame.CommandBuffer;
 
 
-
 			InitVkDestroyer(logical, m_image);
 			InitVkDestroyer(logical, m_imageMemory);
 			InitVkDestroyer(logical, m_imageView);

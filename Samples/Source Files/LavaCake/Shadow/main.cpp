@@ -56,7 +56,7 @@ int main() {
 	shadow_map_buffer->allocate();
 	
 	// Shadow pass
-	Framework::RenderPass shadowMapPass = Framework::RenderPass(Framework::attachementType::DepthOnly, false);
+	Framework::RenderPass shadowMapPass = Framework::RenderPass(Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_DEPTH);
 	Framework::GraphicPipeline* shadowPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(shadowsize),float(shadowsize),1.0f }, { 0,0 }, { float(shadowsize),float(shadowsize) });
 
 	Framework::VertexShaderModule* shadowVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/shadow.vert.spv");
@@ -75,7 +75,7 @@ int main() {
 	shadow_map_buffer->setInputRenderPass(shadowMapPass.getHandle());
 
 	//Render Pass
-	Framework::RenderPass renderPass = Framework::RenderPass(Framework::attachementType::ImageAndDepth, true);
+	Framework::RenderPass renderPass = Framework::RenderPass(Framework::RenderPassFlag::SHOW_ON_SCREEN| Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR );
 	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
 	Framework::VertexShaderModule* renderVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/scene.vert.spv");
 	renderPipeline->setVextexShader(renderVertex);
@@ -186,7 +186,7 @@ int main() {
 		}
 
 
-		renderPass.draw(commandbuffer, *frame.Framebuffer, { 0,0 }, { int(size.width), int(size.height) }, { 0.1f, 0.2f, 0.3f, 1.0f });
+		renderPass.draw(commandbuffer, *frame.Framebuffer, { 0,0 }, { int(size.width), int(size.height) }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {

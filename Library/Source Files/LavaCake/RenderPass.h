@@ -4,21 +4,28 @@
 
 namespace LavaCake {
 	namespace Framework {
-		
-		enum attachementType {
-			ImageOnly, DepthOnly, ImageAndDepth
+		enum RenderPassFlag {
+			SHOW_ON_SCREEN	= 1,
+			USE_COLOR				= 2,
+			USE_DEPTH				= 4,
+			OP_STORE_COLOR	= 8,
+			OP_STORE_DEPTH  = 16,
 		};
+		
 
+		inline RenderPassFlag operator|(RenderPassFlag a, RenderPassFlag b)
+		{
+			return static_cast<RenderPassFlag>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+		}
 
 		class RenderPass {
 		public :
 
-			RenderPass(attachementType type, boolean drawOnScreen);
+			RenderPass(uint32_t AttachementFlag);
 
-			RenderPass(attachementType type, boolean drawOnScreen, VkFormat ImageFormat, VkFormat DepthFormat);
+			RenderPass(uint32_t AttachementFlag, VkFormat ImageFormat, VkFormat DepthFormat);
 
-
-			void setupAttatchments(attachementType type, boolean drawOnScreen);
+			void setupAttatchments(uint32_t AttachementFlag);
 
 			void addDependencies(uint32_t srcSubpass, uint32_t dstSubpass, VkPipelineStageFlags srcPipe, VkPipelineStageFlags dstPipe, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkDependencyFlags dependency);
 
@@ -26,9 +33,7 @@ namespace LavaCake {
 
 			void compile();
 
-			void draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2i viewportMin, vec2i viewportMax, vec4f clearColor);
-
-			void draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2i viewportMin, vec2i viewportMax);
+			void draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2i viewportMin, vec2i viewportMax, std::vector<VkClearValue> const & clear_values = {{ 1.0f, 0 }});
 
 			VkRenderPass& getHandle();
 

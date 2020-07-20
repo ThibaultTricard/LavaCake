@@ -33,7 +33,7 @@ int main() {
 
 
 	// Render pass
-	Framework::RenderPass pass = Framework::RenderPass(Framework::attachementType::ImageAndDepth, true);
+	Framework::RenderPass pass = Framework::RenderPass(Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
 	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
 
 	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/02 Rendering a geometry with fragment specular lighting/shader.vert.spv");
@@ -120,7 +120,7 @@ int main() {
 		}
 
 
-		pass.draw(frame.CommandBuffer, *frame.Framebuffer, { 0,0 }, { int(size.width), int(size.height) }, { 0.1f, 0.2f, 0.3f, 1.0f });
+		pass.draw(frame.CommandBuffer, *frame.Framebuffer, { 0,0 }, { int(size.width), int(size.height) }, {{ 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 }});
 
 
 
