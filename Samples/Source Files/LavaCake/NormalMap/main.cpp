@@ -9,8 +9,10 @@ int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
 	Framework::Window w("LavaCake : Bump Mapping", 0, 0, 500, 500);
-	w.PrepareVulkanContext(0, 1);
-	w.PrepareFrames(nbFrames);
+
+	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
+	d->initDevices(0, 1, w.m_windowParams);
+	d->prepareFrames(nbFrames);
 
 
 	//Normal map
@@ -23,7 +25,6 @@ int main() {
 		return false;
 	}
 	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3,3,2,3,3 });
-	Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	v->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
 
 	//uniform buffer

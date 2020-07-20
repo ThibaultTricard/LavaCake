@@ -97,7 +97,7 @@ namespace LavaCake {
 		}
 
 
-		void Window::PrepareVulkanContext( int nbComputeQueue, int nbGraphicQueue,  VkPhysicalDeviceFeatures* desired_device_features ) {
+		/*void Window::PrepareVulkanContext( int nbComputeQueue, int nbGraphicQueue,  VkPhysicalDeviceFeatures* desired_device_features ) {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			d->initDevices(desired_device_features, nbComputeQueue, nbGraphicQueue, m_windowParams);
 		}
@@ -111,7 +111,7 @@ namespace LavaCake {
 
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			d->prepareFrames(framesCount, swapchain_image_usage, use_depth, depth_attachment_usage);
-		}
+		}*/
 
 
 		void Window::Show() {

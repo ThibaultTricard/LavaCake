@@ -9,8 +9,9 @@ int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
 	Framework::Window w("LavaCake : Diffuse Lighting", 0, 0, 500, 500);
-	w.PrepareVulkanContext(0, 1);
-	w.PrepareFrames(nbFrames);
+	Framework::Device* d = LavaCake::Framework::Device::getDevice();
+	d->initDevices(0, 1, w.m_windowParams);
+	d->prepareFrames(nbFrames);
 	
 	
 	//vertex buffer
@@ -19,7 +20,7 @@ int main() {
 		return false;
 	}
 	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3,3 });
-  Framework::Device* d = LavaCake::Framework::Device::getDevice();
+  
 	v->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
 	
   //uniform buffer

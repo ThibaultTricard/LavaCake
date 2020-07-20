@@ -9,8 +9,10 @@ int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
 	Framework::Window w("LavaCake : Refraction", 0, 0, 500, 500);
-	w.PrepareVulkanContext(0, 1);
-	w.PrepareFrames(nbFrames);
+
+	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
+	d->initDevices(0, 1, w.m_windowParams);
+	d->prepareFrames(nbFrames);
 
 
 	//cubeMap

@@ -9,9 +9,10 @@ int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
 	Framework::Window w("LavaCake : Specular Lighting", 0, 0, 512, 512);
-	w.PrepareVulkanContext(0, 1);
-	w.PrepareFrames(nbFrames);
 
+	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
+	d->initDevices(0, 1, w.m_windowParams);
+	d->prepareFrames(nbFrames);
 
 	//vertex buffer
 	Helpers::Mesh::Mesh*  m = new Helpers::Mesh::Mesh();

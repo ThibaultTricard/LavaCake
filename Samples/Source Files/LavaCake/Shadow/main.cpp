@@ -9,9 +9,10 @@ int main() {
 	uint32_t nbFrames = 4;
 	Framework::ErrorCheck::PrintError(true);
 	Framework::Window w("LavaCake : Shadow", 0, 0, 512, 512);
-	w.PrepareVulkanContext(0, 3);
-	w.PrepareFrames(nbFrames);
-	Framework::Device* d = LavaCake::Framework::Device::getDevice();
+
+	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
+	d->initDevices(0, 1, w.m_windowParams);
+	d->prepareFrames(nbFrames);
 
 	vec3f camera = vec3f({0.0f,0.0f,4.0f});
 

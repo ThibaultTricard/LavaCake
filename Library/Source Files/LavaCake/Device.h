@@ -33,12 +33,12 @@ namespace LavaCake {
 
 			GraphicQueue* getGraphicQueue(int i);
 
-			void initDevices(VkPhysicalDeviceFeatures * desired_device_features, int nbComputeQueue, int nbGraphicQueue, WindowParameters	WindowParams);
+			void initDevices( int nbComputeQueue, int nbGraphicQueue, WindowParameters	WindowParams, VkPhysicalDeviceFeatures * desired_device_features = nullptr);
 
 			void prepareFrames(uint32_t									 framesCount,
-				VkImageUsageFlags          swapchain_image_usage,
-				bool                       use_depth,
-				VkImageUsageFlags          depth_attachment_usage);
+				VkImageUsageFlags          swapchain_image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+				bool                       use_depth = true,
+				VkImageUsageFlags          depth_attachment_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
 
 			//Make sure every command send to the device are finished
