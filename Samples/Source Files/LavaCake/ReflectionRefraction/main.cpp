@@ -15,7 +15,7 @@ int main() {
 
 	//cubeMap
 	Framework::TextureBuffer* cubeMap = new Framework::CubeMap("Data/Textures/Skansen/", 4);
-	cubeMap->compile();
+	cubeMap->allocate();
 
 	//cube vertices
 	Helpers::Mesh::Mesh*  m = new Helpers::Mesh::Mesh();
@@ -24,7 +24,7 @@ int main() {
 	}
 	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3 });
 	Framework::Device* d = LavaCake::Framework::Device::getDevice();
-	v->allocate(d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
+	v->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
 
 
 	//teapotVertices
@@ -33,7 +33,7 @@ int main() {
 		return false;
 	}
 	Framework::VertexBuffer* teapot_vertex_buffer = new Framework::VertexBuffer({ teapot_mesh }, { 3,3 });
-	teapot_vertex_buffer->allocate(d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
+	teapot_vertex_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
@@ -113,7 +113,7 @@ int main() {
 		VkCommandBuffer commandbuffer = frame.CommandBuffer;
 		VkDevice logical = d->getLogicalDevice();
 		VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
-		VkQueue& present_queue = d->getPresentQueue().getHandle();
+		VkQueue& present_queue = d->getPresentQueue()->getHandle();
 
 		if (!Fence::WaitForFences(logical, { *frame.DrawingFinishedFence }, false, 2000000000)) {
 			continue;
@@ -181,5 +181,7 @@ int main() {
 			continue;
 		}
 	}
+
+	d->end();
 }
 

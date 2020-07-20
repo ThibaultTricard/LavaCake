@@ -6,7 +6,7 @@
 using namespace LavaCake;
 
 int main() {
-	int nbFrames = 4;
+	uint32_t nbFrames = 4;
 	Framework::ErrorCheck::PrintError(true);
 	Framework::Window w("LavaCake : Shadow", 0, 0, 512, 512);
 	w.PrepareVulkanContext(0, 3);
@@ -27,18 +27,18 @@ int main() {
 	}
 
 	Framework::VertexBuffer* scene_vertex_buffer = new Framework::VertexBuffer({ plane_mesh, knot_mesh  }, { 3,3 });
-	scene_vertex_buffer->allocate(d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
+	scene_vertex_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
 
 	Framework::VertexBuffer* plane_buffer = new Framework::VertexBuffer({ plane_mesh }, { 3,3 });
-	plane_buffer->allocate(d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
+	plane_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
 
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
 	mat4 proj = Helpers::Transformation::PreparePerspectiveProjectionMatrix(static_cast<float>(w.m_windowSize[0]) / static_cast<float>(w.m_windowSize[1]),
 		50.0f, 0.5f, 10.0f);
-	mat4 modelView = mat4 { 0.9981, -0.0450, 0.0412, 0.0000, 0.0000, 0.6756, 0.7373, 0.0000, -0.0610, -0.7359, 0.6743, 0.0000, -0.0000, -0.0000, -4.0000, 1.0000 };
-	mat4 lightView = mat4{ 1.0,0.0,0.0,0.0,0.0,0.173648223 ,0.984807730,0.0,0.0, -0.984807730, 0.173648223 ,0.0,0.0,0.0,-3.99999976 ,1.0 };
+	mat4 modelView = mat4 { 0.9981f, -0.0450f, 0.0412f, 0.0000f, 0.0000f, 0.6756f, 0.7373f, 0.0000f, -0.0610f, -0.7359f, 0.6743f, 0.0000f, -0.0000f, -0.0000f, -4.0000f, 1.0000f };
+	mat4 lightView = mat4{ 1.0f,0.0f,0.0f,0.0f,0.0f,0.173648223f ,0.984807730f,0.0f,0.0f, -0.984807730f, 0.173648223f ,0.0f,0.0f,0.0f,-3.99999976f ,1.0f };
 	b->addVariable("ligthView", lightView);
 	b->addVariable("modelView", modelView);
 	b->addVariable("projection", proj);
@@ -52,8 +52,8 @@ int main() {
 	int shadowsize = 512;
 	
 	//frameBuffer
-	Framework::FrameBuffer* shadow_map_buffer = new Framework::FrameBuffer(float(shadowsize), float(shadowsize), d->getSwapChain().depthFormat());
-	shadow_map_buffer->compile();
+	Framework::FrameBuffer* shadow_map_buffer = new Framework::FrameBuffer(shadowsize, shadowsize, d->getSwapChain().depthFormat());
+	shadow_map_buffer->allocate();
 	
 	// Shadow pass
 	Framework::RenderPass shadowMapPass = Framework::RenderPass(Framework::attachementType::DepthOnly, false);
@@ -98,16 +98,15 @@ int main() {
 
 
 	w.Show();
-	MSG message;
 	bool updateUniformBuffer = true;
-	int f = 0;
+	uint32_t f = 0;
 	while (w.m_loop) {
 
 		Buffer::FrameResources& frame = d->getFrameRessources()->at(f);
 		VkCommandBuffer commandbuffer = frame.CommandBuffer;
 		VkDevice logical = d->getLogicalDevice();
 		VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
-		VkQueue& present_queue = d->getPresentQueue().getHandle();
+		VkQueue& present_queue = d->getPresentQueue()->getHandle();
 
 
 		w.UpdateInput();
@@ -158,14 +157,14 @@ int main() {
 		shadowMapPass.draw(commandbuffer, shadow_map_buffer->getFrameBuffer(), { 0,0 }, { int(shadowsize), int(shadowsize) });
 
 
-		if (d->getPresentQueue().getIndex() != d->getGraphicQueue(0)->getIndex()) {
+		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
 			Image::ImageTransition image_transition_before_drawing = {
 				d->getSwapChain().getImages()[image_index],						// VkImage              Image
 				VK_ACCESS_MEMORY_READ_BIT,                // VkAccessFlags        CurrentAccess
 				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,     // VkAccessFlags        NewAccess
 				VK_IMAGE_LAYOUT_UNDEFINED,                // VkImageLayout        CurrentLayout
 				VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, // VkImageLayout        NewLayout
-				d->getPresentQueue().getIndex(),          // uint32_t             CurrentQueueFamily
+				d->getPresentQueue()->getIndex(),         // uint32_t             CurrentQueueFamily
 				d->getGraphicQueue(0)->getIndex(),        // uint32_t             NewQueueFamily
 				VK_IMAGE_ASPECT_COLOR_BIT                 // VkImageAspectFlags   Aspect
 			};
@@ -190,7 +189,7 @@ int main() {
 		renderPass.draw(commandbuffer, *frame.Framebuffer, { 0,0 }, { int(size.width), int(size.height) }, { 0.1f, 0.2f, 0.3f, 1.0f });
 
 
-		if (d->getPresentQueue().getIndex() != d->getGraphicQueue(0)->getIndex()) {
+		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
 			Image::ImageTransition image_transition_before_drawing = {
 				d->getSwapChain().getImages()[image_index],	// VkImage              Image
 				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,				// VkAccessFlags        CurrentAccess
@@ -198,7 +197,7 @@ int main() {
 				VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,						// VkImageLayout        CurrentLayout
 				VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,						// VkImageLayout        NewLayout
 				d->getGraphicQueue(0)->getIndex(),          // uint32_t             CurrentQueueFamily
-				d->getPresentQueue().getIndex(),						// uint32_t             NewQueueFamily
+				d->getPresentQueue()->getIndex(),						// uint32_t             NewQueueFamily
 				VK_IMAGE_ASPECT_COLOR_BIT										// VkImageAspectFlags   Aspect
 			};
 			Image::SetImageMemoryBarrier(frame.CommandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, { image_transition_before_drawing });
@@ -229,5 +228,6 @@ int main() {
 		}
 
 	}
+	d->end();
 }
 
