@@ -13,4 +13,5 @@
 #include "LavaCake/ErrorCheck.h"
 #include "LavaCake/UniformBuffer.h"
 #include "Texture.h"
-
+#include "CubeMap.h"
+#include "Constant.h"

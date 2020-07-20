@@ -355,7 +355,7 @@ class Sample : public VulkanCookbookSample {
 
 			Buffer::BindVertexBuffers( command_buffer, 0, { { *VertexBuffer, 0 } } );
 
-			Drawing::DrawGeometry( command_buffer, 3, 1, 0, 0 );
+			LavaCake::vkCmdDraw( command_buffer, 3, 1, 0, 0 );
 
 			RenderPass::EndRenderPass( command_buffer );
 
@@ -373,7 +373,7 @@ class Sample : public VulkanCookbookSample {
 				Image::SetImageMemoryBarrier( command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { image_transition_before_present } );
       }
 
-      if( !Command::EndCommandBufferRecordingOperation( command_buffer ) ) {
+      if( !LavaCake::Command::EndCommandBufferRecordingOperation( command_buffer ) ) {
         return false;
       }
       return true;

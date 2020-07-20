@@ -22,9 +22,7 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 06 Render Passes and Framebuffers
-// Recipe:  01 Specifying attachments descriptions
+
 
 #include "VulkanRenderPass.h"
 #include "VulkanImage.h"

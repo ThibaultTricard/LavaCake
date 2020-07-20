@@ -8,25 +8,39 @@ using namespace LavaCake;
 int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
-	Framework::Window w("LavaCake : Specular Lighting", 0, 0, 512, 512);
+	Framework::Window w("LavaCake : Refraction", 0, 0, 500, 500);
 	w.PrepareVulkanContext(0, 1);
 	w.PrepareFrames(nbFrames);
 
 
-	//vertex buffer
+	//cubeMap
+	Framework::TextureBuffer* cubeMap = new Framework::CubeMap("Data/Textures/Skansen/", 4);
+	cubeMap->compile();
+
+	//cube vertices
 	Helpers::Mesh::Mesh*  m = new Helpers::Mesh::Mesh();
-	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/knot.obj", true, false, false, true, *m)) {
+	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/cube.obj", false, false, false, false, *m)) {
 		return false;
 	}
-	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3,3 });
+	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3 });
 	Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	v->allocate(d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
+
+
+	//teapotVertices
+	Helpers::Mesh::Mesh*  teapot_mesh = new Helpers::Mesh::Mesh();
+	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/teapot.obj", true, false, false, true, *teapot_mesh)) {
+		return false;
+	}
+	Framework::VertexBuffer* teapot_vertex_buffer = new Framework::VertexBuffer({ teapot_mesh }, { 3,3 });
+	teapot_vertex_buffer->allocate(d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
 	mat4 proj = Helpers::Transformation::PreparePerspectiveProjectionMatrix(static_cast<float>(w.m_windowSize[0]) / static_cast<float>(w.m_windowSize[1]),
 		50.0f, 0.5f, 10.0f);
-	mat4 modelView = Helpers::Transformation::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
+
+	mat4 modelView = Helpers::Transformation::PrepareTranslationMatrix(0.0f, 0.0f, 4.0f);
 	b->addVariable("modelView", modelView);
 	b->addVariable("projection", proj);
 	b->end();
@@ -34,18 +48,36 @@ int main() {
 
 	// Render pass
 	Framework::RenderPass pass = Framework::RenderPass(Framework::attachementType::ImageAndDepth, true);
-	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
 
-	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/02 Rendering a geometry with fragment specular lighting/shader.vert.spv");
-	pipeline->setVextexShader(vertex);
+	// Skybox
+	Framework::GraphicPipeline* skybox = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::VertexShaderModule* skyboxVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/04 Rendering a reflective and refractive geometry using cubemaps/skybox.vert.spv");
+	skybox->setVextexShader(skyboxVertex);
+	Framework::FragmentShaderModule* skyboxFrag = new Framework::FragmentShaderModule("Data/Shaders/11 Lighting/04 Rendering a reflective and refractive geometry using cubemaps/skybox.frag.spv");
+	skybox->setFragmentModule(skyboxFrag);
+	skybox->setVeritices(v);
+	skybox->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
+	skybox->addTextureBuffer(cubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
+	skybox->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 
-	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/11 Lighting/02 Rendering a geometry with fragment specular lighting/shader.frag.spv");
-	pipeline->setFragmentModule(frag);
+	// teapot
+	Framework::GraphicPipeline* teapot = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/04 Rendering a reflective and refractive geometry using cubemaps/model.vert.spv");
+	teapot->setVextexShader(vertex);
+	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/11 Lighting/04 Rendering a reflective and refractive geometry using cubemaps/model.frag.spv");
+	teapot->setFragmentModule(frag);
+	teapot->setVeritices(teapot_vertex_buffer);
+	teapot->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
+	teapot->addTextureBuffer(cubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
+	teapot->SetCullMode(VK_CULL_MODE_BACK_BIT);
 
-	pipeline->setVeritices(v);
-	pipeline->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
+	Framework::PushConstant* constant = new Framework::PushConstant();
+	vec3f camera = vec3f({ 0.f,0.f,4.f });
+	constant->addVariable("camera", camera);
+	teapot->addPushContant(constant, VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	pass.addSubPass(pipeline);
+	pass.addSubPass(skybox);
+	pass.addSubPass(teapot);
 	pass.addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	pass.addDependencies(0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	pass.compile();
@@ -64,12 +96,15 @@ int main() {
 			updateUniformBuffer = true;
 			modelView = Helpers::Transformation::Identity();
 
-			modelView = modelView * Helpers::Transformation::PrepareTranslationMatrix(0.0f, 0.0f, w.m_mouse.m_wheel.distance - 4.0f);
+			modelView = modelView * Helpers::Transformation::PrepareTranslationMatrix(0.0f, 0.0f,  w.m_mouse.m_wheel.distance- 4.0f);
 
-			modelView = modelView * Helpers::Transformation::PrepareRotationMatrix(-float(w.m_mouse.m_position.x) / float(w.m_windowSize[0]) * 360, { 0 , 1, 0 });
-			modelView = modelView * Helpers::Transformation::PrepareRotationMatrix(float(w.m_mouse.m_position.y) / float(w.m_windowSize[1]) * 360, { 1 , 0, 0 });
+			modelView = modelView * Helpers::Transformation::PrepareRotationMatrix(-float(w.m_mouse.m_position.x) / float(w.m_windowSize[0]) * 360 - 180, { 0 , 1, 0 });
+			modelView = modelView * Helpers::Transformation::PrepareRotationMatrix(float(w.m_mouse.m_position.y) / float(w.m_windowSize[1]) * 360 - 180, { 1 , 0, 0 });
 
-			b->setVariable("modelView", modelView);
+			camera = vec3f({ 0, 0, 4 }) * modelView;
+
+		  b->setVariable("modelView", modelView);
+			constant->setVariable("camera", camera);
 		}
 
 
@@ -120,7 +155,7 @@ int main() {
 		}
 
 
-		pass.draw(frame.CommandBuffer, *frame.Framebuffer, { 0,0 }, { int(size.width), int(size.height) }, { 0.1f, 0.2f, 0.3f, 1.0f });
+		pass.draw(frame.CommandBuffer, *frame.Framebuffer, { 0,0 }, { int(size.width), int(size.height) } ,{ 0.1f, 0.2f, 0.3f, 1.0f });
 
 
 
@@ -147,3 +182,4 @@ int main() {
 		}
 	}
 }
+

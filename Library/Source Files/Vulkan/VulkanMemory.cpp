@@ -22,9 +22,7 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 04 Resources and Memory
-// Recipe:  01 Creating a buffer
+
 
 #include "VulkanLoader.h"
 #include "VulkanFence.h"
@@ -242,7 +240,7 @@ namespace LavaCake {
 						destination_image_aspect                  // VkImageAspectFlags Aspect
 					} });
 
-			if (!Command::EndCommandBufferRecordingOperation(command_buffer)) {
+			if (!LavaCake::Command::EndCommandBufferRecordingOperation(command_buffer)) {
 				return false;
 			}
 

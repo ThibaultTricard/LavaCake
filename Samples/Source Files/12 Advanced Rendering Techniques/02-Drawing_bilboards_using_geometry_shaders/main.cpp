@@ -480,7 +480,7 @@ class Sample : public VulkanCookbookSample {
 		Pipeline::BindPipelineObject( command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *Pipeline );
 
     for( size_t i = 0; i < Bilboards.Parts.size(); ++i ) {
-			Drawing::DrawGeometry( command_buffer, Bilboards.Parts[i].VertexCount, 1, Bilboards.Parts[i].VertexOffset, 0 );
+			LavaCake::vkCmdDraw( command_buffer, Bilboards.Parts[i].VertexCount, 1, Bilboards.Parts[i].VertexOffset, 0 );
     }
 
 		RenderPass::EndRenderPass( command_buffer );
@@ -499,7 +499,7 @@ class Sample : public VulkanCookbookSample {
 			Image::SetImageMemoryBarrier( command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { image_transition_before_present } );
     }
 
-    if( !Command::EndCommandBufferRecordingOperation( command_buffer ) ) {
+    if( !LavaCake::Command::EndCommandBufferRecordingOperation( command_buffer ) ) {
       return false;
     }
     return true;

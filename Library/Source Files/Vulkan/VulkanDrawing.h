@@ -22,9 +22,7 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 09 Command Recording and Drawing
-// Recipe:  01 Clearing a color image
+
 
 #ifndef VULKAN_DRAWING
 #define VULKAN_DRAWING
@@ -40,42 +38,6 @@
 
 namespace LavaCake {
 	namespace Drawing {
-		void ProvideDataToShadersThroughPushConstants(
-			VkCommandBuffer      command_buffer,
-			VkPipelineLayout     pipeline_layout,
-			VkShaderStageFlags   pipeline_stages,
-			uint32_t             offset,
-			uint32_t             size,
-			void               * data);
-
-		void SetLineWidthStateDynamically(
-			VkCommandBuffer command_buffer,
-			float           line_width);
-
-		void SetDepthBiasStateDynamically(
-			VkCommandBuffer command_buffer,
-			float           constant_factor,
-			float           clamp_value,
-			float           slope_factor);
-
-		void SetBlendConstantsStateDynamically(
-			VkCommandBuffer              command_buffer,
-			std::array<float, 4> const & blend_constants);
-
-		void DrawGeometry(
-			VkCommandBuffer command_buffer,
-			uint32_t        vertex_count,
-			uint32_t        instance_count,
-			uint32_t        first_vertex,
-			uint32_t        first_instance);
-
-		void DrawIndexedGeometry(
-			VkCommandBuffer command_buffer,
-			uint32_t        index_count,
-			uint32_t        instance_count,
-			uint32_t        first_index,
-			uint32_t        vertex_offset,
-			uint32_t        first_instance);
 
 		bool PrepareSingleFrameOfAnimation(
 			VkDevice                                                        logical_device,

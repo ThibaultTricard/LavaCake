@@ -867,10 +867,10 @@ std::vector<VkSubpassDependency> subpass_dependencies = {
 
 			Buffer::BindVertexBuffers( command_buffer, 0, { { *ModelVertexBuffer, 0 } } );
 
-			Drawing::ProvideDataToShadersThroughPushConstants( command_buffer, *PipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof( float ) * 4, &Camera.GetPosition()[0] );
+			LavaCake::vkCmdPushConstants( command_buffer, *PipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof( float ) * 4, &Camera.GetPosition()[0] );
 
       for( size_t i = 0; i < Model.Parts.size(); ++i ) {
-				Drawing::DrawGeometry( command_buffer, Model.Parts[i].VertexCount, 1, Model.Parts[i].VertexOffset, 0 );
+				LavaCake::vkCmdDraw( command_buffer, Model.Parts[i].VertexCount, 1, Model.Parts[i].VertexOffset, 0 );
       }
 
       // Draw skybox
@@ -880,7 +880,7 @@ std::vector<VkSubpassDependency> subpass_dependencies = {
 			Buffer::BindVertexBuffers( command_buffer, 0, { { *SkyboxVertexBuffer, 0 } } );
 
       for( size_t i = 0; i < Skybox.Parts.size(); ++i ) {
-				Drawing::DrawGeometry( command_buffer, Skybox.Parts[i].VertexCount, 1, Skybox.Parts[i].VertexOffset, 0 );
+				LavaCake::vkCmdDraw( command_buffer, Skybox.Parts[i].VertexCount, 1, Skybox.Parts[i].VertexOffset, 0 );
       }
 
       // #1 subpass
@@ -894,9 +894,9 @@ std::vector<VkSubpassDependency> subpass_dependencies = {
 			Buffer::BindVertexBuffers( command_buffer, 0, { { *PostprocessVertexBuffer, 0 } } );
 
       float time = TimerState.GetTime();
-			Drawing::ProvideDataToShadersThroughPushConstants( command_buffer, *PostprocessPipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof( float ), &time );
+			LavaCake::vkCmdPushConstants( command_buffer, *PostprocessPipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof( float ), &time );
 
-			Drawing::DrawGeometry( command_buffer, 6, 1, 0, 0 );
+			LavaCake::vkCmdDraw( command_buffer, 6, 1, 0, 0 );
 
 			RenderPass::EndRenderPass( command_buffer );
 
@@ -914,7 +914,7 @@ std::vector<VkSubpassDependency> subpass_dependencies = {
 				Image::SetImageMemoryBarrier( command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { image_transition_before_present } );
       }
 
-      if( !Command::EndCommandBufferRecordingOperation( command_buffer ) ) {
+      if( !LavaCake::Command::EndCommandBufferRecordingOperation( command_buffer ) ) {
         return false;
       }
       return true;

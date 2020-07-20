@@ -27,6 +27,10 @@ namespace LavaCake {
 				return m_imageViewsRaw;
 			}
 
+			std::vector<VkImage>& getImages() {
+				return m_images;
+			}
+
 			void init(
 				uint32_t																	framesCount,
 				VkDevice&																	logicalDevice,

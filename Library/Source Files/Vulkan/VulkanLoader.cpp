@@ -22,9 +22,7 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 01 Instance and Devices
-// Recipe:  03 Connecting with a Vulkan Loader library
+
 
 #include "Common.h"
 #include "VulkanLoader.h"

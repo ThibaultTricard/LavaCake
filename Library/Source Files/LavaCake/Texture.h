@@ -10,6 +10,7 @@ namespace LavaCake {
 	namespace Framework {
 		class TextureBuffer {
 		public:
+
 			TextureBuffer(char const * filename, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM) {
 				if (!Helpers::Texture::LoadTextureDataFromFile(filename, nbChannel, *m_data, &m_width, &m_height)) {
 					ErrorCheck::setError(15,"could not load texture file");
@@ -26,7 +27,7 @@ namespace LavaCake {
 			};
 
 
-			void compile() {
+			virtual void compile() {
 				Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
@@ -68,7 +69,13 @@ namespace LavaCake {
 				return *m_imageView;
 			}
 
-		private :
+			virtual VkImageLayout getLayout() {
+				return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			}
+
+		protected :
+
+			TextureBuffer() {};
 
 			int																	m_width = 0;
 			int																	m_height = 0;
@@ -84,5 +91,63 @@ namespace LavaCake {
 
 			VkFormat														m_format;
 		};
+
+		class FrameBuffer : public TextureBuffer {
+		public : 
+			
+			FrameBuffer(int width, int height, VkFormat f) {
+				m_width = width;
+				m_height = height;
+				m_format = f;
+			};
+
+			virtual void compile() override {
+
+				Framework::Device* d = LavaCake::Framework::Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				VkPhysicalDevice physical = d->getPhysicalDevice();
+				VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
+
+				InitVkDestroyer(logical, m_sampler);
+				InitVkDestroyer(logical, m_image);
+				InitVkDestroyer(logical, m_imageMemory);
+				InitVkDestroyer(logical, m_imageView);
+
+
+				if (!Image::CreateCombinedImageSampler(physical, logical, VK_IMAGE_TYPE_2D, m_format, { (uint32_t)m_width, (uint32_t)m_height, 1 }, 1, 1,
+					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, false, VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_DEPTH_BIT, VK_FILTER_LINEAR,
+					VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+					VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
+					false, *m_sampler, *m_image, *m_imageMemory, *m_imageView)) {
+					//return false;
+				}
+			}
+				
+			virtual void setInputRenderPass(VkRenderPass pass) {
+				Framework::Device* d = LavaCake::Framework::Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				InitVkDestroyer(logical,m_frameBuffer);
+
+				if (!Buffer::CreateFramebuffer(logical, pass, { *m_imageView }, m_width, m_height, 1, *m_frameBuffer)) {
+					return;
+				}
+
+			}
+
+			virtual VkImageLayout getLayout() override{
+				return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+			}
+
+			VkFramebuffer getFrameBuffer() {
+				return *m_frameBuffer;
+			}
+
+
+		private :
+
+			VkDestroyer(VkFramebuffer) m_frameBuffer;
+
+		};
+
 	}
 }

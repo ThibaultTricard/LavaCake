@@ -22,9 +22,7 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 05 Descriptor Sets
-// Recipe:  01 Creating a sampler
+
 
 #ifndef VULKAN_DESCRIPTOR
 #define VULKAN_DESCRIPTOR

@@ -22,9 +22,7 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 02 Image Presentation
-// Recipe:  01 Creating a Vulkan Instance with WSI extensions enabled
+
 
 #include "VulkanLoader.h"
 #include "VulkanPresentation.h"

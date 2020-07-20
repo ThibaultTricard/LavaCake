@@ -3,7 +3,6 @@
 #include "SwapChain.h"
 #include "Queue.h"
 #include "ErrorCheck.h"
-#include "LayerValidation.h"
 
 
 namespace LavaCake {
@@ -157,14 +156,14 @@ namespace LavaCake {
 						Loader::LoadDeviceLevelFunctions(*m_logical, device_extensions);
 						//Todo Check if getHandle()  works
 						for (int i = 0; i < nbGraphicQueue; i++) {
-							LavaCake::Queue::GetDeviceQueue(*m_logical, m_graphicQueues[i].getIndex(), 0, m_graphicQueues[i].getHandle());
+							LavaCake::vkGetDeviceQueue(*m_logical, m_graphicQueues[i].getIndex(), 0, &m_graphicQueues[i].getHandle());
 						}
 
 						for (int i = 0; i < nbComputeQueue; i++) {
-							LavaCake::Queue::GetDeviceQueue(*m_logical, m_computeQueues[i].getIndex(), 0, m_computeQueues[i].getHandle());
+							LavaCake::vkGetDeviceQueue(*m_logical, m_computeQueues[i].getIndex(), 0, &m_computeQueues[i].getHandle());
 						}
 
-						LavaCake::Queue::GetDeviceQueue(*m_logical, m_presentQueue->getIndex(), 0, m_presentQueue->getHandle());
+						LavaCake::vkGetDeviceQueue(*m_logical, m_presentQueue->getIndex(), 0, &m_presentQueue->getHandle());
 						break;
 					}
 

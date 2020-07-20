@@ -18,7 +18,7 @@ int main() {
 	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/knot.obj", true, false, false, true, *m)) {
 		return false;
 	}
-	Framework::VertexBuffer* v = new Framework::VertexBuffer(m, {3,3});
+	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3,3 });
   Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	v->allocate(d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
 	
@@ -33,7 +33,7 @@ int main() {
 
 
 	// Render pass
-  Framework::RenderPass pass = Framework::RenderPass();
+  Framework::RenderPass pass = Framework::RenderPass(Framework::attachementType::ImageAndDepth, true);
   Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
 
 	Framework::VertexShaderModule* vertex =  new Framework::VertexShaderModule("Data/Shaders/11 Lighting/01 Rendering a geometry with vertex diffuse lighting/shader.vert.spv");
@@ -45,7 +45,7 @@ int main() {
 	pipeline->setVeritices(v);
   pipeline->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
 
-	pass.addSubPass(pipeline, true, true);
+	pass.addSubPass(pipeline);
 	pass.addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	pass.addDependencies(0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	pass.compile();
@@ -120,11 +120,11 @@ int main() {
     }
 
     
-    pass.draw(frame, { 0,0 }, {int(size.width), int(size.height)});
+    pass.draw(frame.CommandBuffer, *frame.Framebuffer, { 0,0 }, {int(size.width), int(size.height)}, { 0.1f, 0.2f, 0.3f, 1.0f });
 
 
 
-    if (!Command::EndCommandBufferRecordingOperation(commandbuffer)) {
+    if (!LavaCake::Command::EndCommandBufferRecordingOperation(commandbuffer)) {
 			continue;
     }
    

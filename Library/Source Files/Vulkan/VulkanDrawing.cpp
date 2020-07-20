@@ -22,9 +22,8 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 09 Command Recording and Drawing
-// Recipe:  01 Clearing a color image
+
+
 
 #include "VulkanDrawing.h"
 #include "VulkanFence.h"
@@ -32,48 +31,6 @@
 
 namespace LavaCake {
 	namespace Drawing {
-		void ProvideDataToShadersThroughPushConstants(VkCommandBuffer      command_buffer,
-			VkPipelineLayout     pipeline_layout,
-			VkShaderStageFlags   pipeline_stages,
-			uint32_t             offset,
-			uint32_t             size,
-			void               * data) {
-			vkCmdPushConstants(command_buffer, pipeline_layout, pipeline_stages, offset, size, data);
-		}
-
-		void SetLineWidthStateDynamically(VkCommandBuffer command_buffer,
-			float           line_width) {
-			vkCmdSetLineWidth(command_buffer, line_width);
-		}
-
-		void SetDepthBiasStateDynamically(VkCommandBuffer command_buffer,
-			float           constant_factor,
-			float           clamp,
-			float           slope_factor) {
-			vkCmdSetDepthBias(command_buffer, constant_factor, clamp, slope_factor);
-		}
-
-		void SetBlendConstantsStateDynamically(VkCommandBuffer              command_buffer,
-			std::array<float, 4> const & blend_constants) {
-			vkCmdSetBlendConstants(command_buffer, blend_constants.data());
-		}
-
-		void DrawGeometry(VkCommandBuffer command_buffer,
-			uint32_t        vertex_count,
-			uint32_t        instance_count,
-			uint32_t        first_vertex,
-			uint32_t        first_instance) {
-			vkCmdDraw(command_buffer, vertex_count, instance_count, first_vertex, first_instance);
-		}
-
-		void DrawIndexedGeometry(VkCommandBuffer command_buffer,
-			uint32_t        index_count,
-			uint32_t        instance_count,
-			uint32_t        first_index,
-			uint32_t        vertex_offset,
-			uint32_t        first_instance) {
-			vkCmdDrawIndexed(command_buffer, index_count, instance_count, first_index, vertex_offset, first_instance);
-		}
 
 
 		bool PrepareSingleFrameOfAnimation(VkDevice                                                        logical_device,

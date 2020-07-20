@@ -50,10 +50,10 @@ namespace LavaCake {
 			VkCommandBufferUsageFlags        usage,
 			VkCommandBufferInheritanceInfo * secondary_command_buffer_info);
 
-		bool EndCommandBufferRecordingOperation(VkCommandBuffer command_buffer);
-
 		bool ResetCommandBuffer(VkCommandBuffer command_buffer,
 			bool            release_resources);
+
+		bool EndCommandBufferRecordingOperation(VkCommandBuffer command_buffer);
 
 		bool ResetCommandPool(VkDevice      logical_device,
 			VkCommandPool command_pool,

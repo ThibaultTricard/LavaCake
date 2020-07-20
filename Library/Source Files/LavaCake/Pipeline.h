@@ -4,6 +4,8 @@
 #include "VertexBuffer.h"
 #include "UniformBuffer.h"
 #include "Texture.h"
+#include "Constant.h"
+
 
 namespace LavaCake {
 	namespace Framework {
@@ -20,9 +22,19 @@ namespace LavaCake {
 			VkShaderStageFlags			stage;
 		};
 
+		struct constant {
+			PushConstant* constant;
+			VkShaderStageFlags			stage;
+		};
+
 		class GraphicPipeline
 		{
 		public:
+
+			VkDestroyer(VkPipeline)																m_pipeline;
+			VkDestroyer(VkPipelineLayout)													m_pipelineLayout;
+			std::vector<VkDescriptorSet>													m_descriptorSets;
+
 			GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax) {
 				//viewport
 				m_viewportscissor = {
@@ -98,11 +110,22 @@ namespace LavaCake {
 				VkDevice& logical = d->getLogicalDevice();
 				generateDescriptorLayout();
 				InitVkDestroyer(logical, m_pipelineLayout);
-				if (!Pipeline::CreatePipelineLayout(logical, { *m_descriptorSetLayout }, {}, *m_pipelineLayout)) {
+
+				std::vector<VkPushConstantRange> push_constant_ranges = {};
+				for (int i = 0; i < m_constants.size(); i++) {
+					push_constant_ranges.push_back(
+						{
+							m_constants[i].stage,																				// VkShaderStageFlags     stageFlags
+							0,																													// uint32_t               offset
+							m_constants[i].constant->size() * sizeof(float)		          // uint32_t               size
+						});
+				}
+
+				if (!Pipeline::CreatePipelineLayout(logical, { *m_descriptorSetLayout }, push_constant_ranges, *m_pipelineLayout)) {
 					ErrorCheck::setError(9, "cannot create pipeline layout");
 				}
 
-				Pipeline::SpecifyPipelineRasterizationState(false, false, VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f, m_rasterizationStateCreateInfo);
+				Pipeline::SpecifyPipelineRasterizationState(false, false, VK_POLYGON_MODE_FILL, m_CullMode, VK_FRONT_FACE_COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f, m_rasterizationStateCreateInfo);
 				Pipeline::SpecifyPipelineMultisampleState(VK_SAMPLE_COUNT_1_BIT, false, 0.0f, nullptr, false, false, m_multisampleStateCreateInfo);
 				Pipeline::SpecifyPipelineDepthAndStencilState(true, true, VK_COMPARE_OP_LESS_OR_EQUAL, false, 0.0f, 1.0f, false, {}, {}, m_depthStencilStateCreateInfo);
 				m_attachmentBlendStates = {
@@ -155,22 +178,42 @@ namespace LavaCake {
 				Pipeline::SpecifyPipelineInputAssemblyState(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, false, m_inputInfo);
 			}
 
-			void draw(const Buffer::FrameResources& ressources) {
+			void draw(const VkCommandBuffer buffer) {
 				VkViewport& viewport = m_viewportscissor.Viewports[0];
-				Viewport::SetViewportStateDynamically(ressources.CommandBuffer, 0, { viewport });
+				Viewport::SetViewportStateDynamically(buffer, 0, { viewport });
 
 				VkRect2D& scissor = m_viewportscissor.Scissors[0];
-				Viewport::SetScissorStateDynamically(ressources.CommandBuffer, 0, { scissor });
+				Viewport::SetScissorStateDynamically(buffer, 0, { scissor });
 
-				Buffer::BindVertexBuffers(ressources.CommandBuffer, 0, { { m_vertexBuffer->getBuffer(), 0 } });
+				Buffer::BindVertexBuffers(buffer, 0, { { m_vertexBuffer->getBuffer(), 0 } });
 
-				Descriptor::BindDescriptorSets(ressources.CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0, m_descriptorSets, {});
 
-				Pipeline::BindPipelineObject(ressources.CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
+				
 
-				for (size_t i = 0; i < m_vertexBuffer->getMesh()->Parts.size(); ++i) {
-					Drawing::DrawGeometry(ressources.CommandBuffer, m_vertexBuffer->getMesh()->Parts[i].VertexCount, 1, m_vertexBuffer->getMesh()->Parts[i].VertexOffset, 0);
+				Descriptor::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0, m_descriptorSets, {});
+
+				Pipeline::BindPipelineObject(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
+
+				for (int i = 0; i < m_constants.size(); i++) {
+					m_constants[i].constant->push(buffer, *m_pipelineLayout, m_constants[i].stage);
 				}
+
+				uint32_t count = 0;
+				for (size_t i = 0; i < m_vertexBuffer->getMeshs().size(); i++) {
+					for (size_t j = 0; j < m_vertexBuffer->getMeshs()[i]->Parts.size(); j++) {
+						count += m_vertexBuffer->getMeshs()[i]->Parts[j].VertexCount;
+					}
+				}
+				LavaCake::vkCmdDraw(buffer, count, 1, 0, 0);
+			}
+
+
+			void SetCullMode(VkCullModeFlagBits cullMode) {
+				m_CullMode = cullMode;
+			}
+
+			void addPushContant(PushConstant* constant, VkShaderStageFlags flag) {
+				m_constants.push_back({ constant, flag });
 			}
 
 		private:
@@ -210,16 +253,20 @@ namespace LavaCake {
 				////////////////////////////////////////////////////////////////////
 				//To Generalize when adding other kind of uniforms
 
-				m_descriptorPoolSize = {
-					{
-						VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,          // VkDescriptorType     type
-						uint32_t(m_uniforms.size())                  // uint32_t             descriptorCount
-					} ,
-					{
-						VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,   // VkDescriptorType     type
-						uint32_t(m_textures.size())                  // uint32_t             descriptorCount
-					}
-				};
+				m_descriptorPoolSize = {};
+
+				if (m_uniforms.size() > 0) {
+					m_descriptorPoolSize.push_back({
+						VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,							// VkDescriptorType     type
+							uint32_t(m_uniforms.size())										// uint32_t             descriptorCount
+						});
+				}
+				if (m_textures.size() > 0) {
+					m_descriptorPoolSize.push_back({
+						VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,			// VkDescriptorType     type
+							uint32_t(m_textures.size())										// uint32_t             descriptorCount
+						});
+				}
 
 
 				InitVkDestroyer(logical, m_descriptorPool);
@@ -258,8 +305,8 @@ namespace LavaCake {
 						{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
 							{
 								m_textures[i].t->getSampler(),							// vkSampler                            buffer
-								m_textures[i].t->getImageView(),																					// VkImageView                         offset
-								VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL		// VkImageLayout                         range
+								m_textures[i].t->getImageView(),						// VkImageView                          offset
+								m_textures[i].t->getLayout()								// VkImageLayout                         range
 							}
 						}
 					});
@@ -269,8 +316,6 @@ namespace LavaCake {
 				Descriptor::UpdateDescriptorSets(logical, m_imageDescriptorUpdate, m_bufferDescriptorUpdate, {}, {});
 			}
 			
-			VkDestroyer(VkPipeline)																m_pipeline;
-			VkDestroyer(VkPipelineLayout)													m_pipelineLayout;
 
 			VertexShaderModule*																		m_vertexModule = nullptr;
 			TessellationControlShaderModule*											m_tesselationControlModule = nullptr;
@@ -282,10 +327,11 @@ namespace LavaCake {
 			std::vector<texture>																	m_textures;
 			VkDestroyer(VkDescriptorSetLayout)										m_descriptorSetLayout;
 			VkDestroyer(VkDescriptorPool)													m_descriptorPool;
-			std::vector<VkDescriptorSet>													m_descriptorSets;
+			//std::vector<VkDescriptorSet>													m_descriptorSets;
 
 			std::vector<Buffer::BufferDescriptorInfo>							m_bufferDescriptorUpdate;
 			std::vector<Image::ImageDescriptorInfo>								m_imageDescriptorUpdate;
+			std::vector<constant>																	m_constants;
 			std::vector<VkDescriptorPoolSize>											m_descriptorPoolSize;
 			std::vector<VkDescriptorSetLayoutBinding>							m_descriptorSetLayoutBinding;
 
@@ -306,6 +352,12 @@ namespace LavaCake {
 			VkPipelineVertexInputStateCreateInfo									m_vertexInfo;
 			VertexBuffer*																					m_vertexBuffer;
 			VkPipelineInputAssemblyStateCreateInfo								m_inputInfo;
+
+
+			VkCullModeFlagBits																		m_CullMode = VK_CULL_MODE_BACK_BIT;
+
+			
+			
 		};
 	}
 }

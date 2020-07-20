@@ -544,11 +544,11 @@ class Sample : public VulkanCookbookSample {
 		Pipeline::BindPipelineObject( ComputeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, *ComputePipeline );
 
     float time = TimerState.GetDeltaTime();
-		Drawing::ProvideDataToShadersThroughPushConstants( ComputeCommandBuffer, *ComputePipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof( float ), &time );
+		LavaCake::vkCmdPushConstants( ComputeCommandBuffer, *ComputePipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof( float ), &time );
 
 		Pipeline::DispatchComputeWork( ComputeCommandBuffer, PARTICLES_COUNT / 32 + 1, 1, 1 );
 
-    if( !Command::EndCommandBufferRecordingOperation( ComputeCommandBuffer ) ) {
+    if( !LavaCake::Command::EndCommandBufferRecordingOperation( ComputeCommandBuffer ) ) {
       return false;
     }
 
@@ -639,7 +639,7 @@ class Sample : public VulkanCookbookSample {
 
 			Pipeline::BindPipelineObject( command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *GraphicsPipeline );
 
-			Drawing::DrawGeometry( command_buffer, PARTICLES_COUNT, 1, 0, 0 );
+			LavaCake::vkCmdDraw( command_buffer, PARTICLES_COUNT, 1, 0, 0 );
 
 			RenderPass::EndRenderPass( command_buffer );
 
@@ -657,7 +657,7 @@ class Sample : public VulkanCookbookSample {
 				Image::SetImageMemoryBarrier( command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { image_transition_before_present } );
       }
 
-      if( !Command::EndCommandBufferRecordingOperation( command_buffer ) ) {
+      if( !LavaCake::Command::EndCommandBufferRecordingOperation( command_buffer ) ) {
         return false;
       }
       return true;

@@ -193,9 +193,9 @@ namespace LavaCake {
       } else {
         PhysicalDevice = physical_device;
         Loader::LoadDeviceLevelFunctions( *LogicalDevice, device_extensions );
-        Queue::GetDeviceQueue( *LogicalDevice, GraphicsQueue.FamilyIndex, 0, GraphicsQueue.Handle );
-				Queue::GetDeviceQueue( *LogicalDevice, ComputeQueue.FamilyIndex, 0, ComputeQueue.Handle );
-				Queue::GetDeviceQueue( *LogicalDevice, PresentQueue.FamilyIndex, 0, PresentQueue.Handle );
+        LavaCake::vkGetDeviceQueue( *LogicalDevice, GraphicsQueue.FamilyIndex, 0, &GraphicsQueue.Handle );
+				LavaCake::vkGetDeviceQueue( *LogicalDevice, ComputeQueue.FamilyIndex, 0, &ComputeQueue.Handle );
+				LavaCake::vkGetDeviceQueue( *LogicalDevice, PresentQueue.FamilyIndex, 0, &PresentQueue.Handle );
         break;
       }
     }

@@ -8,9 +8,12 @@ namespace LavaCake {
 	namespace Framework {
 		class VertexBuffer {
 		public:
-			VertexBuffer(LavaCake::Helpers::Mesh::Mesh* m, std::vector<int> dataDescription, uint32_t binding = 0, VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX) {
-				m_vertices = &m->Data;
-				m_mesh = m;
+			VertexBuffer(std::vector <LavaCake::Helpers::Mesh::Mesh*> m, std::vector<int> dataDescription, uint32_t binding = 0, VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX) {
+				m_vertices = new std::vector<float>(m[0]->Data);
+				for (int i = 1; i < m.size(); i++) {
+					m_vertices->insert(m_vertices->end(), m[i]->Data.begin(), m[i]->Data.end());
+				}
+				m_meshs = m;
 
 				uint32_t offset = 0;
 				for (uint32_t i = 0; i < dataDescription.size(); i++) {
@@ -62,8 +65,8 @@ namespace LavaCake {
 				}
 			}
 
-			LavaCake::Helpers::Mesh::Mesh* getMesh() {
-				return m_mesh;
+			std::vector <LavaCake::Helpers::Mesh::Mesh*> getMeshs() {
+				return m_meshs;
 			}
 			
 			VkBuffer& getBuffer() {
@@ -85,7 +88,7 @@ namespace LavaCake {
 			VkDestroyer(VkBuffer)																m_buffer;
 			VkDestroyer(VkDeviceMemory)													m_bufferMemory;
 			std::vector<float>*																	m_vertices;
-			LavaCake::Helpers::Mesh::Mesh*											m_mesh;
+			std::vector <LavaCake::Helpers::Mesh::Mesh*>				m_meshs;
 		};
 
 	}

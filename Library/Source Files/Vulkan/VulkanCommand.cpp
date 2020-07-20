@@ -22,9 +22,6 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 03 Command Buffers and Synchronization
-// Recipe:  01 Creating a command pool
 
 #include "VulkanCommand.h"
 #include "VulkanFence.h"
@@ -100,7 +97,7 @@ namespace LavaCake {
 			}
 			return true;
 		}
-
+	
 		bool ResetCommandBuffer(VkCommandBuffer command_buffer,
 			bool            release_resources) {
 			VkResult result = vkResetCommandBuffer(command_buffer, release_resources ? VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT : 0);

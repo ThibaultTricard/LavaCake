@@ -281,7 +281,7 @@ class Sample : public VulkanCookbookSample {
     };
 		Image::SetImageMemoryBarrier( CommandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { image_transition_before_present } );
 
-    if( !Command::EndCommandBufferRecordingOperation( CommandBuffer ) ) {
+    if( !LavaCake::Command::EndCommandBufferRecordingOperation( CommandBuffer ) ) {
       return false;
     }
 

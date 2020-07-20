@@ -22,9 +22,7 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 08 Graphics and Compute Pipelines
-// Recipe:  01 Creating a shader module
+
 
 #include "VulkanPipeline.h"
 #include "VulkanShader.h"
