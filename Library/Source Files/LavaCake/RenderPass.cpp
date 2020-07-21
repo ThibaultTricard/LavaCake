@@ -1,24 +1,22 @@
 #include "RenderPass.h"
 namespace LavaCake {
 	namespace Framework {
-		RenderPass::RenderPass(uint32_t AttachementFlag) {
+		RenderPass::RenderPass(uint32_t AttachementFlag, std::vector<uint32_t> input_number) {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			m_imageFormat = d->getSwapChain().imageFormat();
 			m_depthFormat = d->getSwapChain().depthFormat();
 
-			setupAttatchments(AttachementFlag);
-
-
+			addAttatchments(AttachementFlag, input_number);
 		}
 
-		RenderPass::RenderPass(uint32_t AttachementFlag, VkFormat ImageFormat, VkFormat DepthFormat) {
+		RenderPass::RenderPass( VkFormat ImageFormat, VkFormat DepthFormat, uint32_t AttachementFlag, std::vector<uint32_t> input_number) {
 			m_imageFormat = ImageFormat;
 			m_depthFormat = DepthFormat;
-			setupAttatchments(AttachementFlag);
+			addAttatchments(AttachementFlag, input_number);
 		}
 
 
-		void RenderPass::setupAttatchments(uint32_t AttachementFlag) {
+		void RenderPass::addAttatchments(uint32_t AttachementFlag, std::vector<uint32_t> input_number) {
 			VkAttachmentReference* depth = new VkAttachmentReference();
 			uint32_t imageAttachementindex;
 			bool drawOnScreen = false;
@@ -72,9 +70,16 @@ namespace LavaCake {
 
 				params.DepthStencilAttachment = &m_depthAttachments[m_depthAttachments.size() - 1];
 
-				m_subpassParameters.push_back( params );
-
 			}
+			if (AttachementFlag & ADD_INPUT) {
+				std::vector<VkAttachmentReference>   inputAttachments = {};
+				for (size_t i = 0; i < input_number.size(); i++) {
+					inputAttachments.push_back({ input_number[i], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
+				}
+				params.InputAttachments = inputAttachments;
+			}
+
+			m_subpassParameters.push_back(params);
 		}
 
 		void RenderPass::addDependencies(uint32_t srcSubpass, uint32_t dstSubpass, VkPipelineStageFlags srcPipe, VkPipelineStageFlags dstPipe, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkDependencyFlags dependency) {
@@ -102,7 +107,7 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't compile RenderPass");
 			}
 
-			for (int i = 0; i < m_pipelines.size(); i++) {
+			for (uint32_t i = 0; i < m_pipelines.size(); i++) {
 				m_pipelines[i]->compile(*m_renderPass);
 			}
 		}
@@ -111,7 +116,12 @@ namespace LavaCake {
 			LavaCake::RenderPass::BeginRenderPass(commandBuffer, *m_renderPass, frameBuffer, { { 0, 0 },
 				{uint32_t(viewportMax[0] - viewportMin[0]),uint32_t(viewportMax[1] - viewportMin[1])} },
 				clear_values, VK_SUBPASS_CONTENTS_INLINE);
-			for (int i = 0; i < m_pipelines.size(); i++) {
+			uint32_t subpass = 0;
+			for (uint32_t i = 0; i < m_pipelines.size(); i++) {
+				if (m_pipelines[i]->getSubpassNumber() != subpass) {
+					subpass = m_pipelines[i]->getSubpassNumber();
+					LavaCake::RenderPass::ProgressToTheNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+				}
 				m_pipelines[i]->draw(commandBuffer);
 			}
 

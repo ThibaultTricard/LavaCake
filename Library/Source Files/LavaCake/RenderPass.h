@@ -10,6 +10,7 @@ namespace LavaCake {
 			USE_DEPTH				= 4,
 			OP_STORE_COLOR	= 8,
 			OP_STORE_DEPTH  = 16,
+			ADD_INPUT				= 32
 		};
 		
 
@@ -21,11 +22,12 @@ namespace LavaCake {
 		class RenderPass {
 		public :
 
-			RenderPass(uint32_t AttachementFlag);
 
-			RenderPass(uint32_t AttachementFlag, VkFormat ImageFormat, VkFormat DepthFormat);
+			RenderPass(uint32_t AttachementFlag = 0, std::vector<uint32_t> input_number = {});
 
-			void setupAttatchments(uint32_t AttachementFlag);
+			RenderPass( VkFormat ImageFormat, VkFormat DepthFormat, uint32_t AttachementFlag, std::vector<uint32_t> input_number = {});
+
+			void addAttatchments(uint32_t AttachementFlag, std::vector<uint32_t> input_number = {});
 
 			void addDependencies(uint32_t srcSubpass, uint32_t dstSubpass, VkPipelineStageFlags srcPipe, VkPipelineStageFlags dstPipe, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkDependencyFlags dependency);
 

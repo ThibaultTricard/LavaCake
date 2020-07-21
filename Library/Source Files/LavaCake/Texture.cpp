@@ -177,5 +177,42 @@ namespace LavaCake {
 					graphics_queue, commandbuffer, {});
 			}
 		}
+
+
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//																																			Attachement																																				//
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		Attachment::Attachment(int width, int height, VkFormat f) {
+			m_width = width;
+			m_height = height;
+			m_format = f;
+		}
+
+		void Attachment::allocate() {
+			Framework::Device* d = LavaCake::Framework::Device::getDevice();
+			VkDevice logical = d->getLogicalDevice();
+
+			InitVkDestroyer(logical, m_image);
+			InitVkDestroyer(logical, m_imageMemory);
+			InitVkDestroyer(logical, m_imageView);
+			VkPhysicalDevice physical = d->getPhysicalDevice();
+			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
+
+			if (!Image::CreateInputAttachment(physical, logical, VK_IMAGE_TYPE_2D, m_format, { (uint32_t)m_width,
+				(uint32_t)m_height, 1 }, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, VK_IMAGE_VIEW_TYPE_2D,
+				VK_IMAGE_ASPECT_COLOR_BIT, *m_image, *m_imageMemory, *m_imageView)) {
+				ErrorCheck::setError("Can't allocate this input Attachment");
+			}
+		}
+
+		VkImageLayout Attachment::getLayout() {
+			return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		}
+
+		VkImageView Attachment::getImageView() {
+			return *m_imageView;
+		}
 	}
 }

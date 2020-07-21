@@ -25,7 +25,6 @@ int main() {
 		return false;
 	}
 	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3 });
-	Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	v->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
 
 
@@ -86,7 +85,6 @@ int main() {
 
 
 	w.Show();
-	MSG message;
 	bool updateUniformBuffer = true;
 	int f = 0;
 	while (w.m_loop) {

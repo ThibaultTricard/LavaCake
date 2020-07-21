@@ -8,7 +8,7 @@ namespace LavaCake {
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 
-			for (int i = 0; i < m_variables.size(); i++) {
+			for (uint32_t i = 0; i < m_variables.size(); i++) {
 				VkDeviceSize s = sizeof(m_variables[i][0]) * m_variables[i].size();
 				m_typeSizeOffset.push_back(std::pair<VkDeviceSize, VkDeviceSize>(s, m_bufferSize));
 				m_bufferSize += s;
@@ -71,7 +71,7 @@ namespace LavaCake {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
-			for (int i = 0; i < m_variables.size(); i++) {
+			for (uint32_t i = 0; i < m_variables.size(); i++) {
 				if (all || m_modified[i]) {
 					VkDeviceSize size = m_typeSizeOffset[i].first;
 					VkDeviceSize offset = m_typeSizeOffset[i].second;

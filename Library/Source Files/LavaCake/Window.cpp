@@ -165,25 +165,25 @@ namespace LavaCake {
 				if (keyName == "ctrl") {
 					return m_keys[VK_CONTROL];
 				}
-				if (keyName == "shift") {
+				else if (keyName == "shift") {
 					return m_keys[VK_SHIFT];
 				}
-				if (keyName == "space") {
+				else if (keyName == "space") {
 					return m_keys[VK_SPACE];
 				}
-				if (keyName == "alt") {
+				else if (keyName == "alt") {
 					return m_keys[VK_SHIFT];
 				}
-				if (keyName == "up") {
+				else if (keyName == "up") {
 					return m_keys[VK_UP];
 				}
-				if (keyName == "down") {
+				else if (keyName == "down") {
 					return m_keys[VK_DOWN];
 				}
-				if (keyName == "left") {
+				else if (keyName == "left") {
 					return m_keys[VK_LEFT];
 				}
-				if (keyName == "right") {
+				else if (keyName == "right") {
 					return m_keys[VK_RIGHT];
 				}
 			}

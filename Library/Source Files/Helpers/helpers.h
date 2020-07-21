@@ -22,15 +22,10 @@
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-//
-// Chapter: 10 Helper Recipes
-// Recipe:  01 Preparing a translation matrix
 
-#ifndef PREPARING_A_TRANSLATION_MATRIX
-#define PREPARING_A_TRANSLATION_MATRIX
+#pragma once
 
 #include "Tools.h"
-
 
 namespace LavaCake {
 	namespace Helpers {
@@ -91,8 +86,9 @@ namespace LavaCake {
 				bool         unify,
 				Mesh       & mesh,
 				uint32_t   * vertex_stride = nullptr);
+
+			void preparePostProcessQuad(Mesh       & mesh);
 		}
 	}
 } // namespace LavaCake
 
-#endif // PREPARING_A_TRANSLATION_MATRIX

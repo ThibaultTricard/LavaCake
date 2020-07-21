@@ -3,7 +3,7 @@
 namespace LavaCake {
 	namespace Framework {
 
-		GraphicPipeline::GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax) {
+		GraphicPipeline::GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax, uint32_t subpassNumber) {
 			//viewport
 			m_viewportscissor = {
 					{                     // std::vector<VkViewport>   Viewports
@@ -29,7 +29,7 @@ namespace LavaCake {
 						}
 					}
 			};
-
+			m_subpassNumber = subpassNumber;
 			Viewport::SpecifyPipelineViewportAndScissorTestState(m_viewportscissor, m_viewportInfo);
 		};
 
@@ -80,7 +80,7 @@ namespace LavaCake {
 			InitVkDestroyer(logical, m_pipelineLayout);
 
 			std::vector<VkPushConstantRange> push_constant_ranges = {};
-			for (int i = 0; i < m_constants.size(); i++) {
+			for (uint32_t i = 0; i < m_constants.size(); i++) {
 				push_constant_ranges.push_back(
 					{
 						m_constants[i].stage,																				// VkShaderStageFlags     stageFlags
@@ -120,7 +120,7 @@ namespace LavaCake {
 			Pipeline::SpecifyPipelineShaderStages(getStageParameter(), m_shaderStageCreateInfos);
 			Pipeline::SpecifyGraphicsPipelineCreationParameters(0, m_shaderStageCreateInfos, m_vertexInfo, m_inputInfo,
 				nullptr, &m_viewportInfo, m_rasterizationStateCreateInfo, &m_multisampleStateCreateInfo, &m_depthStencilStateCreateInfo, &m_blendStateCreateInfo,
-				&m_dynamicStateCreateInfo, *m_pipelineLayout, renderpass, 0, VK_NULL_HANDLE, -1, m_pipelineCreateInfo);
+				&m_dynamicStateCreateInfo, *m_pipelineLayout, renderpass, m_subpassNumber, VK_NULL_HANDLE, -1, m_pipelineCreateInfo);
 
 			std::vector<VkPipeline> pipelines;
 			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
@@ -137,6 +137,10 @@ namespace LavaCake {
 
 		void GraphicPipeline::addTextureBuffer(TextureBuffer * t, VkShaderStageFlags stage, int binding) {
 			m_textures.push_back({ t,binding,stage });
+		}
+
+		void GraphicPipeline::addAttachment(Attachment * a, VkShaderStageFlags stage, int binding) {
+			m_attachments.push_back({ a,binding,stage });
 		}
 
 		void GraphicPipeline::setVeritices(VertexBuffer* buffer) {
@@ -159,7 +163,7 @@ namespace LavaCake {
 
 			Pipeline::BindPipelineObject(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
 
-			for (int i = 0; i < m_constants.size(); i++) {
+			for (uint32_t i = 0; i < m_constants.size(); i++) {
 				m_constants[i].constant->push(buffer, *m_pipelineLayout, m_constants[i].stage);
 			}
 
@@ -172,6 +176,9 @@ namespace LavaCake {
 			LavaCake::vkCmdDraw(buffer, count, 1, 0, 0);
 		}
 
+		uint32_t GraphicPipeline::getSubpassNumber() {
+			return m_subpassNumber;
+		};
 
 		void GraphicPipeline::SetCullMode(VkCullModeFlagBits cullMode) {
 			m_CullMode = cullMode;
@@ -188,7 +195,7 @@ namespace LavaCake {
 
 			m_descriptorSetLayoutBinding = {};
 
-			for (int i = 0; i < m_uniforms.size(); i++) {
+			for (uint32_t i = 0; i < m_uniforms.size(); i++) {
 				m_descriptorSetLayoutBinding.push_back({
 					uint32_t(m_uniforms[i].binding),
 					VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -197,7 +204,7 @@ namespace LavaCake {
 					nullptr
 					});
 			}
-			for (int i = 0; i < m_textures.size(); i++) {
+			for (uint32_t i = 0; i < m_textures.size(); i++) {
 				m_descriptorSetLayoutBinding.push_back({
 					uint32_t(m_textures[i].binding),
 					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -206,7 +213,15 @@ namespace LavaCake {
 					nullptr
 					});
 			}
-
+			for (uint32_t i = 0; i < m_attachments.size(); i++) {
+				m_descriptorSetLayoutBinding.push_back({
+					uint32_t(m_attachments[i].binding),
+					VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
+					1,
+					m_attachments[i].stage,
+					nullptr
+					});
+			}
 
 			InitVkDestroyer(logical, m_descriptorSetLayout);
 			if (!LavaCake::Descriptor::CreateDescriptorSetLayout(logical, m_descriptorSetLayoutBinding, *m_descriptorSetLayout)) {
@@ -228,10 +243,17 @@ namespace LavaCake {
 						uint32_t(m_textures.size())										// uint32_t             descriptorCount
 					});
 			}
+			if (m_attachments.size() > 0) {
+				m_descriptorPoolSize.push_back({
+					VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,						// VkDescriptorType     type
+						uint32_t(m_attachments.size())								// uint32_t             descriptorCount
+					});
+			}
 
 
+			uint32_t max_sets_count = m_uniforms.size() + m_textures.size() + m_attachments.size();
 			InitVkDestroyer(logical, m_descriptorPool);
-			if (!LavaCake::Descriptor::CreateDescriptorPool(logical, false, uint32_t(m_uniforms.size()), m_descriptorPoolSize, *m_descriptorPool)) {
+			if (!LavaCake::Descriptor::CreateDescriptorPool(logical, false, max_sets_count, m_descriptorPoolSize, *m_descriptorPool)) {
 				ErrorCheck::setError("Can't create descriptor pool");
 			}
 
@@ -240,7 +262,7 @@ namespace LavaCake {
 			}
 			m_bufferDescriptorUpdate = { };
 			int descriptorCount = 0;
-			for (int i = 0; i < m_uniforms.size(); i++) {
+			for (uint32_t i = 0; i < m_uniforms.size(); i++) {
 				m_bufferDescriptorUpdate.push_back({
 					m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
 					uint32_t(m_uniforms[i].binding),								// uint32_t                             TargetDescriptorBinding
@@ -257,7 +279,7 @@ namespace LavaCake {
 			}
 
 			m_imageDescriptorUpdate = { };
-			for (int i = 0; i < m_textures.size(); i++) {
+			for (uint32_t i = 0; i < m_textures.size(); i++) {
 				m_imageDescriptorUpdate.push_back({
 					m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
 					uint32_t(m_textures[i].binding),								// uint32_t                             TargetDescriptorBinding
@@ -272,7 +294,21 @@ namespace LavaCake {
 					}
 					});
 			}
-
+			for (uint32_t i = 0; i < m_attachments.size(); i++) {
+				m_imageDescriptorUpdate.push_back({
+						m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
+						uint32_t(m_attachments[i].binding),								// uint32_t                             TargetDescriptorBinding
+						0,																							// uint32_t                             TargetArrayElement
+						VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,						// VkDescriptorType                     TargetDescriptorType
+						{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
+							{
+								VK_NULL_HANDLE,															// vkSampler                            buffer
+								m_attachments[i].a->getImageView(),					// VkImageView                          offset
+								m_attachments[i].a->getLayout()							// VkImageLayout                         range
+							}
+						}
+					});
+			}
 			/////////////////////////////////////////////////////////////////////////////////////////////
 			Descriptor::UpdateDescriptorSets(logical, m_imageDescriptorUpdate, m_bufferDescriptorUpdate, {}, {});
 		}

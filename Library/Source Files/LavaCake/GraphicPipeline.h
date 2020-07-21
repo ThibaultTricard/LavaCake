@@ -22,6 +22,12 @@ namespace LavaCake {
 			VkShaderStageFlags			stage;
 		};
 
+		struct attachment {
+			Attachment* a;
+			int binding;
+			VkShaderStageFlags			stage;
+		};
+
 		struct constant {
 			PushConstant* constant;
 			VkShaderStageFlags			stage;
@@ -32,7 +38,7 @@ namespace LavaCake {
 		public:
 
 
-			GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax);
+			GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax, uint32_t subpassNumber =0);
 
 			void setVextexShader(VertexShaderModule*	module);
 
@@ -50,13 +56,15 @@ namespace LavaCake {
 
 			void addUniformBuffer(UniformBuffer * b, VkShaderStageFlags stage, int binding = 0);
 
-
 			void addTextureBuffer(TextureBuffer * t, VkShaderStageFlags stage, int binding = 0);
+
+			void addAttachment(Attachment * a, VkShaderStageFlags stage, int binding = 0);
 
 			void setVeritices(VertexBuffer* buffer);
 
 			void draw(const VkCommandBuffer buffer);
 
+			uint32_t getSubpassNumber();
 
 			void SetCullMode(VkCullModeFlagBits cullMode);
 
@@ -78,6 +86,7 @@ namespace LavaCake {
 
 			std::vector<uniform>																	m_uniforms;
 			std::vector<texture>																	m_textures;
+			std::vector<attachment>																m_attachments;
 			VkDestroyer(VkDescriptorSetLayout)										m_descriptorSetLayout;
 			VkDestroyer(VkDescriptorPool)													m_descriptorPool;
 			std::vector<VkDescriptorSet>													m_descriptorSets;
@@ -106,6 +115,7 @@ namespace LavaCake {
 			VertexBuffer*																					m_vertexBuffer;
 			VkPipelineInputAssemblyStateCreateInfo								m_inputInfo;
 
+			uint32_t																							m_subpassNumber;
 
 			VkCullModeFlagBits																		m_CullMode = VK_CULL_MODE_BACK_BIT;
 

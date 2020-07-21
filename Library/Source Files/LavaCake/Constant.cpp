@@ -5,7 +5,7 @@ namespace LavaCake {
 
 		void PushConstant::push(VkCommandBuffer buffer, VkPipelineLayout layout, VkShaderStageFlags flag) {
 			int offset = 0;
-			for (int i = 0; i < m_variables.size(); i++) {
+			for (uint32_t i = 0; i < m_variables.size(); i++) {
 				LavaCake::vkCmdPushConstants(buffer, layout, flag, offset, sizeof(int)* m_variables[i].size(), &(m_variables[i][0]));
 				offset += sizeof(int)* m_variables[i].size();
 			}
