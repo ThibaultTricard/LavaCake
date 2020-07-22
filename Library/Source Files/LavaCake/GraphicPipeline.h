@@ -28,6 +28,12 @@ namespace LavaCake {
 			VkShaderStageFlags			stage;
 		};
 
+		struct storageImage {
+			StorageImage* s;
+			int binding;
+			VkShaderStageFlags			stage;
+		};
+
 		struct constant {
 			PushConstant* constant;
 			VkShaderStageFlags			stage;

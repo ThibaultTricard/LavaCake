@@ -214,5 +214,41 @@ namespace LavaCake {
 		VkImageView Attachment::getImageView() {
 			return *m_imageView;
 		}
+
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//																																			Storage Image																																			//
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		StorageImage::StorageImage(int width, int height, VkFormat f) {
+			m_width = width;
+			m_height = height;
+			m_format = f;
+		}
+
+		void StorageImage::allocate() {
+			Framework::Device* d = LavaCake::Framework::Device::getDevice();
+			VkDevice logical = d->getLogicalDevice();
+
+			InitVkDestroyer(logical, m_image);
+			InitVkDestroyer(logical, m_imageMemory);
+			InitVkDestroyer(logical, m_imageView);
+			VkPhysicalDevice physical = d->getPhysicalDevice();
+			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
+
+			if (!Image::Create2DImageAndView(physical, logical, m_format, { (uint32_t)m_width,
+				(uint32_t)m_height }, 1, 1, VK_SAMPLE_COUNT_1_BIT,
+				VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_IMAGE_ASPECT_COLOR_BIT, *m_image, *m_imageMemory, *m_imageView)) {
+				ErrorCheck::setError("Can't allocate this Storage Image");
+			}
+		}
+
+		VkImageLayout StorageImage::getLayout() {
+			return VK_IMAGE_LAYOUT_GENERAL;
+		}
+
+		VkImageView StorageImage::getImageView() {
+			return *m_imageView;
+		}
 	}
 }

@@ -95,5 +95,28 @@ namespace LavaCake {
 			VkDestroyer(VkImageView)            m_imageView;
 		};
 
+
+		class StorageImage{
+		public:
+
+			StorageImage(int width, int height, VkFormat f);
+
+			void allocate();
+
+			virtual VkImageLayout getLayout();
+
+			VkImageView getImageView();
+
+		private:
+
+			int																	m_width = 0;
+			int																	m_height = 0;
+			VkFormat														m_format;
+
+			VkDestroyer(VkImage)                m_image;
+			VkDestroyer(VkDeviceMemory)         m_imageMemory;
+			VkDestroyer(VkImageView)            m_imageView;
+
+		};
 	}
 }
