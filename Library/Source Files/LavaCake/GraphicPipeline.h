@@ -44,7 +44,7 @@ namespace LavaCake {
 		public:
 
 
-			GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax, uint32_t subpassNumber =0);
+			GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax);
 
 			void setVextexShader(VertexShaderModule*	module);
 
@@ -75,6 +75,8 @@ namespace LavaCake {
 			void SetCullMode(VkCullModeFlagBits cullMode);
 
 			void addPushContant(PushConstant* constant, VkShaderStageFlags flag);
+
+			void setSubpassNumber(uint32_t number);
 
 		private:
 

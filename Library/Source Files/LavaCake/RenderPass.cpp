@@ -1,18 +1,15 @@
 #include "RenderPass.h"
 namespace LavaCake {
 	namespace Framework {
-		RenderPass::RenderPass(uint32_t AttachementFlag, std::vector<uint32_t> input_number) {
+		RenderPass::RenderPass() {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			m_imageFormat = d->getSwapChain().imageFormat();
 			m_depthFormat = d->getSwapChain().depthFormat();
-
-			addAttatchments(AttachementFlag, input_number);
 		}
 
-		RenderPass::RenderPass( VkFormat ImageFormat, VkFormat DepthFormat, uint32_t AttachementFlag, std::vector<uint32_t> input_number) {
+		RenderPass::RenderPass( VkFormat ImageFormat, VkFormat DepthFormat) {
 			m_imageFormat = ImageFormat;
 			m_depthFormat = DepthFormat;
-			addAttatchments(AttachementFlag, input_number);
 		}
 
 
@@ -94,8 +91,13 @@ namespace LavaCake {
 				});
 		}
 
-		void RenderPass::addSubPass(GraphicPipeline* p) {
-			m_pipelines.push_back(p);
+		void RenderPass::addSubPass(std::vector<GraphicPipeline*> p, uint32_t AttachementFlag, std::vector<uint32_t> input_number) {
+			for (int i = 0; i < p.size(); i++) {
+				p[i]->setSubpassNumber(m_subpass.size());
+			}
+			m_subpass.push_back(p);
+			
+			addAttatchments(AttachementFlag, input_number);
 		}
 
 		void RenderPass::compile() {
@@ -107,8 +109,10 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't compile RenderPass");
 			}
 
-			for (uint32_t i = 0; i < m_pipelines.size(); i++) {
-				m_pipelines[i]->compile(*m_renderPass);
+			for (uint32_t i = 0; i < m_subpass.size(); i++) {
+				for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
+					m_subpass[i][j]->compile(*m_renderPass);
+				}
 			}
 		}
 
@@ -116,15 +120,16 @@ namespace LavaCake {
 			LavaCake::RenderPass::BeginRenderPass(commandBuffer, *m_renderPass, frameBuffer, { { 0, 0 },
 				{uint32_t(viewportMax[0] - viewportMin[0]),uint32_t(viewportMax[1] - viewportMin[1])} },
 				clear_values, VK_SUBPASS_CONTENTS_INLINE);
-			uint32_t subpass = 0;
-			for (uint32_t i = 0; i < m_pipelines.size(); i++) {
-				if (m_pipelines[i]->getSubpassNumber() != subpass) {
-					subpass = m_pipelines[i]->getSubpassNumber();
+			for (uint32_t i = 0; i < m_subpass.size(); i++) {
+
+				if (i > 0) {
 					LavaCake::RenderPass::ProgressToTheNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 				}
-				m_pipelines[i]->draw(commandBuffer);
+				
+				for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
+					m_subpass[i][j]->draw(commandBuffer);
+				}
 			}
-
 
 			LavaCake::RenderPass::EndRenderPass(commandBuffer);
 		}

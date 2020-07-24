@@ -23,15 +23,15 @@ namespace LavaCake {
 		public :
 
 
-			RenderPass(uint32_t AttachementFlag = 0, std::vector<uint32_t> input_number = {});
+			RenderPass();
 
-			RenderPass( VkFormat ImageFormat, VkFormat DepthFormat, uint32_t AttachementFlag, std::vector<uint32_t> input_number = {});
+			RenderPass( VkFormat ImageFormat, VkFormat DepthFormat);
 
 			void addAttatchments(uint32_t AttachementFlag, std::vector<uint32_t> input_number = {});
 
 			void addDependencies(uint32_t srcSubpass, uint32_t dstSubpass, VkPipelineStageFlags srcPipe, VkPipelineStageFlags dstPipe, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkDependencyFlags dependency);
 
-			void addSubPass(GraphicPipeline* p);
+			void addSubPass(std::vector<GraphicPipeline*> p, uint32_t AttachementFlag = 0, std::vector<uint32_t> input_number = {});
 
 			void compile();
 
@@ -44,7 +44,7 @@ namespace LavaCake {
 			VkFormat																							m_imageFormat;
 			VkFormat																							m_depthFormat;
 			std::vector<LavaCake::RenderPass::SubpassParameters>	m_subpassParameters;
-			std::vector<GraphicPipeline*>													m_pipelines;
+			std::vector < std::vector<GraphicPipeline*>	>					m_subpass;
 			std::vector<VkAttachmentReference>										m_depthAttachments;
 			std::vector<VkAttachmentDescription>									m_attachmentDescriptions;
 			std::vector<VkSubpassDependency>											m_dependencies;

@@ -72,7 +72,7 @@ int main() {
 	colorAttachemnt->allocate();
 
 	//Render Pass
-	Framework::RenderPass renderPass = Framework::RenderPass( Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
+	Framework::RenderPass renderPass = Framework::RenderPass( );
 
 	
 	Framework::GraphicPipeline* sphereRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
@@ -86,8 +86,6 @@ int main() {
 	sphereRenderPipeline->addUniformBuffer(uniforms, VK_SHADER_STAGE_VERTEX_BIT, 0);
 	sphereRenderPipeline->addTextureBuffer(skyCubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 	sphereRenderPipeline->addPushContant(cameraConstant, VK_SHADER_STAGE_FRAGMENT_BIT);
-
-	renderPass.addSubPass(sphereRenderPipeline);
 
 
 	Framework::GraphicPipeline* skyRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
@@ -104,9 +102,9 @@ int main() {
 	skyRenderPipeline->addTextureBuffer(skyCubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 	skyRenderPipeline->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 
-	renderPass.addSubPass(skyRenderPipeline);
+	renderPass.addSubPass({ sphereRenderPipeline,skyRenderPipeline }, Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
 
-	Framework::GraphicPipeline* postProcessPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) }, 1);
+	Framework::GraphicPipeline* postProcessPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
 	Framework::VertexShaderModule* postProcessVertex = new Framework::VertexShaderModule("Data/Shaders/12 Advanced Rendering Techniques/06 Using input attachment for color correction postprocess effect/postprocess.vert.spv");
 	postProcessPipeline->setVextexShader(postProcessVertex);
 
@@ -120,8 +118,7 @@ int main() {
 	
 	postProcessPipeline->addAttachment(colorAttachemnt, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
 
-	renderPass.addSubPass(postProcessPipeline);
-	renderPass.addAttatchments(Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::OP_STORE_COLOR | Framework::RenderPassFlag::ADD_INPUT, {0});
+	renderPass.addSubPass({ postProcessPipeline }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::OP_STORE_COLOR | Framework::RenderPassFlag::ADD_INPUT, { 0 });
 
 	renderPass.addDependencies(
 		0,

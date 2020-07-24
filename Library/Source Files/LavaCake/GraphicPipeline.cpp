@@ -3,7 +3,7 @@
 namespace LavaCake {
 	namespace Framework {
 
-		GraphicPipeline::GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax, uint32_t subpassNumber) {
+		GraphicPipeline::GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax) {
 			//viewport
 			m_viewportscissor = {
 					{                     // std::vector<VkViewport>   Viewports
@@ -29,7 +29,6 @@ namespace LavaCake {
 						}
 					}
 			};
-			m_subpassNumber = subpassNumber;
 			Viewport::SpecifyPipelineViewportAndScissorTestState(m_viewportscissor, m_viewportInfo);
 		};
 
@@ -141,6 +140,10 @@ namespace LavaCake {
 
 		void GraphicPipeline::addAttachment(Attachment * a, VkShaderStageFlags stage, int binding) {
 			m_attachments.push_back({ a,binding,stage });
+		}
+
+		void GraphicPipeline::setSubpassNumber(uint32_t number) {
+			m_subpassNumber = number;
 		}
 
 		void GraphicPipeline::setVeritices(VertexBuffer* buffer) {

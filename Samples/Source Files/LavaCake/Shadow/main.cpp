@@ -8,7 +8,7 @@ using namespace LavaCake;
 int main() {
 	uint32_t nbFrames = 4;
 	Framework::ErrorCheck::PrintError(true);
-	Framework::Window w("LavaCake : Shadow", 0, 0, 512, 512);
+	Framework::Window w("LavaCake : Shadow", 0, 0, 1000, 800);
 
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
@@ -57,7 +57,7 @@ int main() {
 	shadow_map_buffer->allocate();
 	
 	// Shadow pass
-	Framework::RenderPass shadowMapPass = Framework::RenderPass(Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_DEPTH);
+	Framework::RenderPass shadowMapPass = Framework::RenderPass();
 	Framework::GraphicPipeline* shadowPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(shadowsize),float(shadowsize),1.0f }, { 0,0 }, { float(shadowsize),float(shadowsize) });
 
 	Framework::VertexShaderModule* shadowVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/shadow.vert.spv");
@@ -68,7 +68,7 @@ int main() {
 	shadowPipeline->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
 
 
-	shadowMapPass.addSubPass(shadowPipeline);
+	shadowMapPass.addSubPass({ shadowPipeline }, Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_DEPTH);
 	shadowMapPass.addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	shadowMapPass.addDependencies(0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	shadowMapPass.compile();
@@ -76,7 +76,7 @@ int main() {
 	shadow_map_buffer->setInputRenderPass(shadowMapPass.getHandle());
 
 	//Render Pass
-	Framework::RenderPass renderPass = Framework::RenderPass(Framework::RenderPassFlag::SHOW_ON_SCREEN| Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR );
+	Framework::RenderPass renderPass = Framework::RenderPass();
 	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
 	Framework::VertexShaderModule* renderVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/scene.vert.spv");
 	renderPipeline->setVextexShader(renderVertex);
@@ -92,7 +92,7 @@ int main() {
 
 	renderPipeline->addTextureBuffer(shadow_map_buffer, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 
-	renderPass.addSubPass(renderPipeline);
+	renderPass.addSubPass({ renderPipeline }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
 	renderPass.addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	renderPass.addDependencies(0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	renderPass.compile();
