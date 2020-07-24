@@ -53,7 +53,7 @@ int main() {
 	int shadowsize = 512;
 	
 	//frameBuffer
-	Framework::FrameBuffer* shadow_map_buffer = new Framework::FrameBuffer(shadowsize, shadowsize, d->getSwapChain().depthFormat());
+	Framework::FrameBuffer* shadow_map_buffer = new Framework::FrameBuffer(shadowsize, shadowsize, 1, d->getSwapChain().depthFormat(), Framework::frameBufferType::DEPTH_FRAMEBUFFER);
 	shadow_map_buffer->allocate();
 	
 	// Shadow pass

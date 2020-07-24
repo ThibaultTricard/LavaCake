@@ -68,7 +68,7 @@ int main() {
 	cameraConstant->addVariable("camera", camera);
 
 	//Color Attachment
-	Framework::Attachment* colorAttachemnt = new Framework::Attachment(w.m_windowSize[0], w.m_windowSize[1], d->getSwapChain().imageFormat());
+	Framework::Attachment* colorAttachemnt = new Framework::Attachment(w.m_windowSize[0], w.m_windowSize[1], d->getSwapChain().imageFormat(), Framework::attatchmentType::COLOR_ATTACHMENT);
 	colorAttachemnt->allocate();
 
 	//Render Pass

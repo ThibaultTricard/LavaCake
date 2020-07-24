@@ -65,7 +65,6 @@ int main() {
 
 
 	w.Show();
-	MSG message;
 	bool updateUniformBuffer = true;
 	int f = 0;
 	while (w.m_loop) {

@@ -27,19 +27,19 @@ namespace LavaCake {
 
 			TextureBuffer() {};
 
-			int																	m_width = 0;
-			int																	m_height = 0;
-			int																	m_nbChannel = 0;
-			std::vector<unsigned char>*					m_data = new std::vector<unsigned char>();
+			uint32_t																	m_width = 0;
+			uint32_t																	m_height = 0;
+			uint32_t																	m_nbChannel = 0;
+			std::vector<unsigned char>*								m_data = new std::vector<unsigned char>();
 
 
-			VkDestroyer(VkImage)                m_image;
-			VkDestroyer(VkDeviceMemory)         m_imageMemory;
-			VkDestroyer(VkImageView)            m_imageView;
-			VkDestroyer(VkSampler)              m_sampler;
+			VkDestroyer(VkImage)											m_image;
+			VkDestroyer(VkDeviceMemory)								m_imageMemory;
+			VkDestroyer(VkImageView)									m_imageView;
+			VkDestroyer(VkSampler)										m_sampler;
 
 
-			VkFormat														m_format;
+			VkFormat																	m_format;
 		};
 
 		class CubeMap : public TextureBuffer {
@@ -53,10 +53,15 @@ namespace LavaCake {
 			std::vector<std::string>						m_images;
 		};
 
+
+		enum frameBufferType {
+			COLOR_FRAMEBUFFER, DEPTH_FRAMEBUFFER, STENCIL_FRAMEBUFFER
+		};
+
 		class FrameBuffer : public TextureBuffer {
 		public : 
 			
-			FrameBuffer(int width, int height, VkFormat f);
+			FrameBuffer(uint32_t width, uint32_t height, uint32_t layer, VkFormat f, frameBufferType type);
 
 			virtual void allocate() override;
 				
@@ -69,14 +74,20 @@ namespace LavaCake {
 
 		private :
 
-			VkDestroyer(VkFramebuffer) m_frameBuffer;
+			frameBufferType											m_type;
+			uint32_t														m_layer;
+			VkDestroyer(VkFramebuffer)					m_frameBuffer;
 
+		};
+
+		enum attatchmentType {
+			COLOR_ATTACHMENT ,DEPTH_ATTACHMENT, STENCIL_ATTACHMENT
 		};
 
 		class Attachment {
 		public :
 
-			Attachment(int width, int height, VkFormat f);
+			Attachment(int width, int height, VkFormat f, attatchmentType type);
 
 			void allocate();
 
@@ -89,6 +100,7 @@ namespace LavaCake {
 			int																	m_width = 0;
 			int																	m_height = 0;
 			VkFormat														m_format;
+			attatchmentType											m_type;
 
 			VkDestroyer(VkImage)                m_image;
 			VkDestroyer(VkDeviceMemory)         m_imageMemory;
@@ -99,7 +111,7 @@ namespace LavaCake {
 		class StorageImage{
 		public:
 
-			StorageImage(int width, int height, VkFormat f);
+			StorageImage(uint32_t width, uint32_t height, uint32_t depth, VkFormat f);
 
 			void allocate();
 
@@ -109,8 +121,9 @@ namespace LavaCake {
 
 		private:
 
-			int																	m_width = 0;
-			int																	m_height = 0;
+			uint32_t														m_width  = 0;
+			uint32_t														m_height = 0;
+			uint32_t														m_depth  = 0;
 			VkFormat														m_format;
 
 			VkDestroyer(VkImage)                m_image;
