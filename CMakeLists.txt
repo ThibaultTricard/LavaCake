@@ -111,28 +111,20 @@ target_include_directories( LavaCake PUBLIC "External" "Library/Common Files" "L
 # Sample projects                                             #
 ###############################################################
 
-# OS files
-file( GLOB SAMPLES_COMMON_HEADER_FILES "Samples/Common Files/*.h" )
-file( GLOB SAMPLES_COMMON_SOURCE_FILES "Samples/Common Files/*.cpp" )
-source_group( "Common Files\\Header Files" FILES ${SAMPLES_COMMON_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} )
-source_group( "Common Files" FILES ${SAMPLES_COMMON_SOURCE_FILES} )
 
 # Sample projects generation
 macro( list_samples )
-	file( GLOB CHAPTERS RELATIVE "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files" "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files/*" )
-	FOREACH( CHAPTER ${CHAPTERS} )
-		file( GLOB SAMPLES RELATIVE "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files/${CHAPTER}" "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files/${CHAPTER}/*" )
+		file( GLOB SAMPLES RELATIVE "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files" "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files/*" )
 
 		FOREACH( SAMPLE ${SAMPLES} )
-			file( GLOB SAMPLE_SOURCE_FILES "Samples/Source Files/${CHAPTER}/${SAMPLE}/*.cpp" )
+			file( GLOB SAMPLE_SOURCE_FILES "Samples/Source Files/${SAMPLE}/*.cpp" )
 			source_group( "" FILES ${SAMPLE_SOURCE_FILES} )
 
 			add_executable( ${SAMPLE} ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${SAMPLES_COMMON_HEADER_FILES} ${SAMPLES_COMMON_SOURCE_FILES} ${SAMPLE_SOURCE_FILES} )
 			target_link_libraries( ${SAMPLE} ${PLATFORM_LIBRARY} LavaCake)
-			target_include_directories( ${SAMPLE} PUBLIC "External" "Library/Common Files" "Library/Source Files" "Samples/Common Files" )
-			set_property( TARGET ${SAMPLE} PROPERTY FOLDER "Samples/${CHAPTER}" )
+			target_include_directories( ${SAMPLE} PUBLIC "External" "Library/Common Files" "Library/Source Files" )
+			set_property( TARGET ${SAMPLE} PROPERTY FOLDER "Samples" )
 		ENDFOREACH()
-	ENDFOREACH()
 endmacro()
 
 # Sample projects generation

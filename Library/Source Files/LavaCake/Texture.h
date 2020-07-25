@@ -81,8 +81,22 @@ namespace LavaCake {
 
 		class CubeMap : public TextureBuffer {
 		public:
+
+			/**
+			* construct a CubeMap from 6 textures file.
+			*
+			* @param path : path to a folder where the 6 texture file are
+			* @param int nbChannel : the number of channel that contain the texture between 1 and 4.
+			* @param std::vector<std::string> images : a list of six name of texture in the folder
+			* @param VkFormat f : the format of theTexture buffer.
+			*
+			*/
 			CubeMap(std::string path, int nbChannel, std::vector<std::string> images = { "posx.jpg","negx.jpg","posy.jpg","negy.jpg","posz.jpg","negz.jpg" }, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
 
+			/**
+			* create and allocate the CubeMap on the device
+			*
+			*/
 			virtual void allocate() override;
 
 		private:

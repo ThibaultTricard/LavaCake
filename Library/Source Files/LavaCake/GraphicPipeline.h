@@ -104,7 +104,7 @@ namespace LavaCake {
 			std::vector<constant>																	m_constants;
 			std::vector<VkDescriptorPoolSize>											m_descriptorPoolSize;
 			std::vector<VkDescriptorSetLayoutBinding>							m_descriptorSetLayoutBinding;
-
+			uint32_t																							m_descriptorCount;
 
 			VkPipelineRasterizationStateCreateInfo								m_rasterizationStateCreateInfo;
 			VkPipelineMultisampleStateCreateInfo									m_multisampleStateCreateInfo;

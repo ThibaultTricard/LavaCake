@@ -161,8 +161,9 @@ namespace LavaCake {
 			Viewport::SetScissorStateDynamically(buffer, 0, { scissor });
 
 			Buffer::BindVertexBuffers(buffer, 0, { { m_vertexBuffer->getBuffer(), 0 } });
-
-			Descriptor::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0, m_descriptorSets, {});
+			if (m_descriptorCount > 0) {
+				Descriptor::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0, m_descriptorSets, {});
+			}
 
 			Pipeline::BindPipelineObject(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
 
@@ -254,66 +255,68 @@ namespace LavaCake {
 			}
 
 
-			uint32_t max_sets_count = m_uniforms.size() + m_textures.size() + m_attachments.size();
+			m_descriptorCount = m_uniforms.size() + m_textures.size() + m_attachments.size();
 			InitVkDestroyer(logical, m_descriptorPool);
-			if (!LavaCake::Descriptor::CreateDescriptorPool(logical, false, max_sets_count, m_descriptorPoolSize, *m_descriptorPool)) {
-				ErrorCheck::setError("Can't create descriptor pool");
-			}
+			if (m_descriptorCount > 0) {
+				if (!LavaCake::Descriptor::CreateDescriptorPool(logical, false, m_descriptorCount, m_descriptorPoolSize, *m_descriptorPool)) {
+					ErrorCheck::setError("Can't create descriptor pool");
+				}
 
-			if (!LavaCake::Descriptor::AllocateDescriptorSets(logical, *m_descriptorPool, { *m_descriptorSetLayout }, m_descriptorSets)) {
-				ErrorCheck::setError("Can't allocate descriptor set");
-			}
-			m_bufferDescriptorUpdate = { };
-			int descriptorCount = 0;
-			for (uint32_t i = 0; i < m_uniforms.size(); i++) {
-				m_bufferDescriptorUpdate.push_back({
-					m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
-					uint32_t(m_uniforms[i].binding),								// uint32_t                             TargetDescriptorBinding
-					0,																							// uint32_t                             TargetArrayElement
-					VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,							// VkDescriptorType                     TargetDescriptorType
-					{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
-						{
-							m_uniforms[i].buffer->getBuffer(),					// VkBuffer                             buffer
-							0,																					// VkDeviceSize                         offset
-							VK_WHOLE_SIZE																// VkDeviceSize                         range
-						}
-					}
-					});
-			}
-
-			m_imageDescriptorUpdate = { };
-			for (uint32_t i = 0; i < m_textures.size(); i++) {
-				m_imageDescriptorUpdate.push_back({
-					m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
-					uint32_t(m_textures[i].binding),								// uint32_t                             TargetDescriptorBinding
-					0,																							// uint32_t                             TargetArrayElement
-					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,			// VkDescriptorType                     TargetDescriptorType
-					{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
-						{
-							m_textures[i].t->getSampler(),							// vkSampler                            buffer
-							m_textures[i].t->getImageView(),						// VkImageView                          offset
-							m_textures[i].t->getLayout()								// VkImageLayout                         range
-						}
-					}
-					});
-			}
-			for (uint32_t i = 0; i < m_attachments.size(); i++) {
-				m_imageDescriptorUpdate.push_back({
+				if (!LavaCake::Descriptor::AllocateDescriptorSets(logical, *m_descriptorPool, { *m_descriptorSetLayout }, m_descriptorSets)) {
+					ErrorCheck::setError("Can't allocate descriptor set");
+				}
+				m_bufferDescriptorUpdate = { };
+				int descriptorCount = 0;
+				for (uint32_t i = 0; i < m_uniforms.size(); i++) {
+					m_bufferDescriptorUpdate.push_back({
 						m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
-						uint32_t(m_attachments[i].binding),								// uint32_t                             TargetDescriptorBinding
+						uint32_t(m_uniforms[i].binding),								// uint32_t                             TargetDescriptorBinding
 						0,																							// uint32_t                             TargetArrayElement
-						VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,						// VkDescriptorType                     TargetDescriptorType
+						VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,							// VkDescriptorType                     TargetDescriptorType
 						{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
 							{
-								VK_NULL_HANDLE,															// vkSampler                            buffer
-								m_attachments[i].a->getImageView(),					// VkImageView                          offset
-								m_attachments[i].a->getLayout()							// VkImageLayout                         range
+								m_uniforms[i].buffer->getBuffer(),					// VkBuffer                             buffer
+								0,																					// VkDeviceSize                         offset
+								VK_WHOLE_SIZE																// VkDeviceSize                         range
 							}
 						}
-					});
+						});
+				}
+
+				m_imageDescriptorUpdate = { };
+				for (uint32_t i = 0; i < m_textures.size(); i++) {
+					m_imageDescriptorUpdate.push_back({
+						m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
+						uint32_t(m_textures[i].binding),								// uint32_t                             TargetDescriptorBinding
+						0,																							// uint32_t                             TargetArrayElement
+						VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,			// VkDescriptorType                     TargetDescriptorType
+						{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
+							{
+								m_textures[i].t->getSampler(),							// vkSampler                            buffer
+								m_textures[i].t->getImageView(),						// VkImageView                          offset
+								m_textures[i].t->getLayout()								// VkImageLayout                         range
+							}
+						}
+						});
+				}
+				for (uint32_t i = 0; i < m_attachments.size(); i++) {
+					m_imageDescriptorUpdate.push_back({
+							m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
+							uint32_t(m_attachments[i].binding),								// uint32_t                             TargetDescriptorBinding
+							0,																							// uint32_t                             TargetArrayElement
+							VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,						// VkDescriptorType                     TargetDescriptorType
+							{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
+								{
+									VK_NULL_HANDLE,															// vkSampler                            buffer
+									m_attachments[i].a->getImageView(),					// VkImageView                          offset
+									m_attachments[i].a->getLayout()							// VkImageLayout                         range
+								}
+							}
+						});
+				}
+				/////////////////////////////////////////////////////////////////////////////////////////////
+				Descriptor::UpdateDescriptorSets(logical, m_imageDescriptorUpdate, m_bufferDescriptorUpdate, {}, {});
 			}
-			/////////////////////////////////////////////////////////////////////////////////////////////
-			Descriptor::UpdateDescriptorSets(logical, m_imageDescriptorUpdate, m_bufferDescriptorUpdate, {}, {});
 		}
 	}
 }
