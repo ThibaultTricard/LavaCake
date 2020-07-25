@@ -133,15 +133,6 @@ namespace LavaCake {
 				int                        height);
 
 
-			/*void PrepareVulkanContext(
-				 int nbComputeQueue=0, int nbGraphicQueue=0, VkPhysicalDeviceFeatures * desired_device_features = nullptr
-			);
-
-			void PrepareFrames(uint32_t framesCount,
-				VkImageUsageFlags          swapchain_image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-				bool                       use_depth = true,
-				VkImageUsageFlags          depth_attachment_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
-				*/
 			void Show();
 
 			void UpdateInput();

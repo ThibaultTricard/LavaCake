@@ -4,7 +4,7 @@ namespace LavaCake {
 	namespace Framework {
 
 
-
+		
 		TextureBuffer::TextureBuffer(char const * filename, int nbChannel, VkFormat f) {
 			int width, height;
 			if (!Helpers::Texture::LoadTextureDataFromFile(filename, nbChannel, *m_data, &width, &height)) {

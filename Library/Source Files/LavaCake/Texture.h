@@ -11,16 +11,53 @@ namespace LavaCake {
 		class TextureBuffer {
 		public:
 
+
+			/**
+			* construct a texture buffer from a file.
+			*
+			* @param filename : the name of the file where the data is stored.
+			* @param int nbChannel : the number of channel that contain the texture between 1 and 4.
+			* @param VkFormat f : the format of theTexture buffer.
+      *
+			*/
 			TextureBuffer(char const * filename, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
 
+
+			/**
+			* construct a texture buffer from a array of data.
+			*
+			* @param data : the data that will be used of the texture.
+			* @param int width : the width of the texture.
+			* @param int height : the height of the texture.
+			* @param int nbChannel : the number of channel that contain the texture between 1 and 4.
+			* @param VkFormat f : the format of theTexture buffer.
+			*
+			*/
 			TextureBuffer(std::vector<unsigned char>* data, int width, int height, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
 
+
+			/**
+			* create and allocate the Texture buffer on the device
+			*
+			*/
 			virtual void allocate();
 
+			/**
+			* return the sampler of the texture buffer
+			*
+			*/
 			VkSampler	getSampler();
 
+			/**
+			* return the image view  of the texture buffer
+			*
+			*/
 			VkImageView getImageView();
 
+			/**
+			* return the layout the texture buffer
+			*
+			*/
 			virtual VkImageLayout getLayout();
 
 		protected :

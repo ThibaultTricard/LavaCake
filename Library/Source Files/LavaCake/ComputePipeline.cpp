@@ -2,15 +2,15 @@
 
 namespace LavaCake {
 	namespace Framework {
-		void ComputePipeline::addUniformBuffer(UniformBuffer * b, int binding = 0) {
+		void ComputePipeline::addUniformBuffer(UniformBuffer * b, int binding) {
 			m_uniforms.push_back({ b,binding,VK_SHADER_STAGE_COMPUTE_BIT });
 		}
 
-		void ComputePipeline::addTextureBuffer(TextureBuffer * t, int binding = 0) {
+		void ComputePipeline::addTextureBuffer(TextureBuffer * t, int binding) {
 			m_textures.push_back({ t,binding,VK_SHADER_STAGE_COMPUTE_BIT });
 		}
 
-		void ComputePipeline::addStorageImage(StorageImage * s, int binding = 0) {
+		void ComputePipeline::addStorageImage(StorageImage * s, int binding) {
 			m_storageImage.push_back({ s,binding,VK_SHADER_STAGE_COMPUTE_BIT });
 		}
 
