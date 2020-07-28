@@ -112,14 +112,42 @@ namespace LavaCake {
 		class FrameBuffer : public TextureBuffer {
 		public : 
 			
+			/**
+			* construct a FrameBuffer.
+			*
+			* @param int width						: the width of the FrameBuffer.
+			* @param int height						: the height of the FrameBuffer.
+			* @param int layer						: the number of layer in the FrameBuffer.
+			* @param VkFormat f						: the format of theTexture buffer.
+			*	@param frameBufferType type : the type of the frame buffer will store : COLOR_FRAMEBUFFER, DEPTH_FRAMEBUFFER or STENCIL_FRAMEBUFFER.
+			*
+			*/
 			FrameBuffer(uint32_t width, uint32_t height, uint32_t layer, VkFormat f, frameBufferType type);
 
+			/**
+			* create and allocate the Texture buffer on the device
+			*
+			*/
 			virtual void allocate() override;
-				
+			
+
+			/**
+			* Prepare the framebuffer for a renderPass
+			*
+			*/
 			virtual void setInputRenderPass(VkRenderPass pass);
 
+			/**
+			* return the layout the texture buffer
+			*
+			*/
 			virtual VkImageLayout getLayout() override;
 
+
+			/**
+			* return the FrameBuffer handle
+			*
+			*/
 			VkFramebuffer getFrameBuffer();
 
 

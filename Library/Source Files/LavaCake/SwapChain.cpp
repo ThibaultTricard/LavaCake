@@ -49,11 +49,11 @@ namespace LavaCake {
 					InitVkDestroyer(logicalDevice, m_depthImages.back());
 					m_depthImagesMemory.emplace_back(VkDestroyer(VkDeviceMemory)());
 					InitVkDestroyer(logicalDevice, m_depthImagesMemory.back());
-					InitVkDestroyer(logicalDevice, (framesResources)[i].DepthAttachment);
+					InitVkDestroyer(logicalDevice, (framesResources)[i].depthAttachment);
 
 					if (!Image::Create2DImageAndView(physicalDevice, logicalDevice, m_depthFormat, m_size, 1, 1, VK_SAMPLE_COUNT_1_BIT,
 						VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_ASPECT_DEPTH_BIT, *m_depthImages.back(), *m_depthImagesMemory.back(),
-						*(framesResources)[i].DepthAttachment)) {
+						*(framesResources)[i].depthAttachment)) {
 						ErrorCheck::setError("Can't create frames");
 					}
 				}

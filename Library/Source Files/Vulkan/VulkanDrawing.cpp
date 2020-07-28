@@ -97,18 +97,18 @@ namespace LavaCake {
 			static uint32_t frame_index = 0;
 			Buffer::FrameResources & current_frame = frame_resources[frame_index];
 
-			if (!Fence::WaitForFences(logical_device, { *current_frame.DrawingFinishedFence }, false, 2000000000)) {
+			if (!Fence::WaitForFences(logical_device, { *current_frame.drawingFinishedFence }, false, 2000000000)) {
 				return false;
 			}
-			if (!Fence::ResetFences(logical_device, { *current_frame.DrawingFinishedFence })) {
+			if (!Fence::ResetFences(logical_device, { *current_frame.drawingFinishedFence })) {
 				return false;
 			}
 
-			InitVkDestroyer(logical_device, current_frame.Framebuffer);
+			InitVkDestroyer(logical_device, current_frame.framebuffer);
 
 			if (!PrepareSingleFrameOfAnimation(logical_device, graphics_queue, present_queue, swapchain, swapchain_size, swapchain_image_views,
-				*current_frame.DepthAttachment, wait_infos, *current_frame.ImageAcquiredSemaphore, *current_frame.ReadyToPresentSemaphore,
-				*current_frame.DrawingFinishedFence, record_command_buffer, current_frame.CommandBuffer, render_pass, current_frame.Framebuffer)) {
+				*current_frame.depthAttachment, wait_infos, *current_frame.imageAcquiredSemaphore, *current_frame.readyToPresentSemaphore,
+				*current_frame.drawingFinishedFence, record_command_buffer, current_frame.commandBuffer, render_pass, current_frame.framebuffer)) {
 				return false;
 			}
 

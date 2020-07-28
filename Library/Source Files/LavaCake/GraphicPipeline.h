@@ -46,36 +46,83 @@ namespace LavaCake {
 
 			GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax);
 
+			/**
+			* setup the vertex shader module for this pipeline
+			*/
 			void setVextexShader(VertexShaderModule*	module);
 
+			/**
+			* setup the tesselation control shader module for this pipeline
+			*/
 			void setTesselationControlModule(TessellationControlShaderModule*	module);
 
+			/**
+			* setup the tesselation evaluation shader module for this pipeline
+			*/
 			void setTesselationEvaluationModule(TessellationEvaluationShaderModule*	module);
 
+			/**
+			* setup the geometry shader module for this pipeline
+			*/
 			void setGeometryModule(GeometryShaderModule*	module);
 
+			/**
+			* setup the fragment shader module for this pipeline
+			*/
 			void setFragmentModule(FragmentShaderModule*	module);
 
 			std::vector<Shader::ShaderStageParameters> getStageParameter();
 
+			/**
+			*Prepare the Compute pipeline for it's usage
+			*Warning : If a modification is made to the compute pipeline after this operation,
+			*The compute pipeline need to be compiled again before being used
+			*/
 			void compile(VkRenderPass& renderpass);
 
+			/**
+			*add a uniform Buffer to the pipeline and scpecify it's binding and shader stage
+			*/
 			void addUniformBuffer(UniformBuffer * b, VkShaderStageFlags stage, int binding = 0);
 
+			/**
+			*add a Texture Buffer to the pipeline and scpecify it's binding and shader stage
+			*/
 			void addTextureBuffer(TextureBuffer * t, VkShaderStageFlags stage, int binding = 0);
 
+			/**
+			*add a StorageImage to the pipeline and scpecify it's binding and shader stage
+			*/
+			void addStorageImage(StorageImage * s, VkShaderStageFlags stage, int binding = 0);
+
+			/**
+			*add an attachment to the pipeline and scpecify it's binding and shader stage
+			*/
 			void addAttachment(Attachment * a, VkShaderStageFlags stage, int binding = 0);
 
+			/**
+			*set the vertex buffer to be used for this pipeline
+			*/
 			void setVeritices(VertexBuffer* buffer);
 
+			/**
+			*draw call of the pipeline
+			*/
 			void draw(const VkCommandBuffer buffer);
 
-			uint32_t getSubpassNumber();
-
+			/**
+			set the cull mode for the pipeline, if not set the pipeline cull the back faces
+			*/
 			void SetCullMode(VkCullModeFlagBits cullMode);
 
+			/**
+			add a push constant and specify it's shader stage
+			*/
 			void addPushContant(PushConstant* constant, VkShaderStageFlags flag);
 
+			/**
+			specify in which subpass this graphics pipeline will be used 
+			*/
 			void setSubpassNumber(uint32_t number);
 
 		private:
@@ -95,6 +142,8 @@ namespace LavaCake {
 			std::vector<uniform>																	m_uniforms;
 			std::vector<texture>																	m_textures;
 			std::vector<attachment>																m_attachments;
+			std::vector<storageImage>															m_storageImage;
+
 			VkDestroyer(VkDescriptorSetLayout)										m_descriptorSetLayout;
 			VkDestroyer(VkDescriptorPool)													m_descriptorPool;
 			std::vector<VkDescriptorSet>													m_descriptorSets;

@@ -28,10 +28,10 @@ int main() {
 	}
 
 	Framework::VertexBuffer* scene_vertex_buffer = new Framework::VertexBuffer({ plane_mesh, knot_mesh  }, { 3,3 });
-	scene_vertex_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
+	scene_vertex_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().commandBuffer);
 
 	Framework::VertexBuffer* plane_buffer = new Framework::VertexBuffer({ plane_mesh }, { 3,3 });
-	plane_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().CommandBuffer);
+	plane_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().commandBuffer);
 
 
 	//uniform buffer
@@ -104,7 +104,7 @@ int main() {
 	while (w.m_loop) {
 
 		Buffer::FrameResources& frame = d->getFrameRessources()->at(f);
-		VkCommandBuffer commandbuffer = frame.CommandBuffer;
+		VkCommandBuffer commandbuffer = frame.commandBuffer;
 		VkDevice logical = d->getLogicalDevice();
 		VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 		VkQueue& present_queue = d->getPresentQueue()->getHandle();
@@ -127,10 +127,10 @@ int main() {
 		}
 
 
-		if (!Fence::WaitForFences(logical, { *frame.DrawingFinishedFence }, false, 2000000000)) {
+		if (!Fence::WaitForFences(logical, { *frame.drawingFinishedFence }, false, 2000000000)) {
 			continue;
 		}
-		if (!Fence::ResetFences(logical, { *frame.DrawingFinishedFence })) {
+		if (!Fence::ResetFences(logical, { *frame.drawingFinishedFence })) {
 			continue;
 		}
 
@@ -149,8 +149,8 @@ int main() {
 
 		VkSwapchainKHR& swapchain = d->getSwapChain().getHandle();
 		std::vector<VkImageView>& swapchain_image_views = d->getSwapChain().getImageView();
-		VkSemaphore  image_acquired_semaphore = *frame.ImageAcquiredSemaphore;
-		VkImageView depth_attachment = *frame.DepthAttachment;
+		VkSemaphore  image_acquired_semaphore = *frame.imageAcquiredSemaphore;
+		VkImageView depth_attachment = *frame.depthAttachment;
 		uint32_t image_index;
 		VkExtent2D size = d->getSwapChain().size();
 
@@ -169,7 +169,7 @@ int main() {
 				d->getGraphicQueue(0)->getIndex(),        // uint32_t             NewQueueFamily
 				VK_IMAGE_ASPECT_COLOR_BIT                 // VkImageAspectFlags   Aspect
 			};
-			Image::SetImageMemoryBarrier(frame.CommandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, { image_transition_before_drawing });
+			Image::SetImageMemoryBarrier(frame.commandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, { image_transition_before_drawing });
 		}
 
 
@@ -181,13 +181,13 @@ int main() {
 		if (VK_NULL_HANDLE != depth_attachment) {
 			attachments.push_back(depth_attachment);
 		}
-		InitVkDestroyer(logical, frame.Framebuffer);
-		if (!Buffer::CreateFramebuffer(logical, renderPass.getHandle(), attachments, size.width, size.height, 1, *frame.Framebuffer)) {
+		InitVkDestroyer(logical, frame.framebuffer);
+		if (!Buffer::CreateFramebuffer(logical, renderPass.getHandle(), attachments, size.width, size.height, 1, *frame.framebuffer)) {
 			continue;
 		}
 
 
-		renderPass.draw(commandbuffer, *frame.Framebuffer, { 0,0 }, { int(size.width), int(size.height) }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		renderPass.draw(commandbuffer, *frame.framebuffer, { 0,0 }, { int(size.width), int(size.height) }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
@@ -201,7 +201,7 @@ int main() {
 				d->getPresentQueue()->getIndex(),						// uint32_t             NewQueueFamily
 				VK_IMAGE_ASPECT_COLOR_BIT										// VkImageAspectFlags   Aspect
 			};
-			Image::SetImageMemoryBarrier(frame.CommandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, { image_transition_before_drawing });
+			Image::SetImageMemoryBarrier(frame.commandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, { image_transition_before_drawing });
 		}
 
 		if (!LavaCake::Command::EndCommandBufferRecordingOperation(commandbuffer)) {
@@ -214,7 +214,7 @@ int main() {
 			image_acquired_semaphore,                     // VkSemaphore            Semaphore
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT // VkPipelineStageFlags   WaitingStage
 			});
-		if (!Command::SubmitCommandBuffersToQueue(graphics_queue, wait_semaphore_infos, { commandbuffer }, { *frame.ReadyToPresentSemaphore }, *frame.DrawingFinishedFence)) {
+		if (!Command::SubmitCommandBuffersToQueue(graphics_queue, wait_semaphore_infos, { commandbuffer }, { *frame.readyToPresentSemaphore }, *frame.drawingFinishedFence)) {
 			continue;
 		}
 
@@ -224,7 +224,7 @@ int main() {
 			swapchain,                                    // VkSwapchainKHR         Swapchain
 			image_index                                   // uint32_t               ImageIndex
 		};
-		if (!Presentation::PresentImage(present_queue, { *frame.ReadyToPresentSemaphore }, { present_info })) {
+		if (!Presentation::PresentImage(present_queue, { *frame.readyToPresentSemaphore }, { present_info })) {
 			continue;
 		}
 

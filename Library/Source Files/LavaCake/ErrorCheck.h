@@ -13,6 +13,9 @@ namespace LavaCake {
 
     public :
 
+			/*
+			* return the last error the program has encountered
+			*/
       static char* getError() {
         if (m_instance == nullptr) {
           m_instance = new ErrorCheck();
@@ -20,6 +23,9 @@ namespace LavaCake {
         return m_instance->m_errorMessage;
       }
 
+			/*
+			*	raise and error
+			*/
       static void setError(char* msg) {
         if (m_instance == nullptr) {
           m_instance = new ErrorCheck();
@@ -31,6 +37,9 @@ namespace LavaCake {
         }
       }
 
+			/*
+			*	enable automatic console error printing
+			*/
       static void PrintError(bool print = true) {
         if (m_instance == nullptr) {
           m_instance = new ErrorCheck();

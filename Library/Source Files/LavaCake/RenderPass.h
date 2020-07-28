@@ -4,6 +4,7 @@
 
 namespace LavaCake {
 	namespace Framework {
+		
 		enum RenderPassFlag {
 			SHOW_ON_SCREEN	= 1,
 			USE_COLOR				= 2,
@@ -13,7 +14,7 @@ namespace LavaCake {
 			ADD_INPUT				= 32
 		};
 		
-
+		
 		inline RenderPassFlag operator|(RenderPassFlag a, RenderPassFlag b)
 		{
 			return static_cast<RenderPassFlag>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
@@ -22,21 +23,46 @@ namespace LavaCake {
 		class RenderPass {
 		public :
 
-
+			/*
+			* renderPass Constructor for an image with the swapchain format
+			*/
 			RenderPass();
 
+
+			/*
+			* renderPass Constructor for a specific image format and depth format
+			*/
 			RenderPass( VkFormat ImageFormat, VkFormat DepthFormat);
 
+			/*
+			* add an attachment for a subpass
+			*/
 			void addAttatchments(uint32_t AttachementFlag, std::vector<uint32_t> input_number = {});
 
+			/*
+			* add dependencies for the render pass
+			*/
 			void addDependencies(uint32_t srcSubpass, uint32_t dstSubpass, VkPipelineStageFlags srcPipe, VkPipelineStageFlags dstPipe, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkDependencyFlags dependency);
 
+			/*
+			* add a subpass composed of multiple graphics pipeline and setup their attachments 
+			*/
 			void addSubPass(std::vector<GraphicPipeline*> p, uint32_t AttachementFlag = 0, std::vector<uint32_t> input_number = {});
 
+			/*
+			* prepare the render pass for drawing 
+			*/
 			void compile();
 
+
+			/*
+			* Draw the render pass using a specific command buffer into a framebuffer
+			*/
 			void draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2i viewportMin, vec2i viewportMax, std::vector<VkClearValue> const & clear_values = {{ 1.0f, 0 }});
 
+			/*
+			*	return the handle of the render pass
+			*/
 			VkRenderPass& getHandle();
 
 		private : 

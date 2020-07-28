@@ -70,21 +70,12 @@ namespace LavaCake {
 					nullptr
 					});
 			}
-			for (uint32_t i = 0; i < m_attachments.size(); i++) {
-				m_descriptorSetLayoutBinding.push_back({
-					uint32_t(m_attachments[i].binding),
-					VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
-					1,
-					m_attachments[i].stage,
-					nullptr
-					});
-			}
 			for (uint32_t i = 0; i < m_storageImage.size(); i++) {
 				m_descriptorSetLayoutBinding.push_back({
 					uint32_t(m_storageImage[i].binding),
 					VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
 					1,
-					m_attachments[i].stage,
+					m_storageImage[i].stage,
 					nullptr
 					});
 			}
@@ -94,6 +85,8 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't create descriptor set layout");
 			}
 
+			m_descriptorCount = m_uniforms.size() + m_textures.size() + m_storageImage.size();
+			if (m_descriptorCount == 0) return;
 
 			m_descriptorPoolSize = {};
 
@@ -109,12 +102,6 @@ namespace LavaCake {
 						uint32_t(m_textures.size())										// uint32_t             descriptorCount
 					});
 			}
-			if (m_attachments.size() > 0) {
-				m_descriptorPoolSize.push_back({
-					VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,						// VkDescriptorType     type
-						uint32_t(m_attachments.size())								// uint32_t             descriptorCount
-					});
-			}
 			if (m_storageImage.size() > 0) {
 				m_descriptorPoolSize.push_back({
 					VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,								// VkDescriptorType     type
@@ -122,9 +109,9 @@ namespace LavaCake {
 					});
 			}
 
-			uint32_t max_sets_count = m_uniforms.size() + m_textures.size() + m_attachments.size();
+			
 			InitVkDestroyer(logical, m_descriptorPool);
-			if (!LavaCake::Descriptor::CreateDescriptorPool(logical, false, max_sets_count, m_descriptorPoolSize, *m_descriptorPool)) {
+			if (!LavaCake::Descriptor::CreateDescriptorPool(logical, false, m_descriptorCount, m_descriptorPoolSize, *m_descriptorPool)) {
 				ErrorCheck::setError("Can't create descriptor pool");
 			}
 
@@ -163,21 +150,6 @@ namespace LavaCake {
 							m_textures[i].t->getLayout()								// VkImageLayout                         range
 						}
 					}
-					});
-			}
-			for (uint32_t i = 0; i < m_attachments.size(); i++) {
-				m_imageDescriptorUpdate.push_back({
-						m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
-						uint32_t(m_attachments[i].binding),								// uint32_t                             TargetDescriptorBinding
-						0,																							// uint32_t                             TargetArrayElement
-						VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,						// VkDescriptorType                     TargetDescriptorType
-						{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
-							{
-								VK_NULL_HANDLE,															// vkSampler                            buffer
-								m_attachments[i].a->getImageView(),					// VkImageView                          offset
-								m_attachments[i].a->getLayout()							// VkImageLayout                         range
-							}
-						}
 					});
 			}
 			for (uint32_t i = 0; i < m_storageImage.size(); i++) {

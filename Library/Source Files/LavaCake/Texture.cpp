@@ -30,7 +30,7 @@ namespace LavaCake {
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 			Buffer::FrameResources& frame = d->getFrameRessources()->at(0);
-			VkCommandBuffer commandbuffer = frame.CommandBuffer;
+			VkCommandBuffer commandbuffer = frame.commandBuffer;
 			InitVkDestroyer(logical, m_sampler);
 			InitVkDestroyer(logical, m_image);
 			InitVkDestroyer(logical, m_imageMemory);
@@ -167,7 +167,7 @@ namespace LavaCake {
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 			Buffer::FrameResources& frame = d->getFrameRessources()->at(0);
-			VkCommandBuffer commandbuffer = frame.CommandBuffer;
+			VkCommandBuffer commandbuffer = frame.commandBuffer;
 
 
 			InitVkDestroyer(logical, m_image);

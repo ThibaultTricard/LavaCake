@@ -60,12 +60,12 @@ namespace LavaCake {
 		};
 
 		struct FrameResources {
-			VkCommandBuffer             CommandBuffer;
-			VkDestroyer(VkSemaphore)    ImageAcquiredSemaphore;
-			VkDestroyer(VkSemaphore)    ReadyToPresentSemaphore;
-			VkDestroyer(VkFence)        DrawingFinishedFence;
-			VkDestroyer(VkImageView)    DepthAttachment;
-			VkDestroyer(VkFramebuffer)  Framebuffer;
+			VkCommandBuffer             commandBuffer;
+			VkDestroyer(VkSemaphore)    imageAcquiredSemaphore;
+			VkDestroyer(VkSemaphore)    readyToPresentSemaphore;
+			VkDestroyer(VkFence)        drawingFinishedFence;
+			VkDestroyer(VkImageView)    depthAttachment;
+			VkDestroyer(VkFramebuffer)  framebuffer;
 
 			FrameResources(VkCommandBuffer            & command_buffer,
 				VkDestroyer(VkSemaphore)   & image_acquired_semaphore,
@@ -73,12 +73,12 @@ namespace LavaCake {
 				VkDestroyer(VkFence)       & drawing_finished_fence,
 				VkDestroyer(VkImageView)   & depth_attachment,
 				VkDestroyer(VkFramebuffer) & framebuffer) :
-				CommandBuffer(command_buffer),
-				ImageAcquiredSemaphore(std::move(image_acquired_semaphore)),
-				ReadyToPresentSemaphore(std::move(ready_to_present_semaphore)),
-				DrawingFinishedFence(std::move(drawing_finished_fence)),
-				DepthAttachment(std::move(depth_attachment)),
-				Framebuffer(std::move(framebuffer)) {
+				commandBuffer(command_buffer),
+				imageAcquiredSemaphore(std::move(image_acquired_semaphore)),
+				readyToPresentSemaphore(std::move(ready_to_present_semaphore)),
+				drawingFinishedFence(std::move(drawing_finished_fence)),
+				depthAttachment(std::move(depth_attachment)),
+				framebuffer(std::move(framebuffer)) {
 			}
 
 			FrameResources(FrameResources && other) {
@@ -87,15 +87,15 @@ namespace LavaCake {
 
 			FrameResources& operator=(FrameResources && other) {
 				if (this != &other) {
-					VkCommandBuffer command_buffer = CommandBuffer;
+					VkCommandBuffer command_buffer = commandBuffer;
 
-					CommandBuffer = other.CommandBuffer;
-					other.CommandBuffer = command_buffer;
-					ImageAcquiredSemaphore = std::move(other.ImageAcquiredSemaphore);
-					ReadyToPresentSemaphore = std::move(other.ReadyToPresentSemaphore);
-					DrawingFinishedFence = std::move(other.DrawingFinishedFence);
-					DepthAttachment = std::move(other.DepthAttachment);
-					Framebuffer = std::move(other.Framebuffer);
+					commandBuffer = other.commandBuffer;
+					other.commandBuffer = command_buffer;
+					imageAcquiredSemaphore = std::move(other.imageAcquiredSemaphore);
+					readyToPresentSemaphore = std::move(other.readyToPresentSemaphore);
+					drawingFinishedFence = std::move(other.drawingFinishedFence);
+					depthAttachment = std::move(other.depthAttachment);
+					framebuffer = std::move(other.framebuffer);
 				}
 				return *this;
 			}

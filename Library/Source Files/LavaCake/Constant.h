@@ -13,6 +13,10 @@ namespace LavaCake {
 	namespace Framework {
 		class PushConstant {
 		public:
+
+			/**
+			*add a Variable into the PushConstant
+			*/
 			template<typename T>
 			void addVariable(std::string name, T value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
@@ -20,6 +24,10 @@ namespace LavaCake {
 				addArray(name, v);
 			}
 
+
+			/**
+			* change one of value in the push constant using it's name 
+			*/
 			template<typename T>
 			void setVariable(std::string name, T value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
@@ -27,11 +35,15 @@ namespace LavaCake {
 				setArray(name, v);
 			}
 
+			/**
+			*push the constant into the command buffer
+			*/
 			void push(VkCommandBuffer buffer, VkPipelineLayout layout, VkShaderStageFlags flag);
 
 			uint32_t size();
 
 		private:
+
 
 			void addArray(std::string name, std::vector<int>& value);
 			void setArray(std::string name, std::vector<int>& value);

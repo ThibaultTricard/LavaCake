@@ -8,6 +8,7 @@
 #include "LavaCake/VertexBuffer.h"
 #include "LavaCake/ShaderModule.h"
 #include "LavaCake/GraphicPipeline.h"
+#include "LavaCake/ComputePipeline.h"
 #include "LavaCake/RenderPass.h"
 #include "LavaCake/Device.h"
 #include "LavaCake/ErrorCheck.h"
