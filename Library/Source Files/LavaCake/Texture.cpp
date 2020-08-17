@@ -87,8 +87,8 @@ namespace LavaCake {
 			return m_imageViews.size();
 		}
 
-		VkImageLayout FrameBuffer::getLayout(){
-			return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+		VkImageLayout FrameBuffer::getLayout(int i){
+			return m_layouts[i];
 		}
 
 		VkSampler	FrameBuffer::getSampler() {
@@ -249,11 +249,11 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't create Image");
 			}
 
-			if (!Image::AllocateAndBindMemoryObjectToImage(physical, logical, m_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_imageMemory)) {
+			if (!Image::AllocateAndBindMemoryObjectToImage(physical, logical, *m_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_imageMemory)) {
 				ErrorCheck::setError("Can't allocate Image memory");
 			}
 
-			if (!Image::CreateImageView(logical, m_image, view, m_format, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageView)) {
+			if (!Image::CreateImageView(logical, *m_image, view, m_format, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageView)) {
 				ErrorCheck::setError("Can't create Image View");
 			}
 		}

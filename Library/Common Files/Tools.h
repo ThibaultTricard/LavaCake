@@ -40,6 +40,7 @@ namespace LavaCake {
   typedef std::array<float, 2> vec2f;
   typedef std::array<double, 2> vec2d;
   typedef std::array<int, 2> vec2i;
+  typedef std::array<uint32_t, 2> vec2u;
   typedef std::array<bool, 2> vec2b;
 
 

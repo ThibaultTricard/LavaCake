@@ -126,7 +126,7 @@ namespace LavaCake {
 			* return the layout the texture buffer
 			*
 			*/
-			VkImageLayout getLayout();
+			VkImageLayout getLayout(int i);
 
 
 			/**
@@ -153,6 +153,10 @@ namespace LavaCake {
 			*/
 			VkFramebuffer getFrameBuffer();
 
+			vec2u size() {
+				return { m_width , m_height };
+			}
+
 
 		private :
 
@@ -164,7 +168,7 @@ namespace LavaCake {
 			VkDestroyer(VkDeviceMemory)															m_imageMemory;
 			std::vector<VkDestroyer(VkImage)>												m_images;
 			std::vector<VkDestroyer(VkImageView)>										m_imageViews;
-
+			std::vector<VkImageLayout>															m_layouts;
 			friend class RenderPass;
 		};
 

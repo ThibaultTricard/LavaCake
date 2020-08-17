@@ -146,8 +146,8 @@ namespace LavaCake {
 			m_attachments.push_back({ a,binding,stage });
 		}
 
-		void GraphicPipeline::addFrameBuffer(FrameBuffer * f, VkShaderStageFlags stage, int binding) {
-			m_frameBuffer.push_back({ f, binding, stage });
+		void GraphicPipeline::addFrameBuffer(FrameBuffer * f, VkShaderStageFlags stage, int binding, uint32_t view) {
+			m_frameBuffer.push_back({ f, binding, stage, view });
 		}
 
 		void GraphicPipeline::setSubpassNumber(uint32_t number) {
@@ -329,19 +329,25 @@ namespace LavaCake {
 			}
 			for (uint32_t i = 0; i < m_frameBuffer.size(); i++) {
 				std::vector<VkDescriptorImageInfo> descriptorInfo;
-				for (int j = 0; j < m_frameBuffer[i].f->ImageViewSize(); j++) {
+				/*for (int j = 0; j < m_frameBuffer[i].f->ImageViewSize(); j++) {
 					descriptorInfo.push_back(
 						{
 							m_frameBuffer[i].f->getSampler(),
 							m_frameBuffer[i].f->getImageViews(j),
-							m_frameBuffer[i].f->getLayout(),
+							m_frameBuffer[i].f->getLayout(j),
 						});
-				}
+				}*/
+				descriptorInfo.push_back(
+					{
+						m_frameBuffer[i].f->getSampler(),
+						m_frameBuffer[i].f->getImageViews(m_frameBuffer[i].viewIndex),
+						m_frameBuffer[i].f->getLayout(m_frameBuffer[i].viewIndex),
+					});
 				
 				m_imageDescriptorUpdate.push_back({
 					m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
 					uint32_t(m_frameBuffer[i].binding),							// uint32_t                             TargetDescriptorBinding
-					0,																							// uint32_t                             TargetArrayElement
+					m_frameBuffer[i].viewIndex,																							// uint32_t                             TargetArrayElement
 					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,			// VkDescriptorType                     TargetDescriptorType
 					descriptorInfo																	// std::vector<VkDescriptorBufferInfo>  BufferInfos
 					});

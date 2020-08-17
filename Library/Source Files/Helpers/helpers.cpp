@@ -430,25 +430,54 @@ namespace LavaCake {
 				return true;
 			}
 
-			void preparePostProcessQuad(Mesh       & mesh) {
-				mesh =
-				{
-					{
-						// positions
-						-1.0f, -1.0f, 0.0f,
-						-1.0f,  1.0f, 0.0f,
-						 1.0f, -1.0f, 0.0f,
-						 1.0f, -1.0f, 0.0f,
-						-1.0f,  1.0f, 0.0f,
-						 1.0f,  1.0f, 0.0f,
-					},
+			void preparePostProcessQuad(Mesh       & mesh, bool doUV) {
+				if (!doUV) {
+					mesh =
 					{
 						{
-							uint32_t(0),
-							uint32_t(6)
+							// positions
+							-1.0f, -1.0f, 0.0f,
+							-1.0f,  1.0f, 0.0f,
+							 1.0f, -1.0f, 0.0f,
+							 1.0f, -1.0f, 0.0f,
+							-1.0f,  1.0f, 0.0f,
+							 1.0f,  1.0f, 0.0f,
+						},
+						{
+							{
+								uint32_t(0),
+								uint32_t(6)
+							}
 						}
-					}
-				};
+					};
+				}
+				else {
+					mesh =
+					{
+						{
+							// positions
+							-1.0f, -1.0f, 0.0f,
+							 0.0f, 0.0f,
+							-1.0f,  1.0f, 0.0f,
+							 0.0f, 1.0f,
+							 1.0f, -1.0f, 0.0f,
+							 1.0f, 0.0f,
+							 1.0f, -1.0f, 0.0f,
+							 1.0f, 0.0f,
+							-1.0f,  1.0f, 0.0f,
+							 0.0f, 1.0f,
+							 1.0f,  1.0f, 0.0f,
+							 1.0f, 1.0f,
+						},
+						{
+							{
+								uint32_t(0),
+								uint32_t(6)
+							}
+						}
+					};
+				}
+				
 			}
 		}
 	

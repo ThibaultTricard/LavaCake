@@ -26,6 +26,7 @@ namespace LavaCake {
 			FrameBuffer* f;
 			int binding;
 			VkShaderStageFlags			stage;
+			uint32_t viewIndex;
 		};
 
 		struct attachment {
@@ -99,7 +100,7 @@ namespace LavaCake {
 			/**
 			*add a FrameBuffer Buffer to the pipeline and scpecify it's binding and shader stage
 			*/
-			void addFrameBuffer(FrameBuffer * f, VkShaderStageFlags stage, int binding = 0);
+			void addFrameBuffer(FrameBuffer * f, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0);
 
 			/**
 			*add a StorageImage to the pipeline and scpecify it's binding and shader stage

@@ -60,7 +60,7 @@ namespace LavaCake {
 					});
 				m_attachmentype.push_back(DEPTH_ATTACHMENT);
 				m_depthAttachments.push_back({
-						m_attachmentDescriptions.size() - 1,														// uint32_t                             attachment
+						uint32_t(m_attachmentDescriptions.size() - 1),														// uint32_t                             attachment
 						VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL								// VkImageLayout                        layout
 					});
 
@@ -116,7 +116,7 @@ namespace LavaCake {
 			}
 		}
 
-		void RenderPass::draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2i viewportMin, vec2i viewportMax, std::vector<VkClearValue> const & clear_values) {
+		void RenderPass::draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const & clear_values) {
 			LavaCake::RenderPass::BeginRenderPass(commandBuffer, *m_renderPass, frameBuffer, { { 0, 0 },
 				{uint32_t(viewportMax[0] - viewportMin[0]),uint32_t(viewportMax[1] - viewportMin[1])} },
 				clear_values, VK_SUBPASS_CONTENTS_INLINE);
@@ -159,6 +159,7 @@ namespace LavaCake {
 
 			VkImageUsageFlagBits usage;
 			VkImageAspectFlagBits aspect;
+			VkImageLayout layout;
 			std::vector<VkImageView>	views;
 			for (int i = 0; i < m_attachmentype.size(); i ++) {
 				frameBuffer.m_images.emplace_back(VkDestroyer(VkImage)());
@@ -172,16 +173,19 @@ namespace LavaCake {
 					format = m_imageFormat;
 					usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 					aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+					layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				}
 				else if (m_attachmentype[i] == DEPTH_ATTACHMENT) {
 					format = m_depthFormat;
 					usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 					aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
+					layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
 				}
 				if (!Image::CreateSampledImage(physical, logical, VK_IMAGE_TYPE_2D, format,{ (uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1 }, 1, 1, usage| VK_IMAGE_USAGE_SAMPLED_BIT, false, VK_IMAGE_VIEW_TYPE_2D, aspect, linear_filtering, *frameBuffer.m_images[i], *frameBuffer.m_imageMemory, *frameBuffer.m_imageViews[i])) {
 					ErrorCheck::setError("Can't create an image sampler for this FrameBuffer");
 				}
 				views.push_back(*frameBuffer.m_imageViews[i]);
+				frameBuffer.m_layouts.push_back(layout);
 			}
 
 			if (!Buffer::CreateFramebuffer(logical, *m_renderPass, views, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {

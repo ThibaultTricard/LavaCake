@@ -87,7 +87,7 @@ namespace LavaCake {
 				Mesh       & mesh,
 				uint32_t   * vertex_stride = nullptr);
 
-			void preparePostProcessQuad(Mesh       & mesh);
+			void preparePostProcessQuad(Mesh       & mesh, bool doUV = false);
 		}
 	}
 } // namespace LavaCake
