@@ -50,7 +50,7 @@ int main() {
 	vec4f LigthPos = vec4f({ 0.f,4.f,0.7f,0.0 });
 	constant->addVariable("LigthPos", LigthPos);
 
-	int shadowsize = 512;
+	uint32_t shadowsize = 512;
 	
 	//frameBuffer
 	Framework::FrameBuffer* shadow_map_buffer = new Framework::FrameBuffer(shadowsize, shadowsize);
@@ -153,7 +153,7 @@ int main() {
 		VkExtent2D size = d->getSwapChain().size();
 
 
-		shadowMapPass.draw(commandbuffer, shadow_map_buffer->getFrameBuffer(), { 0,0 }, { int(shadowsize), int(shadowsize) });
+		shadowMapPass.draw(commandbuffer, shadow_map_buffer->getFrameBuffer(), { 0,0 }, { shadowsize, shadowsize });
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
@@ -185,7 +185,7 @@ int main() {
 		}
 
 
-		renderPass.draw(commandbuffer, *frame.framebuffer, { 0,0 }, { int(size.width), int(size.height) }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		renderPass.draw(commandbuffer, *frame.framebuffer, { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
