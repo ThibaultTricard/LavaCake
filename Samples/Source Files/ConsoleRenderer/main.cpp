@@ -34,6 +34,12 @@ int main() {
 	plane_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().commandBuffer);
 
 
+	//PostProcessQuad
+	Helpers::Mesh::Mesh* quad = new Helpers::Mesh::Mesh();
+	Helpers::Mesh::preparePostProcessQuad(*quad);
+	Framework::VertexBuffer* quad_vertex_buffer = new Framework::VertexBuffer({ quad }, { 3 });
+	quad_vertex_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().commandBuffer);
+
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
 	mat4 proj = Helpers::Transformation::PreparePerspectiveProjectionMatrix(static_cast<float>(w.m_windowSize[0]) / static_cast<float>(w.m_windowSize[1]),
@@ -52,8 +58,11 @@ int main() {
 
 	int shadowsize = 512;
 	
-	//frameBuffer
+	//DepthBuffer
 	Framework::FrameBuffer* shadow_map_buffer = new Framework::FrameBuffer(shadowsize, shadowsize);
+
+	//frameBuffer
+	Framework::FrameBuffer* scene_buffer = new Framework::FrameBuffer(shadowsize, shadowsize);
 	
 	// Shadow pass
 	Framework::RenderPass shadowMapPass = Framework::RenderPass();
@@ -73,6 +82,7 @@ int main() {
 	shadowMapPass.compile();
 
 	shadowMapPass.prepareOutputFrameBuffer(*shadow_map_buffer);
+
 	//Render Pass
 	Framework::RenderPass renderPass = Framework::RenderPass();
 	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
@@ -90,11 +100,31 @@ int main() {
 
 	renderPipeline->addFrameBuffer(shadow_map_buffer, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 
-	renderPass.addSubPass({ renderPipeline }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
+	renderPass.addSubPass({ renderPipeline },  Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
 	renderPass.addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	renderPass.addDependencies(0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	renderPass.compile();
 
+	renderPass.prepareOutputFrameBuffer(*scene_buffer);
+
+	//Console Render pass
+	Framework::RenderPass consolePass = Framework::RenderPass();
+	Framework::GraphicPipeline* consolePipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::VertexShaderModule* consoleVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/scene.vert.spv");
+	consolePipeline->setVextexShader(consoleVertex);
+
+	Framework::FragmentShaderModule* consoleFrag = new Framework::FragmentShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/scene.frag.spv");
+	consolePipeline->setFragmentModule(consoleFrag);
+
+
+	consolePipeline->setVeritices(quad_vertex_buffer);
+
+	consolePipeline->addFrameBuffer(scene_buffer, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
+
+	consolePass.addSubPass({ consolePipeline }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
+	consolePass.addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
+	consolePass.addDependencies(0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
+	consolePass.compile();
 
 	w.Show();
 	bool updateUniformBuffer = true;
@@ -185,10 +215,10 @@ int main() {
 		}
 
 
-		renderPass.draw(commandbuffer, *frame.framebuffer, { 0,0 }, { int(size.width), int(size.height) }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		renderPass.draw(commandbuffer, scene_buffer->getFrameBuffer(), { 0,0 }, { int(size.width), int(size.height) }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
-		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
+		/*if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
 			Image::ImageTransition image_transition_before_drawing = {
 				d->getSwapChain().getImages()[image_index],	// VkImage              Image
 				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,				// VkAccessFlags        CurrentAccess
@@ -201,7 +231,7 @@ int main() {
 			};
 			Image::SetImageMemoryBarrier(frame.commandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, { image_transition_before_drawing });
 		}
-
+		*/
 		if (!LavaCake::Command::EndCommandBufferRecordingOperation(commandbuffer)) {
 			continue;
 		}

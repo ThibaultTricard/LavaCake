@@ -105,11 +105,7 @@ namespace LavaCake {
 		};
 
 
-		enum frameBufferType {
-			COLOR_FRAMEBUFFER, DEPTH_FRAMEBUFFER, STENCIL_FRAMEBUFFER
-		};
-
-		class FrameBuffer : public TextureBuffer {
+		class FrameBuffer {
 		public : 
 			
 			/**
@@ -122,27 +118,34 @@ namespace LavaCake {
 			*	@param frameBufferType type : the type of the frame buffer will store : COLOR_FRAMEBUFFER, DEPTH_FRAMEBUFFER or STENCIL_FRAMEBUFFER.
 			*
 			*/
-			FrameBuffer(uint32_t width, uint32_t height, uint32_t layer, VkFormat f, frameBufferType type);
+			FrameBuffer(uint32_t width, uint32_t height);
 
-			/**
-			* create and allocate the Texture buffer on the device
-			*
-			*/
-			virtual void allocate() override;
 			
-
-			/**
-			* Prepare the framebuffer for a renderPass
-			*
-			*/
-			virtual void setInputRenderPass(VkRenderPass pass);
 
 			/**
 			* return the layout the texture buffer
 			*
 			*/
-			virtual VkImageLayout getLayout() override;
+			VkImageLayout getLayout();
 
+
+			/**
+			* return the sampler of the texture buffer
+			*
+			*/
+			VkSampler	getSampler();
+
+			/**
+			* return an image view of the texture buffer
+			*
+			*/
+			VkImageView	 getImageViews(int i);
+
+			/**
+			* return number of image view of the texture buffer
+			*
+			*/
+			size_t FrameBuffer::ImageViewSize();
 
 			/**
 			* return the FrameBuffer handle
@@ -153,20 +156,26 @@ namespace LavaCake {
 
 		private :
 
-			frameBufferType											m_type;
-			uint32_t														m_layer;
-			VkDestroyer(VkFramebuffer)					m_frameBuffer;
+			uint32_t																	m_width = 0;
+			uint32_t																	m_height = 0;
 
+			VkDestroyer(VkFramebuffer)															m_frameBuffer;
+			VkDestroyer(VkSampler)																	m_sampler;
+			VkDestroyer(VkDeviceMemory)															m_imageMemory;
+			std::vector<VkDestroyer(VkImage)>												m_images;
+			std::vector<VkDestroyer(VkImageView)>										m_imageViews;
+
+			friend class RenderPass;
 		};
 
-		enum attatchmentType {
+		enum attachmentType {
 			COLOR_ATTACHMENT ,DEPTH_ATTACHMENT, STENCIL_ATTACHMENT
 		};
 
 		class Attachment {
 		public :
 
-			Attachment(int width, int height, VkFormat f, attatchmentType type);
+			Attachment(int width, int height, VkFormat f, attachmentType type);
 
 			void allocate();
 
@@ -179,7 +188,7 @@ namespace LavaCake {
 			int																	m_width = 0;
 			int																	m_height = 0;
 			VkFormat														m_format;
-			attatchmentType											m_type;
+			attachmentType											m_type;
 
 			VkDestroyer(VkImage)                m_image;
 			VkDestroyer(VkDeviceMemory)         m_imageMemory;

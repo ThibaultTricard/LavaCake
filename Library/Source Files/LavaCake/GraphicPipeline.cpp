@@ -146,6 +146,10 @@ namespace LavaCake {
 			m_attachments.push_back({ a,binding,stage });
 		}
 
+		void GraphicPipeline::addFrameBuffer(FrameBuffer * f, VkShaderStageFlags stage, int binding) {
+			m_frameBuffer.push_back({ f, binding, stage });
+		}
+
 		void GraphicPipeline::setSubpassNumber(uint32_t number) {
 			m_subpassNumber = number;
 		}
@@ -217,6 +221,15 @@ namespace LavaCake {
 					nullptr
 					});
 			}
+			for (uint32_t i = 0; i < m_frameBuffer.size(); i++) {
+				m_descriptorSetLayoutBinding.push_back({
+					uint32_t(m_frameBuffer[i].binding),
+					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+					1,
+					m_frameBuffer[i].stage,
+					nullptr
+					});
+			}
 			for (uint32_t i = 0; i < m_attachments.size(); i++) {
 				m_descriptorSetLayoutBinding.push_back({
 					uint32_t(m_attachments[i].binding),
@@ -241,27 +254,27 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't create descriptor set layout");
 			}
 
-			m_descriptorCount = m_uniforms.size() + m_textures.size() + m_storageImage.size() + m_attachments.size();
+			m_descriptorCount = m_uniforms.size() + m_textures.size() + m_storageImage.size() + m_attachments.size() + m_frameBuffer.size();
 			if (m_descriptorCount == 0) return;
 
 			m_descriptorPoolSize = {};
 
 			if (m_uniforms.size() > 0) {
 				m_descriptorPoolSize.push_back({
-					VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,							// VkDescriptorType     type
-						uint32_t(m_uniforms.size())										// uint32_t             descriptorCount
+					VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,							
+						uint32_t(m_uniforms.size())										
 					});
 			}
-			if (m_textures.size() > 0) {
+			if (m_textures.size() + m_frameBuffer.size() > 0) {
 				m_descriptorPoolSize.push_back({
-					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,			// VkDescriptorType     type
-						uint32_t(m_textures.size())										// uint32_t             descriptorCount
+					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,			
+						uint32_t(m_textures.size()+m_frameBuffer.size())										
 					});
 			}
 			if (m_attachments.size() > 0) {
 				m_descriptorPoolSize.push_back({
-					VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,						// VkDescriptorType     type
-						uint32_t(m_attachments.size())								// uint32_t             descriptorCount
+					VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,						
+						uint32_t(m_attachments.size())								
 					});
 			}
 			if (m_storageImage.size() > 0) {
@@ -312,6 +325,25 @@ namespace LavaCake {
 							m_textures[i].t->getLayout()								// VkImageLayout                         range
 						}
 					}
+					});
+			}
+			for (uint32_t i = 0; i < m_frameBuffer.size(); i++) {
+				std::vector<VkDescriptorImageInfo> descriptorInfo;
+				for (int j = 0; j < m_frameBuffer[i].f->ImageViewSize(); j++) {
+					descriptorInfo.push_back(
+						{
+							m_frameBuffer[i].f->getSampler(),
+							m_frameBuffer[i].f->getImageViews(j),
+							m_frameBuffer[i].f->getLayout(),
+						});
+				}
+				
+				m_imageDescriptorUpdate.push_back({
+					m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
+					uint32_t(m_frameBuffer[i].binding),							// uint32_t                             TargetDescriptorBinding
+					0,																							// uint32_t                             TargetArrayElement
+					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,			// VkDescriptorType                     TargetDescriptorType
+					descriptorInfo																	// std::vector<VkDescriptorBufferInfo>  BufferInfos
 					});
 			}
 			for (uint32_t i = 0; i < m_attachments.size(); i++) {

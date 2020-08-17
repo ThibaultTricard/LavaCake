@@ -22,6 +22,12 @@ namespace LavaCake {
 			VkShaderStageFlags			stage;
 		};
 
+		struct frameBuffer {
+			FrameBuffer* f;
+			int binding;
+			VkShaderStageFlags			stage;
+		};
+
 		struct attachment {
 			Attachment* a;
 			int binding;
@@ -91,6 +97,11 @@ namespace LavaCake {
 			void addTextureBuffer(TextureBuffer * t, VkShaderStageFlags stage, int binding = 0);
 
 			/**
+			*add a FrameBuffer Buffer to the pipeline and scpecify it's binding and shader stage
+			*/
+			void addFrameBuffer(FrameBuffer * f, VkShaderStageFlags stage, int binding = 0);
+
+			/**
 			*add a StorageImage to the pipeline and scpecify it's binding and shader stage
 			*/
 			void addStorageImage(StorageImage * s, VkShaderStageFlags stage, int binding = 0);
@@ -141,6 +152,7 @@ namespace LavaCake {
 
 			std::vector<uniform>																	m_uniforms;
 			std::vector<texture>																	m_textures;
+			std::vector<frameBuffer>															m_frameBuffer;
 			std::vector<attachment>																m_attachments;
 			std::vector<storageImage>															m_storageImage;
 

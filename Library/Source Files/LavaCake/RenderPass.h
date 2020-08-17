@@ -65,6 +65,9 @@ namespace LavaCake {
 			*/
 			VkRenderPass& getHandle();
 
+
+			void prepareOutputFrameBuffer(FrameBuffer& FrameBuffer);
+
 		private : 
 			VkDestroyer(VkRenderPass)															m_renderPass;
 			VkFormat																							m_imageFormat;
@@ -74,6 +77,12 @@ namespace LavaCake {
 			std::vector<VkAttachmentReference>										m_depthAttachments;
 			std::vector<VkAttachmentDescription>									m_attachmentDescriptions;
 			std::vector<VkSubpassDependency>											m_dependencies;
+
+			std::vector<attachmentType>														m_attachmentype;
+
+
+
+
 		};
 	}
 }

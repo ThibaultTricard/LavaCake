@@ -36,7 +36,7 @@ namespace LavaCake {
 						VK_IMAGE_LAYOUT_UNDEFINED,																																									// VkImageLayout                    initialLayout
 						drawOnScreen ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL                   // VkImageLayout                    finalLayout
 					});
-
+				m_attachmentype.push_back(COLOR_ATTACHMENT);
 				params.ColorAttachments = 
 				{ 
 					{
@@ -58,7 +58,7 @@ namespace LavaCake {
 					VK_IMAGE_LAYOUT_UNDEFINED,																																													// VkImageLayout                    initialLayout
 					VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL																																			// VkImageLayout                    finalLayout
 					});
-
+				m_attachmentype.push_back(DEPTH_ATTACHMENT);
 				m_depthAttachments.push_back({
 						m_attachmentDescriptions.size() - 1,														// uint32_t                             attachment
 						VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL								// VkImageLayout                        layout
@@ -137,6 +137,56 @@ namespace LavaCake {
 
 		VkRenderPass& RenderPass::getHandle() {
 			return *m_renderPass;
+		}
+
+		void RenderPass::prepareOutputFrameBuffer(FrameBuffer& frameBuffer) {
+			Framework::Device* d = LavaCake::Framework::Device::getDevice();
+			VkDevice logical = d->getLogicalDevice();
+			VkPhysicalDevice physical = d->getPhysicalDevice();
+			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
+			
+
+			InitVkDestroyer(logical, frameBuffer.m_sampler);
+			InitVkDestroyer(logical, frameBuffer.m_imageMemory);
+		
+			if (!Buffer::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, 
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
+				0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, *frameBuffer.m_sampler)) {
+				ErrorCheck::setError("Can't create an image sampler for this FrameBuffer");
+			}
+
+			bool linear_filtering = true;
+
+			VkImageUsageFlagBits usage;
+			VkImageAspectFlagBits aspect;
+			std::vector<VkImageView>	views;
+			for (int i = 0; i < m_attachmentype.size(); i ++) {
+				frameBuffer.m_images.emplace_back(VkDestroyer(VkImage)());
+				frameBuffer.m_imageViews.emplace_back(VkDestroyer(VkImageView)());
+
+				InitVkDestroyer(logical, frameBuffer.m_images[i]);
+				InitVkDestroyer(logical, frameBuffer.m_imageViews[i]);
+
+				VkFormat format;
+				if (m_attachmentype[i] == COLOR_ATTACHMENT) {
+					format = m_imageFormat;
+					usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+					aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+				}
+				else if (m_attachmentype[i] == DEPTH_ATTACHMENT) {
+					format = m_depthFormat;
+					usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+					aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
+				}
+				if (!Image::CreateSampledImage(physical, logical, VK_IMAGE_TYPE_2D, format,{ (uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1 }, 1, 1, usage| VK_IMAGE_USAGE_SAMPLED_BIT, false, VK_IMAGE_VIEW_TYPE_2D, aspect, linear_filtering, *frameBuffer.m_images[i], *frameBuffer.m_imageMemory, *frameBuffer.m_imageViews[i])) {
+					ErrorCheck::setError("Can't create an image sampler for this FrameBuffer");
+				}
+				views.push_back(*frameBuffer.m_imageViews[i]);
+			}
+
+			if (!Buffer::CreateFramebuffer(logical, *m_renderPass, views, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
+				ErrorCheck::setError("Can't create this FrameBuffer");
+			}
 		}
 	}
 }

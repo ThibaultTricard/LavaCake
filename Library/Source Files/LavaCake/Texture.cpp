@@ -74,64 +74,25 @@ namespace LavaCake {
 		//																																				Frame Buffer																																		//
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		FrameBuffer::FrameBuffer(uint32_t width, uint32_t height, uint32_t layer, VkFormat f, frameBufferType type) {
+		FrameBuffer::FrameBuffer(uint32_t width, uint32_t height) {
 			m_width = width;
 			m_height = height;
-			m_layer = layer;
-			m_type = type;
-			m_format = f;
 		};
 
-		void FrameBuffer::allocate() {
-
-			Framework::Device* d = LavaCake::Framework::Device::getDevice();
-			VkDevice logical = d->getLogicalDevice();
-			VkPhysicalDevice physical = d->getPhysicalDevice();
-			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
-
-			InitVkDestroyer(logical, m_sampler);
-			InitVkDestroyer(logical, m_image);
-			InitVkDestroyer(logical, m_imageMemory);
-			InitVkDestroyer(logical, m_imageView);
-
-
-			VkImageUsageFlagBits usage;
-			VkImageAspectFlagBits aspect;
-			if (m_type == COLOR_FRAMEBUFFER) {
-				usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-				aspect = VK_IMAGE_ASPECT_COLOR_BIT;
-			}
-			else if (m_type == DEPTH_FRAMEBUFFER) {
-				usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-				aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
-			}
-			else {
-				usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-				aspect = VK_IMAGE_ASPECT_STENCIL_BIT;
-			}
-
-			if (!Image::CreateCombinedImageSampler(physical, logical, VK_IMAGE_TYPE_2D, m_format, { (uint32_t)m_width, (uint32_t)m_height, 1 }, 1, m_layer,
-				usage | VK_IMAGE_USAGE_SAMPLED_BIT, false, VK_IMAGE_VIEW_TYPE_2D, aspect, VK_FILTER_LINEAR,
-				VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
-				false, *m_sampler, *m_image, *m_imageMemory, *m_imageView)) {
-				ErrorCheck::setError("Can't create an image sampler for this FrameBuffer");
-			}
+		VkImageView FrameBuffer::getImageViews(int i) {
+			return *m_imageViews[i];
 		}
 
-		void FrameBuffer::setInputRenderPass(VkRenderPass pass) {
-			Framework::Device* d = LavaCake::Framework::Device::getDevice();
-			VkDevice logical = d->getLogicalDevice();
-			InitVkDestroyer(logical, m_frameBuffer);
-
-			if (!Buffer::CreateFramebuffer(logical, pass, { *m_imageView }, m_width, m_height, 1, *m_frameBuffer)) {
-				return;
-			}
-
+		size_t FrameBuffer::ImageViewSize(){
+			return m_imageViews.size();
 		}
 
 		VkImageLayout FrameBuffer::getLayout(){
 			return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+		}
+
+		VkSampler	FrameBuffer::getSampler() {
+			return *m_sampler;
 		}
 
 		VkFramebuffer FrameBuffer::getFrameBuffer() {
@@ -208,7 +169,7 @@ namespace LavaCake {
 		//																																			Attachement																																				//
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		Attachment::Attachment(int width, int height, VkFormat f, attatchmentType type) {
+		Attachment::Attachment(int width, int height, VkFormat f, attachmentType type) {
 			m_width = width;
 			m_height = height;
 			m_format = f;
