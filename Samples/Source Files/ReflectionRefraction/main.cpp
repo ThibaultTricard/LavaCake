@@ -52,9 +52,9 @@ int main() {
 
 	// Skybox
 	Framework::GraphicPipeline* skybox = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
-	Framework::VertexShaderModule* skyboxVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/04 Rendering a reflective and refractive geometry using cubemaps/skybox.vert.spv");
+	Framework::VertexShaderModule* skyboxVertex = new Framework::VertexShaderModule("Data/Shaders/Refraction/skybox.vert.spv");
 	skybox->setVextexShader(skyboxVertex);
-	Framework::FragmentShaderModule* skyboxFrag = new Framework::FragmentShaderModule("Data/Shaders/11 Lighting/04 Rendering a reflective and refractive geometry using cubemaps/skybox.frag.spv");
+	Framework::FragmentShaderModule* skyboxFrag = new Framework::FragmentShaderModule("Data/Shaders/Refraction/skybox.frag.spv");
 	skybox->setFragmentModule(skyboxFrag);
 	skybox->setVeritices(v);
 	skybox->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
@@ -63,9 +63,9 @@ int main() {
 
 	// teapot
 	Framework::GraphicPipeline* teapot = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
-	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/04 Rendering a reflective and refractive geometry using cubemaps/model.vert.spv");
+	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/Refraction/model.vert.spv");
 	teapot->setVextexShader(vertex);
-	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/11 Lighting/04 Rendering a reflective and refractive geometry using cubemaps/model.frag.spv");
+	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/Refraction/model.frag.spv");
 	teapot->setFragmentModule(frag);
 	teapot->setVeritices(teapot_vertex_buffer);
 	teapot->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);

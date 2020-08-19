@@ -36,10 +36,10 @@ int main() {
 	Framework::RenderPass pass = Framework::RenderPass();
 	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
 
-	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/02 Rendering a geometry with fragment specular lighting/shader.vert.spv");
+	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/SpecularLighting/shader.vert.spv");
 	pipeline->setVextexShader(vertex);
 
-	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/11 Lighting/02 Rendering a geometry with fragment specular lighting/shader.frag.spv");
+	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/SpecularLighting/shader.frag.spv");
 	pipeline->setFragmentModule(frag);
 
 	pipeline->setVeritices(v);

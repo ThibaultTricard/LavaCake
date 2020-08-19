@@ -69,7 +69,7 @@ int main() {
 	Framework::RenderPass shadowMapPass = Framework::RenderPass();
 	Framework::GraphicPipeline* shadowPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(shadowsize),float(shadowsize),1.0f }, { 0,0 }, { float(shadowsize),float(shadowsize) });
 
-	Framework::VertexShaderModule* shadowVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/shadow.vert.spv");
+	Framework::VertexShaderModule* shadowVertex = new Framework::VertexShaderModule("Data/Shaders/ConsoleRenderer/shadow.vert.spv");
 	shadowPipeline->setVextexShader(shadowVertex);
 
 
@@ -87,10 +87,10 @@ int main() {
 	//Render Pass
 	Framework::RenderPass renderPass = Framework::RenderPass();
 	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(shadowsize),float(shadowsize),1.0f }, { 0,0 }, { float(shadowsize),float(shadowsize) });
-	Framework::VertexShaderModule* renderVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/scene.vert.spv");
+	Framework::VertexShaderModule* renderVertex = new Framework::VertexShaderModule("Data/Shaders/ConsoleRenderer/scene.vert.spv");
 	renderPipeline->setVextexShader(renderVertex);
 
-	Framework::FragmentShaderModule* renderFrag = new Framework::FragmentShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/scene.frag.spv");
+	Framework::FragmentShaderModule* renderFrag = new Framework::FragmentShaderModule("Data/Shaders/ConsoleRenderer/scene.frag.spv");
 	renderPipeline->setFragmentModule(renderFrag);
 
 	
@@ -111,10 +111,10 @@ int main() {
 	//Console Render pass
 	Framework::RenderPass consolePass = Framework::RenderPass();
 	Framework::GraphicPipeline* consolePipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
-	Framework::VertexShaderModule* consoleVertex = new Framework::VertexShaderModule("Data/Shaders/consoleRenderer/shader.vert.spv");
+	Framework::VertexShaderModule* consoleVertex = new Framework::VertexShaderModule("Data/Shaders/ConsoleRenderer/shader.vert.spv");
 	consolePipeline->setVextexShader(consoleVertex);
 
-	Framework::FragmentShaderModule* consoleFrag = new Framework::FragmentShaderModule("Data/Shaders/consoleRenderer/shader.frag.spv");
+	Framework::FragmentShaderModule* consoleFrag = new Framework::FragmentShaderModule("Data/Shaders/ConsoleRenderer/shader.frag.spv");
 	consolePipeline->setFragmentModule(consoleFrag);
 
 

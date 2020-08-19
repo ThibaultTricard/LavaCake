@@ -76,10 +76,10 @@ int main() {
 
 	
 	Framework::GraphicPipeline* sphereRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
-	Framework::VertexShaderModule* sphereVertex = new Framework::VertexShaderModule("Data/Shaders/12 Advanced Rendering Techniques/06 Using input attachment for color correction postprocess effect/model.vert.spv");
+	Framework::VertexShaderModule* sphereVertex = new Framework::VertexShaderModule("Data/Shaders/PostProcess/model.vert.spv");
 	sphereRenderPipeline->setVextexShader(sphereVertex);
 
-	Framework::FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule("Data/Shaders/12 Advanced Rendering Techniques/06 Using input attachment for color correction postprocess effect/model.frag.spv");
+	Framework::FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule("Data/Shaders/PostProcess/model.frag.spv");
 	sphereRenderPipeline->setFragmentModule(sphereFrag);
 
 	sphereRenderPipeline->setVeritices(sphere_vertex_buffer);
@@ -90,10 +90,10 @@ int main() {
 
 	Framework::GraphicPipeline* skyRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
 
-	Framework::VertexShaderModule* skyVertex = new Framework::VertexShaderModule("Data/Shaders/12 Advanced Rendering Techniques/06 Using input attachment for color correction postprocess effect/skybox.vert.spv");
+	Framework::VertexShaderModule* skyVertex = new Framework::VertexShaderModule("Data/Shaders/PostProcess/skybox.vert.spv");
 	skyRenderPipeline->setVextexShader(skyVertex);
 
-	Framework::FragmentShaderModule* skyFrag = new Framework::FragmentShaderModule("Data/Shaders/12 Advanced Rendering Techniques/06 Using input attachment for color correction postprocess effect/skybox.frag.spv");
+	Framework::FragmentShaderModule* skyFrag = new Framework::FragmentShaderModule("Data/Shaders/PostProcess/skybox.frag.spv");
 	skyRenderPipeline->setFragmentModule(skyFrag);
 
 
@@ -105,10 +105,10 @@ int main() {
 	renderPass.addSubPass({ sphereRenderPipeline,skyRenderPipeline }, Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
 
 	Framework::GraphicPipeline* postProcessPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
-	Framework::VertexShaderModule* postProcessVertex = new Framework::VertexShaderModule("Data/Shaders/12 Advanced Rendering Techniques/06 Using input attachment for color correction postprocess effect/postprocess.vert.spv");
+	Framework::VertexShaderModule* postProcessVertex = new Framework::VertexShaderModule("Data/Shaders/PostProcess/postprocess.vert.spv");
 	postProcessPipeline->setVextexShader(postProcessVertex);
 
-	Framework::FragmentShaderModule* postProcessFrag = new Framework::FragmentShaderModule("Data/Shaders/12 Advanced Rendering Techniques/06 Using input attachment for color correction postprocess effect/postprocess.frag.spv");
+	Framework::FragmentShaderModule* postProcessFrag = new Framework::FragmentShaderModule("Data/Shaders/PostProcess/postprocess.frag.spv");
 	postProcessPipeline->setFragmentModule(postProcessFrag);
 
 	postProcessPipeline->addPushContant(timeConstant, VK_SHADER_STAGE_FRAGMENT_BIT);

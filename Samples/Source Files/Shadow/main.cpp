@@ -59,7 +59,7 @@ int main() {
 	Framework::RenderPass shadowMapPass = Framework::RenderPass();
 	Framework::GraphicPipeline* shadowPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(shadowsize),float(shadowsize),1.0f }, { 0,0 }, { float(shadowsize),float(shadowsize) });
 
-	Framework::VertexShaderModule* shadowVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/shadow.vert.spv");
+	Framework::VertexShaderModule* shadowVertex = new Framework::VertexShaderModule("Data/Shaders/Shadow/shadow.vert.spv");
 	shadowPipeline->setVextexShader(shadowVertex);
 
 
@@ -76,10 +76,10 @@ int main() {
 	//Render Pass
 	Framework::RenderPass renderPass = Framework::RenderPass();
 	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
-	Framework::VertexShaderModule* renderVertex = new Framework::VertexShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/scene.vert.spv");
+	Framework::VertexShaderModule* renderVertex = new Framework::VertexShaderModule("Data/Shaders/Shadow/scene.vert.spv");
 	renderPipeline->setVextexShader(renderVertex);
 
-	Framework::FragmentShaderModule* renderFrag = new Framework::FragmentShaderModule("Data/Shaders/11 Lighting/05 Adding shadows to the scene/scene.frag.spv");
+	Framework::FragmentShaderModule* renderFrag = new Framework::FragmentShaderModule("Data/Shaders/Shadow/scene.frag.spv");
 	renderPipeline->setFragmentModule(renderFrag);
 
 	
