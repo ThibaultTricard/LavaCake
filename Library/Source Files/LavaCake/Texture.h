@@ -76,7 +76,7 @@ namespace LavaCake {
 			VkDestroyer(VkSampler)										m_sampler;
 
 
-			VkFormat																	m_format;
+			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
 		};
 
 		class CubeMap : public TextureBuffer {

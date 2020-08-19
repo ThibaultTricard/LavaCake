@@ -11,7 +11,7 @@ namespace LavaCake {
 
 			uint32_t offset = 0;
 			for (uint32_t i = 0; i < dataDescription.size(); i++) {
-				VkFormat f;
+				VkFormat f = VK_FORMAT_UNDEFINED;
 				if (dataDescription[i] == 1) {
 					f = VK_FORMAT_R32_SFLOAT;
 				}

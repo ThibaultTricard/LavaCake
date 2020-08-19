@@ -1,6 +1,67 @@
 #include "RenderPass.h"
 namespace LavaCake {
 	namespace Framework {
+
+		void RenderPass::SpecifySubpassDescriptions(std::vector<SubpassParameters> const& subpass_parameters,
+			std::vector<VkSubpassDescription>& subpass_descriptions) {
+			subpass_descriptions.clear();
+
+			for (auto& subpass_description : subpass_parameters) {
+				subpass_descriptions.push_back({
+					0,                                                                      // VkSubpassDescriptionFlags        flags
+					subpass_description.PipelineType,                                       // VkPipelineBindPoint              pipelineBindPoint
+					static_cast<uint32_t>(subpass_description.InputAttachments.size()),     // uint32_t                         inputAttachmentCount
+					subpass_description.InputAttachments.data(),                            // const VkAttachmentReference    * pInputAttachments
+					static_cast<uint32_t>(subpass_description.ColorAttachments.size()),     // uint32_t                         colorAttachmentCount
+					subpass_description.ColorAttachments.data(),                            // const VkAttachmentReference    * pColorAttachments
+					subpass_description.ResolveAttachments.data(),                          // const VkAttachmentReference    * pResolveAttachments
+					subpass_description.DepthStencilAttachment,                             // const VkAttachmentReference    * pDepthStencilAttachment
+					static_cast<uint32_t>(subpass_description.PreserveAttachments.size()),  // uint32_t                         preserveAttachmentCount
+					subpass_description.PreserveAttachments.data()                          // const uint32_t                 * pPreserveAttachments
+					});
+			}
+		}
+
+		bool RenderPass::CreateRenderPass(VkDevice                                     logical_device,
+			std::vector<VkAttachmentDescription> const& attachments_descriptions,
+			std::vector<SubpassParameters> const& subpass_parameters,
+			std::vector<VkSubpassDependency> const& subpass_dependencies,
+			VkRenderPass& render_pass) {
+
+			Image::SpecifyAttachmentsDescriptions(attachments_descriptions);
+
+			std::vector<VkSubpassDescription> subpass_descriptions;
+			SpecifySubpassDescriptions(subpass_parameters, subpass_descriptions);
+
+			VkRenderPassCreateInfo render_pass_create_info = {
+				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,                // VkStructureType                    sType
+				nullptr,                                                  // const void                       * pNext
+				0,                                                        // VkRenderPassCreateFlags            flags
+				static_cast<uint32_t>(attachments_descriptions.size()),   // uint32_t                           attachmentCount
+				attachments_descriptions.data(),                          // const VkAttachmentDescription    * pAttachments
+				static_cast<uint32_t>(subpass_descriptions.size()),       // uint32_t                           subpassCount
+				subpass_descriptions.data(),                              // const VkSubpassDescription       * pSubpasses
+				static_cast<uint32_t>(subpass_dependencies.size()),       // uint32_t                           dependencyCount
+				subpass_dependencies.data()                               // const VkSubpassDependency        * pDependencies
+			};
+
+			VkResult result = vkCreateRenderPass(logical_device, &render_pass_create_info, nullptr, &render_pass);
+			if (VK_SUCCESS != result) {
+				std::cout << "Could not create a render pass." << std::endl;
+				return false;
+			}
+			return true;
+		}
+
+		void RenderPass::DestroyRenderPass(VkDevice       logical_device,
+			VkRenderPass& render_pass) {
+			if (VK_NULL_HANDLE != render_pass) {
+				vkDestroyRenderPass(logical_device, render_pass, nullptr);
+				render_pass = VK_NULL_HANDLE;
+			}
+		}
+
+
 		RenderPass::RenderPass() {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			m_imageFormat = d->getSwapChain().imageFormat();
@@ -20,7 +81,7 @@ namespace LavaCake {
 			if (AttachementFlag & SHOW_ON_SCREEN)
 				drawOnScreen = true;
 
-			LavaCake::RenderPass::SubpassParameters params = {};
+			SubpassParameters params = {};
 			
 			if (AttachementFlag & USE_COLOR) {
 				imageAttachementindex = m_attachmentDescriptions.size();
@@ -105,7 +166,7 @@ namespace LavaCake {
 			VkDevice logicalDevice = d->getLogicalDevice();
 
 			InitVkDestroyer(logicalDevice, m_renderPass);
-			if (!LavaCake::RenderPass::CreateRenderPass(logicalDevice, m_attachmentDescriptions, m_subpassParameters, m_dependencies, *m_renderPass)) {
+			if (!CreateRenderPass(logicalDevice, m_attachmentDescriptions, m_subpassParameters, m_dependencies, *m_renderPass)) {
 				ErrorCheck::setError("Can't compile RenderPass");
 			}
 
@@ -116,14 +177,38 @@ namespace LavaCake {
 			}
 		}
 
+		void RenderPass::reloadShaders() {
+
+			for (uint32_t i = 0; i < m_subpass.size(); i++) {
+				for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
+					m_subpass[i][j]->reloadShaders();
+				}
+			}
+
+			compile();
+
+		}
+
 		void RenderPass::draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const & clear_values) {
-			LavaCake::RenderPass::BeginRenderPass(commandBuffer, *m_renderPass, frameBuffer, { { 0, 0 },
+			/*LavaCake::RenderPass::BeginRenderPass(commandBuffer, *m_renderPass, frameBuffer, { { 0, 0 },
 				{uint32_t(viewportMax[0] - viewportMin[0]),uint32_t(viewportMax[1] - viewportMin[1])} },
-				clear_values, VK_SUBPASS_CONTENTS_INLINE);
+				clear_values, VK_SUBPASS_CONTENTS_INLINE);*/
+
+			VkRenderPassBeginInfo renderPassBeginInfo = {
+				VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,																																														 // VkStructureType        sType
+				nullptr,																																																														 // const void           * pNext
+				* m_renderPass,																																																											 // VkRenderPass           renderPass
+				frameBuffer,																																																												 // VkFramebuffer          framebuffer
+				{ { 0, 0 },{uint32_t(viewportMax[0] - viewportMin[0]),uint32_t(viewportMax[1] - viewportMin[1])} },                                  // VkRect2D               renderArea
+				static_cast<uint32_t>(clear_values.size()),																																													 // uint32_t               clearValueCount
+				clear_values.data()																																																									 // const VkClearValue   * pClearValues
+			};
+
+			vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 			for (uint32_t i = 0; i < m_subpass.size(); i++) {
 
 				if (i > 0) {
-					LavaCake::RenderPass::ProgressToTheNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+					vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 				}
 				
 				for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
@@ -131,7 +216,7 @@ namespace LavaCake {
 				}
 			}
 
-			LavaCake::RenderPass::EndRenderPass(commandBuffer);
+			vkCmdEndRenderPass(commandBuffer);
 		}
 
 

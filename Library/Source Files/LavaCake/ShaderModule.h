@@ -6,10 +6,19 @@
 namespace LavaCake {
 	namespace Framework{
 
+		struct ShaderStageParameters {
+			VkShaderStageFlagBits        ShaderStage;
+			VkShaderModule               ShaderModule;
+			char const* EntryPointName;
+			VkSpecializationInfo const* SpecializationInfo;
+		};
+
 		class ShaderModule {
+			
 		public :
 
 			ShaderModule(std::string path, VkShaderStageFlagBits stageBits, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) {
+				m_path = path;
 				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logicalDevice = d->getLogicalDevice();
 				if (!GetBinaryFileContents(path, m_spirv)) {
@@ -17,7 +26,7 @@ namespace LavaCake {
 				}
 				
 				InitVkDestroyer(logicalDevice, m_module);
-				if (!Shader::CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
+				if (!CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
 					ErrorCheck::setError("Can't create the Shader module");
 				}
 				
@@ -29,15 +38,59 @@ namespace LavaCake {
 				};
 			}
 
-			Shader::ShaderStageParameters&	getStageParameter() {
+			ShaderStageParameters&	getStageParameter() {
 				return m_stageParameter;
 			}
 
+			void refresh() {
+				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
+				VkDevice logicalDevice = d->getLogicalDevice();
+				if (!GetBinaryFileContents(m_path, m_spirv)) {
+					ErrorCheck::setError("Can't reed the Shader file ");
+				}
+
+				InitVkDestroyer(logicalDevice, m_module);
+				if (!CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
+					ErrorCheck::setError("Can't create the Shader module");
+				}
+
+				m_stageParameter.ShaderModule = *m_module;
+			}
+
 		private :
+
+			bool CreateShaderModule(VkDevice                           logical_device,
+				std::vector<unsigned char> const& source_code,
+				VkShaderModule& shader_module) {
+				VkShaderModuleCreateInfo shader_module_create_info = {
+					VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,              // VkStructureType              sType
+					nullptr,                                                  // const void                 * pNext
+					0,                                                        // VkShaderModuleCreateFlags    flags
+					source_code.size(),                                       // size_t                       codeSize
+					reinterpret_cast<uint32_t const*>(source_code.data())    // const uint32_t             * pCode
+				};
+
+				VkResult result = vkCreateShaderModule(logical_device, &shader_module_create_info, nullptr, &shader_module);
+				if (VK_SUCCESS != result) {
+					std::cout << "Could not create a shader module." << std::endl;
+					return false;
+				}
+				return true;
+			}
+
+			void DestroyShaderModule(VkDevice         logical_device,
+				VkShaderModule& shader_module) {
+				if (VK_NULL_HANDLE != shader_module) {
+					vkDestroyShaderModule(logical_device, shader_module, nullptr);
+					shader_module = VK_NULL_HANDLE;
+				}
+			}
+
+
 			VkDestroyer(VkShaderModule)								m_module;
 			std::string																m_path;
 			std::vector<unsigned char>								m_spirv;
-			Shader::ShaderStageParameters							m_stageParameter;
+			ShaderStageParameters											m_stageParameter;
 		};
 
 		class VertexShaderModule : public ShaderModule {

@@ -31,7 +31,7 @@ namespace LavaCake {
 
 		protected:
 			VkQueue*		m_handle ;
-			uint32_t		m_familyIndex;
+			uint32_t		m_familyIndex =0;
 		};
 
 

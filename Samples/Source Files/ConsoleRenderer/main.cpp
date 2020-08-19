@@ -111,10 +111,10 @@ int main() {
 	//Console Render pass
 	Framework::RenderPass consolePass = Framework::RenderPass();
 	Framework::GraphicPipeline* consolePipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
-	Framework::VertexShaderModule* consoleVertex = new Framework::VertexShaderModule("Data/Shaders/ConsoleRenderer/shader.vert.spv");
+	Framework::VertexShaderModule* consoleVertex = new Framework::VertexShaderModule("Data/Shaders/ConsoleRenderer/console.vert.spv");
 	consolePipeline->setVextexShader(consoleVertex);
 
-	Framework::FragmentShaderModule* consoleFrag = new Framework::FragmentShaderModule("Data/Shaders/ConsoleRenderer/shader.frag.spv");
+	Framework::FragmentShaderModule* consoleFrag = new Framework::FragmentShaderModule("Data/Shaders/ConsoleRenderer/console.frag.spv");
 	consolePipeline->setFragmentModule(consoleFrag);
 
 
@@ -142,6 +142,11 @@ int main() {
 		w.UpdateInput();
 		f++;
 		f = f % nbFrames;
+
+    if (w.m_keyBoard.getKey("space").pressed) {
+			Command::WaitForAllSubmittedCommandsToBeFinished(logical);
+			consolePass.reloadShaders();
+		}
 
 		if (w.m_mouse.m_actionPerformed) {
 			updateUniformBuffer = true;

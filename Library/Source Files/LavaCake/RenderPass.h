@@ -21,6 +21,16 @@ namespace LavaCake {
 		}
 
 		class RenderPass {
+
+			struct SubpassParameters {
+				VkPipelineBindPoint                  PipelineType;
+				std::vector<VkAttachmentReference>   InputAttachments;
+				std::vector<VkAttachmentReference>   ColorAttachments;
+				std::vector<VkAttachmentReference>   ResolveAttachments;
+				VkAttachmentReference const* DepthStencilAttachment;
+				std::vector<uint32_t>                PreserveAttachments;
+			};
+
 		public :
 
 			/*
@@ -54,6 +64,7 @@ namespace LavaCake {
 			*/
 			void compile();
 
+			void reloadShaders();
 
 			/*
 			* Draw the render pass using a specific command buffer into a framebuffer
@@ -68,11 +79,26 @@ namespace LavaCake {
 
 			void prepareOutputFrameBuffer(FrameBuffer& FrameBuffer);
 
+
 		private : 
+
+
+			void SpecifySubpassDescriptions(std::vector<SubpassParameters> const& subpass_parameters,
+				std::vector<VkSubpassDescription>& subpass_descriptions);
+
+			bool CreateRenderPass(VkDevice                                     logical_device,
+				std::vector<VkAttachmentDescription> const& attachments_descriptions,
+				std::vector<SubpassParameters> const& subpass_parameters,
+				std::vector<VkSubpassDependency> const& subpass_dependencies,
+				VkRenderPass& render_pass);
+
+			void DestroyRenderPass(VkDevice       logical_device,
+				VkRenderPass& render_pass);
+
 			VkDestroyer(VkRenderPass)															m_renderPass;
 			VkFormat																							m_imageFormat;
 			VkFormat																							m_depthFormat;
-			std::vector<LavaCake::RenderPass::SubpassParameters>	m_subpassParameters;
+			std::vector<SubpassParameters>												m_subpassParameters;
 			std::vector < std::vector<GraphicPipeline*>	>					m_subpass;
 			std::vector<VkAttachmentReference>										m_depthAttachments;
 			std::vector<VkAttachmentDescription>									m_attachmentDescriptions;

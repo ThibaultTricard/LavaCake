@@ -1,52 +1,12 @@
 #pragma once
 #include "AllHeaders.h"
-#include "ShaderModule.h"
-#include "VertexBuffer.h"
-#include "UniformBuffer.h"
-#include "Texture.h"
-#include "Constant.h"
+#include "Pipeline.h"
 
 
 namespace LavaCake {
 	namespace Framework {
 
-		struct uniform {
-			UniformBuffer*					buffer;
-			int											binding;
-			VkShaderStageFlags			stage;
-		};
-
-		struct texture{
-			TextureBuffer* t;
-			int binding;
-			VkShaderStageFlags			stage;
-		};
-
-		struct frameBuffer {
-			FrameBuffer* f;
-			int binding;
-			VkShaderStageFlags			stage;
-			uint32_t viewIndex;
-		};
-
-		struct attachment {
-			Attachment* a;
-			int binding;
-			VkShaderStageFlags			stage;
-		};
-
-		struct storageImage {
-			StorageImage* s;
-			int binding;
-			VkShaderStageFlags			stage;
-		};
-
-		struct constant {
-			PushConstant* constant;
-			VkShaderStageFlags			stage;
-		};
-
-		class GraphicPipeline
+		class GraphicPipeline : public Pipeline
 		{
 		public:
 
@@ -78,7 +38,7 @@ namespace LavaCake {
 			*/
 			void setFragmentModule(FragmentShaderModule*	module);
 
-			std::vector<Shader::ShaderStageParameters> getStageParameter();
+			std::vector<ShaderStageParameters> getStageParameter();
 
 			/**
 			*Prepare the Compute pipeline for it's usage
@@ -87,30 +47,8 @@ namespace LavaCake {
 			*/
 			void compile(VkRenderPass& renderpass);
 
-			/**
-			*add a uniform Buffer to the pipeline and scpecify it's binding and shader stage
-			*/
-			void addUniformBuffer(UniformBuffer * b, VkShaderStageFlags stage, int binding = 0);
 
-			/**
-			*add a Texture Buffer to the pipeline and scpecify it's binding and shader stage
-			*/
-			void addTextureBuffer(TextureBuffer * t, VkShaderStageFlags stage, int binding = 0);
-
-			/**
-			*add a FrameBuffer Buffer to the pipeline and scpecify it's binding and shader stage
-			*/
-			void addFrameBuffer(FrameBuffer * f, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0);
-
-			/**
-			*add a StorageImage to the pipeline and scpecify it's binding and shader stage
-			*/
-			void addStorageImage(StorageImage * s, VkShaderStageFlags stage, int binding = 0);
-
-			/**
-			*add an attachment to the pipeline and scpecify it's binding and shader stage
-			*/
-			void addAttachment(Attachment * a, VkShaderStageFlags stage, int binding = 0);
+			void reloadShaders();
 
 			/**
 			*set the vertex buffer to be used for this pipeline
@@ -139,11 +77,7 @@ namespace LavaCake {
 
 		private:
 
-			void generateDescriptorLayout();
-			
 
-			VkDestroyer(VkPipeline)																m_pipeline;
-			VkDestroyer(VkPipelineLayout)													m_pipelineLayout;
 
 			VertexShaderModule*																		m_vertexModule = nullptr;
 			TessellationControlShaderModule*											m_tesselationControlModule = nullptr;
@@ -151,22 +85,10 @@ namespace LavaCake {
 			GeometryShaderModule*																	m_geometryModule = nullptr;
 			FragmentShaderModule*																	m_fragmentModule = nullptr;
 
-			std::vector<uniform>																	m_uniforms;
-			std::vector<texture>																	m_textures;
-			std::vector<frameBuffer>															m_frameBuffer;
-			std::vector<attachment>																m_attachments;
-			std::vector<storageImage>															m_storageImage;
 
-			VkDestroyer(VkDescriptorSetLayout)										m_descriptorSetLayout;
-			VkDestroyer(VkDescriptorPool)													m_descriptorPool;
-			std::vector<VkDescriptorSet>													m_descriptorSets;
 
-			std::vector<Buffer::BufferDescriptorInfo>							m_bufferDescriptorUpdate;
-			std::vector<Image::ImageDescriptorInfo>								m_imageDescriptorUpdate;
 			std::vector<constant>																	m_constants;
-			std::vector<VkDescriptorPoolSize>											m_descriptorPoolSize;
-			std::vector<VkDescriptorSetLayoutBinding>							m_descriptorSetLayoutBinding;
-			uint32_t																							m_descriptorCount;
+
 
 			VkPipelineRasterizationStateCreateInfo								m_rasterizationStateCreateInfo;
 			VkPipelineMultisampleStateCreateInfo									m_multisampleStateCreateInfo;

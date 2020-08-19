@@ -137,7 +137,6 @@ namespace LavaCake {
 					break;
 				case USER_MESSAGE_KEY_DOWN:
 					m_keyBoard.keyDown(message.wParam);
-					std::cout << "test" << std::endl;
 					break;
 				case USER_MESSAGE_KEY_UP:
 					m_keyBoard.keyUp(message.wParam);

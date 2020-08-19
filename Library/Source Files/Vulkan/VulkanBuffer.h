@@ -104,16 +104,6 @@ namespace LavaCake {
 			FrameResources& operator=(FrameResources const &) = delete;
 		};
 
-		struct VertexBufferParameters {
-			VkBuffer      Buffer;
-			VkDeviceSize  MemoryOffset;
-		};
-
-		struct CommandBufferRecordingThreadParameters {
-			VkCommandBuffer                         CommandBuffer;
-			std::function<bool(VkCommandBuffer)>  RecordingFunction;
-		};
-
 		bool CreateBuffer(VkDevice             logical_device,
 			VkDeviceSize         size,
 			VkBufferUsageFlags   usage,
@@ -140,55 +130,10 @@ namespace LavaCake {
 		void DestroyBufferView(VkDevice       logical_device,
 			VkBufferView & buffer_view);
 
-		void ClearColorImage(VkCommandBuffer                              command_buffer,
-			VkImage                                      image,
-			VkImageLayout                                image_layout,
-			std::vector<VkImageSubresourceRange> const & image_subresource_ranges,
-			VkClearColorValue                          & clear_color);
-
-		void ClearDepthStencilImage(VkCommandBuffer                              command_buffer,
-			VkImage                                      image,
-			VkImageLayout                                image_layout,
-			std::vector<VkImageSubresourceRange> const & image_subresource_ranges,
-			VkClearDepthStencilValue                   & clear_value);
-
-		void ClearRenderPassAttachments(VkCommandBuffer                        command_buffer,
-			std::vector<VkClearAttachment> const & attachments,
-			std::vector<VkClearRect> const       & rects);
-
-		void BindVertexBuffers(VkCommandBuffer                             command_buffer,
-			uint32_t                                    first_binding,
-			std::vector<VertexBufferParameters> const & buffers_parameters);
-
 		void BindIndexBuffer(VkCommandBuffer   command_buffer,
 			VkBuffer          buffer,
 			VkDeviceSize      memory_offset,
 			VkIndexType       index_type);
-		
-
-		bool RecordCommandBufferThatDrawsGeometryWithDynamicViewportAndScissorStates(VkCommandBuffer                             command_buffer,
-			VkImage                                     swapchain_image,
-			uint32_t                                    present_queue_family_index,
-			uint32_t                                    graphics_queue_family_index,
-			VkRenderPass                                render_pass,
-			VkFramebuffer                               framebuffer,
-			VkExtent2D                                  framebuffer_size,
-			std::vector<VkClearValue> const &           clear_values,
-			VkPipeline                                  graphics_pipeline,
-			uint32_t                                    first_vertex_buffer_binding,
-			std::vector<VertexBufferParameters> const & vertex_buffers_parameters,
-			VkPipelineLayout                            pipeline_layout,
-			std::vector<VkDescriptorSet> const &        descriptor_sets,
-			uint32_t                                    index_for_first_descriptor_set,
-			Helpers::Mesh::Mesh const &                  geometry,
-			uint32_t                                    instance_count,
-			uint32_t                                    first_instance);
-
-		bool RecordCommandBuffersOnMultipleThreads(std::vector<CommandBufferRecordingThreadParameters> const & threads_parameters,
-			VkQueue                                                     queue,
-			std::vector<Semaphore::WaitSemaphoreInfo>                              wait_semaphore_infos,
-			std::vector<VkSemaphore>                                    signal_semaphores,
-			VkFence                                                     fence);
 	
 		bool CreateSampler(VkDevice               logical_device,
 			VkFilter               mag_filter,
@@ -207,8 +152,6 @@ namespace LavaCake {
 			VkBorderColor          border_color,
 			bool                   unnormalized_coords,
 			VkSampler            & sampler);
-
-		
 
 		bool CreateUniformTexelBuffer(VkPhysicalDevice     physical_device,
 			VkDevice             logical_device,

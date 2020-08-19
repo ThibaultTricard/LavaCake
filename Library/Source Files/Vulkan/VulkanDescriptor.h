@@ -73,20 +73,6 @@ namespace LavaCake {
 			std::vector<VkDescriptorSet> const & descriptor_sets,
 			std::vector<uint32_t> const        & dynamic_offsets);
 
-		bool CreateDescriptorsWithTextureAndUniformBuffer(VkPhysicalDevice               physical_device,
-			VkDevice                       logical_device,
-			VkExtent3D                     sampled_image_size,
-			uint32_t                       uniform_buffer_size,
-			VkSampler                    & sampler,
-			VkImage                      & sampled_image,
-			VkDeviceMemory               & sampled_image_memory_object,
-			VkImageView                  & sampled_image_view,
-			VkBuffer                     & uniform_buffer,
-			VkDeviceMemory               & uniform_buffer_memory_object,
-			VkDescriptorSetLayout        & descriptor_set_layout,
-			VkDescriptorPool             & descriptor_pool,
-			std::vector<VkDescriptorSet> & descriptor_sets);
-
 		bool FreeDescriptorSets(VkDevice                       logical_device,
 			VkDescriptorPool               descriptor_pool,
 			std::vector<VkDescriptorSet> & descriptor_sets);
