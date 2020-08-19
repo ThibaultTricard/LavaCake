@@ -156,34 +156,9 @@ namespace LavaCake {
 			VkDeviceMemory       & memory_object,
 			VkImageView          & sampled_image_view);
 
-		bool CreateStorageImage(VkPhysicalDevice    physical_device,
-			VkDevice            logical_device,
-			VkImageType         type,
-			VkFormat            format,
-			VkExtent3D          size,
-			uint32_t            num_mipmaps,
-			uint32_t            num_layers,
-			VkImageUsageFlags   usage,
-			VkImageViewType     view_type,
-			VkImageAspectFlags  aspect,
-			bool                atomic_operations,
-			VkImage           & storage_image,
-			VkDeviceMemory    & memory_object,
-			VkImageView       & storage_image_view);
 
-		bool CreateInputAttachment(VkPhysicalDevice     physical_device,
-			VkDevice             logical_device,
-			VkImageType          type,
-			VkFormat             format,
-			VkExtent3D           size,
-			VkImageUsageFlags    usage,
-			VkImageViewType      view_type,
-			VkImageAspectFlags   aspect,
-			VkImage            & input_attachment,
-			VkDeviceMemory     & memory_object,
-			VkImageView        & input_attachment_image_view);
+		
 
-		void SpecifyAttachmentsDescriptions(std::vector<VkAttachmentDescription> const & attachments_descriptions);
 	}
 }
 

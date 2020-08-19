@@ -28,8 +28,6 @@ namespace LavaCake {
 			std::vector<VkSubpassDependency> const& subpass_dependencies,
 			VkRenderPass& render_pass) {
 
-			Image::SpecifyAttachmentsDescriptions(attachments_descriptions);
-
 			std::vector<VkSubpassDescription> subpass_descriptions;
 			SpecifySubpassDescriptions(subpass_parameters, subpass_descriptions);
 

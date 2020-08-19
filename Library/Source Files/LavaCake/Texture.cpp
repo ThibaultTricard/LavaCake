@@ -7,7 +7,7 @@ namespace LavaCake {
 		
 		TextureBuffer::TextureBuffer(char const * filename, int nbChannel, VkFormat f) {
 			int width, height;
-			if (!Helpers::Texture::LoadTextureDataFromFile(filename, nbChannel, *m_data, &width, &height)) {
+			if (!Helpers::LoadTextureDataFromFile(filename, nbChannel, *m_data, &width, &height)) {
 				ErrorCheck::setError("Could not load texture file");
 			}
 			m_width = width;
@@ -113,7 +113,7 @@ namespace LavaCake {
 			int image_data_size;
 
 			int width, height;
-			if (!Helpers::Texture::LoadTextureDataFromFile((m_path + m_images[0]).c_str(), 4, cubemap_image_data, &width, &height, nullptr, &image_data_size)) {
+			if (!Helpers::LoadTextureDataFromFile((m_path + m_images[0]).c_str(), 4, cubemap_image_data, &width, &height, nullptr, &image_data_size)) {
 				ErrorCheck::setError("Could not locate texture file");
 			}
 
@@ -147,7 +147,7 @@ namespace LavaCake {
 			for (size_t i = 0; i < m_images.size(); ++i) {
 				std::vector<unsigned char> cubemap_image_data;
 				int image_data_size;
-				if (!Helpers::Texture::LoadTextureDataFromFile((m_path + m_images[i]).c_str(), m_nbChannel, cubemap_image_data, nullptr, nullptr, nullptr, &image_data_size)) {
+				if (!Helpers::LoadTextureDataFromFile((m_path + m_images[i]).c_str(), m_nbChannel, cubemap_image_data, nullptr, nullptr, nullptr, &image_data_size)) {
 					ErrorCheck::setError("Could not load all texture file");
 				}
 				VkImageSubresourceLayers image_subresource = {
@@ -201,11 +201,19 @@ namespace LavaCake {
 				aspect = VK_IMAGE_ASPECT_STENCIL_BIT;
 			}
 
-			if (!Image::CreateInputAttachment(physical, logical, VK_IMAGE_TYPE_2D, m_format, { (uint32_t)m_width,
-				(uint32_t)m_height, 1 }, usage | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, VK_IMAGE_VIEW_TYPE_2D,
-				aspect, *m_image, *m_imageMemory, *m_imageView)) {
-				ErrorCheck::setError("Can't allocate this input Attachment");
+			if (!Image::CreateImage(logical, VK_IMAGE_TYPE_2D, m_format, { (uint32_t)m_width,
+				(uint32_t)m_height, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, usage | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, false, *m_image)) {
+				ErrorCheck::setError("Can't create an Image for this Attachment");
 			}
+
+			if (!Image::AllocateAndBindMemoryObjectToImage(physical, logical, *m_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_imageMemory)) {
+				ErrorCheck::setError("Can't create a Memory object for this Attachment");
+			}
+
+			if (!Image::CreateImageView(logical, *m_image, VK_IMAGE_VIEW_TYPE_2D, m_format, aspect, *m_imageView)) {
+				ErrorCheck::setError("Can't create an Image view for this Attachment");
+			}
+
 		}
 
 		VkImageLayout Attachment::getLayout() {

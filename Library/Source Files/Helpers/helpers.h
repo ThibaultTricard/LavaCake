@@ -29,7 +29,6 @@
 
 namespace LavaCake {
 	namespace Helpers {
-		namespace Transformation {
 			mat4 Identity();
 
 			mat4 PrepareTranslationMatrix(float x,
@@ -55,17 +54,14 @@ namespace LavaCake {
 				float top_plane,
 				float near_plane,
 				float far_plane);
-		}
 
-		namespace Texture {
-			bool LoadTextureDataFromFile(char const                 * filename,
-				int                          num_requested_components,
-				std::vector<unsigned char> & image_data,
-				int                        * image_width = nullptr,
-				int                        * image_height = nullptr,
-				int                        * image_num_components = nullptr,
-				int                        * image_data_size = nullptr);
-		}
+		bool LoadTextureDataFromFile(char const                 * filename,
+			int                          num_requested_components,
+			std::vector<unsigned char> & image_data,
+			int                        * image_width = nullptr,
+			int                        * image_height = nullptr,
+			int                        * image_num_components = nullptr,
+			int                        * image_data_size = nullptr);
 
 		namespace Mesh {
 			struct Mesh {
