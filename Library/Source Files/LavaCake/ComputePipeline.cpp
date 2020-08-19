@@ -6,7 +6,7 @@ namespace LavaCake {
 		void ComputePipeline::compile() {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
-
+			generateDescriptorLayout();
 			InitVkDestroyer(logical, m_pipelineLayout);
 			if (!CreatePipelineLayout(logical, { *m_descriptorSetLayout }, {}, *m_pipelineLayout)) {
 				ErrorCheck::setError("Can't create compute pipeline layout");
