@@ -1,0 +1,48 @@
+#version 450
+
+#define Lsize 32
+#define pi 3.14159265
+
+layout( local_size_x = Lsize) in;
+
+layout( set = 0, binding = 0 ) uniform sampler2D image;
+layout( set = 0, binding = 1 , r32f) uniform imageBuffer transform;
+
+layout( set = 0, binding = 2 ) uniform UniformBuffer {
+  uint sizeX;
+  uint sizeY;
+};
+
+shared float partial[Lsize*2];
+
+void main() {
+  uint Lxid = gl_LocalInvocationID.x;
+  partial[Lxid*2] = 0.0; //Real part
+  partial[Lxid*2+1] = 0.0; // Imaginary part
+  //First directional pass along x
+
+  for(int i = 0; i< sizeX/Lsize; i++){
+
+  	ivec2 coord = ivec2(Lxid* sizeX/Lsize + i, gl_WorkGroupID.y); 
+    if(coord.x < sizeX){
+  	 vec3 color = texture(image, vec2(coord)/vec2(sizeX, sizeY)).xyz;
+
+  	 partial[Lxid*2] 	 += color.x * cos(-2* pi* gl_WorkGroupID.x * Lxid/ sizeX);
+  	 partial[Lxid*2+1] += color.x * sin(-2* pi* gl_WorkGroupID.x * Lxid/ sizeX);
+    }
+  }
+
+  barrier();
+
+  float r = 0.0;
+  float i = 0.0;
+  if(Lxid == 0){
+  	for (int j = 0; j < Lsize; j ++){
+  			r+=partial[j*2];
+  			i+=partial[j*2 + 1];
+  	}
+  	imageStore(transform, int(gl_WorkGroupID.x +  gl_WorkGroupID.y * sizeX )               , vec4(r,0,0,0));
+    imageStore(transform, int(gl_WorkGroupID.x +  gl_WorkGroupID.y * sizeX +  sizeY* sizeX), vec4(i,0,0,0));
+  }
+}
+

@@ -413,7 +413,7 @@ namespace LavaCake {
 					uint32_t(m_storageImage[i].binding),
 					VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
 					1,
-					m_attachments[i].stage,
+					m_storageImage[i].stage,
 					nullptr
 					});
 			}
@@ -528,6 +528,7 @@ namespace LavaCake {
 						}
 					});
 			}
+
 			for (uint32_t i = 0; i < m_storageImage.size(); i++) {
 				m_imageDescriptorUpdate.push_back({
 						m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet

@@ -71,15 +71,16 @@ namespace LavaCake {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
+			std::vector<int> variable;
+			VkDeviceSize size = 0;
 			for (uint32_t i = 0; i < m_variables.size(); i++) {
-				if (all || m_modified[i]) {
-					VkDeviceSize size = m_typeSizeOffset[i].first;
-					VkDeviceSize offset = m_typeSizeOffset[i].second;
-
-					if (!Memory::MapUpdateAndUnmapHostVisibleMemory(logical, *m_stagingBufferMemory, offset, size, &(m_variables[i][0]), true, nullptr)) {
-						ErrorCheck::setError("Can't map host visible memomry");
-					}
+				size += m_typeSizeOffset[i].first;
+				for (uint32_t j = 0; j < m_variables[i].size(); j++) {
+					variable.push_back(m_variables[i][j]);
 				}
+			}
+			if (!Memory::MapUpdateAndUnmapHostVisibleMemory(logical, *m_stagingBufferMemory, 0, size, &variable[0], true, nullptr)) {
+				ErrorCheck::setError("Can't map host visible memomry");
 			}
 		}
 

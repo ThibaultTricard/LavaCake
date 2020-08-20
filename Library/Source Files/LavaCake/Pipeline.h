@@ -226,6 +226,7 @@ namespace LavaCake {
 
 			std::vector<Buffer::BufferDescriptorInfo>							m_bufferDescriptorUpdate;
 			std::vector<Image::ImageDescriptorInfo>								m_imageDescriptorUpdate;
+			std::vector<Buffer::TexelBufferDescriptorInfo>				m_texelBufferDescriptorUpdate;
 
 			std::vector<uniform>																	m_uniforms;
 			std::vector<texture>																	m_textures;

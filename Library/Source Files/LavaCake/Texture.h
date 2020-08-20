@@ -60,6 +60,15 @@ namespace LavaCake {
 			*/
 			virtual VkImageLayout getLayout();
 
+
+			uint32_t width() {
+				return m_width;
+			}
+
+			uint32_t height() {
+				return m_height;
+			}
+
 		protected :
 
 			TextureBuffer() {};
