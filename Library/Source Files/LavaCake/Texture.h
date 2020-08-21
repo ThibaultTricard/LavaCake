@@ -40,7 +40,7 @@ namespace LavaCake {
 			* create and allocate the Texture buffer on the device
 			*
 			*/
-			virtual void allocate();
+			virtual void allocate(VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 			/**
 			* return the sampler of the texture buffer
@@ -106,7 +106,7 @@ namespace LavaCake {
 			* create and allocate the CubeMap on the device
 			*
 			*/
-			virtual void allocate() override;
+			virtual void allocate(VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT) override;
 
 		private:
 			std::string													m_path;
@@ -230,6 +230,26 @@ namespace LavaCake {
 			VkDestroyer(VkImage)                m_image;
 			VkDestroyer(VkDeviceMemory)         m_imageMemory;
 			VkDestroyer(VkImageView)            m_imageView;
+
+		};
+
+
+		class TexelBuffer {
+		public :
+			TexelBuffer();
+
+
+			void allocate(std::vector<float> rawdata, uint32_t dataSize = 1, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+
+			VkBuffer getBuffer();
+
+			VkBufferView getBufferView();
+
+		private : 
+
+			VkDestroyer(VkBuffer)																m_buffer;
+			VkDestroyer(VkDeviceMemory)													m_bufferMemory;
+			VkDestroyer(VkBufferView)														m_bufferView;
 
 		};
 	}

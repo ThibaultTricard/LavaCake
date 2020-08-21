@@ -390,12 +390,12 @@ namespace LavaCake {
 					nullptr
 					});
 			}
-			for (uint32_t i = 0; i < m_frameBuffer.size(); i++) {
+			for (uint32_t i = 0; i < m_frameBuffers.size(); i++) {
 				m_descriptorSetLayoutBinding.push_back({
-					uint32_t(m_frameBuffer[i].binding),
+					uint32_t(m_frameBuffers[i].binding),
 					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 					1,
-					m_frameBuffer[i].stage,
+					m_frameBuffers[i].stage,
 					nullptr
 					});
 			}
@@ -408,12 +408,21 @@ namespace LavaCake {
 					nullptr
 					});
 			}
-			for (uint32_t i = 0; i < m_storageImage.size(); i++) {
+			for (uint32_t i = 0; i < m_storageImages.size(); i++) {
 				m_descriptorSetLayoutBinding.push_back({
-					uint32_t(m_storageImage[i].binding),
+					uint32_t(m_storageImages[i].binding),
 					VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
 					1,
-					m_storageImage[i].stage,
+					m_storageImages[i].stage,
+					nullptr
+					});
+			}
+			for (uint32_t i = 0; i < m_texelBuffers.size(); i++) {
+				m_descriptorSetLayoutBinding.push_back({
+					uint32_t(m_texelBuffers[i].binding),
+					VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
+					1,
+					m_texelBuffers[i].stage,
 					nullptr
 					});
 			}
@@ -423,7 +432,7 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't create descriptor set layout");
 			}
 
-			m_descriptorCount = m_uniforms.size() + m_textures.size() + m_storageImage.size() + m_attachments.size() + m_frameBuffer.size();
+			m_descriptorCount = m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size();
 			if (m_descriptorCount == 0) return;
 
 			m_descriptorPoolSize = {};
@@ -434,10 +443,10 @@ namespace LavaCake {
 						uint32_t(m_uniforms.size())
 					});
 			}
-			if (m_textures.size() + m_frameBuffer.size() > 0) {
+			if (m_textures.size() + m_frameBuffers.size() > 0) {
 				m_descriptorPoolSize.push_back({
 					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-						uint32_t(m_textures.size() + m_frameBuffer.size())
+						uint32_t(m_textures.size() + m_frameBuffers.size())
 					});
 			}
 			if (m_attachments.size() > 0) {
@@ -446,13 +455,18 @@ namespace LavaCake {
 						uint32_t(m_attachments.size())
 					});
 			}
-			if (m_storageImage.size() > 0) {
+			if (m_storageImages.size() > 0) {
 				m_descriptorPoolSize.push_back({
-					VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,								// VkDescriptorType     type
-						uint32_t(m_storageImage.size())								// uint32_t             descriptorCount
+					VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,								
+						uint32_t(m_storageImages.size())								
 					});
 			}
-
+			if (m_texelBuffers.size() > 0) {
+				m_descriptorPoolSize.push_back({
+					VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
+						uint32_t(m_texelBuffers.size())
+					});
+			}
 
 			InitVkDestroyer(logical, m_descriptorPool);
 			if (!LavaCake::Descriptor::CreateDescriptorPool(logical, false, m_descriptorCount, m_descriptorPoolSize, *m_descriptorPool)) {
@@ -496,19 +510,19 @@ namespace LavaCake {
 					}
 					});
 			}
-			for (uint32_t i = 0; i < m_frameBuffer.size(); i++) {
+			for (uint32_t i = 0; i < m_frameBuffers.size(); i++) {
 				std::vector<VkDescriptorImageInfo> descriptorInfo;
 				descriptorInfo.push_back(
 					{
-						m_frameBuffer[i].f->getSampler(),
-						m_frameBuffer[i].f->getImageViews(m_frameBuffer[i].viewIndex),
-						m_frameBuffer[i].f->getLayout(m_frameBuffer[i].viewIndex),
+						m_frameBuffers[i].f->getSampler(),
+						m_frameBuffers[i].f->getImageViews(m_frameBuffers[i].viewIndex),
+						m_frameBuffers[i].f->getLayout(m_frameBuffers[i].viewIndex),
 					});
 
 				m_imageDescriptorUpdate.push_back({
 					m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
-					uint32_t(m_frameBuffer[i].binding),							// uint32_t                             TargetDescriptorBinding
-					m_frameBuffer[i].viewIndex,																							// uint32_t                             TargetArrayElement
+					uint32_t(m_frameBuffers[i].binding),						// uint32_t                             TargetDescriptorBinding
+					m_frameBuffers[i].viewIndex,										// uint32_t                             TargetArrayElement
 					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,			// VkDescriptorType                     TargetDescriptorType
 					descriptorInfo																	// std::vector<VkDescriptorBufferInfo>  BufferInfos
 					});
@@ -529,23 +543,39 @@ namespace LavaCake {
 					});
 			}
 
-			for (uint32_t i = 0; i < m_storageImage.size(); i++) {
+			for (uint32_t i = 0; i < m_storageImages.size(); i++) {
 				m_imageDescriptorUpdate.push_back({
 						m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
-						uint32_t(m_storageImage[i].binding),						// uint32_t                             TargetDescriptorBinding
+						uint32_t(m_storageImages[i].binding),						// uint32_t                             TargetDescriptorBinding
 						0,																							// uint32_t                             TargetArrayElement
 						VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,								// VkDescriptorType                     TargetDescriptorType
 						{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
 							{
 								VK_NULL_HANDLE,															// vkSampler                            buffer
-								m_storageImage[i].s->getImageView(),				// VkImageView                          offset
-								m_storageImage[i].s->getLayout()						// VkImageLayout                         range
+								m_storageImages[i].s->getImageView(),				// VkImageView                          offset
+								m_storageImages[i].s->getLayout()						// VkImageLayout                         range
 							}
 						}
 					});
 			}
+
+			m_texelBufferDescriptorUpdate = {};
+			for (uint32_t i = 0; i < m_texelBuffers.size(); i++) {
+
+				Buffer::TexelBufferDescriptorInfo info = {
+					m_descriptorSets[descriptorCount],
+					uint32_t(m_texelBuffers[i].binding),
+					0,
+					VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
+					{
+						m_texelBuffers[i].t->getBufferView()
+					} 
+				};
+
+				m_texelBufferDescriptorUpdate.push_back(info);
+			}
 			/////////////////////////////////////////////////////////////////////////////////////////////
-			Descriptor::UpdateDescriptorSets(logical, m_imageDescriptorUpdate, m_bufferDescriptorUpdate, {}, {});
+			Descriptor::UpdateDescriptorSets(logical, m_imageDescriptorUpdate, m_bufferDescriptorUpdate, { m_texelBufferDescriptorUpdate }, {});
 		}
 	}
 }

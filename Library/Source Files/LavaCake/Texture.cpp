@@ -24,7 +24,7 @@ namespace LavaCake {
 		};
 
 
-		void TextureBuffer::allocate() {
+		void TextureBuffer::allocate(VkPipelineStageFlagBits stageFlagBit) {
 			Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
@@ -52,7 +52,7 @@ namespace LavaCake {
 			if (!Memory::UseStagingBufferToUpdateImageWithDeviceLocalMemoryBound(physical, logical, static_cast<VkDeviceSize>(m_data->size()),
 				&(*m_data)[0], *m_image, image_subresource_layer, { 0, 0, 0 }, { (uint32_t)m_width, (uint32_t)m_height, 1 }, VK_IMAGE_LAYOUT_UNDEFINED,
 				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-				VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, graphics_queue, commandbuffer, {})) {
+				stageFlagBit, graphics_queue, commandbuffer, {})) {
 				ErrorCheck::setError("Can't send the TextureBuffer data to the GPU");
 			}
 		}
@@ -121,7 +121,7 @@ namespace LavaCake {
 			m_height = height;
 		};
 
-		void CubeMap::allocate() {
+		void CubeMap::allocate(VkPipelineStageFlagBits stageFlagBit) {
 
 			Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
@@ -158,7 +158,7 @@ namespace LavaCake {
 				};
 				Memory::UseStagingBufferToUpdateImageWithDeviceLocalMemoryBound(physical, logical, image_data_size, &cubemap_image_data[0],
 					*m_image, image_subresource, { 0, 0, 0 }, { uint32_t(m_width), uint32_t(m_height), 1 }, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-					0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+					0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, stageFlagBit,
 					graphics_queue, commandbuffer, {});
 			}
 		}
@@ -272,6 +272,57 @@ namespace LavaCake {
 
 		VkImageView StorageImage::getImageView() {
 			return *m_imageView;
+		}
+
+
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//																																			Storage Image																																			//
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+		TexelBuffer::TexelBuffer() {
+
+		}
+
+
+		void TexelBuffer::allocate(std::vector<float> rawdata, uint32_t dataSize, VkPipelineStageFlagBits stageFlagBit) {
+			Device* d = Device::getDevice();
+			VkPhysicalDevice physical = d->getPhysicalDevice();
+			VkDevice logical = d->getLogicalDevice();
+			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
+			Buffer::FrameResources& frame = d->getFrameRessources()->at(0);
+			VkCommandBuffer commandBuffer = frame.commandBuffer;
+
+			VkFormat format = VK_FORMAT_R32_SFLOAT;
+			if (dataSize == 2) {
+				format = VK_FORMAT_R32G32_SFLOAT;
+			}
+			else if (dataSize == 3) {
+				format = VK_FORMAT_R32G32B32_SFLOAT;
+			}
+			else if (dataSize == 4) {
+				format = VK_FORMAT_R32G32B32A32_SFLOAT;
+			}
+
+			if (!LavaCake::Buffer::CreateStorageTexelBuffer(physical, logical, format, sizeof(rawdata[0]) * rawdata.size(),
+				VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT , false,
+				*m_buffer, *m_bufferMemory, *m_bufferView)) {
+				ErrorCheck::setError("Can't create Texel Buffer");
+			}
+
+			if (!LavaCake::Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physical, logical, sizeof(rawdata[0]) * rawdata.size(), &rawdata[0],
+				*m_buffer, 0, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, graphics_queue, commandBuffer, {})) {
+				ErrorCheck::setError("Can't copy data to buffer");
+			}
+		}
+
+		VkBuffer TexelBuffer::getBuffer() {
+			return *m_buffer;
+		}
+
+		VkBufferView TexelBuffer::getBufferView() {
+			return *m_bufferView;
 		}
 	}
 }
