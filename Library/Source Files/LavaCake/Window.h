@@ -39,7 +39,7 @@ namespace LavaCake {
 				m_buttons[0].pressed = false;
 				m_buttons[0].release = false;
 				m_buttons[1].pressed = false;
-				m_buttons[2].release = false;
+				m_buttons[1].release = false;
 			}
 
 			void click(size_t button, bool state) {
