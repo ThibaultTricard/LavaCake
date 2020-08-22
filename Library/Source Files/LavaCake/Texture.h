@@ -154,7 +154,7 @@ namespace LavaCake {
 			* return number of image view of the texture buffer
 			*
 			*/
-			size_t FrameBuffer::ImageViewSize();
+			size_t FrameBuffer::getImageViewSize();
 
 			/**
 			* return the FrameBuffer handle

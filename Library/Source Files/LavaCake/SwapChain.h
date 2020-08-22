@@ -57,7 +57,7 @@ namespace LavaCake {
 		private :
 			uint32_t																	m_framesCount = 0;;
 			VkDestroyer(VkSwapchainKHR)								m_handle;
-			VkFormat																	m_format;
+			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
 			VkExtent2D																m_size = {uint32_t(0), uint32_t(0)};
 			std::vector<VkImage>											m_images;
 			std::vector<VkDestroyer(VkImageView)>			m_imageViews;

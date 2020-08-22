@@ -83,7 +83,7 @@ namespace LavaCake {
 			return *m_imageViews[i];
 		}
 
-		size_t FrameBuffer::ImageViewSize(){
+		size_t FrameBuffer::getImageViewSize(){
 			return m_imageViews.size();
 		}
 

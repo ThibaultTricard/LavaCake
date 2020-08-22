@@ -4,10 +4,11 @@ namespace LavaCake {
 	namespace Framework {
 
 		void PushConstant::push(VkCommandBuffer buffer, VkPipelineLayout layout, VkShaderStageFlags flag) {
-			int offset = 0;
-			for (uint32_t i = 0; i < m_variables.size(); i++) {
-				LavaCake::vkCmdPushConstants(buffer, layout, flag, offset, sizeof(int)* m_variables[i].size(), &(m_variables[i][0]));
-				offset += sizeof(int)* m_variables[i].size();
+			uint32_t offset = 0;
+			for (uint32_t i = 0; i < static_cast<uint32_t>(m_variables.size()); i++) {
+				uint32_t size = static_cast<uint32_t>(sizeof(int) * m_variables[i].size());
+				LavaCake::vkCmdPushConstants(buffer, layout, flag, offset, size, &(m_variables[i][0]));
+				offset += size;
 			}
 		}
 
@@ -23,7 +24,7 @@ namespace LavaCake {
 			int i = int(m_variables.size());
 			m_variables.push_back(value);
 			m_variableNames.insert(std::pair<std::string, int>(name, i));
-			m_size += value.size();
+			m_size += static_cast<uint32_t>(value.size());
 		}
 
 		void PushConstant::setArray(std::string name, std::vector<int>& value) {

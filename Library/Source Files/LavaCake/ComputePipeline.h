@@ -37,7 +37,7 @@ namespace LavaCake {
 
 		private :
 			
-			ComputeShaderModule*																	m_computeModule;
+			ComputeShaderModule*																	m_computeModule = NULL;
 
 		};
 	}
