@@ -18,11 +18,12 @@ int main() {
 	input->allocate();
 
 
-	Framework::StorageImage* output_pass1 = new Framework::StorageImage(input->width(), input->height(), uint32_t(2), VK_FORMAT_R8_UNORM);
-	output_pass1->allocate();
+	Framework::TexelBuffer* output_pass1 = new Framework::TexelBuffer();
+	std::vector<float> rawdata = std::vector<float>(input->width() * input->height() * 2);
+	output_pass1->allocate(rawdata, uint32_t(1));
 
-	Framework::StorageImage* output_pass2 = new Framework::StorageImage(input->width(), input->height(), uint32_t(2), VK_FORMAT_R8_UNORM);
-	output_pass2->allocate();
+	Framework::TexelBuffer* output_pass2 = new Framework::TexelBuffer();
+	output_pass2->allocate(rawdata, uint32_t(1));
 
 	Framework::UniformBuffer* sizeBuffer = new Framework::UniformBuffer();
 	sizeBuffer->addVariable("width", input->width());
@@ -36,7 +37,7 @@ int main() {
 	computePipeline1->setComputeShader(computeFourier1);
 
 	computePipeline1->addTextureBuffer(input, VK_SHADER_STAGE_COMPUTE_BIT, 0);
-	computePipeline1->addStorageImage(output_pass1, VK_SHADER_STAGE_COMPUTE_BIT, 1);
+	computePipeline1->addTexelBuffer(output_pass1, VK_SHADER_STAGE_COMPUTE_BIT, 1);
 	computePipeline1->addUniformBuffer(sizeBuffer, VK_SHADER_STAGE_COMPUTE_BIT, 2);
 
 	computePipeline1->compile();
@@ -47,8 +48,8 @@ int main() {
 	Framework::ComputeShaderModule* computeFourier2 = new Framework::ComputeShaderModule("Data/Shaders/FourierTransform/fourier_pass2.comp.spv");
 	computePipeline2->setComputeShader(computeFourier2);
 
-	computePipeline2->addStorageImage(output_pass1, VK_SHADER_STAGE_COMPUTE_BIT, 0);
-	computePipeline2->addStorageImage(output_pass2, VK_SHADER_STAGE_COMPUTE_BIT, 1);
+	computePipeline2->addTexelBuffer(output_pass1, VK_SHADER_STAGE_COMPUTE_BIT, 0);
+	computePipeline2->addTexelBuffer(output_pass2, VK_SHADER_STAGE_COMPUTE_BIT, 1);
 	computePipeline2->addUniformBuffer(sizeBuffer, VK_SHADER_STAGE_COMPUTE_BIT, 2);
 
 	computePipeline2->compile();

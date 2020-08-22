@@ -45,8 +45,11 @@ namespace LavaCake {
 			VkShaderStageFlags			stage;
 		};
 
-	
-
+		struct texelBuffer {
+			TexelBuffer* t;
+			int binding;
+			VkShaderStageFlags			stage;
+		};
 
 		class Pipeline {
 		public :
@@ -68,14 +71,14 @@ namespace LavaCake {
 			*add a FrameBuffer Buffer to the pipeline and scpecify it's binding and shader stage
 			*/
 			virtual void addFrameBuffer(FrameBuffer* f, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
-				m_frameBuffer.push_back({ f, binding, stage, view });
+				m_frameBuffers.push_back({ f, binding, stage, view });
 			}; 
 
 			/**
 			*add a StorageImage to the pipeline and scpecify it's binding and shader stage
 			*/
 			virtual void addStorageImage(StorageImage* s, VkShaderStageFlags stage, int binding = 0) {
-				m_storageImage.push_back({ s,binding,stage });
+				m_storageImages.push_back({ s,binding,stage });
 			}; 
 
 
@@ -84,6 +87,11 @@ namespace LavaCake {
 			*/
 			virtual void addAttachment(Attachment* a, VkShaderStageFlags stage, int binding = 0) {
 				m_attachments.push_back({ a,binding,stage });
+			};
+
+
+			virtual void addTexelBuffer(TexelBuffer* a, VkShaderStageFlags stage, int binding = 0) {
+				m_texelBuffers.push_back({ a,binding,stage });
 			};
 
 
@@ -230,9 +238,11 @@ namespace LavaCake {
 
 			std::vector<uniform>																	m_uniforms;
 			std::vector<texture>																	m_textures;
-			std::vector<frameBuffer>															m_frameBuffer;
+			std::vector<frameBuffer>															m_frameBuffers;
 			std::vector<attachment>																m_attachments;
-			std::vector<storageImage>															m_storageImage;
+			std::vector<storageImage>															m_storageImages;
+			std::vector<texelBuffer>															m_texelBuffers;
+
 		};
 	}
 }
