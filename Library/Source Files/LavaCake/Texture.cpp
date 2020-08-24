@@ -306,13 +306,13 @@ namespace LavaCake {
 			}
 
 			if (!LavaCake::Buffer::CreateStorageTexelBuffer(physical, logical, format, sizeof(rawdata[0]) * rawdata.size(),
-				VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT , false,
+				VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | stageFlagBit, false,
 				*m_buffer, *m_bufferMemory, *m_bufferView)) {
 				ErrorCheck::setError("Can't create Texel Buffer");
 			}
 
 			if (!LavaCake::Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physical, logical, sizeof(rawdata[0]) * rawdata.size(), &rawdata[0],
-				*m_buffer, 0, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, graphics_queue, commandBuffer, {})) {
+				*m_buffer, 0, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT , graphics_queue, commandBuffer, {})) {
 				ErrorCheck::setError("Can't copy data to buffer");
 			}
 		}

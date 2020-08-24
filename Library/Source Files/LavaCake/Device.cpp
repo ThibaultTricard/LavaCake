@@ -26,6 +26,10 @@ namespace LavaCake {
 			return &m_graphicQueues[i];
 		};
 
+		ComputeQueue* Device::getComputeQueue(int i) {
+			return& m_computeQueues[i];
+		}
+
 		void Device::initDevices(int nbComputeQueue, int nbGraphicQueue, WindowParameters	WindowParams, VkPhysicalDeviceFeatures * desired_device_features) {
 			if (!Loader::ConnectWithVulkanLoaderLibrary(m_vulkanLibrary)) {
 				ErrorCheck::setError("Could not connect with Vulkan while initializing the device");

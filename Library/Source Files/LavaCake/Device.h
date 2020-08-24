@@ -29,9 +29,15 @@ namespace LavaCake {
 
 			std::vector<Buffer::FrameResources>* getFrameRessources();
 
+			VkCommandPool getCommandPool() {
+				return *m_commandPool;
+			}
+
 			PresentationQueue* getPresentQueue();
 
 			GraphicQueue* getGraphicQueue(int i);
+
+			ComputeQueue* getComputeQueue(int i);
 
 			void initDevices( int nbComputeQueue, int nbGraphicQueue, WindowParameters	WindowParams, VkPhysicalDeviceFeatures * desired_device_features = nullptr);
 
