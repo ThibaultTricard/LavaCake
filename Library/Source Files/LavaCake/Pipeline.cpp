@@ -432,7 +432,7 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't create descriptor set layout");
 			}
 
-			m_descriptorCount = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImage.size() + m_attachments.size() + m_frameBuffer.size() + m_texelBuffers.size());
+			m_descriptorCount = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size());
 			if (m_descriptorCount == 0) return;
 
 			m_descriptorPoolSize = {};
