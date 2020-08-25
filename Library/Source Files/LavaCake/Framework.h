@@ -15,3 +15,4 @@
 #include "LavaCake/UniformBuffer.h"
 #include "LavaCake/Texture.h"
 #include "LavaCake/Constant.h"
+#include "LavaCake/CommandBuffer.h"

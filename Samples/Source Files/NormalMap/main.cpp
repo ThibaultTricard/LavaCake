@@ -5,6 +5,7 @@
 
 using namespace LavaCake;
 
+
 int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
@@ -12,12 +13,19 @@ int main() {
 
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
-	d->prepareFrames(nbFrames);
-
+	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
+	s->init(nbFrames);
+	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	VkQueue& present_queue = d->getPresentQueue()->getHandle();
+	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
+	for (int i = 0; i < nbFrames; i++) {
+		commandBuffer[i].addSemaphore();
+		commandBuffer[i].addSemaphore();
+	}
 
 	//Normal map
 	Framework::TextureBuffer* normalMap = new Framework::TextureBuffer("Data/Textures/normal_map.png", 4);
-	normalMap->allocate();
+	normalMap->allocate(queue, commandBuffer[0].getHandle());
 
 	//vertex buffer
 	Helpers::Mesh::Mesh*  m = new Helpers::Mesh::Mesh();
@@ -25,7 +33,7 @@ int main() {
 		return false;
 	}
 	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3,3,2,3,3 });
-	v->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().commandBuffer);
+	v->allocate(queue, commandBuffer[0].getHandle());
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
@@ -86,40 +94,30 @@ int main() {
 
 
 
-		Buffer::FrameResources& frame = d->getFrameRessources()->at(f);
-		VkCommandBuffer commandbuffer = frame.commandBuffer;
+		Buffer::FrameResources& frame = s->getFrameRessources()->at(f);
 		VkDevice logical = d->getLogicalDevice();
-		VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 		VkQueue& present_queue = d->getPresentQueue()->getHandle();
 
-		if (!Fence::WaitForFences(logical, { *frame.drawingFinishedFence }, false, 2000000000)) {
-			continue;
-		}
-		if (!Fence::ResetFences(logical, { *frame.drawingFinishedFence })) {
-			continue;
-		}
+		commandBuffer[f].wait(2000000000);
+		commandBuffer[f].resetFence();
+		commandBuffer[f].beginRecord();
 
-		InitVkDestroyer(logical, frame.framebuffer);
-		if (!Command::BeginCommandBufferRecordingOperation(commandbuffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
-			continue;
-		}
 
 
 		if (updateUniformBuffer) {
-			b->update(commandbuffer);
+			b->update(commandBuffer[f].getHandle());
 			updateUniformBuffer = false;
 		}
 
 
 
-		VkSwapchainKHR& swapchain = d->getSwapChain().getHandle();
-		std::vector<VkImageView>& swapchain_image_views = d->getSwapChain().getImageView();
-		VkSemaphore  image_acquired_semaphore = *frame.imageAcquiredSemaphore;
+		VkSwapchainKHR& swapchain = s->getHandle();
+		std::vector<VkImageView>& swapchain_image_views = s->getImageView();
 		VkImageView depth_attachment = *frame.depthAttachment;
 		uint32_t image_index;
-		VkExtent2D size = d->getSwapChain().size();
+		VkExtent2D size = s->size();
 
-		if (!Swapchain::AcquireSwapchainImage(logical, swapchain, image_acquired_semaphore, VK_NULL_HANDLE, image_index)) {
+		if (!Swapchain::AcquireSwapchainImage(logical, swapchain, commandBuffer[f].getSemaphore(0), VK_NULL_HANDLE, image_index)) {
 			continue;
 		}
 
@@ -132,21 +130,21 @@ int main() {
 		}
 
 
-		pass.draw(frame.commandBuffer, *frame.framebuffer, { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		pass.draw(commandBuffer[f].getHandle(), *frame.framebuffer, { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 
-		if (!LavaCake::Command::EndCommandBufferRecordingOperation(commandbuffer)) {
+		if (!LavaCake::Command::EndCommandBufferRecordingOperation(commandBuffer[f].getHandle())) {
 			continue;
 		}
 
 
 		std::vector<Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
 		wait_semaphore_infos.push_back({
-			image_acquired_semaphore,                     // VkSemaphore            Semaphore
+			commandBuffer[f].getSemaphore(0),                     // VkSemaphore            Semaphore
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT // VkPipelineStageFlags   WaitingStage
 			});
-		if (!Command::SubmitCommandBuffersToQueue(graphics_queue, wait_semaphore_infos, { commandbuffer }, { *frame.readyToPresentSemaphore }, *frame.drawingFinishedFence)) {
+		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(1) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
@@ -154,7 +152,7 @@ int main() {
 			swapchain,                                    // VkSwapchainKHR         Swapchain
 			image_index                                   // uint32_t               ImageIndex
 		};
-		if (!Presentation::PresentImage(present_queue, { *frame.readyToPresentSemaphore }, { present_info })) {
+		if (!Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(1) }, { present_info })) {
 			continue;
 		}
 	}

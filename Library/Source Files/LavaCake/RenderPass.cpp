@@ -61,9 +61,9 @@ namespace LavaCake {
 
 
 		RenderPass::RenderPass() {
-			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-			m_imageFormat = d->getSwapChain().imageFormat();
-			m_depthFormat = d->getSwapChain().depthFormat();
+			SwapChain* s = SwapChain::getSwapChain();
+			m_imageFormat = s->imageFormat();
+			m_depthFormat = s->depthFormat();
 		}
 
 		RenderPass::RenderPass( VkFormat ImageFormat, VkFormat DepthFormat) {

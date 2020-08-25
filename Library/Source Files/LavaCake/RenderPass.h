@@ -1,6 +1,7 @@
 #pragma once
 #include "AllHeaders.h"
 #include "LavaCake/GraphicPipeline.h"
+#include "SwapChain.h"
 
 namespace LavaCake {
 	namespace Framework {

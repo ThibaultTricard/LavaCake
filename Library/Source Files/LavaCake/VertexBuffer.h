@@ -10,7 +10,7 @@ namespace LavaCake {
 		public:
 			VertexBuffer(std::vector <LavaCake::Helpers::Mesh::Mesh*> m, std::vector<int> dataDescription, uint32_t binding = 0, VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX);
 
-			void allocate(LavaCake::Framework::Queue& queue, VkCommandBuffer& commandBuffer);
+			void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer);
 
 			std::vector <LavaCake::Helpers::Mesh::Mesh*> getMeshs();
 			

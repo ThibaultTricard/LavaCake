@@ -1,4 +1,5 @@
 #include "VertexBuffer.h"
+#include "CommandBuffer.h"
 namespace LavaCake {
 	namespace Framework {
 
@@ -41,10 +42,12 @@ namespace LavaCake {
 				});
 		};
 
-		void VertexBuffer::allocate(LavaCake::Framework::Queue& queue, VkCommandBuffer& commandBuffer) {
+		void VertexBuffer::allocate(VkQueue& queue, VkCommandBuffer& commandBuffer) {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logicalDevice = d->getLogicalDevice();
 			VkPhysicalDevice physicalDevice = d->getPhysicalDevice();
+
+
 			InitVkDestroyer(logicalDevice, m_buffer);
 			if (!Buffer::CreateBuffer(logicalDevice, sizeof(m_vertices[0]) * m_vertices->size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, *m_buffer)) {
 				ErrorCheck::setError("Can't create vertices buffer");
@@ -54,7 +57,7 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't allocate vertices buffer");
 			}
 			if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(float) * m_vertices->size(), &(*m_vertices)[0], *m_buffer, 0, 0,
-				VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue.getHandle(), commandBuffer, {})) {
+				VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue, commandBuffer, {})) {
 				ErrorCheck::setError("Can't update buffer memory");
 			}
 		}

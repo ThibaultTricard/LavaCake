@@ -1,7 +1,8 @@
 #include "Device.h"
+
 namespace LavaCake {
   namespace Framework {
-
+		Device* Device::m_device;
 
 		VkPhysicalDevice& Device::getPhysicalDevice() {
 			return m_physical;
@@ -11,13 +12,6 @@ namespace LavaCake {
 			return *m_logical;
 		}
 
-		SwapChain& Device::getSwapChain() {
-			return *m_swapChain;
-		}
-
-		std::vector<Buffer::FrameResources>* Device::getFrameRessources() {
-			return &framesResources;
-		}
 		PresentationQueue* Device::getPresentQueue() {
 			return m_presentQueue;
 		};
@@ -30,7 +24,17 @@ namespace LavaCake {
 			return& m_computeQueues[i];
 		}
 
-		void Device::initDevices(int nbComputeQueue, int nbGraphicQueue, WindowParameters	WindowParams, VkPhysicalDeviceFeatures * desired_device_features) {
+
+		VkCommandPool  Device::getCommandPool() {
+			return *m_commandPool;
+		};
+
+		VkSurfaceKHR  Device::getSurface() {
+			return *m_presentationSurface;
+		};
+
+
+		void Device::initDevices(int nbComputeQueue, int nbGraphicQueue, WindowParameters	WindowParams, VkPhysicalDeviceFeatures* desired_device_features) {
 			if (!Loader::ConnectWithVulkanLoaderLibrary(m_vulkanLibrary)) {
 				ErrorCheck::setError("Could not connect with Vulkan while initializing the device");
 			}
@@ -45,7 +49,7 @@ namespace LavaCake {
 
 
 
-			std::vector<char const *> instance_extensions;
+			std::vector<char const*> instance_extensions;
 			InitVkDestroyer(m_instance);
 			if (!Instance::CreateVulkanInstanceWithWsiExtensionsEnabled(instance_extensions, "LavaCake", *m_instance)) {
 				ErrorCheck::setError("Could not load Vulkan while initializing the device");
@@ -71,8 +75,8 @@ namespace LavaCake {
 				m_graphicQueues.push_back(GraphicQueue());
 			}
 
-			for (auto & physical_device : physical_devices) {
-				std::vector<char const *> device_extensions;
+			for (auto& physical_device : physical_devices) {
+				std::vector<char const*> device_extensions;
 				std::vector <LavaCake::Queue::QueueInfo > requested_queues;
 				for (int i = 0; i < nbGraphicQueue; i++) {
 					if (!m_graphicQueues[0].initIndex(&physical_device)) {
@@ -167,46 +171,7 @@ namespace LavaCake {
 			}
 		}
 
-		void Device::prepareFrames(uint32_t									 framesCount,
-			VkImageUsageFlags          swapchain_image_usage,
-			bool                       use_depth,
-			VkImageUsageFlags          depth_attachment_usage) {
-			for (uint32_t i = 0; i < framesCount; ++i) {
-				std::vector<VkCommandBuffer> command_buffer;
-				VkDestroyer(VkSemaphore) image_acquired_semaphore;
-				InitVkDestroyer(m_logical, image_acquired_semaphore);
-				VkDestroyer(VkSemaphore) ready_to_present_semaphore;
-				InitVkDestroyer(m_logical, ready_to_present_semaphore);
-				VkDestroyer(VkFence) drawing_finished_fence;
-				InitVkDestroyer(m_logical, drawing_finished_fence);
-				VkDestroyer(VkImageView) depth_attachment;
-				InitVkDestroyer(m_logical, depth_attachment);
-
-				if (!Command::AllocateCommandBuffers(*m_logical, *m_commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1, command_buffer)) {
-					ErrorCheck::setError("Failed to allocate commande buffer");
-				}
-				if (!Semaphore::CreateSemaphore(*m_logical, *image_acquired_semaphore)) {
-					ErrorCheck::setError("Failed to create commande semaphore");
-				}
-				if (!Semaphore::CreateSemaphore(*m_logical, *ready_to_present_semaphore)) {
-					ErrorCheck::setError("Failed to create commande semaphore");
-				}
-				if (!Fence::CreateFence(*m_logical, true, *drawing_finished_fence)) {
-					ErrorCheck::setError("Failed to create commande fence");
-				}
-
-				framesResources.emplace_back(
-					command_buffer[0],
-					std::move(image_acquired_semaphore),
-					std::move(ready_to_present_semaphore),
-					std::move(drawing_finished_fence),
-					std::move(depth_attachment),
-					VkDestroyer(VkFramebuffer)()
-				);
-			}
-
-			m_swapChain->init(framesCount, *m_logical, m_physical, *m_presentationSurface, framesResources, swapchain_image_usage, use_depth, depth_attachment_usage);
-		}
+		
 
 		void Device::end() {
 			if (m_logical) {
@@ -215,7 +180,7 @@ namespace LavaCake {
 		}
 
 
-    Device* Device::m_device;
+		
 
   }
 }

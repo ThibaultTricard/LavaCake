@@ -5,6 +5,7 @@
 #include "Queue.h"
 #include "Device.h"
 #include "ErrorCheck.h"
+#include "SwapChain.h"
 
 namespace LavaCake {
 	namespace Framework {
@@ -40,7 +41,7 @@ namespace LavaCake {
 			* create and allocate the Texture buffer on the device
 			*
 			*/
-			virtual void allocate(VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+			virtual void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 			/**
 			* return the sampler of the texture buffer
@@ -106,7 +107,7 @@ namespace LavaCake {
 			* create and allocate the CubeMap on the device
 			*
 			*/
-			virtual void allocate(VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT) override;
+			virtual void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT) override;
 
 		private:
 			std::string													m_path;
@@ -239,7 +240,7 @@ namespace LavaCake {
 			TexelBuffer();
 
 
-			void allocate(std::vector<float> rawdata, uint32_t dataSize = 1, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+			void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, std::vector<float> rawdata, uint32_t dataSize = 1, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 			VkBuffer getBuffer();
 

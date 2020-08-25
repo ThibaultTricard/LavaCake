@@ -2,20 +2,19 @@
 
 #include "AllHeaders.h"
 #include "VulkanDestroyer.h"
-#include "SwapChain.h"
 
 #include "Tools.h"
 
 namespace LavaCake {
 	namespace Framework {
 		class Queue {
-		public :
+		public:
 
 			Queue() {
 				m_handle = new VkQueue();
 			}
 
-			bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr);
+			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) { return false; };
 
 			VkQueue& getHandle() {
 				return *m_handle;
@@ -37,21 +36,21 @@ namespace LavaCake {
 
 		class ComputeQueue : public Queue {
 		public:
-			bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) {
+			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
 				return LavaCake::Queue::SelectIndexOfQueueFamilyWithDesiredCapabilities(*physicalDevice, VK_QUEUE_GRAPHICS_BIT, m_familyIndex);
 			}
 		};
 
 		class GraphicQueue : public Queue {
 		public:
-			bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) {
+			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
 				return LavaCake::Queue::SelectIndexOfQueueFamilyWithDesiredCapabilities(*physicalDevice, VK_QUEUE_COMPUTE_BIT, m_familyIndex);
 			}
 		};
 
 		class PresentationQueue : public Queue {
 		public:
-			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) {
+			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
 				return Presentation::SelectQueueFamilyThatSupportsPresentationToGivenSurface(*physicalDevice, *surface, m_familyIndex);
 			}
 		};

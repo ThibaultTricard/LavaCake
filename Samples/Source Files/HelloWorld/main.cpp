@@ -7,7 +7,15 @@ int main() {
 	int nbFrames = 3;
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
-	d->prepareFrames(nbFrames);
+	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
+	s->init(nbFrames); 
+	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	VkQueue& present_queue = d->getPresentQueue()->getHandle();
+	std::vector<CommandBuffer> commandBuffer = std::vector<CommandBuffer>(nbFrames);
+	for (int i = 0; i < nbFrames; i++) {
+		commandBuffer[i].addSemaphore();
+		commandBuffer[i].addSemaphore();
+	}
 
 	LavaCake::Helpers::Mesh::Mesh* triangle = new LavaCake::Helpers::Mesh::Mesh();
 	triangle->Data = {
@@ -20,7 +28,7 @@ int main() {
 	};
 	triangle->Parts = { {uint32_t(0),uint32_t(3)} };
 	VertexBuffer* triangle_vertex_buffer = new VertexBuffer({ triangle }, {3,3});
-	triangle_vertex_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().commandBuffer);
+	triangle_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
 
 
 	RenderPass* pass = new RenderPass();
@@ -42,33 +50,21 @@ int main() {
 		w.UpdateInput();
 		f++;
 		f = f % nbFrames;
-		LavaCake::Buffer::FrameResources& frame = d->getFrameRessources()->at(f);
-		VkCommandBuffer commandbuffer = frame.commandBuffer;
+		LavaCake::Buffer::FrameResources& frame = s->getFrameRessources()->at(f);
 		VkDevice logical = d->getLogicalDevice();
-		VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
-		VkQueue& present_queue = d->getPresentQueue()->getHandle();
-		VkSwapchainKHR& swapchain = d->getSwapChain().getHandle();
-		std::vector<VkImageView>& swapchain_image_views = d->getSwapChain().getImageView();
-		VkSemaphore  image_acquired_semaphore = *frame.imageAcquiredSemaphore;
+		VkSwapchainKHR& swapchain = s->getHandle();
+		std::vector<VkImageView>& swapchain_image_views = s->getImageView();
 		VkImageView depth_attachment = *frame.depthAttachment;
 		uint32_t image_index;
-		VkExtent2D size = d->getSwapChain().size();
+		VkExtent2D size = s->size();
 
-		if (!LavaCake::Fence::WaitForFences(logical, { *frame.drawingFinishedFence }, false, 2000000000)) {
-			continue;
-		}
+		commandBuffer[f].wait(2000000000);
+		commandBuffer[f].resetFence();
+		commandBuffer[f].beginRecord();
 
-		if (!LavaCake::Fence::ResetFences(logical, { *frame.drawingFinishedFence })) {
-			continue;
-		}
-
-
-		InitVkDestroyer(logical, frame.framebuffer);
-		if (!LavaCake::Command::BeginCommandBufferRecordingOperation(commandbuffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
-			continue;
-		}
 		
-		if (!LavaCake::Swapchain::AcquireSwapchainImage(logical, swapchain, image_acquired_semaphore, VK_NULL_HANDLE, image_index)) {
+
+		if (!LavaCake::Swapchain::AcquireSwapchainImage(logical, swapchain, commandBuffer[f].getSemaphore(0), VK_NULL_HANDLE, image_index)) {
 			continue;
 		}
 
@@ -77,23 +73,24 @@ int main() {
 		if (VK_NULL_HANDLE != depth_attachment) {
 			attachments.push_back(depth_attachment);
 		}
+
+
+		InitVkDestroyer(logical, frame.framebuffer);
 		if (!LavaCake::Buffer::CreateFramebuffer(logical, pass->getHandle(), attachments, size.width, size.height, 1, *frame.framebuffer)) {
 			continue;
 		}
 
-		pass->draw(frame.commandBuffer, *frame.framebuffer, { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		pass->draw(commandBuffer[f].getHandle(), *frame.framebuffer, { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
-		if (!LavaCake::Command::EndCommandBufferRecordingOperation(commandbuffer)) {
-			continue;
-		}
+		commandBuffer[f].endRecord();
 
 		std::vector<LavaCake::Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
 		wait_semaphore_infos.push_back({
-			image_acquired_semaphore,                     // VkSemaphore            Semaphore
-			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT // VkPipelineStageFlags   WaitingStage
+			commandBuffer[f].getSemaphore(0),                     // VkSemaphore            Semaphore
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
 			});
 
-		if (!LavaCake::Command::SubmitCommandBuffersToQueue(graphics_queue, wait_semaphore_infos, { commandbuffer }, { *frame.readyToPresentSemaphore }, *frame.drawingFinishedFence)) {
+		if (!LavaCake::Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(1) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 		LavaCake::Presentation::PresentInfo present_info = {
@@ -101,7 +98,7 @@ int main() {
 			image_index                                   // uint32_t               ImageIndex
 		};
 
-		if (!LavaCake::Presentation::PresentImage(present_queue, { *frame.readyToPresentSemaphore }, { present_info })) {
+		if (!LavaCake::Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(1) }, { present_info })) {
 			continue;
 		}
 	}

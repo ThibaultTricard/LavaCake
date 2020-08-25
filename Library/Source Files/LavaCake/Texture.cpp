@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "CommandBuffer.h"
 
 namespace LavaCake {
 	namespace Framework {
@@ -24,13 +25,11 @@ namespace LavaCake {
 		};
 
 
-		void TextureBuffer::allocate(VkPipelineStageFlagBits stageFlagBit) {
+		void TextureBuffer::allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, VkPipelineStageFlagBits stageFlagBit) {
 			Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
-			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
-			Buffer::FrameResources& frame = d->getFrameRessources()->at(0);
-			VkCommandBuffer commandbuffer = frame.commandBuffer;
+
 			InitVkDestroyer(logical, m_sampler);
 			InitVkDestroyer(logical, m_image);
 			InitVkDestroyer(logical, m_imageMemory);
@@ -52,7 +51,7 @@ namespace LavaCake {
 			if (!Memory::UseStagingBufferToUpdateImageWithDeviceLocalMemoryBound(physical, logical, static_cast<VkDeviceSize>(m_data->size()),
 				&(*m_data)[0], *m_image, image_subresource_layer, { 0, 0, 0 }, { (uint32_t)m_width, (uint32_t)m_height, 1 }, VK_IMAGE_LAYOUT_UNDEFINED,
 				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-				stageFlagBit, graphics_queue, commandbuffer, {})) {
+				stageFlagBit, queue, commandBuffer, {})) {
 				ErrorCheck::setError("Can't send the TextureBuffer data to the GPU");
 			}
 		}
@@ -121,14 +120,11 @@ namespace LavaCake {
 			m_height = height;
 		};
 
-		void CubeMap::allocate(VkPipelineStageFlagBits stageFlagBit) {
+		void CubeMap::allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, VkPipelineStageFlagBits stageFlagBit) {
 
 			Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
-			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
-			Buffer::FrameResources& frame = d->getFrameRessources()->at(0);
-			VkCommandBuffer commandbuffer = frame.commandBuffer;
 
 
 			InitVkDestroyer(logical, m_image);
@@ -159,7 +155,7 @@ namespace LavaCake {
 				Memory::UseStagingBufferToUpdateImageWithDeviceLocalMemoryBound(physical, logical, image_data_size, &cubemap_image_data[0],
 					*m_image, image_subresource, { 0, 0, 0 }, { uint32_t(m_width), uint32_t(m_height), 1 }, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 					0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, stageFlagBit,
-					graphics_queue, commandbuffer, {});
+					queue, commandBuffer, {});
 			}
 		}
 
@@ -184,7 +180,6 @@ namespace LavaCake {
 			InitVkDestroyer(logical, m_imageMemory);
 			InitVkDestroyer(logical, m_imageView);
 			VkPhysicalDevice physical = d->getPhysicalDevice();
-			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 
 			VkImageUsageFlagBits usage;
 			VkImageAspectFlagBits aspect;
@@ -244,7 +239,6 @@ namespace LavaCake {
 			InitVkDestroyer(logical, m_imageMemory);
 			InitVkDestroyer(logical, m_imageView);
 			VkPhysicalDevice physical = d->getPhysicalDevice();
-			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 
 			
 
@@ -286,13 +280,10 @@ namespace LavaCake {
 		}
 
 
-		void TexelBuffer::allocate(std::vector<float> rawdata, uint32_t dataSize, VkPipelineStageFlagBits stageFlagBit) {
+		void TexelBuffer::allocate(VkQueue& queue, VkCommandBuffer& commandBuffer ,std::vector<float> rawdata, uint32_t dataSize, VkPipelineStageFlagBits stageFlagBit) {
 			Device* d = Device::getDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkDevice logical = d->getLogicalDevice();
-			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
-			Buffer::FrameResources& frame = d->getFrameRessources()->at(0);
-			VkCommandBuffer commandBuffer = frame.commandBuffer;
 
 			VkFormat format = VK_FORMAT_R32_SFLOAT;
 			if (dataSize == 2) {
@@ -312,7 +303,7 @@ namespace LavaCake {
 			}
 
 			if (!LavaCake::Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physical, logical, sizeof(rawdata[0]) * rawdata.size(), &rawdata[0],
-				*m_buffer, 0, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT , graphics_queue, commandBuffer, {})) {
+				*m_buffer, 0, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT , queue, commandBuffer, {})) {
 				ErrorCheck::setError("Can't copy data to buffer");
 			}
 		}

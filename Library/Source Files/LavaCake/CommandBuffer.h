@@ -13,9 +13,11 @@ namespace LavaCake {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
         VkCommandPool pool = d->getCommandPool();
-        if (!Command::AllocateCommandBuffers(logical, pool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1, { m_commandBuffer })) {
+        std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
+        if (!LavaCake::Command::AllocateCommandBuffers(logical, pool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1, buffers)) {
           ErrorCheck::setError("Failed to allocate commande buffer");
         }
+        m_commandBuffer = buffers[0];
 
         VkFenceCreateInfo fence_create_info = {
         VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,          // VkStructureType        sType
@@ -23,7 +25,7 @@ namespace LavaCake {
         VK_FENCE_CREATE_SIGNALED_BIT,                 // VkFenceCreateFlags     flags
         };
 
-        VkResult result = vkCreateFence(logical, &fence_create_info, nullptr, &*m_finishedFence);
+        VkResult result = vkCreateFence(logical, &fence_create_info, nullptr, &*m_fence);
         if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
           //std::cout << "Could not create a fence." << std::endl;
@@ -50,7 +52,7 @@ namespace LavaCake {
       void wait(uint32_t waitingTime) {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1), { &*m_finishedFence }, true, waitingTime);
+        VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1), { &*m_fence }, false, waitingTime);
         if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
           //std::cout << "Waiting on fence failed." << std::endl;
@@ -60,17 +62,45 @@ namespace LavaCake {
       void resetFence() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        VkResult result = vkResetFences(logical, static_cast<uint32_t>(1), { &*m_finishedFence });
+        VkResult result = vkResetFences(logical, static_cast<uint32_t>(1), { &*m_fence });
         if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
           //std::cout << "Error occurred when tried to reset fences." << std::endl;
         }
       }
 
+      void beginRecord() {
+        if (!LavaCake::Command::BeginCommandBufferRecordingOperation(m_commandBuffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
+          //TODO : Raise error using error check
+        }
+      }
+
+      void endRecord() {
+        if (!LavaCake::Command::EndCommandBufferRecordingOperation(m_commandBuffer)) {
+          //TODO : Raise error using error check
+        }
+      }
+
+      VkCommandBuffer& getHandle() {
+        return m_commandBuffer;
+      }
+
+      VkSemaphore& getSemaphore(int i) {
+        return *m_semaphores[i];
+      }
+
+      VkFence& getFence() {
+        return *m_fence;
+      }
+
+      ~CommandBuffer() {
+
+      };
+
     private:
       VkCommandBuffer                           m_commandBuffer;
       std::vector<VkDestroyer(VkSemaphore)>     m_semaphores;
-      VkDestroyer(VkFence)                      m_finishedFence;
+      VkDestroyer(VkFence)                      m_fence;
     };
   }
 }

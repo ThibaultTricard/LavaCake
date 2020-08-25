@@ -12,7 +12,15 @@ int main() {
 
 	Framework::Device* d = Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
-	d->prepareFrames(nbFrames);
+	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
+	s->init(nbFrames);
+	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	VkQueue& present_queue = d->getPresentQueue()->getHandle();
+	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
+	for (int i = 0; i < nbFrames; i++) {
+		commandBuffer[i].addSemaphore();
+		commandBuffer[i].addSemaphore();
+	}
 
 
 	// Sphere Data
@@ -22,7 +30,7 @@ int main() {
 	}
 
 	Framework::VertexBuffer* sphere_vertex_buffer = new Framework::VertexBuffer({ sphere }, { 3,3 });
-	sphere_vertex_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().commandBuffer);
+	sphere_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
 
 	//Skybox Data
 	Helpers::Mesh::Mesh* sky = new Helpers::Mesh::Mesh();
@@ -31,14 +39,14 @@ int main() {
 	}
 
 	Framework::VertexBuffer* sky_vertex_buffer = new Framework::VertexBuffer({ sky }, { 3 });
-	sky_vertex_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().commandBuffer);
+	sky_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
 
 
 	//PostProcessQuad
 	Helpers::Mesh::Mesh* quad = new Helpers::Mesh::Mesh();
 	Helpers::Mesh::preparePostProcessQuad(*quad);
 	Framework::VertexBuffer* quad_vertex_buffer = new Framework::VertexBuffer({ quad }, { 3 });
-	quad_vertex_buffer->allocate(*d->getPresentQueue(), d->getFrameRessources()->front().commandBuffer);
+	quad_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
 	
 
 	//Uniform Buffer
@@ -52,7 +60,7 @@ int main() {
 
 	//SkyBox texture
 	Framework::CubeMap* skyCubeMap = new Framework::CubeMap("Data/Textures/Skansen/", 4);
-	skyCubeMap->allocate();
+	skyCubeMap->allocate(queue, commandBuffer[0].getHandle());
 
 
 
@@ -68,7 +76,7 @@ int main() {
 	cameraConstant->addVariable("camera", camera);
 
 	//Color Attachment
-	Framework::Attachment* colorAttachemnt = new Framework::Attachment(w.m_windowSize[0], w.m_windowSize[1], d->getSwapChain().imageFormat(), Framework::attachmentType::COLOR_ATTACHMENT);
+	Framework::Attachment* colorAttachemnt = new Framework::Attachment(w.m_windowSize[0], w.m_windowSize[1], s->imageFormat(), Framework::attachmentType::COLOR_ATTACHMENT);
 	colorAttachemnt->allocate();
 
 	//Render Pass
@@ -159,6 +167,15 @@ int main() {
 		f++;
 		f = f % nbFrames;
 
+		Buffer::FrameResources& frame = s->getFrameRessources()->at(f);
+		VkDevice logical = d->getLogicalDevice();
+		VkSwapchainKHR& swapchain = s->getHandle();
+		std::vector<VkImageView>& swapchain_image_views = s->getImageView();
+		VkImageView depth_attachment = *frame.depthAttachment;
+		uint32_t image_index;
+		VkExtent2D size = s->size();
+
+
 
 		time +=0.001f;
 		timeConstant->setVariable("Time", time);
@@ -177,64 +194,51 @@ int main() {
 
 
 
-		Buffer::FrameResources& frame = d->getFrameRessources()->at(f);
-		VkCommandBuffer commandbuffer = frame.commandBuffer;
-		VkDevice logical = d->getLogicalDevice();
-		VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
-		VkQueue& present_queue = d->getPresentQueue()->getHandle();
-
-		if (!Fence::WaitForFences(logical, { *frame.drawingFinishedFence }, false, 2000000000)) {
-			continue;
-		}
-		if (!Fence::ResetFences(logical, { *frame.drawingFinishedFence })) {
+		
+		if (!Swapchain::AcquireSwapchainImage(logical, swapchain, commandBuffer[f].getSemaphore(0), VK_NULL_HANDLE, image_index)) {
 			continue;
 		}
 
-		InitVkDestroyer(logical, frame.framebuffer);
-		if (!Command::BeginCommandBufferRecordingOperation(commandbuffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
-			continue;
-		}
+		commandBuffer[f].wait(2000000000);
+		commandBuffer[f].resetFence();
+
+
+		commandBuffer[f].beginRecord();
+
+
+		
 
 
 		if (updateUniformBuffer) {
-			uniforms->update(commandbuffer);
+			uniforms->update(commandBuffer[f].getHandle());
 			updateUniformBuffer = false;
 		}
 
 
 
-		VkSwapchainKHR& swapchain = d->getSwapChain().getHandle();
-		std::vector<VkImageView>& swapchain_image_views = d->getSwapChain().getImageView();
-		VkSemaphore  image_acquired_semaphore = *frame.imageAcquiredSemaphore;
-		VkImageView depth_attachment = *frame.depthAttachment;
-		uint32_t image_index;
-		VkExtent2D size = d->getSwapChain().size();
+		
 
-		if (!Swapchain::AcquireSwapchainImage(logical, swapchain, image_acquired_semaphore, VK_NULL_HANDLE, image_index)) {
-			continue;
-		}
 
+		InitVkDestroyer(logical, frame.framebuffer);
 		std::vector<VkImageView> attachments = {colorAttachemnt->getImageView(),depth_attachment, swapchain_image_views[image_index]  };
 		if (!Buffer::CreateFramebuffer(logical, renderPass.getHandle(), attachments, size.width, size.height, 1, *frame.framebuffer)) {
 			continue;
 		}
 
 
-		renderPass.draw(frame.commandBuffer, *frame.framebuffer, { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } , { 0.1f, 0.2f, 0.3f, 1.0f } });
+		renderPass.draw(commandBuffer[f].getHandle(), *frame.framebuffer, { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } , { 0.1f, 0.2f, 0.3f, 1.0f } });
 
 
 
-		if (!LavaCake::Command::EndCommandBufferRecordingOperation(commandbuffer)) {
-			continue;
-		}
+		commandBuffer[f].endRecord();
 
 
 		std::vector<Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
 		wait_semaphore_infos.push_back({
-			image_acquired_semaphore,                     // VkSemaphore            Semaphore
+			commandBuffer[f].getSemaphore(0),                     // VkSemaphore            Semaphore
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT // VkPipelineStageFlags   WaitingStage
 			});
-		if (!Command::SubmitCommandBuffersToQueue(graphics_queue, wait_semaphore_infos, { commandbuffer }, { *frame.readyToPresentSemaphore }, *frame.drawingFinishedFence)) {
+		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(1) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
@@ -242,7 +246,7 @@ int main() {
 			swapchain,                                    // VkSwapchainKHR         Swapchain
 			image_index                                   // uint32_t               ImageIndex
 		};
-		if (!Presentation::PresentImage(present_queue, { *frame.readyToPresentSemaphore }, { present_info })) {
+		if (!Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(1) }, { present_info })) {
 			continue;
 		}
 	}
