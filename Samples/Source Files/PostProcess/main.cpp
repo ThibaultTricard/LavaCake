@@ -19,7 +19,6 @@ int main() {
 	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
 	for (int i = 0; i < nbFrames; i++) {
 		commandBuffer[i].addSemaphore();
-		commandBuffer[i].addSemaphore();
 	}
 
 
@@ -157,7 +156,11 @@ int main() {
 	);
 	renderPass.compile();
 
-
+	std::vector<Framework::FrameBuffer*> frameBuffers;
+	for (int i = 0; i < nbFrames; i++) {
+		frameBuffers.push_back(new Framework::FrameBuffer(s->size().width, s->size().height));
+		renderPass.prepareOutputFrameBuffer(*frameBuffers[i]);
+	}
 
 	w.Show();
 	bool updateUniformBuffer = true;
@@ -167,15 +170,16 @@ int main() {
 		f++;
 		f = f % nbFrames;
 
-		Buffer::FrameResources& frame = s->getFrameRessources()->at(f);
 		VkDevice logical = d->getLogicalDevice();
 		VkSwapchainKHR& swapchain = s->getHandle();
-		std::vector<VkImageView>& swapchain_image_views = s->getImageView();
-		VkImageView depth_attachment = *frame.depthAttachment;
-		uint32_t image_index;
 		VkExtent2D size = s->size();
 
-
+		Framework::SwapChainImage& image = s->AcquireImage();
+		std::vector<Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
+		wait_semaphore_infos.push_back({
+			image.getSemaphore(),																	// VkSemaphore            Semaphore
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
+			});
 
 		time +=0.001f;
 		timeConstant->setVariable("Time", time);
@@ -194,15 +198,8 @@ int main() {
 
 
 
-		
-		if (!Swapchain::AcquireSwapchainImage(logical, swapchain, commandBuffer[f].getSemaphore(0), VK_NULL_HANDLE, image_index)) {
-			continue;
-		}
-
 		commandBuffer[f].wait(2000000000);
 		commandBuffer[f].resetFence();
-
-
 		commandBuffer[f].beginRecord();
 
 
@@ -219,34 +216,25 @@ int main() {
 		
 
 
-		InitVkDestroyer(logical, frame.framebuffer);
-		std::vector<VkImageView> attachments = {colorAttachemnt->getImageView(),depth_attachment, swapchain_image_views[image_index]  };
-		if (!Buffer::CreateFramebuffer(logical, renderPass.getHandle(), attachments, size.width, size.height, 1, *frame.framebuffer)) {
-			continue;
-		}
-
-
-		renderPass.draw(commandBuffer[f].getHandle(), *frame.framebuffer, { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } , { 0.1f, 0.2f, 0.3f, 1.0f } });
+		
+		renderPass.setSwapChainImage(*frameBuffers[f], image);
+		renderPass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getFrameBuffer(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } , { 0.1f, 0.2f, 0.3f, 1.0f } });
 
 
 
 		commandBuffer[f].endRecord();
 
 
-		std::vector<Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
-		wait_semaphore_infos.push_back({
-			commandBuffer[f].getSemaphore(0),                     // VkSemaphore            Semaphore
-			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT // VkPipelineStageFlags   WaitingStage
-			});
-		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(1) }, commandBuffer[f].getFence())) {
+
+		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
 		Presentation::PresentInfo present_info = {
 			swapchain,                                    // VkSwapchainKHR         Swapchain
-			image_index                                   // uint32_t               ImageIndex
+			image.getIndex()                              // uint32_t               ImageIndex
 		};
-		if (!Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(1) }, { present_info })) {
+		if (!Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
 			continue;
 		}
 	}

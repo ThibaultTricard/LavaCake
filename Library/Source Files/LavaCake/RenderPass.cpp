@@ -95,7 +95,11 @@ namespace LavaCake {
 						VK_IMAGE_LAYOUT_UNDEFINED,																																									// VkImageLayout                    initialLayout
 						drawOnScreen ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL                   // VkImageLayout                    finalLayout
 					});
-				m_attachmentype.push_back(COLOR_ATTACHMENT);
+				if (drawOnScreen) {
+					m_khr_attachement = m_attachmentype.size();
+				}
+				m_attachmentype.push_back(RENDERPASS_COLOR_ATTACHMENT);
+				
 				params.ColorAttachments = 
 				{ 
 					{
@@ -117,7 +121,7 @@ namespace LavaCake {
 					VK_IMAGE_LAYOUT_UNDEFINED,																																													// VkImageLayout                    initialLayout
 					VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL																																			// VkImageLayout                    finalLayout
 					});
-				m_attachmentype.push_back(DEPTH_ATTACHMENT);
+				m_attachmentype.push_back(RENDERPASS_DEPTH_ATTACHMENT);
 				m_depthAttachments.push_back({
 						uint32_t(m_attachmentDescriptions.size() - 1),														// uint32_t                             attachment
 						VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL								// VkImageLayout                        layout
@@ -131,8 +135,19 @@ namespace LavaCake {
 				std::vector<VkAttachmentReference>   inputAttachments = {};
 				for (size_t i = 0; i < input_number.size(); i++) {
 					inputAttachments.push_back({ input_number[i], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
+					int n = 0;
+					for (size_t j = 0; j < m_attachmentype.size(); j++) {
+						if (m_attachmentype[j] == RENDERPASS_COLOR_ATTACHMENT) {
+							if (n == input_number[i]) {
+								m_attachmentype[j] = RENDERPASS_INPUT_ATTACHMENT;
+							}
+							n++;
+						}
+					}
 				}
 				params.InputAttachments = inputAttachments;
+				
+				
 			}
 
 			m_subpassParameters.push_back(params);
@@ -245,43 +260,68 @@ namespace LavaCake {
 			VkImageLayout layout;
 			VkFormat format;
 			
-			std::vector<VkImageView>	views;
+			frameBuffer.m_images = std::vector<VkImage>(m_attachmentype.size());
+			frameBuffer.m_imageViews = std::vector<VkImageView>(m_attachmentype.size());
+
 			for (int i = 0; i < m_attachmentype.size(); i ++) {
-				frameBuffer.m_images.emplace_back(VkDestroyer(VkImage)());
-				frameBuffer.m_imageViews.emplace_back(VkDestroyer(VkImageView)());
-
-				InitVkDestroyer(logical, frameBuffer.m_images[i]);
-				InitVkDestroyer(logical, frameBuffer.m_imageViews[i]);
-
 				
-				if (m_attachmentype[i] == COLOR_ATTACHMENT) {
+
+				if (m_attachmentype[i] == RENDERPASS_COLOR_ATTACHMENT) {
 					format = m_imageFormat;
-					usage  = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+					usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) | static_cast<uint32_t>(VK_IMAGE_USAGE_SAMPLED_BIT));
 					aspect = VK_IMAGE_ASPECT_COLOR_BIT;
 					layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				}
-				else if (m_attachmentype[i] == DEPTH_ATTACHMENT) {
+				else if (m_attachmentype[i] == RENDERPASS_INPUT_ATTACHMENT) {
+					format = m_imageFormat;
+					usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT) | static_cast<uint32_t>(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT));
+					aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+					layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				}
+				else if (m_attachmentype[i] == RENDERPASS_DEPTH_ATTACHMENT) {
 					format = m_depthFormat;
-					usage  = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+					usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) | static_cast<uint32_t>(VK_IMAGE_USAGE_SAMPLED_BIT));
 					aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
 					layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
 				}
 				else {
 					format = VK_FORMAT_UNDEFINED;
-					usage  = VK_IMAGE_USAGE_FLAG_BITS_MAX_ENUM;
+					usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_FLAG_BITS_MAX_ENUM) | static_cast<uint32_t>(VK_IMAGE_USAGE_SAMPLED_BIT));
 					aspect = VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM;
 					layout = VK_IMAGE_LAYOUT_UNDEFINED;
 				}
+				frameBuffer.m_layouts.push_back(layout);
 
-				if (!Image::CreateSampledImage(physical, logical, VK_IMAGE_TYPE_2D, format,{ (uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1 }, 1, 1, usage| VK_IMAGE_USAGE_SAMPLED_BIT, false, VK_IMAGE_VIEW_TYPE_2D, aspect, linear_filtering, *frameBuffer.m_images[i], *frameBuffer.m_imageMemory, *frameBuffer.m_imageViews[i])) {
+				if (i == m_khr_attachement) {
+					continue;
+				}
+
+				frameBuffer.m_images[i] = VkImage();
+				frameBuffer.m_imageViews[i] =  VkImageView();
+
+
+				if (!Image::CreateSampledImage(physical, logical, VK_IMAGE_TYPE_2D, format,{ (uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1 }, 1, 1, usage, false, VK_IMAGE_VIEW_TYPE_2D, aspect, linear_filtering, frameBuffer.m_images[i], *frameBuffer.m_imageMemory, frameBuffer.m_imageViews[i])) {
 					ErrorCheck::setError("Can't create an image sampler for this FrameBuffer");
 				}
-				views.push_back(*frameBuffer.m_imageViews[i]);
-				frameBuffer.m_layouts.push_back(layout);
+				
 			}
+			if (m_khr_attachement == -1) {
+				if (!Buffer::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
+					ErrorCheck::setError("Can't create this FrameBuffer");
+				}
+			}
+		}
 
-			if (!Buffer::CreateFramebuffer(logical, *m_renderPass, views, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
-				ErrorCheck::setError("Can't create this FrameBuffer");
+		void RenderPass::setSwapChainImage(FrameBuffer& frameBuffer, SwapChainImage& image) {
+			if (m_khr_attachement != -1) {
+				Framework::Device* d = LavaCake::Framework::Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+
+				frameBuffer.m_images[m_khr_attachement] = image.getImage();
+				frameBuffer.m_imageViews[m_khr_attachement] = image.getView();
+				if (!Buffer::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
+					ErrorCheck::setError("Can't create this FrameBuffer");
+				}
 			}
 		}
 	}

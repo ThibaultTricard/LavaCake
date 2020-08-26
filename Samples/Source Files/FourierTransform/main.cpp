@@ -5,7 +5,7 @@ using namespace LavaCake;
 
 int main() {
 
-	int nbFrames = 3;
+	/*int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
 	Framework::Window w("LavaCake : Post Process", 0, 0, 512, 512);
 
@@ -163,5 +163,5 @@ int main() {
 	w.Show();
 
 
-  return 0;
+  return 0;*/
 }

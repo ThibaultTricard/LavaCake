@@ -28,9 +28,28 @@ namespace LavaCake {
 				}
 			}
 
+			VkSemaphore getSemaphore() {
+				return *m_aquiredSemaphore;
+			}
+
+			VkImageView getView() {
+				return *m_imageView;
+			}
+
+			VkImage getImage() {
+				return m_image;
+			}
+
+			uint32_t getIndex() {
+				return m_index;
+			}
+
 		private:
+			uint32_t																	m_index;
 			VkImage																		m_image;
 			VkDestroyer(VkImageView)									m_imageView;
+			VkDestroyer(VkSemaphore)									m_aquiredSemaphore;
+			friend class SwapChain;
 		};
 
 
@@ -80,6 +99,32 @@ namespace LavaCake {
 
 			std::vector<Buffer::FrameResources>* getFrameRessources() {
 				return &m_framesResources;
+			}
+
+			SwapChainImage& AcquireImage() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				VkSemaphoreCreateInfo semaphore_create_info = {
+					VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,    // VkStructureType            sType
+					nullptr,                                    // const void               * pNext
+					0                                           // VkSemaphoreCreateFlags     flags
+				};
+				uint32_t index;
+				VkSemaphore semaphore;
+				VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &semaphore);
+				if (VK_SUCCESS != result) {
+					//TODO : Raise error using error check
+					//std::cout << "Could not create a semaphore." << std::endl;
+				}
+
+				result = vkAcquireNextImageKHR(logical, *m_handle, 2000000000, semaphore, VK_NULL_HANDLE, &index);
+				if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+					//TODO : Raise error using error check
+					//std::cout << "Could not create a semaphore." << std::endl;
+				}
+				*m_swapchainImages[index].m_aquiredSemaphore = semaphore;
+				m_swapchainImages[index].m_index = index;
+				return m_swapchainImages[index];
 			}
 
 		private :

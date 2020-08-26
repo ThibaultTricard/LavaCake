@@ -155,7 +155,7 @@ namespace LavaCake {
 			* return number of image view of the texture buffer
 			*
 			*/
-			size_t FrameBuffer::getImageViewSize();
+			size_t getImageViewSize();
 
 			/**
 			* return the FrameBuffer handle
@@ -176,8 +176,8 @@ namespace LavaCake {
 			VkDestroyer(VkFramebuffer)															m_frameBuffer;
 			VkDestroyer(VkSampler)																	m_sampler;
 			VkDestroyer(VkDeviceMemory)															m_imageMemory;
-			std::vector<VkDestroyer(VkImage)>												m_images;
-			std::vector<VkDestroyer(VkImageView)>										m_imageViews;
+			std::vector<VkImage>																		m_images;
+			std::vector<VkImageView>																m_imageViews;
 			std::vector<VkImageLayout>															m_layouts;
 			friend class RenderPass;
 		};

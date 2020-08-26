@@ -15,11 +15,15 @@ namespace LavaCake {
 			ADD_INPUT				= 32
 		};
 		
-		
 		inline RenderPassFlag operator|(RenderPassFlag a, RenderPassFlag b)
 		{
 			return static_cast<RenderPassFlag>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
 		}
+
+
+		enum RenderPassAttachmentType {
+			RENDERPASS_COLOR_ATTACHMENT, RENDERPASS_DEPTH_ATTACHMENT, RENDERPASS_STENCIL_ATTACHMENT, RENDERPASS_INPUT_ATTACHMENT
+		};
 
 		class RenderPass {
 
@@ -81,6 +85,8 @@ namespace LavaCake {
 			void prepareOutputFrameBuffer(FrameBuffer& FrameBuffer);
 
 
+			void setSwapChainImage(FrameBuffer& FrameBuffer, SwapChainImage& image);
+
 		private : 
 
 
@@ -105,9 +111,9 @@ namespace LavaCake {
 			std::vector<VkAttachmentDescription>									m_attachmentDescriptions;
 			std::vector<VkSubpassDependency>											m_dependencies;
 
-			std::vector<attachmentType>														m_attachmentype;
+			std::vector<RenderPassAttachmentType>									m_attachmentype;
 
-
+			int																										m_khr_attachement = -1;
 
 
 		};
