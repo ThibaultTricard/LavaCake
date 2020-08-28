@@ -25,6 +25,7 @@ namespace LavaCake {
 			RENDERPASS_COLOR_ATTACHMENT, RENDERPASS_DEPTH_ATTACHMENT, RENDERPASS_STENCIL_ATTACHMENT, RENDERPASS_INPUT_ATTACHMENT
 		};
 
+		
 		class RenderPass {
 
 			struct SubpassParameters {
@@ -48,11 +49,6 @@ namespace LavaCake {
 			* renderPass Constructor for a specific image format and depth format
 			*/
 			RenderPass( VkFormat ImageFormat, VkFormat DepthFormat);
-
-			/*
-			* add an attachment for a subpass
-			*/
-			void addAttatchments(uint32_t AttachementFlag, std::vector<uint32_t> input_number = {});
 
 			/*
 			* add dependencies for the render pass
@@ -90,6 +86,11 @@ namespace LavaCake {
 		private : 
 
 
+			/*
+			* add an attachment for a subpass
+			*/
+			void addAttatchments(uint32_t AttachementFlag, std::vector<uint32_t> input_number = {});
+
 			void SpecifySubpassDescriptions(std::vector<SubpassParameters> const& subpass_parameters,
 				std::vector<VkSubpassDescription>& subpass_descriptions);
 
@@ -113,9 +114,13 @@ namespace LavaCake {
 
 			std::vector<RenderPassAttachmentType>									m_attachmentype;
 
+			std::vector<Attachment*>															m_inputAttachements;
+
+			std::vector<std::vector<uint32_t>>										m_subpassAttachements;
+
 			int																										m_khr_attachement = -1;
 
-
+			
 		};
 	}
 }

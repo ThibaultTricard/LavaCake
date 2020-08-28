@@ -197,6 +197,8 @@ namespace LavaCake {
 
 			VkImageView getImageView();
 
+			VkImage getImage();
+
 		private : 
 
 			int																	m_width = 0;

@@ -99,7 +99,6 @@ namespace LavaCake {
 					m_khr_attachement = m_attachmentype.size();
 				}
 				m_attachmentype.push_back(RENDERPASS_COLOR_ATTACHMENT);
-				
 				params.ColorAttachments = 
 				{ 
 					{
@@ -131,17 +130,16 @@ namespace LavaCake {
 				params.DepthStencilAttachment = &m_depthAttachments[m_depthAttachments.size() - 1];
 
 			}
+			m_subpassAttachements.push_back(input_number);
 			if (AttachementFlag & ADD_INPUT) {
 				std::vector<VkAttachmentReference>   inputAttachments = {};
 				for (size_t i = 0; i < input_number.size(); i++) {
 					inputAttachments.push_back({ input_number[i], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
-					int n = 0;
 					for (size_t j = 0; j < m_attachmentype.size(); j++) {
 						if (m_attachmentype[j] == RENDERPASS_COLOR_ATTACHMENT) {
-							if (n == input_number[i]) {
+							if (j == input_number[i]) {
 								m_attachmentype[j] = RENDERPASS_INPUT_ATTACHMENT;
 							}
-							n++;
 						}
 					}
 				}
@@ -188,6 +186,37 @@ namespace LavaCake {
 					m_subpass[i][j]->compile(*m_renderPass);
 				}
 			}
+
+			std::vector<Attachment*> tempInputAttachements = std::vector<Attachment*>(m_attachmentype.size());
+
+			for (uint32_t i = 0; i < m_subpassAttachements.size(); i++) {
+				tempInputAttachements[i] = nullptr;
+				std::vector<Attachment*> tia;
+				for (int k = 0; k < m_subpass[i].size(); k++) {
+					std::vector<attachment> attachment = m_subpass[i][k]->getAttachments();
+					for (int l = 0; l < attachment.size(); l++) {
+						bool insert = true;
+						for (int m = 0; m < tia.size(); m++) {
+							if (attachment[l].a == tia[m]) {
+								insert = false;
+							}
+						}
+						if (insert) {
+							tia.push_back(attachment[l].a);
+						}
+					}
+				}
+				for (uint32_t j = 0; j < tia.size(); j++) {
+					tempInputAttachements[m_subpassAttachements[i][j]] = tia[j];
+				}
+			}
+
+			for (uint32_t i = 0; i < m_subpassAttachements.size(); i++) {
+				if (tempInputAttachements[i] != nullptr) {
+					m_inputAttachements.push_back(tempInputAttachements[i]);
+				}
+			}
+
 		}
 
 		void RenderPass::reloadShaders() {
@@ -263,6 +292,8 @@ namespace LavaCake {
 			frameBuffer.m_images = std::vector<VkImage>(m_attachmentype.size());
 			frameBuffer.m_imageViews = std::vector<VkImageView>(m_attachmentype.size());
 
+			int attachementIndex = 0;
+
 			for (int i = 0; i < m_attachmentype.size(); i ++) {
 				
 
@@ -277,12 +308,21 @@ namespace LavaCake {
 					usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT) | static_cast<uint32_t>(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT));
 					aspect = VK_IMAGE_ASPECT_COLOR_BIT;
 					layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+
+					frameBuffer.m_images[i] = m_inputAttachements[attachementIndex]->getImage();
+					frameBuffer.m_imageViews[i] = m_inputAttachements[attachementIndex]->getImageView();
+
+					attachementIndex++;
+					continue;
 				}
 				else if (m_attachmentype[i] == RENDERPASS_DEPTH_ATTACHMENT) {
 					format = m_depthFormat;
 					usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) | static_cast<uint32_t>(VK_IMAGE_USAGE_SAMPLED_BIT));
 					aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
 					layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+
+
 				}
 				else {
 					format = VK_FORMAT_UNDEFINED;

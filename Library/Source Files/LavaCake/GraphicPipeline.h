@@ -75,6 +75,8 @@ namespace LavaCake {
 			*/
 			void setSubpassNumber(uint32_t number);
 
+			
+
 		private:
 
 

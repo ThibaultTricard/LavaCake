@@ -94,6 +94,9 @@ namespace LavaCake {
 				m_texelBuffers.push_back({ a,binding,stage });
 			};
 
+			std::vector<attachment>& getAttachments() {
+				return m_attachments;
+			};
 
 		protected :
 			virtual void generateDescriptorLayout();
@@ -220,6 +223,8 @@ namespace LavaCake {
 			void DestroyPipelineLayout(VkDevice           logical_device,
 				VkPipelineLayout& pipeline_layout);
 
+
+			
 
 
 			VkDestroyer(VkPipeline)																m_pipeline;
