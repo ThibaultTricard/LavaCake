@@ -200,7 +200,7 @@ int main() {
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
 			Image::ImageTransition image_transition_before_drawing = {
-				s->getImages()[image.getIndex()],					// VkImage              Image
+				image.getImage(),													// VkImage              Image
 				VK_ACCESS_MEMORY_READ_BIT,                // VkAccessFlags        CurrentAccess
 				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,     // VkAccessFlags        NewAccess
 				VK_IMAGE_LAYOUT_UNDEFINED,                // VkImageLayout        CurrentLayout
@@ -223,7 +223,7 @@ int main() {
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
 			Image::ImageTransition image_transition_before_drawing = {
-				s->getImages()[image.getIndex()],	// VkImage              Image
+				image.getImage(),														// VkImage              Image
 				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,				// VkAccessFlags        CurrentAccess
 				VK_ACCESS_MEMORY_READ_BIT,									// VkAccessFlags        NewAccess
 				VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,						// VkImageLayout        CurrentLayout
