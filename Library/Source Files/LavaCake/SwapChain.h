@@ -17,7 +17,7 @@ namespace LavaCake {
 		class SwapChainImage {
 		public:
 
-			SwapChainImage(VkExtent2D size, VkFormat imageFormat, VkFormat depthFormat, VkImage image) {
+			SwapChainImage(VkExtent2D size, VkFormat imageFormat, VkImage image) {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
@@ -45,7 +45,7 @@ namespace LavaCake {
 			}
 
 		private:
-			uint32_t																	m_index;
+			uint32_t																	m_index =0;
 			VkImage																		m_image;
 			VkDestroyer(VkImageView)									m_imageView;
 			VkDestroyer(VkSemaphore)									m_aquiredSemaphore;
@@ -69,9 +69,6 @@ namespace LavaCake {
 				return *m_handle;
 			}
 
-			std::vector<VkImageView>& getImageView() {
-				return m_imageViewsRaw;
-			}
 
 			std::vector<VkImage>& getImages() {
 				return m_images;
@@ -95,10 +92,6 @@ namespace LavaCake {
 			
 			VkExtent2D size() {
 				return m_size;
-			}
-
-			std::vector<Buffer::FrameResources>* getFrameRessources() {
-				return &m_framesResources;
 			}
 
 			SwapChainImage& AcquireImage() {
@@ -134,16 +127,10 @@ namespace LavaCake {
 			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
 			const VkFormat														m_depthFormat = VK_FORMAT_D16_UNORM;
 			VkExtent2D																m_size = {uint32_t(0), uint32_t(0)};
-			uint32_t																	m_framesCount = 0;;
 
 			std::vector<SwapChainImage>								m_swapchainImages;
 
-			std::vector<Buffer::FrameResources>				m_framesResources;
 			std::vector<VkImage>											m_images;
-			std::vector<VkDestroyer(VkImageView)>			m_imageViews;
-			std::vector<VkImageView>									m_imageViewsRaw;
-			std::vector<VkDestroyer(VkImage)>         m_depthImages;
-			std::vector<VkDestroyer(VkDeviceMemory)>  m_depthImagesMemory;
 		};
 
 

@@ -59,51 +59,6 @@ namespace LavaCake {
 			uint32_t        NewQueueFamily;
 		};
 
-		struct FrameResources {
-			VkCommandBuffer             commandBuffer;
-			VkDestroyer(VkSemaphore)    imageAcquiredSemaphore;
-			VkDestroyer(VkSemaphore)    readyToPresentSemaphore;
-			VkDestroyer(VkFence)        drawingFinishedFence;
-			VkDestroyer(VkImageView)    depthAttachment;
-			VkDestroyer(VkFramebuffer)  framebuffer;
-
-			FrameResources(VkCommandBuffer            & command_buffer,
-				VkDestroyer(VkSemaphore)   & image_acquired_semaphore,
-				VkDestroyer(VkSemaphore)   & ready_to_present_semaphore,
-				VkDestroyer(VkFence)       & drawing_finished_fence,
-				VkDestroyer(VkImageView)   & depth_attachment,
-				VkDestroyer(VkFramebuffer) & framebuffer) :
-				commandBuffer(command_buffer),
-				imageAcquiredSemaphore(std::move(image_acquired_semaphore)),
-				readyToPresentSemaphore(std::move(ready_to_present_semaphore)),
-				drawingFinishedFence(std::move(drawing_finished_fence)),
-				depthAttachment(std::move(depth_attachment)),
-				framebuffer(std::move(framebuffer)) {
-			}
-
-			FrameResources(FrameResources && other) {
-				*this = std::move(other);
-			}
-
-			FrameResources& operator=(FrameResources && other) {
-				if (this != &other) {
-					VkCommandBuffer command_buffer = commandBuffer;
-
-					commandBuffer = other.commandBuffer;
-					other.commandBuffer = command_buffer;
-					imageAcquiredSemaphore = std::move(other.imageAcquiredSemaphore);
-					readyToPresentSemaphore = std::move(other.readyToPresentSemaphore);
-					drawingFinishedFence = std::move(other.drawingFinishedFence);
-					depthAttachment = std::move(other.depthAttachment);
-					framebuffer = std::move(other.framebuffer);
-				}
-				return *this;
-			}
-
-			FrameResources(FrameResources const &) = delete;
-			FrameResources& operator=(FrameResources const &) = delete;
-		};
-
 		bool CreateBuffer(VkDevice             logical_device,
 			VkDeviceSize         size,
 			VkBufferUsageFlags   usage,

@@ -96,7 +96,7 @@ namespace LavaCake {
 						drawOnScreen ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL                   // VkImageLayout                    finalLayout
 					});
 				if (drawOnScreen) {
-					m_khr_attachement = m_attachmentype.size();
+					m_khr_attachement = static_cast<int>(m_attachmentype.size());
 				}
 				m_attachmentype.push_back(RENDERPASS_COLOR_ATTACHMENT);
 				params.ColorAttachments = 
@@ -189,12 +189,12 @@ namespace LavaCake {
 
 			std::vector<Attachment*> tempInputAttachements = std::vector<Attachment*>(m_attachmentype.size());
 
-			for (uint32_t i = 0; i < m_subpassAttachements.size(); i++) {
+			for (size_t i = 0; i < m_subpassAttachements.size(); i++) {
 				tempInputAttachements[i] = nullptr;
 				std::vector<Attachment*> tia;
-				for (int k = 0; k < m_subpass[i].size(); k++) {
+				for (size_t k = 0; k < m_subpass[i].size(); k++) {
 					std::vector<attachment> attachment = m_subpass[i][k]->getAttachments();
-					for (int l = 0; l < attachment.size(); l++) {
+					for (size_t l = 0; l < attachment.size(); l++) {
 						bool insert = true;
 						for (int m = 0; m < tia.size(); m++) {
 							if (attachment[l].a == tia[m]) {
@@ -206,12 +206,12 @@ namespace LavaCake {
 						}
 					}
 				}
-				for (uint32_t j = 0; j < tia.size(); j++) {
+				for (size_t j = 0; j < tia.size(); j++) {
 					tempInputAttachements[m_subpassAttachements[i][j]] = tia[j];
 				}
 			}
 
-			for (uint32_t i = 0; i < m_subpassAttachements.size(); i++) {
+			for (size_t i = 0; i < m_subpassAttachements.size(); i++) {
 				if (tempInputAttachements[i] != nullptr) {
 					m_inputAttachements.push_back(tempInputAttachements[i]);
 				}
@@ -232,9 +232,6 @@ namespace LavaCake {
 		}
 
 		void RenderPass::draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const & clear_values) {
-			/*LavaCake::RenderPass::BeginRenderPass(commandBuffer, *m_renderPass, frameBuffer, { { 0, 0 },
-				{uint32_t(viewportMax[0] - viewportMin[0]),uint32_t(viewportMax[1] - viewportMin[1])} },
-				clear_values, VK_SUBPASS_CONTENTS_INLINE);*/
 
 			VkRenderPassBeginInfo renderPassBeginInfo = {
 				VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,																																														 // VkStructureType        sType
