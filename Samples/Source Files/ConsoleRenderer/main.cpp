@@ -1,23 +1,34 @@
 #include "LavaCake/Framework.h"
-#include "AllHeaders.h"
-#include "Common.h"
-#include "VulkanDestroyer.h"
-
+#define GLFW_INCLUDE_NONE
+#define GLFW_EXPOSE_NATIVE_WIN32 true
+#include "glfw3.h"
+#include "glfw3native.h"
 using namespace LavaCake;
 
 int main() {
 	uint32_t nbFrames = 4;
 	Framework::ErrorCheck::PrintError(true);
-	Framework::Window w("LavaCake : Shadow", 0, 0, 1024, 1024);
+
+	glfwInit();
+
+	const uint32_t WIDTH = 512;
+	const uint32_t HEIGHT = 512;
+
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LavaCake HelloWorld", nullptr, nullptr);
+	LavaCake::WindowParameters param = { GetModuleHandleW(NULL), glfwGetWin32Window(window) };
 
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-	d->initDevices(0, 1, w.m_windowParams);
+	d->initDevices(0, 1, param);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
-	s->init(nbFrames);
+	s->init();
 
 	VkQueue queue = d->getGraphicQueue(0)->getHandle();
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
+	VkExtent2D size = s->size();
 
 	for (int i = 0; i < nbFrames; i++) {
 		commandBuffer[i].addSemaphore();
@@ -119,7 +130,7 @@ int main() {
 
 	//Console Render pass
 	Framework::RenderPass consolePass = Framework::RenderPass();
-	Framework::GraphicPipeline* consolePipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::GraphicPipeline* consolePipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	Framework::VertexShaderModule* consoleVertex = new Framework::VertexShaderModule("Data/Shaders/ConsoleRenderer/console.vert.spv");
 	consolePipeline->setVextexShader(consoleVertex);
 
@@ -143,17 +154,17 @@ int main() {
 		consolePass.prepareOutputFrameBuffer(*frameBuffers[i]);
 	}
 
-	w.Show();
+
 	bool updateUniformBuffer = true;
 	uint32_t f = 0;
-	while (w.m_loop) {
-		w.UpdateInput();
+	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
 		f++;
 		f = f % nbFrames;
 		
 		VkDevice logical = d->getLogicalDevice();
 		VkSwapchainKHR& swapchain = s->getHandle();
-		VkExtent2D size = s->size();
+		
 		Framework::SwapChainImage& image = s->AcquireImage();
 
 		std::vector<LavaCake::Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
@@ -163,12 +174,12 @@ int main() {
 			});
 
 		
-
-    if (w.m_keyBoard.getKey("space").pressed) {
+		int state = glfwGetKey(window, GLFW_KEY_SPACE);
+    if (state == GLFW_PRESS) {
 			Command::WaitForAllSubmittedCommandsToBeFinished(logical);
 			consolePass.reloadShaders();
 		}
-
+		/*
 		if (w.m_mouse.m_actionPerformed) {
 			updateUniformBuffer = true;
 			modelView = Helpers::Identity();
@@ -179,7 +190,7 @@ int main() {
 			modelView = modelView * Helpers::PrepareRotationMatrix(float(w.m_mouse.m_position.y) / float(w.m_windowSize[1]) * 360, { 1 , 0, 0 });
 
 			b->setVariable("modelView", modelView);
-		}
+		}*/
 
 	
 
@@ -256,5 +267,8 @@ int main() {
 
 	}
 	d->end();
+
+	glfwDestroyWindow(window);
+	glfwTerminate();
 }
 

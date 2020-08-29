@@ -11,7 +11,7 @@ int main() {
 
 	Framework::Device* d = Framework::Device::getDevice();
 	d->initDevices(1, 1, w.m_windowParams);
-	d->prepareFrames(nbFrames);
+	d->prepareFrames();
 
 
 	//PostProcessQuad

@@ -15,14 +15,14 @@ int main() {
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LavaCake HelloWorld", nullptr, nullptr);
-	LavaCake::WindowParameters param = { GetModuleHandleW(NULL), glfwGetWin32Window(window)};
+	LavaCake::WindowParameters param = { GetModuleHandleW(NULL), glfwGetWin32Window(window) };
 
 
 	int nbFrames = 3;
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, param);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
-	s->init(nbFrames); 
+	s->init(); 
 	VkExtent2D size = s->size();
 	VkQueue queue = d->getGraphicQueue(0)->getHandle();
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();

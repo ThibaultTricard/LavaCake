@@ -5,7 +5,6 @@ namespace LavaCake {
 		SwapChain* SwapChain::m_swapChain;
 
 		void SwapChain::init(
-				uint32_t																	framesCount,
 				VkImageUsageFlags													swapchain_image_usage,
 				bool																			use_depth,
 				VkImageUsageFlags													depth_attachment_usage

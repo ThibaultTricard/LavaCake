@@ -75,7 +75,6 @@ namespace LavaCake {
 			}
 
 			void init(
-				uint32_t																	framesCount,
 				VkImageUsageFlags													swapchain_image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 				bool																			use_depth = true,
 				VkImageUsageFlags													depth_attachment_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
