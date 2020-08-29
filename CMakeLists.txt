@@ -74,7 +74,17 @@ endif()
 add_definitions( -DVK_USE_PLATFORM_${VK_USE_PLATFORM}_KHR )
 
 ###############################################################
-# Cookbook Library                                            #
+# External Library                                            #
+###############################################################
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(./External/lib/glwf/)
+
+
+###############################################################
+# LavaCake Library                                            #
 ###############################################################
 
 # External files
@@ -104,8 +114,9 @@ list_recipes_files( "*.cpp" "" LIBRARY_SOURCE_FILES )
 
 # Recipes Library generation
 add_library( LavaCake ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${LIBRARY_COMMON_SOURCE_FILES} ${LIBRARY_HEADER_FILES} ${LIBRARY_SOURCE_FILES} )
-target_link_libraries( LavaCake ${PLATFORM_LIBRARY} )
+target_link_libraries( LavaCake ${PLATFORM_LIBRARY} glfw)
 target_include_directories( LavaCake PUBLIC "External" "Library/Common Files" "Library/Source Files" )
+
 
 ###############################################################
 # Sample projects                                             #
@@ -121,7 +132,7 @@ macro( list_samples )
 			source_group( "" FILES ${SAMPLE_SOURCE_FILES} )
 
 			add_executable( ${SAMPLE} ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${SAMPLES_COMMON_HEADER_FILES} ${SAMPLES_COMMON_SOURCE_FILES} ${SAMPLE_SOURCE_FILES} )
-			target_link_libraries( ${SAMPLE} ${PLATFORM_LIBRARY} LavaCake)
+			target_link_libraries( ${SAMPLE} ${PLATFORM_LIBRARY} LavaCake glfw)
 			target_include_directories( ${SAMPLE} PUBLIC "External" "Library/Common Files" "Library/Source Files" )
 			set_property( TARGET ${SAMPLE} PROPERTY FOLDER "Samples" )
 		ENDFOREACH()

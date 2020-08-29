@@ -1,14 +1,29 @@
 #include "LavaCake/Framework.h"
+#define GLFW_INCLUDE_NONE
+#define GLFW_EXPOSE_NATIVE_WIN32 true
+#include "glfw3.h"
+#include "glfw3native.h"
+
 using namespace LavaCake::Framework;
 int main() {
-	Window w("LavaCake HelloWorld", 0, 0, 512, 512);
-	w.Show();
+	glfwInit();
+
+	const uint32_t WIDTH = 512;
+	const uint32_t HEIGHT = 512;
+
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LavaCake HelloWorld", nullptr, nullptr);
+	LavaCake::WindowParameters param = { GetModuleHandleW(NULL), glfwGetWin32Window(window)};
+
 
 	int nbFrames = 3;
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-	d->initDevices(0, 1, w.m_windowParams);
+	d->initDevices(0, 1, param);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init(nbFrames); 
+	VkExtent2D size = s->size();
 	VkQueue queue = d->getGraphicQueue(0)->getHandle();
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	std::vector<CommandBuffer> commandBuffer = std::vector<CommandBuffer>(nbFrames);
@@ -30,7 +45,7 @@ int main() {
 	triangle_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
 
 	RenderPass* pass = new RenderPass();
-	GraphicPipeline* pipeline = new GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	GraphicPipeline* pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	VertexShaderModule* vertexShader = new VertexShaderModule("Data/Shaders/helloworld/shader.vert.spv");
 	FragmentShaderModule* fragmentShader = new FragmentShaderModule("Data/Shaders/helloworld/shader.frag.spv");
 
@@ -51,13 +66,12 @@ int main() {
 	}
 
 	int f = 0;
-	while (w.m_loop) {
-		w.UpdateInput();
+	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
 		f++;
 		f = f % nbFrames;
 		VkDevice logical = d->getLogicalDevice();
 		VkSwapchainKHR& swapchain = s->getHandle();
-		VkExtent2D size = s->size();
 		SwapChainImage& image = s->AcquireImage();
 
 		std::vector<LavaCake::Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
@@ -95,4 +109,6 @@ int main() {
 		}
 	}
 	d->end();
+	glfwDestroyWindow(window);
+	glfwTerminate();
 }
