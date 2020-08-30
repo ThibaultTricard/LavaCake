@@ -8,19 +8,11 @@ using namespace LavaCake::Framework;
 int main() {
 	glfwInit();
 
-	const uint32_t WIDTH = 512;
-	const uint32_t HEIGHT = 512;
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LavaCake HelloWorld", nullptr, nullptr);
-	LavaCake::WindowParameters param = { GetModuleHandleW(NULL), glfwGetWin32Window(window) };
-
+	Window w("LavaCake HelloWorld", 512, 512);
 
 	int nbFrames = 3;
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-	d->initDevices(0, 1, param);
+	d->initDevices(0, 1, w.m_windowParams);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init(); 
 	VkExtent2D size = s->size();
@@ -66,8 +58,8 @@ int main() {
 	}
 
 	int f = 0;
-	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
+	while (w.running()) {
+		w.UpdateInput();
 		f++;
 		f = f % nbFrames;
 		VkDevice logical = d->getLogicalDevice();
@@ -109,6 +101,4 @@ int main() {
 		}
 	}
 	d->end();
-	glfwDestroyWindow(window);
-	glfwTerminate();
 }

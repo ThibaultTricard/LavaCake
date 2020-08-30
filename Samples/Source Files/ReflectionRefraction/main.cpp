@@ -8,7 +8,7 @@ using namespace LavaCake;
 int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
-	Framework::Window w("LavaCake : Refraction", 0, 0, 500, 500);
+	Framework::Window w("LavaCake : Refraction", 500, 500);
 
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
@@ -48,10 +48,10 @@ int main() {
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
-	mat4 proj = Helpers::PreparePerspectiveProjectionMatrix(static_cast<float>(w.m_windowSize[0]) / static_cast<float>(w.m_windowSize[1]),
+	mat4 proj = Helpers::PreparePerspectiveProjectionMatrix(static_cast<float>(size.width) / static_cast<float>(size.height),
 		50.0f, 0.5f, 10.0f);
 
-	mat4 modelView = Helpers::PrepareTranslationMatrix(0.0f, 0.0f, 4.0f);
+	mat4 modelView = Helpers::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
 	b->addVariable("modelView", modelView);
 	b->addVariable("projection", proj);
 	b->end();
@@ -61,7 +61,7 @@ int main() {
 	Framework::RenderPass pass = Framework::RenderPass();
 
 	// Skybox
-	Framework::GraphicPipeline* skybox = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::GraphicPipeline* skybox = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	Framework::VertexShaderModule* skyboxVertex = new Framework::VertexShaderModule("Data/Shaders/Refraction/skybox.vert.spv");
 	skybox->setVextexShader(skyboxVertex);
 	Framework::FragmentShaderModule* skyboxFrag = new Framework::FragmentShaderModule("Data/Shaders/Refraction/skybox.frag.spv");
@@ -72,7 +72,7 @@ int main() {
 	skybox->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 
 	// teapot
-	Framework::GraphicPipeline* teapot = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::GraphicPipeline* teapot = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/Refraction/model.vert.spv");
 	teapot->setVextexShader(vertex);
 	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/Refraction/model.frag.spv");
@@ -99,15 +99,14 @@ int main() {
 		pass.prepareOutputFrameBuffer(*frameBuffers[i]);
 	}
 
-	w.Show();
 	bool updateUniformBuffer = true;
 	int f = 0;
-	while (w.m_loop) {
+	while (w.running()) {
 		w.UpdateInput();
 		f++;
 		f = f % nbFrames;
 
-		if (w.m_mouse.m_actionPerformed) {
+		/*if (w.m_mouse.m_actionPerformed) {
 			updateUniformBuffer = true;
 			modelView = Helpers::Identity();
 
@@ -121,7 +120,7 @@ int main() {
 		  b->setVariable("modelView", modelView);
 			constant->setVariable("camera", camera);
 		}
-
+		*/
 
 
 		

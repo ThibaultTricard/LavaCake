@@ -80,8 +80,11 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(./External/lib/glwf/)
-
+add_subdirectory(./External/lib/glfw/)
+set(IMGUI_SOURCE 
+./External/lib/imgui/imgui.h
+./External/lib/imgui/imgui.cpp
+)
 
 ###############################################################
 # LavaCake Library                                            #
@@ -113,9 +116,9 @@ list_recipes_files( "*.h" "Header Files" LIBRARY_HEADER_FILES )
 list_recipes_files( "*.cpp" "" LIBRARY_SOURCE_FILES )
 
 # Recipes Library generation
-add_library( LavaCake ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${LIBRARY_COMMON_SOURCE_FILES} ${LIBRARY_HEADER_FILES} ${LIBRARY_SOURCE_FILES} )
-target_link_libraries( LavaCake ${PLATFORM_LIBRARY} glfw)
-target_include_directories( LavaCake PUBLIC "External" "Library/Common Files" "Library/Source Files" )
+add_library( LavaCake ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${LIBRARY_COMMON_SOURCE_FILES} ${LIBRARY_HEADER_FILES} ${LIBRARY_SOURCE_FILES} ${IMGUI_SOURCE} )
+target_link_libraries( LavaCake ${PLATFORM_LIBRARY} glfw )
+target_include_directories( LavaCake PUBLIC "External" "Library/Common Files" "Library/Source Files"  "./External/lib/imgui/")
 
 
 ###############################################################
@@ -132,7 +135,7 @@ macro( list_samples )
 			source_group( "" FILES ${SAMPLE_SOURCE_FILES} )
 
 			add_executable( ${SAMPLE} ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${SAMPLES_COMMON_HEADER_FILES} ${SAMPLES_COMMON_SOURCE_FILES} ${SAMPLE_SOURCE_FILES} )
-			target_link_libraries( ${SAMPLE} ${PLATFORM_LIBRARY} LavaCake glfw)
+			target_link_libraries( ${SAMPLE} ${PLATFORM_LIBRARY} LavaCake )
 			target_include_directories( ${SAMPLE} PUBLIC "External" "Library/Common Files" "Library/Source Files" )
 			set_property( TARGET ${SAMPLE} PROPERTY FOLDER "Samples" )
 		ENDFOREACH()

@@ -1,27 +1,17 @@
 #include "LavaCake/Framework.h"
-#define GLFW_INCLUDE_NONE
-#define GLFW_EXPOSE_NATIVE_WIN32 true
-#include "glfw3.h"
-#include "glfw3native.h"
+
 using namespace LavaCake;
 
 int main() {
 	uint32_t nbFrames = 4;
 	Framework::ErrorCheck::PrintError(true);
 
-	glfwInit();
 
-	const uint32_t WIDTH = 512;
-	const uint32_t HEIGHT = 512;
+	Framework::Window w("LavaCake HelloWorld", 512, 512);
 
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LavaCake HelloWorld", nullptr, nullptr);
-	LavaCake::WindowParameters param = { GetModuleHandleW(NULL), glfwGetWin32Window(window) };
 
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-	d->initDevices(0, 1, param);
+	d->initDevices(0, 1, w.m_windowParams);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
 
@@ -157,8 +147,8 @@ int main() {
 
 	bool updateUniformBuffer = true;
 	uint32_t f = 0;
-	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
+	while (w.running()){
+		w.UpdateInput();
 		f++;
 		f = f % nbFrames;
 		
@@ -174,7 +164,7 @@ int main() {
 			});
 
 		
-		int state = glfwGetKey(window, GLFW_KEY_SPACE);
+		int state = glfwGetKey(w.m_window, GLFW_KEY_SPACE);
     if (state == GLFW_PRESS) {
 			Command::WaitForAllSubmittedCommandsToBeFinished(logical);
 			consolePass.reloadShaders();
@@ -267,8 +257,5 @@ int main() {
 
 	}
 	d->end();
-
-	glfwDestroyWindow(window);
-	glfwTerminate();
 }
 

@@ -8,7 +8,7 @@ using namespace LavaCake;
 int main() {
 	uint32_t nbFrames = 4;
 	Framework::ErrorCheck::PrintError(true);
-	Framework::Window w("LavaCake : Shadow", 0, 0, 1000, 800);
+	Framework::Window w("LavaCake : Shadow", 1000, 800);
 
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
@@ -17,6 +17,9 @@ int main() {
 	VkDevice logical = d->getLogicalDevice();
 	VkQueue queue = d->getGraphicQueue(0)->getHandle();
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
+
+	VkExtent2D size = s->size();
+
 	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
 	for (int i = 0; i < nbFrames; i++) {
 		commandBuffer[i].addSemaphore();
@@ -45,7 +48,7 @@ int main() {
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
-	mat4 proj = Helpers::PreparePerspectiveProjectionMatrix(static_cast<float>(w.m_windowSize[0]) / static_cast<float>(w.m_windowSize[1]),
+	mat4 proj = Helpers::PreparePerspectiveProjectionMatrix(static_cast<float>(size.width) / static_cast<float>(size.height),
 		50.0f, 0.5f, 10.0f);
 	mat4 modelView = mat4 { 0.9981f, -0.0450f, 0.0412f, 0.0000f, 0.0000f, 0.6756f, 0.7373f, 0.0000f, -0.0610f, -0.7359f, 0.6743f, 0.0000f, -0.0000f, -0.0000f, -4.0000f, 1.0000f };
 	mat4 lightView = mat4{ 1.0f,0.0f,0.0f,0.0f,0.0f,0.173648223f ,0.984807730f,0.0f,0.0f, -0.984807730f, 0.173648223f ,0.0f,0.0f,0.0f,-3.99999976f ,1.0f };
@@ -84,7 +87,7 @@ int main() {
 	shadowMapPass.prepareOutputFrameBuffer(*shadow_map_buffer);
 	//Render Pass
 	Framework::RenderPass renderPass = Framework::RenderPass();
-	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	Framework::VertexShaderModule* renderVertex = new Framework::VertexShaderModule("Data/Shaders/Shadow/scene.vert.spv");
 	renderPipeline->setVextexShader(renderVertex);
 
@@ -111,10 +114,9 @@ int main() {
 		renderPass.prepareOutputFrameBuffer(*frameBuffers[i]);
 	}
 
-	w.Show();
 	bool updateUniformBuffer = true;
 	uint32_t f = 0;
-	while (w.m_loop) {
+	while (w.running()) {
 
 		
 		
@@ -133,7 +135,7 @@ int main() {
 		f++;
 		f = f % nbFrames;
 
-		if (w.m_mouse.m_actionPerformed) {
+		/*if (w.m_mouse.m_actionPerformed) {
 			updateUniformBuffer = true;
 			modelView = Helpers::Identity();
 
@@ -143,7 +145,7 @@ int main() {
 			modelView = modelView * Helpers::PrepareRotationMatrix(float(w.m_mouse.m_position.y) / float(w.m_windowSize[1]) * 360, { 1 , 0, 0 });
 
 			b->setVariable("modelView", modelView);
-		}
+		}*/
 
 		commandBuffer[f].wait(2000000000);
 		commandBuffer[f].resetFence();

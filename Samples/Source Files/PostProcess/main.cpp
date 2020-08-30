@@ -8,12 +8,13 @@ using namespace LavaCake;
 int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
-	Framework::Window w("LavaCake : Post Process", 0, 0, 1000, 800);
+	Framework::Window w("LavaCake : Post Process", 1000, 800);
 
 	Framework::Device* d = Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
+	VkExtent2D size = s->size();
 	VkQueue queue = d->getGraphicQueue(0)->getHandle();
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
@@ -50,9 +51,9 @@ int main() {
 
 	//Uniform Buffer
 	Framework::UniformBuffer* uniforms = new Framework::UniformBuffer();
-	mat4 proj = Helpers::PreparePerspectiveProjectionMatrix(static_cast<float>(w.m_windowSize[0]) / static_cast<float>(w.m_windowSize[1]),
+	mat4 proj = Helpers::PreparePerspectiveProjectionMatrix(static_cast<float>(size.width) / static_cast<float>(size.height),
 		50.0f, 0.5f, 10.0f);
-	mat4 modelView = Helpers::PrepareTranslationMatrix(0.0f, 0.0f, 4.0f);
+	mat4 modelView = Helpers::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
 	uniforms->addVariable("modelView", modelView);
 	uniforms->addVariable("projection", proj);
 	uniforms->end();
@@ -75,14 +76,14 @@ int main() {
 	cameraConstant->addVariable("camera", camera);
 
 	//Color Attachment
-	Framework::Attachment* colorAttachemnt = new Framework::Attachment(w.m_windowSize[0], w.m_windowSize[1], s->imageFormat(), Framework::attachmentType::COLOR_ATTACHMENT);
+	Framework::Attachment* colorAttachemnt = new Framework::Attachment(size.width, size.height, s->imageFormat(), Framework::attachmentType::COLOR_ATTACHMENT);
 	colorAttachemnt->allocate();
 
 	//Render Pass
 	Framework::RenderPass renderPass = Framework::RenderPass( );
 
 	
-	Framework::GraphicPipeline* sphereRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::GraphicPipeline* sphereRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	Framework::VertexShaderModule* sphereVertex = new Framework::VertexShaderModule("Data/Shaders/PostProcess/model.vert.spv");
 	sphereRenderPipeline->setVextexShader(sphereVertex);
 
@@ -95,7 +96,7 @@ int main() {
 	sphereRenderPipeline->addPushContant(cameraConstant, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 
-	Framework::GraphicPipeline* skyRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::GraphicPipeline* skyRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 
 	Framework::VertexShaderModule* skyVertex = new Framework::VertexShaderModule("Data/Shaders/PostProcess/skybox.vert.spv");
 	skyRenderPipeline->setVextexShader(skyVertex);
@@ -111,7 +112,7 @@ int main() {
 
 	renderPass.addSubPass({ sphereRenderPipeline,skyRenderPipeline }, Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
 
-	Framework::GraphicPipeline* postProcessPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::GraphicPipeline* postProcessPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	Framework::VertexShaderModule* postProcessVertex = new Framework::VertexShaderModule("Data/Shaders/PostProcess/postprocess.vert.spv");
 	postProcessPipeline->setVextexShader(postProcessVertex);
 
@@ -162,10 +163,9 @@ int main() {
 		renderPass.prepareOutputFrameBuffer(*frameBuffers[i]);
 	}
 
-	w.Show();
 	bool updateUniformBuffer = true;
 	int f = 0;
-	while (w.m_loop) {
+	while (w.running()) {
 		w.UpdateInput();
 		f++;
 		f = f % nbFrames;
@@ -184,7 +184,7 @@ int main() {
 		time +=0.001f;
 		timeConstant->setVariable("Time", time);
 
-		if (w.m_mouse.m_actionPerformed) {
+		/*if (w.m_mouse.m_actionPerformed) {
 			updateUniformBuffer = true;
 			modelView = Helpers::Identity();
 
@@ -194,7 +194,7 @@ int main() {
 			modelView = modelView * Helpers::PrepareRotationMatrix(float(w.m_mouse.m_position.y) / float(w.m_windowSize[1]) * 360 - 180, { 1 , 0, 0 });
 
 			uniforms->setVariable("modelView", modelView);
-		}
+		}*/
 
 
 

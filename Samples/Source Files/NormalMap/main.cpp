@@ -9,12 +9,13 @@ using namespace LavaCake;
 int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
-	Framework::Window w("LavaCake : Bump Mapping", 0, 0, 500, 500);
+	Framework::Window w("LavaCake : Bump Mapping", 500, 500);
 
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
+	VkExtent2D size = s->size();
 	VkQueue queue = d->getGraphicQueue(0)->getHandle();
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
@@ -36,7 +37,7 @@ int main() {
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
-	mat4 proj = Helpers::PreparePerspectiveProjectionMatrix(static_cast<float>(w.m_windowSize[0]) / static_cast<float>(w.m_windowSize[1]),
+	mat4 proj = Helpers::PreparePerspectiveProjectionMatrix(static_cast<float>(size.width) / static_cast<float>(size.height),
 		50.0f, 0.5f, 10.0f);
 	mat4 modelView = Helpers::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
 	b->addVariable("modelView", modelView);
@@ -51,7 +52,7 @@ int main() {
 
 	// Render pass
 	Framework::RenderPass pass = Framework::RenderPass();
-	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]),1.0f }, { 0,0 }, { float(w.m_windowSize[0]),float(w.m_windowSize[1]) });
+	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 
 	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/NormalMap/shader.vert.spv");
 	pipeline->setVextexShader(vertex);
@@ -76,10 +77,9 @@ int main() {
 		pass.prepareOutputFrameBuffer(*frameBuffers[i]);
 	}
 
-	w.Show();
 	bool updateUniformBuffer = true;
 	int f = 0;
-	while (w.m_loop) {
+	while (w.running()) {
 		w.UpdateInput();
 		f++;
 		f = f % nbFrames;
@@ -97,7 +97,7 @@ int main() {
 		VkSwapchainKHR& swapchain = s->getHandle();
 		VkExtent2D size = s->size();
 
-		if (w.m_mouse.m_actionPerformed) {
+		/*if (w.m_mouse.m_actionPerformed) {
 			updateUniformBuffer = true;
 			modelView = Helpers::Identity();
 
@@ -107,7 +107,7 @@ int main() {
 			modelView = modelView * Helpers::PrepareRotationMatrix(float(w.m_mouse.m_position.y) / float(w.m_windowSize[1]) * 360, { 1 , 0, 0 });
 
 			b->setVariable("modelView", modelView);
-		}
+		}*/
 
 
 
