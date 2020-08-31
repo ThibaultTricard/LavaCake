@@ -25,8 +25,8 @@ void main() {
     if(coord.y < sizeY){
       float a = imageLoad(inputImage, int(coord.x + coord.y*sizeX) ).x;
       float b = imageLoad(inputImage, int(coord.x + coord.y*sizeX + sizeY* sizeX) ).x;
-      float c = cos(-2* pi* gl_WorkGroupID.y * Lxid/ sizeY);
-      float d = sin(-2* pi* gl_WorkGroupID.y * Lxid/ sizeY);
+      float c = cos(-2.0* pi* coord.y * float(gl_WorkGroupID.y) / float(sizeY));
+      float d = sin(-2.0* pi* coord.y * float(gl_WorkGroupID.y) / float(sizeY));
       partial[Lxid*2]   += a*c - b*d;
       partial[Lxid*2+1] += a*d + b*c;
     }
