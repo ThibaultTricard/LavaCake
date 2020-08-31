@@ -9,6 +9,17 @@ In consequence the code architecture might change drasticly as my understanding 
 However if you dare use it, I'd be happy to listen to your feedback :).
 
 
+## Installation
+
+git pull https://github.com/ThibaultTricard/LavaCake.git
+
+git submodule init
+
+git submodule update
+
+Then use Cmake
+
+
 ## Credits
 
 The core of this library is based on the Vulkan Cookbook code.  
