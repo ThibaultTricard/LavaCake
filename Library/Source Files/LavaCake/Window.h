@@ -18,8 +18,39 @@
 namespace LavaCake {
 	namespace Framework {
 
+		class Mouse {
+			
+		public:
+
+			static Mouse* getMouse() {
+				return m_mouse;
+			}
+
+			static void init(GLFWwindow* window);
+
+
+			bool leftButton = false;
+			bool rightButton = false;
+			bool middleButton = false;
+			vec2d position = { 0.0,0.0 };
+			double wheel = 0.0;
+
+		private: 
+
+
+			static Mouse* m_mouse;
+
+			Mouse() {};
+
+			
+
+		};
+
+
 		class Window{
 		public :
+
+			
 
 			Window(
 				const char               * window_title,
@@ -34,13 +65,25 @@ namespace LavaCake {
 				return !glfwWindowShouldClose(m_window);
 			}
 
+
+
+
 			~Window() {
+				glfwSetCursor(m_window, NULL);
+				glfwDestroyCursor(m_cursor);
 				glfwDestroyWindow(m_window);
 				glfwTerminate();
 			}
 
+
+
 			GLFWwindow*																m_window;
 			WindowParameters													m_windowParams;
+
+
+			GLFWcursor*																m_cursor;
+
+			Mouse* m_mouse;
 		};
 
 	}

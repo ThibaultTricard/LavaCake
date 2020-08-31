@@ -9,7 +9,7 @@ int main() {
 	int nbFrames = 3;
 	Framework::ErrorCheck::PrintError(true);
 	Framework::Window w("LavaCake : Specular Lighting", 512, 512);
-
+	Framework::Mouse* mouse = Framework::Mouse::getMouse();
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
@@ -24,7 +24,7 @@ int main() {
 	}
 
 	//vertex buffer
-	Helpers::Mesh::Mesh*  m = new Helpers::Mesh::Mesh();
+	Helpers::Mesh::Mesh* m = new Helpers::Mesh::Mesh();
 	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/knot.obj", true, false, false, true, *m)) {
 		return false;
 	}
@@ -72,22 +72,37 @@ int main() {
 
 	bool updateUniformBuffer = true;
 	int f = 0;
+
+	vec2d* lastMousePos = nullptr;
+
+	vec2d polars = { 0.0,0.0 };
+
 	while (w.running()) {
 		w.UpdateInput();
 		f++;
 		f = f % nbFrames;
 
-		/*if (w.m_mouse.m_actionPerformed) {
+		if (mouse->leftButton) {
+			if (lastMousePos == nullptr) {
+				lastMousePos = new vec2d({ mouse->position[0], mouse->position[1] });
+			}
+			polars[0] += float((mouse->position[0] - (*lastMousePos)[0]) / 512.0f) * 360;
+			polars[1] -= float((mouse->position[1] - (*lastMousePos)[1]) / 512.0f) * 360;
+
 			updateUniformBuffer = true;
 			modelView = Helpers::Identity();
 
-			modelView = modelView * Helpers::PrepareTranslationMatrix(0.0f, 0.0f, w.m_mouse.m_wheel.distance - 4.0f);
+			modelView = modelView * Helpers::PrepareTranslationMatrix(0.0f, 0.0f,  - 4.0f);
 
-			modelView = modelView * Helpers::PrepareRotationMatrix(-float(w.m_mouse.m_position.x) / float(w.m_windowSize[0]) * 360, { 0 , 1, 0 });
-			modelView = modelView * Helpers::PrepareRotationMatrix(float(w.m_mouse.m_position.y) / float(w.m_windowSize[1]) * 360, { 1 , 0, 0 });
-
+			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), { 0 , 1, 0 });
+			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), { 1 , 0, 0 });
+			//std::cout << w.m_mouse.position[0] << std::endl;
 			b->setVariable("modelView", modelView);
-		}*/
+			lastMousePos = new vec2d({ mouse->position[0], mouse->position[1] });
+		}
+		else {
+			lastMousePos = nullptr;
+		}
 
 
 
