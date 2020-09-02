@@ -66,6 +66,7 @@ namespace LavaCake {
 		namespace Mesh {
 			struct Mesh {
 				std::vector<float>  Data;
+				std::vector<uint16_t> index;
 
 				struct Part {
 					uint32_t  VertexOffset;
@@ -73,6 +74,7 @@ namespace LavaCake {
 				};
 
 				std::vector<Part>   Parts;
+				bool								indexed = false;
 			};
 
 			bool Load3DModelFromObjFile(char const * filename,

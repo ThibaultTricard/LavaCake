@@ -439,12 +439,14 @@ namespace LavaCake {
 							-1.0f,  1.0f, 0.0f,
 							 1.0f,  1.0f, 0.0f,
 						},
+						{},
 						{
 							{
 								uint32_t(0),
 								uint32_t(6)
 							}
-						}
+						},
+						false
 					};
 				}
 				else {
@@ -465,12 +467,14 @@ namespace LavaCake {
 							 1.0f,  1.0f, 0.0f,
 							 1.0f, 1.0f,
 						},
+						{},
 						{
 							{
 								uint32_t(0),
 								uint32_t(6)
 							}
-						}
+						},
+						false
 					};
 				}
 				

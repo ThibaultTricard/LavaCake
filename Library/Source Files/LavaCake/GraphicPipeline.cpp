@@ -127,9 +127,19 @@ namespace LavaCake {
 			}
 			InitVkDestroyer(logical, m_pipeline);
 			*m_pipeline = pipelines[0];
+			m_compiled = true;
 		}
 
+		void GraphicPipeline::recompile() {
+			Device* d = Device::getDevice();
+			VkDevice& logical = d->getLogicalDevice();
 
+			std::vector<VkPipeline> pipelines;
+			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
+				ErrorCheck::setError("Can't create Graphics piepeline");
+			}
+			*m_pipeline = pipelines[0];
+		}
 
 		void GraphicPipeline::reloadShaders() {
 			if (m_vertexModule != nullptr) {
@@ -160,7 +170,14 @@ namespace LavaCake {
 			Pipeline::SpecifyPipelineVertexInputState(buffer->getBindingDescriptions(), buffer->getAttributeDescriptions(), m_vertexInfo);
 
 			Pipeline::SpecifyPipelineInputAssemblyState(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, false, m_inputInfo);
+			if (m_compiled) { 
+				m_pipelineCreateInfo.pVertexInputState = &m_vertexInfo;
+				m_pipelineCreateInfo.pInputAssemblyState = &m_inputInfo;
+				recompile(); 
+			}
 		}
+
+
 
 		void GraphicPipeline::draw(const VkCommandBuffer buffer) {
 			VkViewport& viewport = m_viewportscissor.Viewports[0];
@@ -170,6 +187,9 @@ namespace LavaCake {
 			Viewport::SetScissorStateDynamically(buffer, 0, { scissor });
 
 			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getBuffer() }, { new VkDeviceSize(0) });
+			if (m_vertexBuffer->isIndexed()) {
+				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer(), VkDeviceSize(0), VK_INDEX_TYPE_UINT16);
+			}
 
 			if (m_descriptorCount > 0) {
 				Descriptor::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0, m_descriptorSets, {});
@@ -181,13 +201,24 @@ namespace LavaCake {
 				m_constants[i].constant->push(buffer, *m_pipelineLayout, m_constants[i].stage);
 			}
 
-			uint32_t count = 0;
-			for (size_t i = 0; i < m_vertexBuffer->getMeshs().size(); i++) {
-				for (size_t j = 0; j < m_vertexBuffer->getMeshs()[i]->Parts.size(); j++) {
-					count += m_vertexBuffer->getMeshs()[i]->Parts[j].VertexCount;
+			if (m_vertexBuffer->isIndexed()) {
+				uint32_t count = 0;
+				for (size_t i = 0; i < m_vertexBuffer->getMeshs().size(); i++) {
+					for (size_t j = 0; j < m_vertexBuffer->getMeshs()[i]->Parts.size(); j++) {
+						count += m_vertexBuffer->getMeshs()[i]->index.size();
+					}
 				}
+				LavaCake::vkCmdDrawIndexed(buffer, count, 1, 0, 0, 0);
+			}else{
+				uint32_t count = 0;
+				for (size_t i = 0; i < m_vertexBuffer->getMeshs().size(); i++) {
+					for (size_t j = 0; j < m_vertexBuffer->getMeshs()[i]->Parts.size(); j++) {
+						count += m_vertexBuffer->getMeshs()[i]->Parts[j].VertexCount;
+					}
+				}
+				LavaCake::vkCmdDraw(buffer, count, 1, 0, 0);
 			}
-			LavaCake::vkCmdDraw(buffer, count, 1, 0, 0);
+			
 		}
 
 		void GraphicPipeline::SetCullMode(VkCullModeFlagBits cullMode) {

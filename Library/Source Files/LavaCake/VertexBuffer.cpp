@@ -4,12 +4,9 @@ namespace LavaCake {
 	namespace Framework {
 
 		VertexBuffer::VertexBuffer(std::vector <LavaCake::Helpers::Mesh::Mesh*> m, std::vector<int> dataDescription, uint32_t binding, VkVertexInputRate inputRate ) {
-			m_vertices = new std::vector<float>(m[0]->Data);
-			for (unsigned int i = 1; i < m.size(); i++) {
-				m_vertices->insert(m_vertices->end(), m[i]->Data.begin(), m[i]->Data.end());
-			}
 			m_meshs = m;
 
+			
 			uint32_t offset = 0;
 			for (uint32_t i = 0; i < dataDescription.size(); i++) {
 				VkFormat f = VK_FORMAT_UNDEFINED;
@@ -47,18 +44,50 @@ namespace LavaCake {
 			VkDevice logicalDevice = d->getLogicalDevice();
 			VkPhysicalDevice physicalDevice = d->getPhysicalDevice();
 
+			m_vertices = new std::vector<float>(m_meshs[0]->Data);
+			m_indices = new std::vector<uint16_t>(m_meshs[0]->index);
+			m_indexed = m_meshs[0]->indexed;
+			for (unsigned int i = 1; i < m_meshs.size(); i++) {
+				if (m_indexed) {
+					for (size_t j = 0; j < m_meshs[i]->index.size(); j++) {
+						m_indices->push_back(m_meshs[i]->index[j] + m_vertices->size());
+					}
+				}
+				m_vertices->insert(m_vertices->end(), m_meshs[i]->Data.begin(), m_meshs[i]->Data.end());
+			}
+
+
 
 			InitVkDestroyer(logicalDevice, m_buffer);
+			InitVkDestroyer(logicalDevice, m_bufferMemory);
 			if (!Buffer::CreateBuffer(logicalDevice, sizeof(m_vertices[0]) * m_vertices->size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, *m_buffer)) {
 				ErrorCheck::setError("Can't create vertices buffer");
 			}
-			InitVkDestroyer(logicalDevice, m_bufferMemory);
+			
 			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physicalDevice, logicalDevice, *m_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_bufferMemory)) {
 				ErrorCheck::setError("Can't allocate vertices buffer");
 			}
 			if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(float) * m_vertices->size(), &(*m_vertices)[0], *m_buffer, 0, 0,
 				VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue, commandBuffer, {})) {
 				ErrorCheck::setError("Can't update buffer memory");
+			}
+
+			if (m_indexed) {
+
+				InitVkDestroyer(logicalDevice, m_indexBuffer);
+				InitVkDestroyer(logicalDevice, m_indexBufferMemory);
+				if (!Buffer::CreateBuffer(logicalDevice, sizeof(m_indices[0]) * m_indices->size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, *m_indexBuffer)) {
+					ErrorCheck::setError("Can't create vertices buffer");
+				}
+				
+				if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physicalDevice, logicalDevice, *m_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_indexBufferMemory)) {
+					ErrorCheck::setError("Can't allocate vertices buffer");
+				}
+				if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(float) * m_indices->size(), &(*m_indices)[0], *m_indexBuffer, 0, 0,
+					VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue, commandBuffer, {})) {
+					ErrorCheck::setError("Can't update buffer memory");
+				}
+
 			}
 		}
 
@@ -70,6 +99,10 @@ namespace LavaCake {
 			return *m_buffer;
 		}
 
+		VkBuffer& VertexBuffer::getIndexBuffer() {
+			return *m_indexBuffer;
+		}
+
 		std::vector<VkVertexInputAttributeDescription>& VertexBuffer::getAttributeDescriptions() {
 			return m_attributeDescriptions;
 		}
@@ -77,5 +110,21 @@ namespace LavaCake {
 		std::vector<VkVertexInputBindingDescription>& VertexBuffer::getBindingDescriptions() {
 			return m_bindingDescriptions;
 		}
+
+		bool VertexBuffer::isIndexed() {
+			return m_indexed;
+		};
+
+		void VertexBuffer::swapMeshes(std::vector <LavaCake::Helpers::Mesh::Mesh*>				meshes) {
+			m_meshs = meshes;
+			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
+			VkDevice logicalDevice = d->getLogicalDevice();
+			if (m_indexed) {
+				Buffer::DestroyBuffer(logicalDevice, *m_indexBuffer);
+				vkFreeMemory(logicalDevice, *m_indexBufferMemory, VK_NULL_HANDLE);
+			}
+			Buffer::DestroyBuffer(logicalDevice, *m_buffer);
+			vkFreeMemory(logicalDevice, *m_bufferMemory, VK_NULL_HANDLE);
+		};
 	}
 }

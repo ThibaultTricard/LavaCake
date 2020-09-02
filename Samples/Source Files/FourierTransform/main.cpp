@@ -40,7 +40,7 @@ int main() {
 
 
 	Framework::TexelBuffer* output_pass1 = new Framework::TexelBuffer();
-	std::vector<float> rawdata = std::vector<float>(input->width() * input->height() * 2);
+	std::vector<float> rawdata = std::vector<float>(input->width() * input->height() * uint32_t(2));
 	output_pass1->allocate(queue, commandBuffer[0].getHandle(),rawdata, uint32_t(1));
 
 	Framework::TexelBuffer* output_pass2 = new Framework::TexelBuffer();
@@ -75,8 +75,6 @@ int main() {
 
 	computePipeline2->compile();
 
-	
-
 
 	//renderPass
 	Framework::RenderPass* showPass = new Framework::RenderPass();
@@ -90,12 +88,9 @@ int main() {
 	pipeline->addTexelBuffer(output_pass2, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
 	pipeline->addUniformBuffer(sizeBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 
-
 	showPass->addSubPass({ pipeline }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
 
-
 	showPass->compile();
-
 
 
 
@@ -115,20 +110,6 @@ int main() {
 	computePipeline1->compute(commandBuffer[0].getHandle(), input->width(), input->height(), 1);
 
 	
-
-
-	commandBuffer[0].endRecord();
-
-	if (!Command::SubmitCommandBuffersToQueue(compute_queue, { }, { commandBuffer[0].getHandle() }, { }, { commandBuffer[0].getFence() })) {
-	}
-
-
-
-
-	commandBuffer[0].wait(2000000000);
-	commandBuffer[0].resetFence();
-	commandBuffer[0].beginRecord();
-
 	computePipeline2->compute(commandBuffer[0].getHandle(), input->width(), input->height(), 1);
 
 

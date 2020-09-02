@@ -38,6 +38,25 @@ namespace LavaCake {
 				};
 			}
 
+			ShaderModule(std::vector<unsigned char>	spirv, VkShaderStageFlagBits stageBits, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) {
+				m_path = "";
+				m_spirv = spirv;
+				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
+				VkDevice logicalDevice = d->getLogicalDevice();
+
+				InitVkDestroyer(logicalDevice, m_module);
+				if (!CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
+					ErrorCheck::setError("Can't create the Shader module");
+				}
+
+				m_stageParameter = {
+						stageBits,
+						*m_module,
+						entrypoint,
+						specialization
+				};
+			}
+
 			ShaderStageParameters&	getStageParameter() {
 				return m_stageParameter;
 			}
@@ -99,12 +118,20 @@ namespace LavaCake {
 				ShaderModule(path, VK_SHADER_STAGE_VERTEX_BIT, entrypoint, specialization) {
 
 			}
+			VertexShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_VERTEX_BIT, entrypoint, specialization) {
+
+			}
 		};
 
 		class TessellationControlShaderModule : public ShaderModule {
 		public:
 			TessellationControlShaderModule( std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
 				ShaderModule( path, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, entrypoint, specialization) {
+
+			}
+			TessellationControlShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, entrypoint, specialization) {
 
 			}
 		};
@@ -115,12 +142,20 @@ namespace LavaCake {
 				ShaderModule(path, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, entrypoint, specialization) {
 
 			}
+			TessellationEvaluationShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, entrypoint, specialization) {
+
+			}
 		};
 
 		class GeometryShaderModule : public ShaderModule {
 		public:
 			GeometryShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
 				ShaderModule(path, VK_SHADER_STAGE_GEOMETRY_BIT, entrypoint, specialization) {
+
+			}
+			GeometryShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_GEOMETRY_BIT, entrypoint, specialization) {
 
 			}
 		};
@@ -131,12 +166,22 @@ namespace LavaCake {
 				ShaderModule(path, VK_SHADER_STAGE_FRAGMENT_BIT, entrypoint, specialization) {
 
 			}
+			FragmentShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_FRAGMENT_BIT, entrypoint, specialization) {
+
+			}
+
 		};
 
 		class ComputeShaderModule : public ShaderModule {
 		public:
 			ComputeShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
 				ShaderModule(path, VK_SHADER_STAGE_COMPUTE_BIT, entrypoint, specialization) {
+
+			}
+
+			ComputeShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_COMPUTE_BIT, entrypoint, specialization) {
 
 			}
 		};

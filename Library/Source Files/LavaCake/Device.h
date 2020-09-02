@@ -20,6 +20,10 @@ namespace LavaCake {
 				return m_device;
 			}
 
+			VkInstance getInstance() {
+				return *m_instance;
+			};
+
 			VkPhysicalDevice& getPhysicalDevice();
 
 			VkDevice& getLogicalDevice();

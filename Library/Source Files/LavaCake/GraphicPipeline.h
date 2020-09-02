@@ -47,6 +47,7 @@ namespace LavaCake {
 			*/
 			void compile(VkRenderPass& renderpass);
 
+			
 
 			void reloadShaders();
 
@@ -79,7 +80,7 @@ namespace LavaCake {
 
 		private:
 
-
+			void recompile();
 
 			VertexShaderModule*																		m_vertexModule = nullptr;
 			TessellationControlShaderModule*											m_tesselationControlModule = nullptr;
@@ -113,8 +114,8 @@ namespace LavaCake {
 
 			VkCullModeFlagBits																		m_CullMode = VK_CULL_MODE_BACK_BIT;
 
-			
-			
+
+			bool																									m_compiled = false;
 		};
 	}
 }
