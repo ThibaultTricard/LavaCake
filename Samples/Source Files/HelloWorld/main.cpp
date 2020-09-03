@@ -14,7 +14,7 @@ int main() {
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
-	s->init(); 
+	s->init();
 	VkExtent2D size = s->size();
 	VkQueue queue = d->getGraphicQueue(0)->getHandle();
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
@@ -32,6 +32,8 @@ int main() {
 		 0.0f , -0.75f, 0.0f,
 		 0.0f	, 0.0f	, 1.0f
 	};
+	triangle->index = { 0,1,2 };
+	triangle->indexed = true;
 	triangle->Parts = { {uint32_t(0),uint32_t(3)} };
 	VertexBuffer* triangle_vertex_buffer = new VertexBuffer({ triangle }, {3,3});
 	triangle_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());

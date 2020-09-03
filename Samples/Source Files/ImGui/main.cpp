@@ -1,13 +1,15 @@
 #include "LavaCake/Framework.h"
-
+#include <windows.h>
 using namespace LavaCake::Framework;
 int main() {
 
-	Window w("LavaCake HelloWorld", 512, 512);
+	Window w("LavaCake HelloWorld", 1400, 1000);
 
+	ImGuiWrapper* gui = new ImGuiWrapper();
 
+	int  debug = 0;
 
-	int nbFrames = 3;
+	int nbFrames = 1;
 	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
@@ -20,7 +22,7 @@ int main() {
 		commandBuffer[i].addSemaphore();
 	}
 
-	//prepareImgui(queue, &commandBuffer[0]);
+	gui->initGui(&w,d->getGraphicQueue(0), &commandBuffer[0]);
 
 	LavaCake::Helpers::Mesh::Mesh* triangle = new LavaCake::Helpers::Mesh::Mesh();
 	triangle->Data = {
@@ -59,22 +61,31 @@ int main() {
 	int f = 0;
 	while (w.running()) {
 		w.UpdateInput();
-		f++;
-		f = f % nbFrames;
-		VkDevice logical = d->getLogicalDevice();
-		VkSwapchainKHR& swapchain = s->getHandle();
-		SwapChainImage& image = s->AcquireImage();
 
-
+		commandBuffer[f].wait(2000000000);
+		commandBuffer[f].resetFence();
 
 
 		bool show_demo_window = true;
-		bool show_another_window = false;
+		bool show_another_window = true;
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+		
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
+
+			// Setup display size (every frame to accommodate for window resizing)
+			int width, height;
+			int display_w, display_h;
+			glfwGetWindowSize(w.m_window, &width, &height);
+			glfwGetFramebufferSize(w.m_window, &display_w, &display_h);
+			io.DisplaySize = ImVec2((float)width, (float)height);
+			if (width > 0 && height > 0)
+				io.DisplayFramebufferScale = ImVec2((float)display_w / width, (float)display_h / height);
+		}
 		ImGui::NewFrame();
 
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
 
@@ -111,7 +122,17 @@ int main() {
 			ImGui::End();
 		}
 
+		
 
+		
+		f++;
+		f = f % nbFrames;
+		VkDevice logical = d->getLogicalDevice();
+		VkSwapchainKHR& swapchain = s->getHandle();
+		SwapChainImage& image = s->AcquireImage();
+
+
+		gui->prepareGui(d->getGraphicQueue(0), &commandBuffer[f], &image);
 
 
 
@@ -121,8 +142,7 @@ int main() {
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
 			});
 
-		commandBuffer[f].wait(2000000000);
-		commandBuffer[f].resetFence();
+		
 		commandBuffer[f].beginRecord();
 
 		
@@ -132,7 +152,7 @@ int main() {
 
 		pass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getFrameBuffer(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
-		//drawGui(&commandBuffer[f]);
+		gui->drawGui(d->getGraphicQueue(0) , &commandBuffer[f], &image);
 
 		commandBuffer[f].endRecord();
 
@@ -150,6 +170,9 @@ int main() {
 		if (!LavaCake::Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
 			continue;
 		}
+
+		debug++;
 	}
 	d->end();
+	
 }

@@ -97,14 +97,14 @@ namespace LavaCake {
 			Pipeline::SpecifyPipelineDepthAndStencilState(true, true, VK_COMPARE_OP_LESS_OR_EQUAL, false, 0.0f, 1.0f, false, {}, {}, m_depthStencilStateCreateInfo);
 			m_attachmentBlendStates = {
 				{
-					false,                          // VkBool32                 blendEnable
-					VK_BLEND_FACTOR_ONE,            // VkBlendFactor            srcColorBlendFactor
-					VK_BLEND_FACTOR_ONE,            // VkBlendFactor            dstColorBlendFactor
-					VK_BLEND_OP_ADD,                // VkBlendOp                colorBlendOp
-					VK_BLEND_FACTOR_ONE,            // VkBlendFactor            srcAlphaBlendFactor
-					VK_BLEND_FACTOR_ONE,            // VkBlendFactor            dstAlphaBlendFactor
-					VK_BLEND_OP_ADD,                // VkBlendOp                alphaBlendOp
-					VK_COLOR_COMPONENT_R_BIT |      // VkColorComponentFlags    colorWriteMask
+					VK_TRUE,																				// VkBool32                 blendEnable
+					VK_BLEND_FACTOR_SRC_ALPHA,											// VkBlendFactor            srcColorBlendFactor
+					VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,            // VkBlendFactor            dstColorBlendFactor
+					VK_BLEND_OP_ADD,																// VkBlendOp                colorBlendOp
+					VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,						// VkBlendFactor            srcAlphaBlendFactor
+					VK_BLEND_FACTOR_ZERO,														// VkBlendFactor            dstAlphaBlendFactor
+					VK_BLEND_OP_ADD,																// VkBlendOp                alphaBlendOp
+					VK_COLOR_COMPONENT_R_BIT |											// VkColorComponentFlags    colorWriteMask
 					VK_COLOR_COMPONENT_G_BIT |
 					VK_COLOR_COMPONENT_B_BIT |
 					VK_COLOR_COMPONENT_A_BIT
@@ -185,7 +185,7 @@ namespace LavaCake {
 
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
 			Viewport::SetScissorStateDynamically(buffer, 0, { scissor });
-
+			if (m_vertexBuffer->getBuffer() == VK_NULL_HANDLE)return;
 			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getBuffer() }, { new VkDeviceSize(0) });
 			if (m_vertexBuffer->isIndexed()) {
 				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer(), VkDeviceSize(0), VK_INDEX_TYPE_UINT16);

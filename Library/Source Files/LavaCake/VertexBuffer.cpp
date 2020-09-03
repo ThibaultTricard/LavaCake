@@ -56,7 +56,7 @@ namespace LavaCake {
 				m_vertices->insert(m_vertices->end(), m_meshs[i]->Data.begin(), m_meshs[i]->Data.end());
 			}
 
-
+			if (m_vertices->size() == 0)return;
 
 			InitVkDestroyer(logicalDevice, m_buffer);
 			InitVkDestroyer(logicalDevice, m_bufferMemory);
@@ -76,15 +76,15 @@ namespace LavaCake {
 
 				InitVkDestroyer(logicalDevice, m_indexBuffer);
 				InitVkDestroyer(logicalDevice, m_indexBufferMemory);
-				if (!Buffer::CreateBuffer(logicalDevice, sizeof(m_indices[0]) * m_indices->size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, *m_indexBuffer)) {
+				if (!Buffer::CreateBuffer(logicalDevice, sizeof(m_indices[0]) * m_indices->size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, *m_indexBuffer)) {
 					ErrorCheck::setError("Can't create vertices buffer");
 				}
 				
-				if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physicalDevice, logicalDevice, *m_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_indexBufferMemory)) {
+				if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physicalDevice, logicalDevice, *m_indexBuffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_indexBufferMemory)) {
 					ErrorCheck::setError("Can't allocate vertices buffer");
 				}
-				if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(float) * m_indices->size(), &(*m_indices)[0], *m_indexBuffer, 0, 0,
-					VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue, commandBuffer, {})) {
+				if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(uint16_t) * m_indices->size(), &(*m_indices)[0], *m_indexBuffer, 0, 0,
+					VK_ACCESS_INDEX_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue, commandBuffer, {})) {
 					ErrorCheck::setError("Can't update buffer memory");
 				}
 
@@ -121,10 +121,10 @@ namespace LavaCake {
 			VkDevice logicalDevice = d->getLogicalDevice();
 			if (m_indexed) {
 				Buffer::DestroyBuffer(logicalDevice, *m_indexBuffer);
-				vkFreeMemory(logicalDevice, *m_indexBufferMemory, VK_NULL_HANDLE);
+				Memory::FreeMemoryObject(logicalDevice, *m_indexBufferMemory);
 			}
 			Buffer::DestroyBuffer(logicalDevice, *m_buffer);
-			vkFreeMemory(logicalDevice, *m_bufferMemory, VK_NULL_HANDLE);
+			Memory::FreeMemoryObject(logicalDevice, *m_bufferMemory);
 		};
 	}
 }
