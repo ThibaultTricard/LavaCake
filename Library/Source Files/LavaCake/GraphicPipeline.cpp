@@ -183,10 +183,13 @@ namespace LavaCake {
 			VkViewport& viewport = m_viewportscissor.Viewports[0];
 			Viewport::SetViewportStateDynamically(buffer, 0, { viewport });
 
+			
+
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
 			Viewport::SetScissorStateDynamically(buffer, 0, { scissor });
 			if (m_vertexBuffer->getBuffer() == VK_NULL_HANDLE)return;
-			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getBuffer() }, { new VkDeviceSize(0) });
+			VkDeviceSize size(0);
+			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getBuffer() }, { &size });
 			if (m_vertexBuffer->isIndexed()) {
 				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer(), VkDeviceSize(0), VK_INDEX_TYPE_UINT16);
 			}
