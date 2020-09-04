@@ -26,6 +26,18 @@ namespace LavaCake {
 				if (!Image::CreateImageView(logical, m_image, VK_IMAGE_VIEW_TYPE_2D, imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageView)) {
 					ErrorCheck::setError("Can't create image view");
 				}
+
+				VkSemaphoreCreateInfo semaphore_create_info = {
+					VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,    // VkStructureType            sType
+					nullptr,                                    // const void               * pNext
+					0                                           // VkSemaphoreCreateFlags     flags
+				};
+
+				VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &*m_aquiredSemaphore);
+				if (VK_SUCCESS != result) {
+					//TODO : Raise error using error check
+					//std::cout << "Could not create a semaphore." << std::endl;
+				}
 			}
 
 			VkSemaphore getSemaphore() {
@@ -55,7 +67,9 @@ namespace LavaCake {
 
 		class SwapChain {
 			static SwapChain* m_swapChain;
-			SwapChain() {};
+			SwapChain() {
+				
+			};
 		public :
 			
 			static SwapChain* getSwapChain() {
@@ -114,6 +128,12 @@ namespace LavaCake {
 					//TODO : Raise error using error check
 					//std::cout << "Could not create a semaphore." << std::endl;
 				}
+
+				if (*m_swapchainImages[index].m_aquiredSemaphore != VK_NULL_HANDLE) {
+					vkDestroySemaphore(logical, *m_swapchainImages[index].m_aquiredSemaphore, nullptr);
+				}
+				
+
 				*m_swapchainImages[index].m_aquiredSemaphore = semaphore;
 				m_swapchainImages[index].m_index = index;
 				return m_swapchainImages[index];

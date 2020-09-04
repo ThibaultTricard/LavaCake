@@ -351,9 +351,11 @@ namespace LavaCake {
 
 		void RenderPass::setSwapChainImage(FrameBuffer& frameBuffer, SwapChainImage& image) {
 			if (m_khr_attachement != -1) {
+				
+				
 				Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-
+				Buffer::DestroyFramebuffer(logical, *frameBuffer.m_frameBuffer);
 				frameBuffer.m_images[m_khr_attachement] = image.getImage();
 				frameBuffer.m_imageViews[m_khr_attachement] = image.getView();
 				if (!Buffer::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
