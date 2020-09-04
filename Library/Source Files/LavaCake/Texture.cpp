@@ -4,7 +4,9 @@
 namespace LavaCake {
 	namespace Framework {
 
-
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//																																				Textrue Buffer 																																	//
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		TextureBuffer::TextureBuffer(char const * filename, int nbChannel, VkFormat f) {
 			int width, height;
@@ -68,6 +70,59 @@ namespace LavaCake {
 		VkImageLayout TextureBuffer::getLayout() {
 			return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		}
+
+
+
+
+
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//																																		Textrue Buffer 3D																																		//
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+		TextureBuffer3D::TextureBuffer3D(std::vector<unsigned char>* data, int width, int height, int depth, int nbChannel, VkFormat f) {
+			m_data = data;
+			m_width = width;
+			m_height = height;
+			m_nbChannel = nbChannel;
+			m_format = f;
+		};
+
+
+		void TextureBuffer3D::allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, VkPipelineStageFlagBits stageFlagBit) {
+			Framework::Device* d = LavaCake::Framework::Device::getDevice();
+			VkDevice logical = d->getLogicalDevice();
+			VkPhysicalDevice physical = d->getPhysicalDevice();
+
+			InitVkDestroyer(logical, m_sampler);
+			InitVkDestroyer(logical, m_image);
+			InitVkDestroyer(logical, m_imageMemory);
+			InitVkDestroyer(logical, m_imageView);
+			if (!Image::CreateCombinedImageSampler(physical, logical, VK_IMAGE_TYPE_2D, m_format, { m_width, m_height, m_depth },
+				1, 1, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, false, VK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_ASPECT_COLOR_BIT, VK_FILTER_LINEAR,
+				VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT,
+				VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
+				false, *m_sampler, *m_image, *m_imageMemory, *m_imageView)) {
+				ErrorCheck::setError("Can't create an image sampler for this TextureBuffer");
+			}
+
+			VkImageSubresourceLayers image_subresource_layer = {
+				VK_IMAGE_ASPECT_COLOR_BIT,    // VkImageAspectFlags     aspectMask
+				0,                            // uint32_t               mipLevel
+				0,                            // uint32_t               baseArrayLayer
+				1                             // uint32_t               layerCount
+			};
+			if (!Memory::UseStagingBufferToUpdateImageWithDeviceLocalMemoryBound(physical, logical, static_cast<VkDeviceSize>(m_data->size()),
+				&(*m_data)[0], *m_image, image_subresource_layer, { 0, 0, 0 }, { m_width, m_height, m_depth }, VK_IMAGE_LAYOUT_UNDEFINED,
+				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+				stageFlagBit, queue, commandBuffer, {})) {
+				ErrorCheck::setError("Can't send the TextureBuffer data to the GPU");
+			}
+		}
+
+
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//																																				Frame Buffer																																		//

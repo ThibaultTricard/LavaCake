@@ -89,6 +89,35 @@ namespace LavaCake {
 			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
 		};
 
+
+		class TextureBuffer3D : public TextureBuffer {
+		public:
+
+			/**
+			* construct a texture buffer from a array of data.
+			*
+			* @param data : the data that will be used of the texture.
+			* @param int width : the width of the texture.
+			* @param int height : the height of the texture.
+			* @param int depth : the depth of the texture.
+			* @param int nbChannel : the number of channel that contain the texture between 1 and 4.
+			* @param VkFormat f : the format of theTexture buffer.
+			*
+			*/
+			TextureBuffer3D(std::vector<unsigned char>* data, int width, int height, int depth, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
+
+			/**
+			* create and allocate the Texture buffer on the device
+			*
+			*/
+			virtual void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+
+		private:
+
+			uint32_t																	m_depth = 1;
+			
+		};
+
 		class CubeMap : public TextureBuffer {
 		public:
 
