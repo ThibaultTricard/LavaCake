@@ -26,7 +26,7 @@ namespace LavaCake {
       GraphicPipeline* pipeline = nullptr;
       PushConstant* pushConstant = nullptr;
       Framework::VertexBuffer* vertex_buffer = nullptr;
-      Helpers::Mesh::Mesh mesh;
+      Helpers::Mesh::Mesh* mesh;
 
 
       

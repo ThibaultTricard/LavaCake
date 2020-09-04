@@ -31,10 +31,10 @@ namespace LavaCake {
 			std::vector<VkVertexInputBindingDescription>				m_bindingDescriptions;
 			VkDestroyer(VkBuffer)																m_buffer;
 			VkDestroyer(VkDeviceMemory)													m_bufferMemory;
-			std::vector<float>*																	m_vertices;
+			std::vector<float>																	m_vertices;
 			VkDestroyer(VkBuffer)																m_indexBuffer;
 			VkDestroyer(VkDeviceMemory)													m_indexBufferMemory;
-			std::vector<uint16_t>*															m_indices;
+			std::vector<uint16_t>																m_indices;
 			std::vector <LavaCake::Helpers::Mesh::Mesh*>				m_meshs;
 			bool																								m_indexed;
 		};

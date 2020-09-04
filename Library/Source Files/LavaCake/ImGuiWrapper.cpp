@@ -209,9 +209,9 @@ namespace LavaCake {
       TextureBuffer* fontBuffer = new TextureBuffer(textureData, width, height, 4);
       fontBuffer->allocate(queue->getHandle(), cmdBuff->getHandle());
 
+			mesh = new Helpers::Mesh::Mesh();
 
-
-      mesh = {
+      *mesh = {
             {
           // positions
           -1.0f, -1.0f,
@@ -234,7 +234,7 @@ namespace LavaCake {
         true
       };;
 
-      vertex_buffer = new Framework::VertexBuffer({ &mesh }, { 2,2,4 });
+      vertex_buffer = new Framework::VertexBuffer({ mesh }, { 2,2,4 });
       vertex_buffer->allocate(queue->getHandle(), cmdBuff->getHandle());
 
       pushConstant = new PushConstant();
@@ -270,41 +270,37 @@ namespace LavaCake {
       size_t vertex_size = draw_data->TotalVtxCount * sizeof(ImDrawVert)/sizeof(float);
       size_t index_size = draw_data->TotalIdxCount ;
 
-      std::vector<float> vertices;
-      std::vector<uint16_t>indices;
+			mesh->Data.clear();
+			mesh->index.clear();
 
       uint16_t offset = 0;
       for (int n = 0; n < draw_data->CmdListsCount; n++)
       {
         const ImDrawList* cmd_list = draw_data->CmdLists[n];
         for (int j = 0; j < cmd_list->VtxBuffer.Size; j++) {
-          vertices.push_back(cmd_list->VtxBuffer.Data[j].pos[0]);
-          vertices.push_back(cmd_list->VtxBuffer.Data[j].pos[1]);
-          vertices.push_back(cmd_list->VtxBuffer.Data[j].uv[0]);
-          vertices.push_back(cmd_list->VtxBuffer.Data[j].uv[1]);
+					mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].pos[0]);
+					mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].pos[1]);
+					mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].uv[0]);
+					mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].uv[1]);
           uint8_t a = static_cast<uint8_t>((cmd_list->VtxBuffer.Data[j].col & 0xFF000000) >> 24);
           uint8_t r = static_cast<uint8_t>((cmd_list->VtxBuffer.Data[j].col & 0x00FF0000) >> 16);
           uint8_t g = static_cast<uint8_t>((cmd_list->VtxBuffer.Data[j].col & 0x0000FF00) >> 8);
           uint8_t b = static_cast<uint8_t>(cmd_list->VtxBuffer.Data[j].col & 0x000000FF);
-          vertices.push_back(float(b) / 255.0f);
-          vertices.push_back(float(g) / 255.0f);
-          vertices.push_back(float(r) / 255.0f);
-          vertices.push_back(float(a) / 255.0f);
+					mesh->Data.push_back(float(b) / 255.0f);
+					mesh->Data.push_back(float(g) / 255.0f);
+					mesh->Data.push_back(float(r) / 255.0f);
+					mesh->Data.push_back(float(a) / 255.0f);
         }
         for (int j = 0; j < cmd_list->IdxBuffer.Size; j++) {
-          indices.push_back(static_cast<uint16_t>(cmd_list->IdxBuffer.Data[j] + offset));
+					mesh->index.push_back(static_cast<uint16_t>(cmd_list->IdxBuffer.Data[j] + offset));
         }
-        offset = vertices.size()/8;
+        offset = mesh->Data.size()/8;
       }
 
-      mesh = {
-        vertices,
-        indices,
-        {{uint32_t(0),uint32_t(draw_data->TotalIdxCount)}},
-        true
-      };
+			
+			mesh->Parts =	{ {uint32_t(0),uint32_t(draw_data->TotalIdxCount)} };
 
-      vertex_buffer->swapMeshes({ &mesh });
+      vertex_buffer->swapMeshes({ mesh });
       vertex_buffer->allocate(queue->getHandle(), cmdBuff->getHandle());
 
       vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
