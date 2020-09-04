@@ -3,7 +3,7 @@
 using namespace LavaCake::Framework;
 int main() {
 
-	Window w("LavaCake HelloWorld", 1400, 1000);
+	Window w("LavaCake HelloWorld & Imgui", 1400, 1000);
 
 	ImGuiWrapper* gui = new ImGuiWrapper();
 
@@ -46,10 +46,10 @@ int main() {
 	pipeline->setFragmentModule(fragmentShader);
 	pipeline->setVeritices(triangle_vertex_buffer);
 
-	pass->addSubPass({ pipeline }, RenderPassFlag::SHOW_ON_SCREEN | RenderPassFlag::USE_COLOR | RenderPassFlag::USE_DEPTH | RenderPassFlag::OP_STORE_COLOR);
+	pass->addSubPass({ pipeline, gui->getPipeline() }, RenderPassFlag::SHOW_ON_SCREEN | RenderPassFlag::USE_COLOR | RenderPassFlag::USE_DEPTH | RenderPassFlag::OP_STORE_COLOR);
 	pass->addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	pass->addDependencies(0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
-	
+
 	pass->compile();
 
 	std::vector<FrameBuffer*> frameBuffers;
@@ -61,7 +61,8 @@ int main() {
 	int f = 0;
 	while (w.running()) {
 		w.UpdateInput();
-
+		f++;
+		f = f % nbFrames;
 		commandBuffer[f].wait(2000000000);
 		commandBuffer[f].resetFence();
 
@@ -123,16 +124,15 @@ int main() {
 		}
 
 		
-
+		gui->prepareGui(d->getGraphicQueue(0), &commandBuffer[f]);
 		
-		f++;
-		f = f % nbFrames;
+		
 		VkDevice logical = d->getLogicalDevice();
 		VkSwapchainKHR& swapchain = s->getHandle();
 		SwapChainImage& image = s->AcquireImage();
 
 
-		gui->prepareGui(d->getGraphicQueue(0), &commandBuffer[f], &image);
+	
 
 
 
@@ -152,7 +152,6 @@ int main() {
 
 		pass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getFrameBuffer(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
-		gui->drawGui(d->getGraphicQueue(0) , &commandBuffer[f], &image);
 
 		commandBuffer[f].endRecord();
 

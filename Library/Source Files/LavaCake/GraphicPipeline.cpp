@@ -97,7 +97,7 @@ namespace LavaCake {
 			Pipeline::SpecifyPipelineDepthAndStencilState(true, true, VK_COMPARE_OP_LESS_OR_EQUAL, false, 0.0f, 1.0f, false, {}, {}, m_depthStencilStateCreateInfo);
 			m_attachmentBlendStates = {
 				{
-					VK_TRUE,																				// VkBool32                 blendEnable
+					m_alphablending,																// VkBool32                 blendEnable
 					VK_BLEND_FACTOR_SRC_ALPHA,											// VkBlendFactor            srcColorBlendFactor
 					VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,            // VkBlendFactor            dstColorBlendFactor
 					VK_BLEND_OP_ADD,																// VkBlendOp                colorBlendOp

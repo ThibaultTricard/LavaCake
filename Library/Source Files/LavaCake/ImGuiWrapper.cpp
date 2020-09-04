@@ -9,6 +9,9 @@ namespace LavaCake {
     static void ImGui_ImplGlfw_Mouse_Position(GLFWwindow* window, double xpos, double ypos) {
       ImGuiIO& io = ImGui::GetIO();
       io.MousePos = ImVec2((float)xpos, (float)ypos);
+      if (s_PrevUserCallbackMousebutton!= NULL) {
+        s_PrevUserCallbackMouseMotion(window, xpos, ypos);
+      }
     }
     static const char* ImGui_ImplGlfw_GetClipboardText(void* user_data)
     {
@@ -22,8 +25,6 @@ namespace LavaCake {
 
     void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     {
-//      if (g_PrevUserCallbackMousebutton != NULL)
-//        g_PrevUserCallbackMousebutton(window, button, action, mods);
 
       if (action == GLFW_PRESS && button >= 0) {
         ImGuiIO& io = ImGui::GetIO();
@@ -33,23 +34,23 @@ namespace LavaCake {
         ImGuiIO& io = ImGui::GetIO();
         io.MouseDown[button] = false;
       }
+      if (s_PrevUserCallbackMousebutton != NULL) {
+        s_PrevUserCallbackMousebutton(window, button, action, mods);
+      }
     }
 
     void ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     {
-//      if (g_PrevUserCallbackScroll != NULL)
-//        g_PrevUserCallbackScroll(window, xoffset, yoffset);
-
       ImGuiIO& io = ImGui::GetIO();
       io.MouseWheelH += (float)xoffset;
       io.MouseWheel += (float)yoffset;
+      if (s_PrevUserCallbackScroll != NULL) {
+        s_PrevUserCallbackScroll(window, xoffset, yoffset);
+      }
     }
 
     void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-//      if (g_PrevUserCallbackKey != NULL)
-//        g_PrevUserCallbackKey(window, key, scancode, action, mods);
-
       ImGuiIO& io = ImGui::GetIO();
       if (action == GLFW_PRESS)
         io.KeysDown[key] = true;
@@ -65,15 +66,19 @@ namespace LavaCake {
 #else
       io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
 #endif
+      if (s_PrevUserCallbackKey != NULL) {
+        s_PrevUserCallbackKey(window,  key,  scancode,  action,  mods);
+      }
     }
 
     void ImGui_ImplGlfw_CharCallback(GLFWwindow* window, unsigned int c)
     {
-//      if (g_PrevUserCallbackChar != NULL)
-//        g_PrevUserCallbackChar(window, c);
-
       ImGuiIO& io = ImGui::GetIO();
       io.AddInputCharacter(c);
+
+      if (s_PrevUserCallbackChar != NULL) {
+        s_PrevUserCallbackChar(window,c);
+      }
     }
 
     // glsl_shader.vert, compiled with:
@@ -204,8 +209,6 @@ namespace LavaCake {
       TextureBuffer* fontBuffer = new TextureBuffer(textureData, width, height, 4);
       fontBuffer->allocate(queue->getHandle(), cmdBuff->getHandle());
 
-      
-      pass = new RenderPass();
 
 
       mesh = {
@@ -254,15 +257,11 @@ namespace LavaCake {
       pipeline->addPushContant(pushConstant, VK_SHADER_STAGE_VERTEX_BIT);
       pipeline->addTextureBuffer(fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
       pipeline->SetCullMode(VK_CULL_MODE_NONE);
-      pass->addSubPass({ pipeline }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::OP_STORE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_DEPTH);
+      pipeline->setAlphaBlending(true);
 
-      pass->compile();
-
-      frame = new FrameBuffer(size.width, size.height);
-      pass->prepareOutputFrameBuffer(*frame);
     }
     
-    void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer* cmdBuff, SwapChainImage* img) {
+    void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer* cmdBuff) {
       LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
       VkExtent2D size = s->size();
       ImGui::Render();
@@ -318,17 +317,6 @@ namespace LavaCake {
     }
 
 
-    void ImGuiWrapper::drawGui(Queue* queue, CommandBuffer* cmdBuff, SwapChainImage* img) {
-      LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
-      VkExtent2D size = s->size();
-
-      pass->setSwapChainImage(*frame, *img);
-      
-      pass->draw(cmdBuff->getHandle(), frame->getFrameBuffer(), { 0,0 }, { size.width, size.height }, { {0.0f,0.0f,0.0f,0.0f}, { 1.0f, 0 }});
-    }
-
-
-
     void prepareImput(GLFWwindow* window) {
 
       // Setup back-end capabilities flags
@@ -337,7 +325,6 @@ namespace LavaCake {
       io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)
       io.BackendPlatformName = "imgui_impl_glfw";
 
-      // Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
       io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
       io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
       io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
@@ -361,48 +348,20 @@ namespace LavaCake {
       io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
       io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
 
-      //io.SetClipboardTextFn = ImGui_ImplGlfw_SetClipboardText;
-      //io.GetClipboardTextFn = ImGui_ImplGlfw_GetClipboardText;
-      //io.ClipboardUserData = g_Window;
+
 #if defined(_WIN32)
       io.ImeWindowHandle = (void*)glfwGetWin32Window(window);
 #endif
 
-      // Create mouse cursors
-      // (By design, on X11 cursors are user configurable and some cursors may be missing. When a cursor doesn't exist,
-      // GLFW will emit an error which will often be printed by the app, so we temporarily disable error reporting.
-      // Missing cursors will return NULL and our _UpdateMouseCursor() function will use the Arrow cursor instead.)
       GLFWerrorfun prev_error_callback = glfwSetErrorCallback(NULL);
-/*      g_MouseCursors[ImGuiMouseCursor_Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_ResizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_ResizeEW] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-#if GLFW_HAS_NEW_CURSORS
-      g_MouseCursors[ImGuiMouseCursor_ResizeAll] = glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_NotAllowed] = glfwCreateStandardCursor(GLFW_NOT_ALLOWED_CURSOR);
-#else
-      g_MouseCursors[ImGuiMouseCursor_ResizeAll] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-      g_MouseCursors[ImGuiMouseCursor_NotAllowed] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-#endif
-      glfwSetErrorCallback(prev_error_callback);
-      */
-      // Chain GLFW callbacks: our callbacks will call the user's previously installed callbacks, if any.
-      //g_PrevUserCallbackMousebutton = NULL;
-      //g_PrevUserCallbackScroll = NULL;
-      //g_PrevUserCallbackKey = NULL;
-      //g_PrevUserCallbackChar = NULL;
-      
-      //g_InstalledCallbacks = true;
-      glfwSetMouseButtonCallback(window, ImGui_ImplGlfw_MouseButtonCallback);
-      glfwSetScrollCallback(window, ImGui_ImplGlfw_ScrollCallback);
-      glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback);
-      glfwSetCharCallback(window, ImGui_ImplGlfw_CharCallback);
-      glfwSetCursorPosCallback(window, ImGui_ImplGlfw_Mouse_Position);
+
+
+
+      s_PrevUserCallbackMousebutton = glfwSetMouseButtonCallback(window, ImGui_ImplGlfw_MouseButtonCallback);
+      s_PrevUserCallbackScroll = glfwSetScrollCallback(window, ImGui_ImplGlfw_ScrollCallback);
+      s_PrevUserCallbackKey = glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback);
+      s_PrevUserCallbackChar = glfwSetCharCallback(window, ImGui_ImplGlfw_CharCallback);
+      s_PrevUserCallbackMouseMotion = glfwSetCursorPosCallback(window, ImGui_ImplGlfw_Mouse_Position);
          
     }
   }

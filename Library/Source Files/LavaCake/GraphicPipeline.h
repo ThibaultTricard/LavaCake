@@ -76,6 +76,10 @@ namespace LavaCake {
 			*/
 			void setSubpassNumber(uint32_t number);
 
+
+			void setAlphaBlending(bool v) {
+				m_alphablending = v ? VK_TRUE : VK_FALSE;
+			};
 			
 
 		private:
@@ -114,6 +118,8 @@ namespace LavaCake {
 
 			VkCullModeFlagBits																		m_CullMode = VK_CULL_MODE_BACK_BIT;
 
+
+			VkBool32																							m_alphablending = VK_FALSE;
 
 			bool																									m_compiled = false;
 		};
