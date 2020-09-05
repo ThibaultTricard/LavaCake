@@ -63,7 +63,7 @@ namespace LavaCake {
 			Buffer::SetBufferMemoryBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, { post_transfer_transition });
 		}
 
-		VkBuffer& UniformBuffer::getBuffer() {
+		VkBuffer& UniformBuffer::getHandle() {
 			return *m_buffer;
 		};
 

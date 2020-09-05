@@ -211,7 +211,7 @@ int main() {
 
 
 
-		shadowMapPass.draw(commandBuffer[f].getHandle(), shadow_map_buffer->getFrameBuffer(), { 0,0 }, {shadowsize, shadowsize });
+		shadowMapPass.draw(commandBuffer[f].getHandle(), shadow_map_buffer->getHandle(), { 0,0 }, {shadowsize, shadowsize });
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
@@ -230,11 +230,11 @@ int main() {
 
 
 
-		renderPass.draw(commandBuffer[f].getHandle(), scene_buffer->getFrameBuffer(), { 0,0 }, scene_buffer->size(), { { 0.0f, 0.0f, 1.0f, 1.0f }, { 1.0f, 0 } });
+		renderPass.draw(commandBuffer[f].getHandle(), scene_buffer->getHandle(), { 0,0 }, scene_buffer->size(), { { 0.0f, 0.0f, 1.0f, 1.0f }, { 1.0f, 0 } });
 
 
 		consolePass.setSwapChainImage(*frameBuffers[f], image);
-		consolePass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getFrameBuffer(), { 0,0 }, {size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		consolePass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, {size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {

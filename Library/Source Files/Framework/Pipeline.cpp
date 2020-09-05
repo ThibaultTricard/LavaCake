@@ -486,7 +486,7 @@ namespace LavaCake {
 					VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,							// VkDescriptorType                     TargetDescriptorType
 					{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
 						{
-							m_uniforms[i].buffer->getBuffer(),					// VkBuffer                             buffer
+							m_uniforms[i].buffer->getHandle(),					// VkBuffer                             buffer
 							0,																					// VkDeviceSize                         offset
 							VK_WHOLE_SIZE																// VkDeviceSize                         range
 						}

@@ -209,9 +209,9 @@ namespace LavaCake {
       TextureBuffer* fontBuffer = new TextureBuffer(textureData, width, height, 4);
       fontBuffer->allocate(queue->getHandle(), cmdBuff->getHandle());
 
-			mesh = new Helpers::Mesh::Mesh();
+      m_mesh = new Helpers::Mesh::Mesh();
 
-      *mesh = {
+      *m_mesh = {
             {
           // positions
           -1.0f, -1.0f,
@@ -234,30 +234,30 @@ namespace LavaCake {
         true
       };;
 
-      vertex_buffer = new Framework::VertexBuffer({ mesh }, { 2,2,4 });
-      vertex_buffer->allocate(queue->getHandle(), cmdBuff->getHandle());
+      m_vertexBuffer = new Framework::VertexBuffer({ m_mesh }, { 2,2,4 });
+      m_vertexBuffer->allocate(queue->getHandle(), cmdBuff->getHandle());
 
-      pushConstant = new PushConstant();
-      pushConstant->addVariable("uScale", vec2f({0.0f,0.0f}));
-      pushConstant->addVariable("uTranslate", vec2f({0.0f,0.0f}));
+      m_pushConstant = new PushConstant();
+      m_pushConstant->addVariable("uScale", vec2f({0.0f,0.0f}));
+      m_pushConstant->addVariable("uTranslate", vec2f({0.0f,0.0f}));
 
       std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv)/sizeof(unsigned char));
       memcpy(&vertSpirv[0], __glsl_shader_vert_spv, sizeof(__glsl_shader_vert_spv));
       std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
       memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
 
-      pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+      m_pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
       VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
-      pipeline->setVextexShader(sphereVertex);
+      m_pipeline->setVextexShader(sphereVertex);
 
       FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
-      pipeline->setFragmentModule(sphereFrag);
-      pipeline->setVeritices(vertex_buffer);
+      m_pipeline->setFragmentModule(sphereFrag);
+      m_pipeline->setVeritices(m_vertexBuffer);
 
-      pipeline->addPushContant(pushConstant, VK_SHADER_STAGE_VERTEX_BIT);
-      pipeline->addTextureBuffer(fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
-      pipeline->SetCullMode(VK_CULL_MODE_NONE);
-      pipeline->setAlphaBlending(true);
+      m_pipeline->addPushContant(m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT);
+      m_pipeline->addTextureBuffer(fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
+      m_pipeline->SetCullMode(VK_CULL_MODE_NONE);
+      m_pipeline->setAlphaBlending(true);
 
     }
     
@@ -270,45 +270,43 @@ namespace LavaCake {
       size_t vertex_size = draw_data->TotalVtxCount * sizeof(ImDrawVert)/sizeof(float);
       size_t index_size = draw_data->TotalIdxCount ;
 
-			mesh->Data.clear();
-			mesh->index.clear();
+			m_mesh->Data.clear();
+			m_mesh->index.clear();
 
       uint16_t offset = 0;
       for (int n = 0; n < draw_data->CmdListsCount; n++)
       {
         const ImDrawList* cmd_list = draw_data->CmdLists[n];
         for (int j = 0; j < cmd_list->VtxBuffer.Size; j++) {
-					mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].pos[0]);
-					mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].pos[1]);
-					mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].uv[0]);
-					mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].uv[1]);
+          m_mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].pos[0]);
+          m_mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].pos[1]);
+          m_mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].uv[0]);
+          m_mesh->Data.push_back(cmd_list->VtxBuffer.Data[j].uv[1]);
           uint8_t a = static_cast<uint8_t>((cmd_list->VtxBuffer.Data[j].col & 0xFF000000) >> 24);
           uint8_t r = static_cast<uint8_t>((cmd_list->VtxBuffer.Data[j].col & 0x00FF0000) >> 16);
           uint8_t g = static_cast<uint8_t>((cmd_list->VtxBuffer.Data[j].col & 0x0000FF00) >> 8);
           uint8_t b = static_cast<uint8_t>(cmd_list->VtxBuffer.Data[j].col & 0x000000FF);
-					mesh->Data.push_back(float(b) / 255.0f);
-					mesh->Data.push_back(float(g) / 255.0f);
-					mesh->Data.push_back(float(r) / 255.0f);
-					mesh->Data.push_back(float(a) / 255.0f);
+          m_mesh->Data.push_back(float(b) / 255.0f);
+          m_mesh->Data.push_back(float(g) / 255.0f);
+          m_mesh->Data.push_back(float(r) / 255.0f);
+          m_mesh->Data.push_back(float(a) / 255.0f);
         }
         for (int j = 0; j < cmd_list->IdxBuffer.Size; j++) {
-					mesh->index.push_back(static_cast<uint16_t>(cmd_list->IdxBuffer.Data[j] + offset));
+            m_mesh->index.push_back(static_cast<uint16_t>(cmd_list->IdxBuffer.Data[j] + offset));
         }
-        offset = mesh->Data.size()/8;
+        offset = m_mesh->Data.size()/8;
       }
 
 			
-			mesh->Parts =	{ {uint32_t(0),uint32_t(draw_data->TotalIdxCount)} };
+      m_mesh->Parts =	{ {uint32_t(0),uint32_t(draw_data->TotalIdxCount)} };
 
-      vertex_buffer->swapMeshes({ mesh });
-      vertex_buffer->allocate(queue->getHandle(), cmdBuff->getHandle());
+      m_vertexBuffer->swapMeshes({ m_mesh });
+      m_vertexBuffer->allocate(queue->getHandle(), cmdBuff->getHandle());
 
       vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
       vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });
-      pushConstant->setVariable("uScale", scale);
-      pushConstant->setVariable("uTranslate", translate);
-
-
+      m_pushConstant->setVariable("uScale", scale);
+      m_pushConstant->setVariable("uTranslate", translate);
 
     }
 
@@ -348,10 +346,7 @@ namespace LavaCake {
 #if defined(_WIN32)
       io.ImeWindowHandle = (void*)glfwGetWin32Window(window);
 #endif
-
       GLFWerrorfun prev_error_callback = glfwSetErrorCallback(NULL);
-
-
 
       s_PrevUserCallbackMousebutton = glfwSetMouseButtonCallback(window, ImGui_ImplGlfw_MouseButtonCallback);
       s_PrevUserCallbackScroll = glfwSetScrollCallback(window, ImGui_ImplGlfw_ScrollCallback);

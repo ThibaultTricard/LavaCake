@@ -50,7 +50,7 @@ namespace LavaCake {
 				LIBRARY_TYPE															m_vulkanLibrary;
 				VkDestroyer(VkInstance)										m_instance;
 				VkDestroyer(VkSurfaceKHR)                 m_presentationSurface;
-				VkDestroyer(VkCommandPool)                m_commandPool;
+				VkDestroyer(VkCommandPool)								m_commandPool;
 				std::vector<GraphicQueue>									m_graphicQueues;
 				std::vector<ComputeQueue>									m_computeQueues;
 				PresentationQueue*												m_presentQueue = new PresentationQueue();

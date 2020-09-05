@@ -31,7 +31,7 @@ namespace LavaCake {
 
 			void update(VkCommandBuffer& commandBuffer, bool all = true);
 
-			VkBuffer& getBuffer();
+			VkBuffer& getHandle();
     private :
 
 			void copyToStageMemory(bool all = false);

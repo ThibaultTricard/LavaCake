@@ -14,7 +14,7 @@ namespace LavaCake {
 
 			std::vector <LavaCake::Helpers::Mesh::Mesh*> getMeshs();
 			
-			VkBuffer& getBuffer();
+			VkBuffer& getHandle();
 			
 			VkBuffer& getIndexBuffer();
 

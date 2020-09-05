@@ -94,7 +94,7 @@ namespace LavaCake {
 			return m_meshs;
 		}
 
-		VkBuffer& VertexBuffer::getBuffer() {
+		VkBuffer& VertexBuffer::getHandle() {
 			return *m_buffer;
 		}
 

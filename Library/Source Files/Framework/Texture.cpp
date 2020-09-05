@@ -149,7 +149,7 @@ namespace LavaCake {
 			return *m_sampler;
 		}
 
-		VkFramebuffer FrameBuffer::getFrameBuffer() {
+		VkFramebuffer FrameBuffer::getHandle() {
 			return *m_frameBuffer;
 		}
 

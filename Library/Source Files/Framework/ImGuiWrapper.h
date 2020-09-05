@@ -20,13 +20,13 @@ namespace LavaCake {
        
 
       GraphicPipeline* getPipeline() {
-        return pipeline;
+        return m_pipeline;
       }
     private : 
-      GraphicPipeline* pipeline = nullptr;
-      PushConstant* pushConstant = nullptr;
-      Framework::VertexBuffer* vertex_buffer = nullptr;
-      Helpers::Mesh::Mesh* mesh;
+      GraphicPipeline* m_pipeline = nullptr;
+      PushConstant* m_pushConstant = nullptr;
+      Framework::VertexBuffer* m_vertexBuffer = nullptr;
+      Helpers::Mesh::Mesh* m_mesh;
 
 
       

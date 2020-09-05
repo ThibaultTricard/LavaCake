@@ -47,7 +47,6 @@ namespace LavaCake {
 			*/
 			void compile(VkRenderPass& renderpass);
 
-			
 
 			void reloadShaders();
 

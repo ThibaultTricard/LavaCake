@@ -190,7 +190,7 @@ namespace LavaCake {
 			* return the FrameBuffer handle
 			*
 			*/
-			VkFramebuffer getFrameBuffer();
+			VkFramebuffer getHandle();
 
 			vec2u size() {
 				return { m_width , m_height };
