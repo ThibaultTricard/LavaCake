@@ -82,6 +82,11 @@ set(EXTERNAL_HEADER_FILES
 ./External/lib/glfw/include/GLFW/glfw3native.h
 )
 
+
+set(LAVACAKE_INCLUDE_DIR
+"External" "Library/Common Files" "Library/Source Files" "External/lib/glfw/include/GLFW"
+)
+
 source_group( "External" FILES ${EXTERNAL_HEADER_FILES}, ${VULKAN_HEADER_FILES} ${IMGUI_SOURCE} )
 
 set(LIBRARY_COMMON_DIR "Library/Common Files")
@@ -203,7 +208,9 @@ source_group( "Library\\Framework\\Source" FILES ${LIBRARY_FRAMEWORK_SOURCE} )
 # Recipes Library generation
 add_library( LavaCake ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${LIBRARY_COMMON_SOURCE_FILES} ${LIBRARY_HELPER_HEADER} ${LIBRARY_HELPER_SOURCE}  ${LIBRARY_CORE_HEADER} ${LIBRARY_CORE_SOURCE} ${LIBRARY_FRAMEWORK_HEADER} ${LIBRARY_FRAMEWORK_SOURCE} ${IMGUI_SOURCE})
 target_link_libraries( LavaCake ${PLATFORM_LIBRARY} glfw )
-target_include_directories( LavaCake PUBLIC "External" "Library/Common Files" "Library/Source Files" )
+target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} )
+
+
 
 
 ###############################################################
@@ -221,7 +228,7 @@ macro( list_samples )
 
 			add_executable( ${SAMPLE} ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${SAMPLES_COMMON_HEADER_FILES} ${SAMPLES_COMMON_SOURCE_FILES} ${SAMPLE_SOURCE_FILES} )
 			target_link_libraries( ${SAMPLE} ${PLATFORM_LIBRARY} LavaCake )
-			target_include_directories( ${SAMPLE} PUBLIC "External" "Library/Common Files" "Library/Source Files" )
+			target_include_directories( ${SAMPLE} PUBLIC ${LAVACAKE_INCLUDE_DIR} )
 			set_property( TARGET ${SAMPLE} PROPERTY FOLDER "Samples" )
 		ENDFOREACH()
 endmacro()
