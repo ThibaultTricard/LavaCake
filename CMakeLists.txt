@@ -1,31 +1,4 @@
-﻿# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the "Software"),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and / or sell copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following conditions:
-#
-# The below copyright notice and this permission notice shall be included
-# in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-#
-# Vulkan Cookbook
-# ISBN: 9781786468154
-# © Packt Publishing Limited
-#
-# Author:   Pawel Lapinski
-# LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
-#
-# CMakeLists
-
-cmake_minimum_required (VERSION 3.0)
+﻿cmake_minimum_required (VERSION 3.0)
 project( "LavaCake" )
 
 set(CMAKE_CXX_STANDARD 17)
@@ -33,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 set( CMAKE_SUPPRESS_REGENERATION true )
+
+option(BUILD_LAVACAKE_EXAMPLES "Build LavaCake examples" true)
 
 ###############################################################
 # Environment setup                                           #
@@ -96,30 +71,137 @@ set(IMGUI_SOURCE
 # External files
 find_package(vulkan)
 
-file( GLOB EXTERNAL_HEADER_FILES "External/*.h" )
-#file( GLOB VULKAN_HEADER_FILES ${Vulkan_INCLUDE_DIRS}/vulkan/*.h )
-source_group( "External" FILES ${EXTERNAL_HEADER_FILES}, ${VULKAN_HEADER_FILES} )
+set(EXTERNAL_HEADER_FILES
+./External/stb_image.h
+./External/tiny_obj_loader.h
+./External/vk_platform.h
+./External/vulkan.h
+./External/vulkan_core.h
+./External/vulkan_win32.h
+./External/lib/glfw/include/GLFW/glfw3.h
+./External/lib/glfw/include/GLFW/glfw3native.h
+)
 
-# Common files
-file( GLOB LIBRARY_COMMON_HEADER_FILES "Library/Common Files/*.h" "Library/Common Files/*.inl" )
-file( GLOB LIBRARY_COMMON_SOURCE_FILES "Library/Common Files/*.cpp" )
-source_group( "Common Files\\Header Files" FILES ${LIBRARY_COMMON_HEADER_FILES} )
-source_group( "Common Files" FILES ${LIBRARY_COMMON_SOURCE_FILES} )
+source_group( "External" FILES ${EXTERNAL_HEADER_FILES}, ${VULKAN_HEADER_FILES} ${IMGUI_SOURCE} )
 
-# Recipes Library files
-macro( list_recipes_files FILE_TYPE SUB_GROUP OUT_VARIABLE )
-	file( GLOB CHAPTERS RELATIVE "${CMAKE_CURRENT_LIST_DIR}/Library/Source Files" "${CMAKE_CURRENT_LIST_DIR}/Library/Source Files/*" )
-	FOREACH( CHAPTER ${CHAPTERS} )
-		file( GLOB CHAPTER_FILES "Library/Source Files/${CHAPTER}/${FILE_TYPE}" )
-		source_group( "Source Files\\${CHAPTER}\\${SUB_GROUP}" FILES ${CHAPTER_FILES} )
-		list( APPEND ${OUT_VARIABLE} ${CHAPTER_FILES} )
-	ENDFOREACH()
-endmacro( list_recipes_files )
-list_recipes_files( "*.h" "Header Files" LIBRARY_HEADER_FILES )
-list_recipes_files( "*.cpp" "" LIBRARY_SOURCE_FILES )
+set(LIBRARY_COMMON_DIR "Library/Common Files")
+
+set(LIBRARY_COMMON_HEADER_FILES
+${LIBRARY_COMMON_DIR}/AllHeaders.h
+${LIBRARY_COMMON_DIR}/Common.h
+${LIBRARY_COMMON_DIR}/Tools.h
+${LIBRARY_COMMON_DIR}/VulkanDestroyer.h
+${LIBRARY_COMMON_DIR}/VulkanFunctions.h
+${LIBRARY_COMMON_DIR}/ListOfVulkanFunctions.inl
+)
+
+set(LIBRARY_COMMON_SOURCE_FILES
+${LIBRARY_COMMON_DIR}/Common.cpp
+${LIBRARY_COMMON_DIR}/Tools.cpp
+${LIBRARY_COMMON_DIR}/VulkanFunctions.cpp
+)
+
+source_group( "Library\\Common\\Header" FILES ${LIBRARY_COMMON_HEADER_FILES} )
+source_group( "Library\\Common\\Source" FILES ${LIBRARY_COMMON_SOURCE_FILES} )
+
+
+set(LIBRARY_HELPER_DIR "Library/Source Files/Helpers")
+set(LIBRARY_HELPER_HEADER 
+${LIBRARY_HELPER_DIR}/helpers.h
+)
+
+set(LIBRARY_HELPER_SOURCE 
+${LIBRARY_HELPER_DIR}/helpers.cpp
+)
+
+source_group( "Library\\Helpers\\Header" FILES ${LIBRARY_HELPER_HEADER} )
+source_group( "Library\\Helpers\\Source" FILES ${LIBRARY_HELPER_SOURCE} )
+
+set(LIBRARY_CORE_DIR "Library/Source Files/Core")
+set(LIBRARY_CORE_HEADER 
+${LIBRARY_CORE_DIR}/VulkanBuffer.h
+${LIBRARY_CORE_DIR}/VulkanCommand.h
+${LIBRARY_CORE_DIR}/VulkanDescriptor.h
+${LIBRARY_CORE_DIR}/VulkanDevice.h
+${LIBRARY_CORE_DIR}/VulkanFence.h
+${LIBRARY_CORE_DIR}/VulkanImage.h
+${LIBRARY_CORE_DIR}/VulkanInstance.h
+${LIBRARY_CORE_DIR}/VulkanLoader.h
+${LIBRARY_CORE_DIR}/VulkanMemory.h
+${LIBRARY_CORE_DIR}/VulkanPresentation.h
+${LIBRARY_CORE_DIR}/VulkanQueue.h
+${LIBRARY_CORE_DIR}/VulkanSemaphore.h
+${LIBRARY_CORE_DIR}/VulkanSwapChain.h
+${LIBRARY_CORE_DIR}/VulkanViewport.h
+)
+
+set(LIBRARY_CORE_SOURCE 
+${LIBRARY_CORE_DIR}/VulkanBuffer.cpp
+${LIBRARY_CORE_DIR}/VulkanCommand.cpp
+${LIBRARY_CORE_DIR}/VulkanDescriptor.cpp
+${LIBRARY_CORE_DIR}/VulkanDevice.cpp
+${LIBRARY_CORE_DIR}/VulkanFence.cpp
+${LIBRARY_CORE_DIR}/VulkanImage.cpp
+${LIBRARY_CORE_DIR}/VulkanInstance.cpp
+${LIBRARY_CORE_DIR}/VulkanLoader.cpp
+${LIBRARY_CORE_DIR}/VulkanMemory.cpp
+${LIBRARY_CORE_DIR}/VulkanPresentation.cpp
+${LIBRARY_CORE_DIR}/VulkanQueue.cpp
+${LIBRARY_CORE_DIR}/VulkanSemaphore.cpp
+${LIBRARY_CORE_DIR}/VulkanSwapChain.cpp
+${LIBRARY_CORE_DIR}/VulkanViewport.cpp
+)
+
+
+source_group( "Library\\Core\\Header" FILES ${LIBRARY_CORE_HEADER} )
+source_group( "Library\\Core\\Source" FILES ${LIBRARY_CORE_SOURCE} )
+
+set(LIBRARY_FRAMEWORK_DIR "Library/Source Files/Framework")
+
+set(LIBRARY_FRAMEWORK_HEADER 
+${LIBRARY_FRAMEWORK_DIR}/CommandBuffer.h
+${LIBRARY_FRAMEWORK_DIR}/ComputePipeline.h
+${LIBRARY_FRAMEWORK_DIR}/Constant.h
+${LIBRARY_FRAMEWORK_DIR}/Device.h
+${LIBRARY_FRAMEWORK_DIR}/ErrorCheck.h
+${LIBRARY_FRAMEWORK_DIR}/Framework.h
+${LIBRARY_FRAMEWORK_DIR}/GraphicPipeline.h
+${LIBRARY_FRAMEWORK_DIR}/ImGUIWrapper.h
+${LIBRARY_FRAMEWORK_DIR}/Pipeline.h
+${LIBRARY_FRAMEWORK_DIR}/Queue.h
+${LIBRARY_FRAMEWORK_DIR}/RenderPass.h
+${LIBRARY_FRAMEWORK_DIR}/ShaderModule.h
+${LIBRARY_FRAMEWORK_DIR}/SwapChain.h
+${LIBRARY_FRAMEWORK_DIR}/Texture.h
+${LIBRARY_FRAMEWORK_DIR}/UniformBuffer.h
+${LIBRARY_FRAMEWORK_DIR}/VertexBuffer.h
+${LIBRARY_FRAMEWORK_DIR}/Window.h
+)
+
+set(LIBRARY_FRAMEWORK_SOURCE
+${LIBRARY_FRAMEWORK_DIR}/CommandBuffer.cpp
+${LIBRARY_FRAMEWORK_DIR}/ComputePipeline.cpp
+${LIBRARY_FRAMEWORK_DIR}/Constant.cpp
+${LIBRARY_FRAMEWORK_DIR}/Device.cpp
+${LIBRARY_FRAMEWORK_DIR}/ErrorCheck.cpp
+${LIBRARY_FRAMEWORK_DIR}/GraphicPipeline.cpp
+${LIBRARY_FRAMEWORK_DIR}/ImGUIWrapper.cpp
+${LIBRARY_FRAMEWORK_DIR}/Pipeline.cpp
+${LIBRARY_FRAMEWORK_DIR}/RenderPass.cpp
+${LIBRARY_FRAMEWORK_DIR}/SwapChain.cpp
+${LIBRARY_FRAMEWORK_DIR}/Texture.cpp
+${LIBRARY_FRAMEWORK_DIR}/UniformBuffer.cpp
+${LIBRARY_FRAMEWORK_DIR}/VertexBuffer.cpp
+${LIBRARY_FRAMEWORK_DIR}/Window.cpp
+)
+
+source_group( "Library\\Framework\\Header" FILES ${LIBRARY_FRAMEWORK_HEADER} )
+source_group( "Library\\Framework\\Source" FILES ${LIBRARY_FRAMEWORK_SOURCE} )
+
+
 
 # Recipes Library generation
-add_library( LavaCake ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${LIBRARY_COMMON_SOURCE_FILES} ${LIBRARY_HEADER_FILES} ${LIBRARY_SOURCE_FILES} ${IMGUI_SOURCE} )
+add_library( LavaCake ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${LIBRARY_COMMON_SOURCE_FILES} ${LIBRARY_HELPER_HEADER} ${LIBRARY_HELPER_SOURCE}  ${LIBRARY_CORE_HEADER} ${LIBRARY_CORE_SOURCE} ${LIBRARY_FRAMEWORK_HEADER} ${LIBRARY_FRAMEWORK_SOURCE} ${IMGUI_SOURCE})
 target_link_libraries( LavaCake ${PLATFORM_LIBRARY} glfw )
 target_include_directories( LavaCake PUBLIC "External" "Library/Common Files" "Library/Source Files" )
 
@@ -128,7 +210,7 @@ target_include_directories( LavaCake PUBLIC "External" "Library/Common Files" "L
 # Sample projects                                             #
 ###############################################################
 
-
+if (BUILD_LAVACAKE_EXAMPLES)
 # Sample projects generation
 macro( list_samples )
 		file( GLOB SAMPLES RELATIVE "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files" "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files/*" )
@@ -146,5 +228,7 @@ endmacro()
 
 # Sample projects generation
 list_samples()
+file( COPY "${CMAKE_CURRENT_LIST_DIR}/Samples/Data" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}" )
+endif()
 
-file( COPY "${CMAKE_CURRENT_LIST_DIR}/Samples/Data" DESTINATION "${CMAKE_CURRENT_LIST_DIR}/build" )
+

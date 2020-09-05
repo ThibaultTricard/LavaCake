@@ -32,19 +32,19 @@
 #ifndef ALL_HEADERS
 #define ALL_HEADERS
 
-#include "Vulkan/VulkanBuffer.h"
-#include "Vulkan/VulkanCommand.h"
-#include "Vulkan/VulkanDescriptor.h"
-#include "Vulkan/VulkanDevice.h"
-#include "Vulkan/VulkanFence.h"
-#include "Vulkan/VulkanImage.h"
-#include "Vulkan/VulkanInstance.h"
-#include "Vulkan/VulkanLoader.h"
-#include "Vulkan/VulkanMemory.h"
-#include "Vulkan/VulkanPresentation.h"
-#include "Vulkan/VulkanQueue.h"
-#include "Vulkan/VulkanSwapchain.h"
-#include "Vulkan/VulkanViewport.h"
+#include "Core/VulkanBuffer.h"
+#include "Core/VulkanCommand.h"
+#include "Core/VulkanDescriptor.h"
+#include "Core/VulkanDevice.h"
+#include "Core/VulkanFence.h"
+#include "Core/VulkanImage.h"
+#include "Core/VulkanInstance.h"
+#include "Core/VulkanLoader.h"
+#include "Core/VulkanMemory.h"
+#include "Core/VulkanPresentation.h"
+#include "Core/VulkanQueue.h"
+#include "Core/VulkanSwapchain.h"
+#include "Core/VulkanViewport.h"
 
 #include "Helpers/helpers.h"
 

@@ -1,4 +1,4 @@
-#include "LavaCake/Framework.h"
+#include "Framework/Framework.h"
 #define GLFW_INCLUDE_NONE
 #define GLFW_EXPOSE_NATIVE_WIN32 true
 #include "glfw3.h"
