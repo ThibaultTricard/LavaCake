@@ -84,7 +84,7 @@ set(EXTERNAL_HEADER_FILES
 
 
 set(LAVACAKE_INCLUDE_DIR
-"External" "Library/Common Files" "Library/Source Files" "External/lib/glfw/include/GLFW"
+"${CMAKE_CURRENT_LIST_DIR}/External" "${CMAKE_CURRENT_LIST_DIR}/Library/Common Files" "${CMAKE_CURRENT_LIST_DIR}/Library/Source Files" "${CMAKE_CURRENT_LIST_DIR}/External/lib/glfw/include/GLFW"
 )
 
 source_group( "External" FILES ${EXTERNAL_HEADER_FILES}, ${VULKAN_HEADER_FILES} ${IMGUI_SOURCE} )
@@ -226,9 +226,9 @@ macro( list_samples )
 			file( GLOB SAMPLE_SOURCE_FILES "Samples/Source Files/${SAMPLE}/*.cpp" )
 			source_group( "" FILES ${SAMPLE_SOURCE_FILES} )
 
-			add_executable( ${SAMPLE} ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${SAMPLES_COMMON_HEADER_FILES} ${SAMPLES_COMMON_SOURCE_FILES} ${SAMPLE_SOURCE_FILES} )
-			target_link_libraries( ${SAMPLE} ${PLATFORM_LIBRARY} LavaCake )
-			target_include_directories( ${SAMPLE} PUBLIC ${LAVACAKE_INCLUDE_DIR} )
+			add_executable( ${SAMPLE} ${SAMPLE_SOURCE_FILES} )
+			target_link_libraries( ${SAMPLE} LavaCake )
+			#target_include_directories( ${SAMPLE} PUBLIC ${LAVACAKE_INCLUDE_DIR} )
 			set_property( TARGET ${SAMPLE} PROPERTY FOLDER "Samples" )
 		ENDFOREACH()
 endmacro()

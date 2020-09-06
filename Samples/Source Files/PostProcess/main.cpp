@@ -169,7 +169,7 @@ int main() {
 
 	vec2d polars = { 0.0,0.0 };
 	while (w.running()) {
-		w.UpdateInput();
+		w.updateInput();
 		f++;
 		f = f % nbFrames;
 

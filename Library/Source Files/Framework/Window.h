@@ -59,7 +59,7 @@ namespace LavaCake {
 
 
 
-			void UpdateInput();
+			void updateInput();
 
 			bool running() {
 				return !glfwWindowShouldClose(m_window);

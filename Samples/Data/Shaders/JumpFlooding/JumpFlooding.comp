@@ -1,0 +1,41 @@
+#version 450
+
+layout( local_size_x = 1) in;
+layout( set = 0, binding = 0 , rgba32f) uniform coherent imageBuffer seed;
+layout( set = 0, binding = 1 ) uniform UniformBuffer {
+	ivec2 dim;
+	int pass;
+};
+
+
+void main() {
+	vec3 data[9];
+	int n = max(dim.x, dim.y);
+	int step = int(max(n/pow(2.0,pass),1));
+	ivec2 pos = ivec2(gl_WorkGroupID.xy);
+
+	for(int i = -1; i <= 1; i ++){
+		for(int j = -1; j <= 1; j ++){
+			ivec2 samplePos = pos + ivec2(i*step, j*step);
+			if(samplePos.x >= 0&& samplePos.y>= 0 && samplePos.x<dim.x && samplePos.y<dim.y){
+				data[(i+1) + (j+1)*3] = imageLoad(seed, int(samplePos.x +  samplePos.y * dim.x )).xyz;
+			}else{
+				data[(i+1) + (j+1)*3] = vec3(-n);
+			}
+		}
+	}
+
+	float l = 10000000000000.0;
+	int index = 10;
+	for(int i = 0; i < 9 ; i++){
+		float l1 =(data[i].x-gl_WorkGroupID.x) * (data[i].x-gl_WorkGroupID.x) + (data[i].y-gl_WorkGroupID.y) * (data[i].y-gl_WorkGroupID.y);
+		if(l1 < l){
+			l = l1;
+			index =i;
+		}
+	}
+
+	if(index < 9){
+		imageStore(seed, int(gl_WorkGroupID.x +  gl_WorkGroupID.y * dim ) , vec4(data[index],l));
+	}
+}

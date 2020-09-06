@@ -135,7 +135,7 @@ int main() {
 			});
 
 
-		w.UpdateInput();
+		w.updateInput();
 		f++;
 		f = f % nbFrames;
 

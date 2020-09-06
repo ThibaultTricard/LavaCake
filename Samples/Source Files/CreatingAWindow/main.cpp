@@ -8,8 +8,7 @@ int main() {
 
 
 	while (w.running()) {
-	
-		w.UpdateInput();
+		w.updateInput();
 
 	}
 }

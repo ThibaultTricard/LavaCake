@@ -124,7 +124,7 @@ int main() {
 
 	int f = 0;
 	while (w.running()) {
-		w.UpdateInput();
+		w.updateInput();
 		f++;
 		f = f % nbFrames;
 

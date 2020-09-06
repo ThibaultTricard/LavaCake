@@ -95,6 +95,21 @@ namespace LavaCake {
 
       ~CommandBuffer() {
 
+        Device* d = Device::getDevice();
+        VkDevice logical = d->getLogicalDevice();
+
+        for (size_t t = 0; t < m_semaphores.size(); t++) {
+          if (*m_semaphores[t] != VK_NULL_HANDLE) {
+            vkDestroySemaphore(logical, *m_semaphores[t], nullptr);
+          }
+        }
+        if (*m_fence != VK_NULL_HANDLE) {
+          vkDestroyFence(logical, *m_fence, nullptr);
+        }
+        if (m_commandBuffer != VK_NULL_HANDLE) {
+          std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
+          LavaCake::Command::FreeCommandBuffers(logical, d->getCommandPool(), buffers);
+        }
       };
 
     private:

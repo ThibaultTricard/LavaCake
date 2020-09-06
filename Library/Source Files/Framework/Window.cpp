@@ -83,10 +83,7 @@ namespace LavaCake {
 		}
 
 
-		
-
-
-		void Window::UpdateInput() {
+		void Window::updateInput() {
 			glfwPollEvents();
 		}
 
