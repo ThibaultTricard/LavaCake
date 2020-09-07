@@ -196,11 +196,26 @@ namespace LavaCake {
 				return { m_width , m_height };
 			}
 
+			~FrameBuffer() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				
+
+				for (uint32_t i = 0; i < m_images.size(); i++) {
+					if (i != m_swapChainImageIndex) {
+						Image::DestroyImage(logical, m_images[i]);
+						Image::DestroyImageView(logical, m_imageViews[i]);
+					}
+				}
+
+				Buffer::DestroySampler(logical, *m_sampler);
+				Buffer::DestroyFramebuffer(logical, *m_frameBuffer);
+			}
 
 		private :
 
-			uint32_t																	m_width = 0;
-			uint32_t																	m_height = 0;
+			uint32_t																								m_width = 0;
+			uint32_t																								m_height = 0;
 
 			VkDestroyer(VkFramebuffer)															m_frameBuffer;
 			VkDestroyer(VkSampler)																	m_sampler;
@@ -208,6 +223,8 @@ namespace LavaCake {
 			std::vector<VkImage>																		m_images;
 			std::vector<VkImageView>																m_imageViews;
 			std::vector<VkImageLayout>															m_layouts;
+
+			uint32_t																								m_swapChainImageIndex;
 			friend class RenderPass;
 		};
 

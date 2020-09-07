@@ -76,6 +76,15 @@ namespace LavaCake {
 				m_stageParameter.ShaderModule = *m_module;
 			}
 
+			~ShaderModule() {
+				m_path = "";
+				m_spirv.clear();
+				m_stageParameter = {};
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				DestroyShaderModule(logical, *m_module);
+			};
+
 		private :
 
 			bool CreateShaderModule(VkDevice                           logical_device,

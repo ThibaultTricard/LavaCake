@@ -358,6 +358,7 @@ namespace LavaCake {
 				Buffer::DestroyFramebuffer(logical, *frameBuffer.m_frameBuffer);
 				frameBuffer.m_images[m_khr_attachement] = image.getImage();
 				frameBuffer.m_imageViews[m_khr_attachement] = image.getView();
+				frameBuffer.m_swapChainImageIndex = m_khr_attachement;
 				if (!Buffer::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
 					ErrorCheck::setError("Can't create this FrameBuffer");
 				}

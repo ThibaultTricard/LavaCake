@@ -25,19 +25,18 @@ int main() {
 		data[i] = -512.0f;
 	}
 
-	//setting up 3 seeds
+	int nseeds = 200;
 
-	data[(60 + 60 * 512) * 4] = 60.0f;
-	data[(60 + 60 * 512) * 4 + 1] = 60.0f;
-	data[(60 + 60 * 512) * 4 + 2] = 0.2;
+	//setting up seeds
+	for (int i = 0; i < nseeds; i++) {
+		int x = float(std::rand()) / float(RAND_MAX) * 512;
+		int y = float(std::rand()) / float(RAND_MAX) * 512;
 
-	data[(400 + 256 * 512) * 4] = 400.0f;
-	data[(400 + 256 * 512) * 4 + 1] = 256.0f;
-	data[(400 + 256 * 512) * 4 + 2] = 0.6;
-
-	data[(256 + 450 * 512) * 4] = 256.0f;
-	data[(256 + 450 * 512) * 4 + 1] = 450.0f;
-	data[(256 + 450 * 512) * 4 + 2] = 0.8;
+		data[(x + y * 512) * 4] = x;
+		data[(x + y * 512) * 4 + 1] = y;
+		data[(x + y * 512) * 4 + 2] = float(i)/ nseeds;
+		data[(x + y * 512) * 4 + 3] = 0.0;
+	}
 
 	seeds->allocate(queue->getHandle(), cmbBuff->getHandle(), data, uint32_t(4));
 
