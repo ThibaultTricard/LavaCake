@@ -28,6 +28,11 @@ namespace LavaCake {
 				m_handle = handle;
 			}
 
+
+			~Queue() {
+
+			}
+
 		protected:
 			VkQueue*		m_handle ;
 			uint32_t		m_familyIndex =0;

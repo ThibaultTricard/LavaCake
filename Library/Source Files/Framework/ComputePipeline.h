@@ -34,7 +34,9 @@ namespace LavaCake {
 			*/
 			void compute(const VkCommandBuffer buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ);
 
-
+			~ComputePipeline() {
+			
+			}
 		private :
 			
 			ComputeShaderModule*																	m_computeModule = NULL;

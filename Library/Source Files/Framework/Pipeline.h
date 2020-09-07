@@ -98,6 +98,15 @@ namespace LavaCake {
 				return m_attachments;
 			};
 
+			~Pipeline() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				DestroyPipeline(logical, *m_pipeline);
+				DestroyPipelineLayout(logical, *m_pipelineLayout);
+				Descriptor::DestroyDescriptorPool(logical, *m_descriptorPool);
+				Descriptor::DestroyDescriptorSetLayout(logical, *m_descriptorSetLayout);
+			};
+
 		protected :
 			virtual void generateDescriptorLayout();
 

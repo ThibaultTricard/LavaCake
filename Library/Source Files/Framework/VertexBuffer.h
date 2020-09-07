@@ -26,6 +26,16 @@ namespace LavaCake {
 			
 			bool isIndexed();
 
+			~VertexBuffer() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				Buffer::DestroyBuffer(logical, *m_buffer);
+				Memory::FreeMemoryObject(logical, *m_bufferMemory);
+
+				Buffer::DestroyBuffer(logical, *m_indexBuffer);
+				Memory::FreeMemoryObject(logical, *m_indexBufferMemory);
+			}
+
 		private :
 			std::vector<VkVertexInputAttributeDescription>			m_attributeDescriptions;
 			std::vector<VkVertexInputBindingDescription>				m_bindingDescriptions;

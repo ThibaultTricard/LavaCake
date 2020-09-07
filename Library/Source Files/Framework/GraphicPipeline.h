@@ -80,6 +80,9 @@ namespace LavaCake {
 				m_alphablending = v ? VK_TRUE : VK_FALSE;
 			};
 			
+			~GraphicPipeline() {
+
+			}
 
 		private:
 

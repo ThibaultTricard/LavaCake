@@ -22,6 +22,13 @@ namespace LavaCake {
       GraphicPipeline* getPipeline() {
         return m_pipeline;
       }
+
+      ~ImGuiWrapper() {
+        delete m_pipeline;
+        delete m_pushConstant;
+        delete m_vertexBuffer;
+      }
+
     private : 
       GraphicPipeline* m_pipeline = nullptr;
       PushConstant* m_pushConstant = nullptr;

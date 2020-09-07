@@ -32,6 +32,17 @@ namespace LavaCake {
 			void update(VkCommandBuffer& commandBuffer, bool all = true);
 
 			VkBuffer& getHandle();
+
+      ~UniformBuffer() {
+        Device* d = Device::getDevice();
+        VkDevice logical = d->getLogicalDevice();
+        Buffer::DestroyBuffer(logical, *m_buffer);
+        Memory::FreeMemoryObject(logical, *m_bufferMemory);
+
+        Buffer::DestroyBuffer(logical, *m_stagingBuffer);
+        Memory::FreeMemoryObject(logical, *m_stagingBufferMemory);
+      }
+
     private :
 
 			void copyToStageMemory(bool all = false);

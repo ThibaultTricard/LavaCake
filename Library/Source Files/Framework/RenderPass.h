@@ -83,6 +83,13 @@ namespace LavaCake {
 
 			void setSwapChainImage(FrameBuffer& FrameBuffer, SwapChainImage& image);
 
+
+			~RenderPass() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				DestroyRenderPass(logical, *m_renderPass);
+			}
+
 		private : 
 
 
