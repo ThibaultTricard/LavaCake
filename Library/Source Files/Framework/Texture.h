@@ -70,6 +70,17 @@ namespace LavaCake {
 				return m_height;
 			}
 
+			~TextureBuffer() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+
+
+				Image::DestroyImage(logical, *m_image);
+				Image::DestroyImageView(logical, *m_imageView);
+				Buffer::DestroySampler(logical, *m_sampler);
+				Memory::FreeMemoryObject(logical, *m_imageMemory);
+			}
+
 		protected :
 
 			TextureBuffer() {};
@@ -210,6 +221,7 @@ namespace LavaCake {
 
 				Buffer::DestroySampler(logical, *m_sampler);
 				Buffer::DestroyFramebuffer(logical, *m_frameBuffer);
+				Memory::FreeMemoryObject(logical, *m_imageMemory);
 			}
 
 		private :
@@ -245,6 +257,16 @@ namespace LavaCake {
 
 			VkImage getImage();
 
+			~Attachment() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+
+
+				Image::DestroyImage(logical, *m_image);
+				Image::DestroyImageView(logical, *m_imageView);
+				Memory::FreeMemoryObject(logical, *m_imageMemory);
+			}
+
 		private : 
 
 			int																	m_width = 0;
@@ -268,6 +290,17 @@ namespace LavaCake {
 			virtual VkImageLayout getLayout();
 
 			VkImageView getImageView();
+
+			~StorageImage() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+
+
+				Image::DestroyImage(logical, *m_image);
+				Image::DestroyImageView(logical, *m_imageView);
+				Memory::FreeMemoryObject(logical, *m_imageMemory);
+			}
+
 
 		private:
 
@@ -293,6 +326,14 @@ namespace LavaCake {
 			VkBuffer getBuffer();
 
 			VkBufferView getBufferView();
+
+			~TexelBuffer() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				Buffer::DestroyBuffer(logical, *m_buffer);
+				Buffer::DestroyBufferView(logical, *m_bufferView);
+				Memory::FreeMemoryObject(logical, *m_bufferMemory);
+			}
 
 		private : 
 
