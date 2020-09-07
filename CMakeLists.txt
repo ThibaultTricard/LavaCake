@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.0)
 project( "LavaCake" )
 
 set(CMAKE_CXX_STANDARD 17)
@@ -79,7 +79,7 @@ set(EXTERNAL_HEADER_FILES
 ./External/vulkan_core.h
 ./External/vulkan_win32.h
 ./External/lib/glfw/include/GLFW/glfw3.h
-./External/lib/glfw/include/GLFW/glfw3native.h
+./External/lib/glfw/include/GLFW/glfw3native.h 
 )
 
 
@@ -87,7 +87,7 @@ set(LAVACAKE_INCLUDE_DIR
 "${CMAKE_CURRENT_LIST_DIR}/External" "${CMAKE_CURRENT_LIST_DIR}/Library/Common Files" "${CMAKE_CURRENT_LIST_DIR}/Library/Source Files" "${CMAKE_CURRENT_LIST_DIR}/External/lib/glfw/include/GLFW"
 )
 
-source_group( "External" FILES ${EXTERNAL_HEADER_FILES}, ${VULKAN_HEADER_FILES} ${IMGUI_SOURCE} )
+source_group( "External" FILES ${EXTERNAL_HEADER_FILES} ${VULKAN_HEADER_FILES} ${IMGUI_SOURCE} )
 
 set(LIBRARY_COMMON_DIR "Library/Common Files")
 
@@ -228,7 +228,6 @@ macro( list_samples )
 
 			add_executable( ${SAMPLE} ${SAMPLE_SOURCE_FILES} )
 			target_link_libraries( ${SAMPLE} LavaCake )
-			#target_include_directories( ${SAMPLE} PUBLIC ${LAVACAKE_INCLUDE_DIR} )
 			set_property( TARGET ${SAMPLE} PROPERTY FOLDER "Samples" )
 		ENDFOREACH()
 endmacro()
