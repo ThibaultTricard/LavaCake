@@ -6,6 +6,7 @@
 #include "Device.h"
 #include "ErrorCheck.h"
 #include "SwapChain.h"
+#include "CommandBuffer.h"
 
 namespace LavaCake {
 	namespace Framework {
@@ -327,6 +328,9 @@ namespace LavaCake {
 
 			VkBufferView getBufferView();
 
+
+			void readBack(VkQueue& queue, CommandBuffer* cmdBuff, std::vector<float>& data);
+
 			~TexelBuffer() {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
@@ -340,6 +344,8 @@ namespace LavaCake {
 			VkDestroyer(VkBuffer)																m_buffer;
 			VkDestroyer(VkDeviceMemory)													m_bufferMemory;
 			VkDestroyer(VkBufferView)														m_bufferView;
+
+			uint32_t																						m_dataSize = 0;
 
 		};
 	}

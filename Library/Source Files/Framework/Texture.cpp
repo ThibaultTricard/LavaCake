@@ -342,7 +342,7 @@ namespace LavaCake {
 			Device* d = Device::getDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkDevice logical = d->getLogicalDevice();
-
+			m_dataSize = rawdata.size();
 			VkFormat format = VK_FORMAT_R32_SFLOAT;
 			if (dataSize == 2) {
 				format = VK_FORMAT_R32G32_SFLOAT;
@@ -355,7 +355,7 @@ namespace LavaCake {
 			}
 
 			if (!LavaCake::Buffer::CreateStorageTexelBuffer(physical, logical, format, sizeof(rawdata[0]) * rawdata.size(),
-				VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | stageFlagBit, false,
+				VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT| stageFlagBit, false,
 				*m_buffer, *m_bufferMemory, *m_bufferView)) {
 				ErrorCheck::setError("Can't create Texel Buffer");
 			}
@@ -372,6 +372,54 @@ namespace LavaCake {
 
 		VkBufferView TexelBuffer::getBufferView() {
 			return *m_bufferView;
+		}
+
+		void TexelBuffer::readBack(VkQueue& queue, CommandBuffer* cmdBuff, std::vector<float>& data) {
+			Device* d = Device::getDevice();
+			VkPhysicalDevice physical = d->getPhysicalDevice();
+			VkDevice logical = d->getLogicalDevice();
+			VkDestroyer(VkBuffer) staging_buffer;
+
+			data = std::vector<float>(m_dataSize);
+			InitVkDestroyer(logical, staging_buffer);
+			if (!Buffer::CreateBuffer(logical, sizeof(float) * m_dataSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT, *staging_buffer)) {
+				
+			}
+
+			VkDestroyer(VkDeviceMemory) memory_object;
+			InitVkDestroyer(logical, memory_object);
+			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physical, logical, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
+				
+			}
+
+			
+			cmdBuff->wait(2000000);
+			cmdBuff->resetFence();
+			cmdBuff->beginRecord();
+
+			Buffer::SetBufferMemoryBarrier(cmdBuff->getHandle(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, { { *m_buffer, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED } });
+
+			Memory::CopyDataBetweenBuffers(cmdBuff->getHandle(), *m_buffer, *staging_buffer, { { 0, 0, sizeof(float) * m_dataSize } });
+
+			Buffer::SetBufferMemoryBarrier(cmdBuff->getHandle(), VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, { { *m_buffer, VK_ACCESS_TRANSFER_WRITE_BIT, 0, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED } });
+
+			cmdBuff->endRecord();
+
+			if (!Command::SubmitCommandBuffersToQueue(queue, {}, { cmdBuff->getHandle() }, {}, cmdBuff->getFence())) {
+
+			}
+
+			cmdBuff->wait(2000000);
+			cmdBuff->resetFence();
+			void* local_pointer;
+			VkResult result = vkMapMemory(logical, *memory_object, 0, sizeof(float) * m_dataSize, 0, &local_pointer);
+			if (VK_SUCCESS != result) {
+				//std::cout << "Could not map memory object." << std::endl;
+				//return false;
+			}
+			std::memcpy(&data[0], local_pointer, static_cast<size_t>(sizeof(float) * m_dataSize));
+			vkUnmapMemory(logical, *memory_object);
+
 		}
 	}
 }
