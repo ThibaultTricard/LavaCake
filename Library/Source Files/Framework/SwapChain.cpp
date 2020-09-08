@@ -34,7 +34,7 @@ namespace LavaCake {
 			}
 
 			for (uint32_t i = 0; i < m_images.size(); ++i) {
-				m_swapchainImages.push_back(SwapChainImage(m_size, m_format, m_images[i]));
+				m_swapchainImages.push_back(new SwapChainImage(m_size, m_format, m_images[i]));
 			}
 		}
 	}

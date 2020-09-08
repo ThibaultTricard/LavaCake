@@ -16,6 +16,8 @@ namespace LavaCake {
 
 		class SwapChainImage {
 		public:
+			
+			SwapChainImage(){}
 
 			SwapChainImage(VkExtent2D size, VkFormat imageFormat, VkImage image) {
 				Device* d = Device::getDevice();
@@ -68,7 +70,7 @@ namespace LavaCake {
 				if (m_aquiredSemaphore != VK_NULL_HANDLE) {
 					vkDestroySemaphore(logical, *m_aquiredSemaphore, nullptr);
 				}
-			};
+			}
 
 		private:
 			uint32_t																	m_index =0;
@@ -89,10 +91,14 @@ namespace LavaCake {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 				m_swapchainImages.clear();
+				for (uint32_t i = 0; i < m_swapchainImages.size(); i++) {
+					delete m_swapchainImages[i];
+				}
 				for (size_t i = 0; i < m_images.size(); i++) {
 					Image::DestroyImage(logical, m_images[i]);
 				}
 				LavaCake::Swapchain::DestroySwapchain(logical, *m_handle);
+
 			};
 
 		public :
@@ -106,6 +112,8 @@ namespace LavaCake {
 
 			static void destroy() {
 				delete m_swapChain;
+
+				
 			}
 
 			VkSwapchainKHR& getHandle() {
@@ -158,14 +166,14 @@ namespace LavaCake {
 					//std::cout << "Could not create a semaphore." << std::endl;
 				}
 
-				if (*m_swapchainImages[index].m_aquiredSemaphore != VK_NULL_HANDLE) {
-					vkDestroySemaphore(logical, *m_swapchainImages[index].m_aquiredSemaphore, nullptr);
+				if (*m_swapchainImages[index]->m_aquiredSemaphore != VK_NULL_HANDLE) {
+					vkDestroySemaphore(logical, *m_swapchainImages[index]->m_aquiredSemaphore, nullptr);
 				}
 				
 
-				*m_swapchainImages[index].m_aquiredSemaphore = semaphore;
-				m_swapchainImages[index].m_index = index;
-				return m_swapchainImages[index];
+				*m_swapchainImages[index]->m_aquiredSemaphore = std::move(semaphore);
+				m_swapchainImages[index]->m_index = index;
+				return *m_swapchainImages[index];
 			}
 
 		private :
@@ -176,7 +184,7 @@ namespace LavaCake {
 			const VkFormat														m_depthFormat = VK_FORMAT_D16_UNORM;
 			VkExtent2D																m_size = {uint32_t(0), uint32_t(0)};
 
-			std::vector<SwapChainImage>								m_swapchainImages;
+			std::vector<SwapChainImage*>							m_swapchainImages;
 
 			std::vector<VkImage>											m_images;
 		};
