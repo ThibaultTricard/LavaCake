@@ -34,7 +34,7 @@ namespace LavaCake {
 		};
 
 
-		void Device::initDevices(int nbComputeQueue, int nbGraphicQueue, WindowParameters	WindowParams, VkPhysicalDeviceFeatures* desired_device_features) {
+		void Device::initDevices(int nbComputeQueue, int nbGraphicQueue, WindowParameters&	WindowParams, VkPhysicalDeviceFeatures* desired_device_features) {
 			if (!Loader::ConnectWithVulkanLoaderLibrary(m_vulkanLibrary)) {
 				ErrorCheck::setError("Could not connect with Vulkan while initializing the device");
 			}
@@ -79,7 +79,7 @@ namespace LavaCake {
 				std::vector<char const*> device_extensions;
 				std::vector <LavaCake::Queue::QueueInfo > requested_queues;
 				for (int i = 0; i < nbGraphicQueue; i++) {
-					if (!m_graphicQueues[0].initIndex(&physical_device)) {
+					if (!m_graphicQueues[i].initIndex(&physical_device)) {
 						goto endloop;
 					}
 				}

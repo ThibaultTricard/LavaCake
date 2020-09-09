@@ -38,8 +38,8 @@ namespace LavaCake {
 
 			ComputeQueue* getComputeQueue(int i);
 
-			void initDevices( int nbComputeQueue, int nbGraphicQueue, WindowParameters	WindowParams, VkPhysicalDeviceFeatures * desired_device_features = nullptr);
-
+			void initDevices( int nbComputeQueue, int nbGraphicQueue, WindowParameters&	WindowParams, VkPhysicalDeviceFeatures * desired_device_features = nullptr);
+ 
 			//Make sure every command send to the device are finished
 			void end();
 
