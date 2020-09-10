@@ -22,7 +22,7 @@ namespace LavaCake {
 				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logicalDevice = d->getLogicalDevice();
 				if (!GetBinaryFileContents(path, m_spirv)) {
-					ErrorCheck::setError("Can't reed the Shader file ");
+					ErrorCheck::setError("Can't read the Shader file ");
 				}
 				
 				InitVkDestroyer(logicalDevice, m_module);
@@ -65,7 +65,7 @@ namespace LavaCake {
 				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logicalDevice = d->getLogicalDevice();
 				if (!GetBinaryFileContents(m_path, m_spirv)) {
-					ErrorCheck::setError("Can't reed the Shader file ");
+					ErrorCheck::setError("Can't read the Shader file ");
 				}
 
 				InitVkDestroyer(logicalDevice, m_module);

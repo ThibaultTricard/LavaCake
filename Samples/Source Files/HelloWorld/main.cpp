@@ -6,7 +6,6 @@
 
 using namespace LavaCake::Framework;
 int main() {
-	glfwInit();
 
 	Window w("LavaCake HelloWorld", 512, 512);
 

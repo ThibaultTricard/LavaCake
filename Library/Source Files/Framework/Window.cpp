@@ -76,8 +76,7 @@ namespace LavaCake {
         ErrorCheck::setError("Failed to create window");
 			}
 
-			m_cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-			glfwSetCursor(m_window, m_cursor);
+			
 			Mouse::init(m_window);
 
 		}

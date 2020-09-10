@@ -70,7 +70,6 @@ namespace LavaCake {
 
 			~Window() {
 				glfwSetCursor(m_window, NULL);
-				glfwDestroyCursor(m_cursor);
 				glfwDestroyWindow(m_window);
 				glfwTerminate();
 			}
@@ -79,9 +78,6 @@ namespace LavaCake {
 
 			GLFWwindow*																m_window;
 			WindowParameters													m_windowParams;
-
-
-			GLFWcursor*																m_cursor;
 
 			Mouse* m_mouse;
 		};

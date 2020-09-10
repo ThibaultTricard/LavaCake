@@ -393,7 +393,7 @@ namespace LavaCake {
 			}
 
 			
-			cmdBuff->wait(2000000);
+			cmdBuff->wait(UINT32_MAX);
 			cmdBuff->resetFence();
 			cmdBuff->beginRecord();
 
@@ -409,7 +409,7 @@ namespace LavaCake {
 
 			}
 
-			cmdBuff->wait(2000000);
+			cmdBuff->wait(UINT32_MAX);
 			cmdBuff->resetFence();
 			void* local_pointer;
 			VkResult result = vkMapMemory(logical, *memory_object, 0, sizeof(float) * m_dataSize, 0, &local_pointer);
