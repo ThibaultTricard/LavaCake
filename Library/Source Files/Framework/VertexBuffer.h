@@ -44,7 +44,7 @@ namespace LavaCake {
 			std::vector<float>																	m_vertices;
 			VkDestroyer(VkBuffer)																m_indexBuffer;
 			VkDestroyer(VkDeviceMemory)													m_indexBufferMemory;
-			std::vector<uint16_t>																m_indices;
+			std::vector<uint32_t>																m_indices;
 			std::vector <LavaCake::Helpers::Mesh::Mesh*>				m_meshs;
 			bool																								m_indexed;
 		};

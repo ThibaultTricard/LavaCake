@@ -273,7 +273,7 @@ namespace LavaCake {
 			m_mesh->Data.clear();
 			m_mesh->index.clear();
 
-      uint16_t offset = 0;
+      uint32_t offset = 0;
       for (int n = 0; n < draw_data->CmdListsCount; n++)
       {
         const ImDrawList* cmd_list = draw_data->CmdLists[n];
@@ -292,7 +292,7 @@ namespace LavaCake {
           m_mesh->Data.push_back(float(a) / 255.0f);
         }
         for (int j = 0; j < cmd_list->IdxBuffer.Size; j++) {
-            m_mesh->index.push_back(static_cast<uint16_t>(cmd_list->IdxBuffer.Data[j] + offset));
+            m_mesh->index.push_back(static_cast<uint32_t>(cmd_list->IdxBuffer.Data[j] + offset));
         }
         offset = m_mesh->Data.size()/8;
       }

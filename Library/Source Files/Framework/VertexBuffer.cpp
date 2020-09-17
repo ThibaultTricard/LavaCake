@@ -44,7 +44,7 @@ namespace LavaCake {
 			VkDevice logicalDevice = d->getLogicalDevice();
 			VkPhysicalDevice physicalDevice = d->getPhysicalDevice();
 			m_vertices =  std::vector<float>(m_meshs[0]->Data);
-			m_indices =  std::vector<uint16_t>(m_meshs[0]->index);
+			m_indices =  std::vector<uint32_t>(m_meshs[0]->index);
 			m_indexed = m_meshs[0]->indexed;
 			for (unsigned int i = 1; i < m_meshs.size(); i++) {
 				if (m_indexed) {
@@ -82,7 +82,7 @@ namespace LavaCake {
 				if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physicalDevice, logicalDevice, *m_indexBuffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_indexBufferMemory)) {
 					ErrorCheck::setError("Can't allocate vertices buffer");
 				}
-				if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(uint16_t) * m_indices.size(), &(m_indices)[0], *m_indexBuffer, 0, 0,
+				if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(uint32_t) * m_indices.size(), &(m_indices)[0], *m_indexBuffer, 0, 0,
 					VK_ACCESS_INDEX_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue, commandBuffer, {})) {
 					ErrorCheck::setError("Can't update buffer memory");
 				}

@@ -66,7 +66,7 @@ namespace LavaCake {
 		namespace Mesh {
 			struct Mesh {
 				std::vector<float>  Data;
-				std::vector<uint16_t> index;
+				std::vector<uint32_t> index;
 
 				struct Part {
 					uint32_t  VertexOffset;

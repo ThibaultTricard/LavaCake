@@ -3,7 +3,7 @@
 #include "AllHeaders.h"
 #include "Device.h"
 #include "ErrorCheck.h"
-
+#include <cassert>
 
 namespace LavaCake {
   namespace Framework {
@@ -52,7 +52,7 @@ namespace LavaCake {
       void wait(uint32_t waitingTime) {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1), { &*m_fence }, false, waitingTime);
+        VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1), { &*m_fence }, true, waitingTime);
         if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
           //std::cout << "Waiting on fence failed." << std::endl;
@@ -77,7 +77,7 @@ namespace LavaCake {
 
       void endRecord() {
         if (!LavaCake::Command::EndCommandBufferRecordingOperation(m_commandBuffer)) {
-          //TODO : Raise error using error check
+          assert("ERROR");
         }
       }
 
