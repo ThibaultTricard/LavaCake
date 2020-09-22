@@ -294,7 +294,7 @@ namespace LavaCake {
         for (int j = 0; j < cmd_list->IdxBuffer.Size; j++) {
             m_mesh->index.push_back(static_cast<uint32_t>(cmd_list->IdxBuffer.Data[j] + offset));
         }
-        offset = m_mesh->Data.size()/8;
+        offset = uint32_t(m_mesh->Data.size()/8) ;
       }
 
 			
