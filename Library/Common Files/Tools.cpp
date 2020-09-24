@@ -87,129 +87,131 @@ namespace LavaCake {
     };
   }
 
-  vec3f operator+ ( vec3f const & left,
-                      vec3f const & right ) {
-    return{
-      left[0] + right[0],
-      left[1] + right[1],
-      left[2] + right[2]
-    };
-  }
-
-  vec3f operator- ( vec3f const & left,
-                      vec3f const & right ) {
-    return{
-      left[0] - right[0],
-      left[1] - right[1],
-      left[2] - right[2]
-    };
-  }
-
-  vec3f operator+ ( float const   & left,
-                      vec3f const & right ) {
-    return {
-      left + right[0],
-      left + right[1],
-      left + right[2]
-    };
-  }
-
-  vec3f operator- ( float const   & left,
-                      vec3f const & right ) {
-    return {
-      left - right[0],
-      left - right[1],
-      left - right[2]
-    };
-  }
-
-  vec3f operator+ ( vec3f const & left,
-                      float const   & right ) {
-    return{
-      left[0] + right,
-      left[1] + right,
-      left[2] + right
-    };
-  }
-
-  vec3f operator- ( vec3f const & left,
-                      float const   & right ) {
-    return {
-      left[0] - right,
-      left[1] - right,
-      left[2] - right
-    };
-  }
-
-  vec3f operator* ( float           left,
-                      vec3f const & right ) {
-    return {
-      left * right[0],
-      left * right[1],
-      left * right[2]
-    };
-  }
-
-  vec3f operator* ( vec3f const & left,
-                      float           right ) {
-    return {
-      left[0] * right,
-      left[1] * right,
-      left[2] * right
-    };
-  }
-
-  vec3f operator* ( vec3f const   & left,
-    mat4 const & right ) {
-    return {
-      left[0] * right[0] + left[1] * right[1] + left[2] * right[2],
-      left[0] * right[4] + left[1] * right[5] + left[2] * right[6],
-      left[0] * right[8] + left[1] * right[9] + left[2] * right[10]
-    };
-  }
-
-  vec3f operator- ( vec3f const & vector ) {
-    return {
-      -vector[0],
-      -vector[1],
-      -vector[2]
-    };
-  }
-
-  bool operator== ( vec3f const & left,
-                    vec3f const & right ) {
-    if( (std::abs( left[0] - right[0] ) > 0.00001f) ||
-        (std::abs( left[1] - right[1] ) > 0.00001f) ||
-        (std::abs( left[2] - right[2] ) > 0.00001f) ) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  mat4 operator* (mat4 const & left,
-    mat4 const & right ) {
-    return {
-      left[0] * right[0] + left[4] * right[1] + left[8] * right[2] + left[12] * right[3],
-      left[1] * right[0] + left[5] * right[1] + left[9] * right[2] + left[13] * right[3],
-      left[2] * right[0] + left[6] * right[1] + left[10] * right[2] + left[14] * right[3],
-      left[3] * right[0] + left[7] * right[1] + left[11] * right[2] + left[15] * right[3],
-
-      left[0] * right[4] + left[4] * right[5] + left[8] * right[6] + left[12] * right[7],
-      left[1] * right[4] + left[5] * right[5] + left[9] * right[6] + left[13] * right[7],
-      left[2] * right[4] + left[6] * right[5] + left[10] * right[6] + left[14] * right[7],
-      left[3] * right[4] + left[7] * right[5] + left[11] * right[6] + left[15] * right[7],
-
-      left[0] * right[8] + left[4] * right[9] + left[8] * right[10] + left[12] * right[11],
-      left[1] * right[8] + left[5] * right[9] + left[9] * right[10] + left[13] * right[11],
-      left[2] * right[8] + left[6] * right[9] + left[10] * right[10] + left[14] * right[11],
-      left[3] * right[8] + left[7] * right[9] + left[11] * right[10] + left[15] * right[11],
-
-      left[0] * right[12] + left[4] * right[13] + left[8] * right[14] + left[12] * right[15],
-      left[1] * right[12] + left[5] * right[13] + left[9] * right[14] + left[13] * right[15],
-      left[2] * right[12] + left[6] * right[13] + left[10] * right[14] + left[14] * right[15],
-      left[3] * right[12] + left[7] * right[13] + left[11] * right[14] + left[15] * right[15]
-    };
-  }
-
 } // namespace LavaCake
+
+
+LavaCake::vec3f operator+ (LavaCake::vec3f const& left,
+  LavaCake::vec3f const& right) {
+  return{
+    left[0] + right[0],
+    left[1] + right[1],
+    left[2] + right[2]
+  };
+}
+
+LavaCake::vec3f operator- (LavaCake::vec3f const& left,
+  LavaCake::vec3f const& right) {
+  return{
+    left[0] - right[0],
+    left[1] - right[1],
+    left[2] - right[2]
+  };
+}
+
+LavaCake::vec3f operator+ (float const& left,
+  LavaCake::vec3f const& right) {
+  return {
+    left + right[0],
+    left + right[1],
+    left + right[2]
+  };
+}
+
+LavaCake::vec3f operator- (float const& left,
+  LavaCake::vec3f const& right) {
+  return {
+    left - right[0],
+    left - right[1],
+    left - right[2]
+  };
+}
+
+LavaCake::vec3f operator+ (LavaCake::vec3f const& left,
+  float const& right) {
+  return{
+    left[0] + right,
+    left[1] + right,
+    left[2] + right
+  };
+}
+
+LavaCake::vec3f operator- (LavaCake::vec3f const& left,
+  float const& right) {
+  return {
+    left[0] - right,
+    left[1] - right,
+    left[2] - right
+  };
+}
+
+LavaCake::vec3f operator* (float           left,
+  LavaCake::vec3f const& right) {
+  return {
+    left * right[0],
+    left * right[1],
+    left * right[2]
+  };
+}
+
+LavaCake::vec3f operator* (LavaCake::vec3f const& left,
+  float           right) {
+  return {
+    left[0] * right,
+    left[1] * right,
+    left[2] * right
+  };
+}
+
+LavaCake::vec3f operator* (LavaCake::vec3f const& left,
+  LavaCake::mat4 const& right) {
+  return {
+    left[0] * right[0] + left[1] * right[1] + left[2] * right[2],
+    left[0] * right[4] + left[1] * right[5] + left[2] * right[6],
+    left[0] * right[8] + left[1] * right[9] + left[2] * right[10]
+  };
+}
+
+LavaCake::vec3f operator- (LavaCake::vec3f const& vector) {
+  return {
+    -vector[0],
+    -vector[1],
+    -vector[2]
+  };
+}
+
+bool operator== (LavaCake::vec3f const& left,
+  LavaCake::vec3f const& right) {
+  if ((std::abs(left[0] - right[0]) > 0.00001f) ||
+    (std::abs(left[1] - right[1]) > 0.00001f) ||
+    (std::abs(left[2] - right[2]) > 0.00001f)) {
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+
+LavaCake::mat4 operator* (LavaCake::mat4 const& left,
+  LavaCake::mat4 const& right) {
+  return {
+    left[0] * right[0] + left[4] * right[1] + left[8] * right[2] + left[12] * right[3],
+    left[1] * right[0] + left[5] * right[1] + left[9] * right[2] + left[13] * right[3],
+    left[2] * right[0] + left[6] * right[1] + left[10] * right[2] + left[14] * right[3],
+    left[3] * right[0] + left[7] * right[1] + left[11] * right[2] + left[15] * right[3],
+
+    left[0] * right[4] + left[4] * right[5] + left[8] * right[6] + left[12] * right[7],
+    left[1] * right[4] + left[5] * right[5] + left[9] * right[6] + left[13] * right[7],
+    left[2] * right[4] + left[6] * right[5] + left[10] * right[6] + left[14] * right[7],
+    left[3] * right[4] + left[7] * right[5] + left[11] * right[6] + left[15] * right[7],
+
+    left[0] * right[8] + left[4] * right[9] + left[8] * right[10] + left[12] * right[11],
+    left[1] * right[8] + left[5] * right[9] + left[9] * right[10] + left[13] * right[11],
+    left[2] * right[8] + left[6] * right[9] + left[10] * right[10] + left[14] * right[11],
+    left[3] * right[8] + left[7] * right[9] + left[11] * right[10] + left[15] * right[11],
+
+    left[0] * right[12] + left[4] * right[13] + left[8] * right[14] + left[12] * right[15],
+    left[1] * right[12] + left[5] * right[13] + left[9] * right[14] + left[13] * right[15],
+    left[2] * right[12] + left[6] * right[13] + left[10] * right[14] + left[14] * right[15],
+    left[3] * right[12] + left[7] * right[13] + left[11] * right[14] + left[15] * right[15]
+  };
+}

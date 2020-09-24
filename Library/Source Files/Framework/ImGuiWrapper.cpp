@@ -192,9 +192,18 @@ namespace LavaCake {
     void ImGuiWrapper::initGui(Window* win, Queue* queue, CommandBuffer* cmdBuff) {
       IMGUI_CHECKVERSION();
       ImGui::CreateContext();
-      ImGuiIO& io = ImGui::GetIO(); (void)io;
       ImGui::StyleColorsDark();
       prepareImput(win->m_window);
+      ImGuiIO& io = ImGui::GetIO();
+     
+      // Setup display size (every frame to accommodate for window resizing)
+      int Wwidth, Wheight;
+      int display_w, display_h;
+      glfwGetWindowSize(win->m_window, &Wwidth, &Wheight);
+      glfwGetFramebufferSize(win->m_window, &display_w, &display_h);
+      io.DisplaySize = ImVec2((float)Wwidth, (float)Wheight);
+      if (Wwidth > 0 && Wheight > 0)
+        io.DisplayFramebufferScale = ImVec2((float)display_w / Wwidth, (float)display_h / Wheight);
 
       Framework::Device* d = Framework::Device::getDevice();
       LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
@@ -262,6 +271,8 @@ namespace LavaCake {
     }
     
     void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer* cmdBuff) {
+
+
       LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
       VkExtent2D size = s->size();
       ImGui::Render();
