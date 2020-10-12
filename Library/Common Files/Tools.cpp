@@ -71,112 +71,35 @@ namespace LavaCake {
 
   vec3f Cross( vec3f const & left,
                  vec3f const & right ) {
-    return {
+    return  vec3f({
       left[1] * right[2] - left[2] * right[1],
       left[2] * right[0] - left[0] * right[2],
       left[0] * right[1] - left[1] * right[0]
-    };
+    });
   }
 
   vec3f Normalize( vec3f const & vector ) {
     float length = std::sqrt( vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2] );
-    return {
+    return vec3f({
       vector[0] / length,
       vector[1] / length,
       vector[2] / length
-    };
+    });
   }
 
-  vec3f operator+ ( vec3f const & left,
-                      vec3f const & right ) {
-    return{
-      left[0] + right[0],
-      left[1] + right[1],
-      left[2] + right[2]
-    };
-  }
+ 
 
-  vec3f operator- ( vec3f const & left,
-                      vec3f const & right ) {
-    return{
-      left[0] - right[0],
-      left[1] - right[1],
-      left[2] - right[2]
-    };
-  }
-
-  vec3f operator+ ( float const   & left,
-                      vec3f const & right ) {
-    return {
-      left + right[0],
-      left + right[1],
-      left + right[2]
-    };
-  }
-
-  vec3f operator- ( float const   & left,
-                      vec3f const & right ) {
-    return {
-      left - right[0],
-      left - right[1],
-      left - right[2]
-    };
-  }
-
-  vec3f operator+ ( vec3f const & left,
-                      float const   & right ) {
-    return{
-      left[0] + right,
-      left[1] + right,
-      left[2] + right
-    };
-  }
-
-  vec3f operator- ( vec3f const & left,
-                      float const   & right ) {
-    return {
-      left[0] - right,
-      left[1] - right,
-      left[2] - right
-    };
-  }
-
-  vec3f operator* ( float           left,
-                      vec3f const & right ) {
-    return {
-      left * right[0],
-      left * right[1],
-      left * right[2]
-    };
-  }
-
-  vec3f operator* ( vec3f const & left,
-                      float           right ) {
-    return {
-      left[0] * right,
-      left[1] * right,
-      left[2] * right
-    };
-  }
 
   vec3f operator* ( vec3f const   & left,
     mat4 const & right ) {
-    return {
+    return vec3f({
       left[0] * right[0] + left[1] * right[1] + left[2] * right[2],
       left[0] * right[4] + left[1] * right[5] + left[2] * right[6],
       left[0] * right[8] + left[1] * right[9] + left[2] * right[10]
-    };
+    });
   }
 
-  vec3f operator- ( vec3f const & vector ) {
-    return {
-      -vector[0],
-      -vector[1],
-      -vector[2]
-    };
-  }
-
-  bool operator== ( vec3f const & left,
+   bool operator== ( vec3f const & left,
                     vec3f const & right ) {
     if( (std::abs( left[0] - right[0] ) > 0.00001f) ||
         (std::abs( left[1] - right[1] ) > 0.00001f) ||

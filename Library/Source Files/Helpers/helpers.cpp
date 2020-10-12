@@ -47,8 +47,8 @@ namespace LavaCake {
 		float         * tangent_data,
 		float         * bitangent_data) {
 		// Gram-Schmidt orthogonalize
-		vec3f const normal = { normal_data[0], normal_data[1], normal_data[2] };
-		vec3f const tangent = Normalize(face_tangent - normal * Dot(normal, face_tangent));
+		vec3f const normal = vec3f({ normal_data[0], normal_data[1], normal_data[2] });
+		vec3f const tangent = Normalize(face_tangent - vec3f(Dot(normal, face_tangent) * normal));
 
 		// Calculate handedness
 		float handedness = (Dot(Cross(normal, tangent), face_bitangent) < 0.0f) ? -1.0f : 1.0f;
@@ -76,9 +76,9 @@ namespace LavaCake {
 				size_t i1 = i;
 				size_t i2 = i1 + stride;
 				size_t i3 = i2 + stride;
-				vec3f const v1 = { mesh.Data[i1], mesh.Data[i1 + 1], mesh.Data[i1 + 2] };
-				vec3f const v2 = { mesh.Data[i2], mesh.Data[i2 + 1], mesh.Data[i2 + 2] };
-				vec3f const v3 = { mesh.Data[i3], mesh.Data[i3 + 1], mesh.Data[i3 + 2] };
+				vec3f const v1 = vec3f({ mesh.Data[i1], mesh.Data[i1 + 1], mesh.Data[i1 + 2] });
+				vec3f const v2 = vec3f({ mesh.Data[i2], mesh.Data[i2 + 1], mesh.Data[i2 + 2] });
+				vec3f const v3 = vec3f({ mesh.Data[i3], mesh.Data[i3 + 1], mesh.Data[i3 + 2] });
 
 				std::array<float, 2> const w1 = { mesh.Data[i1 + texcoord_offset], mesh.Data[i1 + texcoord_offset + 1] };
 				std::array<float, 2> const w2 = { mesh.Data[i2 + texcoord_offset], mesh.Data[i2 + texcoord_offset + 1] };
@@ -97,8 +97,8 @@ namespace LavaCake {
 				float t2 = w3[1] - w1[1];
 
 				float r = 1.0f / (s1 * t2 - s2 * t1);
-				vec3f face_tangent = { (t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r };
-				vec3f face_bitangent = { (s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r };
+				vec3f face_tangent = vec3f({ (t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r });
+				vec3f face_bitangent = vec3f({ (s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r });
 
 				CalculateTangentAndBitangent(&mesh.Data[i1 + normal_offset], face_tangent, face_bitangent, &mesh.Data[i1 + tangent_offset], &mesh.Data[i1 + bitangent_offset]);
 				CalculateTangentAndBitangent(&mesh.Data[i2 + normal_offset], face_tangent, face_bitangent, &mesh.Data[i2 + tangent_offset], &mesh.Data[i2 + bitangent_offset]);

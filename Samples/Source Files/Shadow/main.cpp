@@ -69,7 +69,7 @@ int main() {
 	
 	// Shadow pass
 	Framework::RenderPass shadowMapPass = Framework::RenderPass();
-	Framework::GraphicPipeline* shadowPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(shadowsize),float(shadowsize),1.0f }, { 0,0 }, { float(shadowsize),float(shadowsize) });
+	Framework::GraphicPipeline* shadowPipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(shadowsize),float(shadowsize),1.0f }), vec2f({ 0,0 }), vec2f({ float(shadowsize),float(shadowsize) }));
 
 	Framework::VertexShaderModule* shadowVertex = new Framework::VertexShaderModule("Data/Shaders/Shadow/shadow.vert.spv");
 	shadowPipeline->setVextexShader(shadowVertex);
@@ -87,7 +87,7 @@ int main() {
 	shadowMapPass.prepareOutputFrameBuffer(*shadow_map_buffer);
 	//Render Pass
 	Framework::RenderPass renderPass = Framework::RenderPass();
-	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
 	Framework::VertexShaderModule* renderVertex = new Framework::VertexShaderModule("Data/Shaders/Shadow/scene.vert.spv");
 	renderPipeline->setVextexShader(renderVertex);
 
@@ -119,7 +119,7 @@ int main() {
 
 	vec2d* lastMousePos = nullptr;
 
-	vec2d polars = { 0.0,0.0 };
+	vec2d polars = vec2d({ 0.0,0.0 });
 	while (w.running()) {
 
 		
@@ -151,8 +151,8 @@ int main() {
 
 			modelView = modelView * Helpers::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
 
-			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), { 0 , 1, 0 });
-			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), { 1 , 0, 0 });
+			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), vec3f({ 0 , 1, 0 }));
+			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), vec3f({ 1 , 0, 0 }));
 			//std::cout << w.m_mouse.position[0] << std::endl;
 			b->setVariable("modelView", modelView);
 			lastMousePos = new vec2d({ mouse->position[0], mouse->position[1] });
@@ -171,7 +171,7 @@ int main() {
 			updateUniformBuffer = false;
 		}
 
-		shadowMapPass.draw(commandBuffer[f].getHandle(), shadow_map_buffer->getHandle(), { 0,0 }, { shadowsize, shadowsize });
+		shadowMapPass.draw(commandBuffer[f].getHandle(), shadow_map_buffer->getHandle(), vec2u({ 0,0 }), vec2u({ shadowsize, shadowsize }));
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
@@ -194,7 +194,7 @@ int main() {
 	
 		renderPass.setSwapChainImage(*frameBuffers[f], image);
 
-		renderPass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		renderPass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {

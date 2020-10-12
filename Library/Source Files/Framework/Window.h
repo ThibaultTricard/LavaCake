@@ -32,7 +32,7 @@ namespace LavaCake {
 			bool leftButton = false;
 			bool rightButton = false;
 			bool middleButton = false;
-			vec2d position = { 0.0,0.0 };
+			vec2d position = vec2d({ 0.0,0.0 });
 			double wheel = 0.0;
 
 		private: 

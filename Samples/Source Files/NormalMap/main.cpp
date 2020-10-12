@@ -53,7 +53,7 @@ int main() {
 
 	// Render pass
 	Framework::RenderPass pass = Framework::RenderPass();
-	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
 
 	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/NormalMap/shader.vert.spv");
 	pipeline->setVextexShader(vertex);
@@ -83,7 +83,7 @@ int main() {
 
 	vec2d* lastMousePos = nullptr;
 
-	vec2d polars = { 0.0,0.0 };
+	vec2d polars = vec2d({ 0.0,0.0 });
 
 	while (w.running()) {
 		w.updateInput();
@@ -115,8 +115,8 @@ int main() {
 
 			modelView = modelView * Helpers::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
 
-			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), { 0 , 1, 0 });
-			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), { 1 , 0, 0 });
+			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), vec3f({ 0 , 1, 0 }));
+			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), vec3f({ 1 , 0, 0 }));
 			//std::cout << w.m_mouse.position[0] << std::endl;
 			b->setVariable("modelView", modelView);
 			lastMousePos = new vec2d({ mouse->position[0], mouse->position[1] });
@@ -141,7 +141,7 @@ int main() {
 		pass.setSwapChainImage(*frameBuffers[f], image);
 
 
-		pass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		pass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 

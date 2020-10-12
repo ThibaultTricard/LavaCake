@@ -79,7 +79,7 @@ int main() {
 	//renderPass
 	Framework::RenderPass* showPass = new Framework::RenderPass();
 
-	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
 	Framework::VertexShaderModule* vertexShader = new Framework::VertexShaderModule("Data/Shaders/FourierTransform/shader.vert.spv");
 	Framework::FragmentShaderModule* fragmentShader = new Framework::FragmentShaderModule("Data/Shaders/FourierTransform/shader.frag.spv");
 	pipeline->setVextexShader(vertexShader);
@@ -146,7 +146,7 @@ int main() {
 		showPass->setSwapChainImage(*frameBuffers[f], image);
 
 
-		showPass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		showPass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 		commandBuffer[f].endRecord();
 

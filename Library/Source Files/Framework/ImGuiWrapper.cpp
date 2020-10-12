@@ -246,7 +246,7 @@ namespace LavaCake {
       std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
       memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
 
-      m_pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+      m_pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
       VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
       m_pipeline->setVextexShader(sphereVertex);
 

@@ -77,7 +77,7 @@ int main() {
 	
 	// Shadow pass
 	Framework::RenderPass shadowMapPass = Framework::RenderPass();
-	Framework::GraphicPipeline* shadowPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(shadowsize),float(shadowsize),1.0f }, { 0,0 }, { float(shadowsize),float(shadowsize) });
+	Framework::GraphicPipeline* shadowPipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(shadowsize),float(shadowsize),1.0f }), vec2f({ 0,0 }), vec2f({ float(shadowsize),float(shadowsize) }));
 
 	Framework::VertexShaderModule* shadowVertex = new Framework::VertexShaderModule("Data/Shaders/ConsoleRenderer/shadow.vert.spv");
 	shadowPipeline->setVextexShader(shadowVertex);
@@ -96,7 +96,7 @@ int main() {
 
 	//Render Pass
 	Framework::RenderPass renderPass = Framework::RenderPass();
-	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(shadowsize),float(shadowsize),1.0f }, { 0,0 }, { float(shadowsize),float(shadowsize) });
+	Framework::GraphicPipeline* renderPipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(shadowsize),float(shadowsize),1.0f }), vec2f({ 0,0 }), vec2f({ float(shadowsize),float(shadowsize) }));
 	Framework::VertexShaderModule* renderVertex = new Framework::VertexShaderModule("Data/Shaders/ConsoleRenderer/scene.vert.spv");
 	renderPipeline->setVextexShader(renderVertex);
 
@@ -120,7 +120,7 @@ int main() {
 
 	//Console Render pass
 	Framework::RenderPass consolePass = Framework::RenderPass();
-	Framework::GraphicPipeline* consolePipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	Framework::GraphicPipeline* consolePipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
 	Framework::VertexShaderModule* consoleVertex = new Framework::VertexShaderModule("Data/Shaders/ConsoleRenderer/console.vert.spv");
 	consolePipeline->setVextexShader(consoleVertex);
 
@@ -150,7 +150,7 @@ int main() {
 
 	vec2d* lastMousePos = nullptr;
 
-	vec2d polars = { 0.0,0.0 };
+	vec2d polars = vec2d({ 0.0,0.0 });
 	while (w.running()){
 		w.updateInput();
 		f++;
@@ -187,8 +187,8 @@ int main() {
 
 			modelView = modelView * Helpers::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
 
-			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), { 0 , 1, 0 });
-			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), { 1 , 0, 0 });
+			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), vec3f({ 0 , 1, 0 }));
+			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), vec3f({ 1 , 0, 0 }));
 			//std::cout << w.m_mouse.position[0] << std::endl;
 			b->setVariable("modelView", modelView);
 			lastMousePos = new vec2d({ mouse->position[0], mouse->position[1] });
@@ -211,7 +211,7 @@ int main() {
 
 
 
-		shadowMapPass.draw(commandBuffer[f].getHandle(), shadow_map_buffer->getHandle(), { 0,0 }, {shadowsize, shadowsize });
+		shadowMapPass.draw(commandBuffer[f].getHandle(), shadow_map_buffer->getHandle(), vec2u({ 0,0 }), vec2u({shadowsize, shadowsize }));
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
@@ -230,11 +230,11 @@ int main() {
 
 
 
-		renderPass.draw(commandBuffer[f].getHandle(), scene_buffer->getHandle(), { 0,0 }, scene_buffer->size(), { { 0.0f, 0.0f, 1.0f, 1.0f }, { 1.0f, 0 } });
+		renderPass.draw(commandBuffer[f].getHandle(), scene_buffer->getHandle(), vec2u({ 0,0 }), scene_buffer->size(), { { 0.0f, 0.0f, 1.0f, 1.0f }, { 1.0f, 0 } });
 
 
 		consolePass.setSwapChainImage(*frameBuffers[f], image);
-		consolePass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, {size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		consolePass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 		if (d->getPresentQueue()->getIndex() != d->getGraphicQueue(0)->getIndex()) {
