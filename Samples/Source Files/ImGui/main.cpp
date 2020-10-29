@@ -24,17 +24,13 @@ int main() {
 
 	gui->initGui(&w,d->getGraphicQueue(0), &commandBuffer[0]);
 
-	LavaCake::Helpers::Mesh::Mesh* triangle = new LavaCake::Helpers::Mesh::Mesh();
-	triangle->Data = {
-		-0.75f, 0.75f , 0.0f,
-		1.0f	, 0.0f	, 0.0f,
-		 0.75f,	0.75f , 0.0f,
-		 0.0f	, 1.0f	, 0.0f,
-		 0.0f , -0.75f, 0.0f,
-		 0.0f	, 0.0f	, 1.0f
-	};
-	triangle->Parts = { {uint32_t(0),uint32_t(3)} };
-	VertexBuffer* triangle_vertex_buffer = new VertexBuffer({ triangle }, {3,3});
+
+	LavaCake::Geometry::Mesh_t* triangle = new LavaCake::Geometry::Mesh<LavaCake::Geometry::TRIANGLE>(LavaCake::Geometry::PC3);
+	triangle->appendVertex({ -0.75f, 0.75f , 0.0f, 1.0f	, 0.0f	, 0.0f });
+	triangle->appendVertex({ 0.75f,	0.75f , 0.0f,  0.0f	, 1.0f	, 0.0f });
+	triangle->appendVertex({ 0.0f , -0.75f, 0.0f, 0.0f	, 0.0f	, 1.0f });
+
+	VertexBuffer* triangle_vertex_buffer = new VertexBuffer({ triangle });
 	triangle_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
 
 	RenderPass* pass = new RenderPass();

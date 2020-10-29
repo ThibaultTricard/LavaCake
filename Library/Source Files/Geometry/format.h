@@ -1,5 +1,7 @@
 #pragma once 
+
 #include <vector>
+#include "AllHeaders.h"
 
 namespace LavaCake {
   namespace Geometry {
@@ -19,61 +21,107 @@ namespace LavaCake {
       F4
     };
 
-    struct vertexFormat_t{
-      std::vector<primitiveFormat> description;
-    };
-    typedef vertexFormat_t vertexFormat;
 
-   
-    size_t size(vertexFormat vf) {
-      size_t s = 0;
-      for (size_t t = 0; t < vf.description.size(); t++) {
-        switch (vf.description[t]) {
-        case POS2 :
-          s += 2;
-          break;
-        case POS3:
-          s += 3;
-          break;
-        case POS4:
-          s += 4;
-          break;
-        case NORM3:
-          s += 3;
-          break;
-        case NORM4:
-          s += 4;
-          break;
-        case UV:
-          s += 2;
-          break;
-        case COL3:
-          s += 3;
-          break;
-        case COL4:
-          s += 4;
-          break;
-        case F1:
-          s += 1;
-          break;
-        case F2:
-          s += 2;
-          break;
-        case F3:
-          s += 3;
-          break;
-        case F4:
-          s += 4;
-          break;
-        }
+    size_t static toSize(primitiveFormat f) {
+      switch (f) {
+      case POS2:
+        return 2;
+        break;
+      case POS3:
+        return 3;
+        break;
+      case POS4:
+        return 4;
+        break;
+      case NORM3:
+        return 3;
+        break;
+      case NORM4:
+        return 4;
+        break;
+      case UV:
+        return  2;
+        break;
+      case COL3:
+        return 3;
+        break;
+      case COL4:
+        return 4;
+        break;
+      case F1:
+        return 1;
+        break;
+      case F2:
+        return 2;
+        break;
+      case F3:
+        return 3;
+        break;
+      case F4:
+        return 4;
+        break;
+      default :
+        return 0;
       }
-      return s;
     }
 
-    vertexFormat P3 = { {POS3} };
-    vertexFormat PN3 = { {POS3,NORM3} };
-    vertexFormat PN3UV = { {POS3,NORM3,UV} };
-    vertexFormat PNC3 = { {POS3,NORM3,COL3} };
+
+
+    class vertexFormat {
+    private : 
+      std::vector<primitiveFormat> m_description;
+      size_t m_size = 0;
+      std::vector<VkVertexInputAttributeDescription> m_vulkanDescription;
+
+    public :
+      vertexFormat() {};
+      vertexFormat(std::vector<primitiveFormat> description) {
+        m_description = description;
+        for (size_t t = 0; t < m_description.size(); t++) {
+          size_t s = toSize(m_description[t]);
+
+          VkFormat f = VK_FORMAT_UNDEFINED;
+          if (s == 1) {
+            f = VK_FORMAT_R32_SFLOAT;
+          }
+          else if (s == 2) {
+            f = VK_FORMAT_R32G32_SFLOAT;
+          }
+          else if (s == 3) {
+            f = VK_FORMAT_R32G32B32_SFLOAT;
+          }
+          else if (s == 4) {
+            f = VK_FORMAT_R32G32B32A32_SFLOAT;
+          }
+
+          m_vulkanDescription.push_back({
+            uint32_t(t),
+            0,
+            f,
+            uint32_t(m_size * sizeof(float))
+            });
+          m_size += s;
+        }
+      
+      
+      }
+      
+      size_t size() {
+        return m_size;
+      }
+
+      std::vector<VkVertexInputAttributeDescription> VkDescription() {
+        return m_vulkanDescription;
+      }
+
+    };
+
+
+    static vertexFormat P3 = vertexFormat({POS3});
+    static vertexFormat PC3 = vertexFormat({ POS3,COL3});
+    static vertexFormat PN3 = vertexFormat({POS3,NORM3} );
+    static vertexFormat PN3UV = vertexFormat({POS3,NORM3,UV} );
+    static vertexFormat PNC3 = vertexFormat({POS3,NORM3,COL3} );
 
     enum topology {
       POINT,

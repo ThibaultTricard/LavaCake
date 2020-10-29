@@ -1,59 +1,36 @@
 #include "VertexBuffer.h"
 #include "CommandBuffer.h"
+
 namespace LavaCake {
 	namespace Framework {
 
-		VertexBuffer::VertexBuffer(std::vector <LavaCake::Helpers::Mesh::Mesh*> m, std::vector<int> dataDescription, uint32_t binding, VkVertexInputRate inputRate ) {
-			m_meshs = m;
+		VertexBuffer::VertexBuffer(std::vector<LavaCake::Geometry::Mesh_t*> m, uint32_t binding, bool Computable ,VkVertexInputRate inputRate) {
 
+			m_topology = m[0]->getTopology();
+			uint32_t offset = (uint32_t)m[0]->vertexSize();
 			
-			uint32_t offset = 0;
-			for (uint32_t i = 0; i < dataDescription.size(); i++) {
-				VkFormat f = VK_FORMAT_UNDEFINED;
-				if (dataDescription[i] == 1) {
-					f = VK_FORMAT_R32_SFLOAT;
-				}
-				else if (dataDescription[i] == 2) {
-					f = VK_FORMAT_R32G32_SFLOAT;
-				}
-				else if (dataDescription[i] == 3) {
-					f = VK_FORMAT_R32G32B32_SFLOAT;
-				}
-				else if (dataDescription[i] == 4) {
-					f = VK_FORMAT_R32G32B32A32_SFLOAT;
-				}
+			m_attributeDescriptions = m[0]->VkDescription();
 
-				m_attributeDescriptions.push_back({
-					i,
-					binding,
-					f,
-					uint32_t(offset * sizeof(float))
-					});
-				offset += dataDescription[i];
+			for (size_t t = 0; t < m_attributeDescriptions.size(); t++) {
+				m_attributeDescriptions[t].binding = binding;
 			}
+
+
 			m_bindingDescriptions.push_back(
 				{
 							binding,
 							uint32_t(offset * sizeof(float)),
 							inputRate
 				});
+
+			swapMeshes(m);
 		};
 
 		void VertexBuffer::allocate(VkQueue& queue, VkCommandBuffer& commandBuffer) {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logicalDevice = d->getLogicalDevice();
 			VkPhysicalDevice physicalDevice = d->getPhysicalDevice();
-			m_vertices =  std::vector<float>(m_meshs[0]->Data);
-			m_indices =  std::vector<uint32_t>(m_meshs[0]->index);
-			m_indexed = m_meshs[0]->indexed;
-			for (unsigned int i = 1; i < m_meshs.size(); i++) {
-				if (m_indexed) {
-					for (size_t j = 0; j < m_meshs[i]->index.size(); j++) {
-						m_indices.push_back(m_meshs[i]->index[j] + m_vertices.size());
-					}
-				}
-				m_vertices.insert(m_vertices.end(), m_meshs[i]->Data.begin(), m_meshs[i]->Data.end());
-			}
+			
 
 			if (m_vertices.size() == 0)return;
 
@@ -90,10 +67,8 @@ namespace LavaCake {
 			}
 		}
 
-		std::vector<LavaCake::Helpers::Mesh::Mesh*> VertexBuffer::getMeshs() {
-			return m_meshs;
-		}
-
+		
+		
 		VkBuffer& VertexBuffer::getHandle() {
 			return *m_buffer;
 		}
@@ -114,8 +89,23 @@ namespace LavaCake {
 			return m_indexed;
 		};
 
-		void VertexBuffer::swapMeshes(std::vector <LavaCake::Helpers::Mesh::Mesh*>				meshes) {
-			m_meshs = meshes;
+		
+		void VertexBuffer::swapMeshes(std::vector<LavaCake::Geometry::Mesh_t*>				m) {
+			if (m_topology == m[0]->getTopology()) {
+				m_vertices = std::vector<float>(m[0]->vertices());
+				m_indices = std::vector<uint32_t>(m[0]->indices());
+
+				m_indexed = m[0]->isIndexed();
+				for (unsigned int i = 1; i < m.size(); i++) {
+					if (m_indexed) {
+						for (size_t j = 0; j < m[i]->indices().size(); j++) {
+							m_indices.push_back(m[i]->indices()[j] + uint32_t(m_vertices.size()));
+						}
+					}
+					m_vertices.insert(m_vertices.end(), m[i]->vertices().begin(), m[i]->vertices().end());
+				}
+			}
+
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logicalDevice = d->getLogicalDevice();
 			if (m_indexed) {
