@@ -132,16 +132,19 @@ namespace LavaCake {
       data = std::array<T, N*N>(d);
     }
 
-    std::vector<int>& rawMemory() override {
-      std::vector<int> mem(length() / sizeof(int));
+    std::vector<int> rawMemory() override {
+      std::vector<int> mem(length() * sizeof(T) / sizeof(int));
       std::memcpy(&mem[0], &data, sizeof(mem));
       return mem;
     }
 
-    T& operator[](int i) {
-      return data[i];
+    T& operator [](const int idx) {
+      return data[idx];
     }
 
+    T operator [](const int idx) const {
+      return data[idx];
+    }
     size_t length() {
       return size_t(N * N);
     }
@@ -164,6 +167,10 @@ namespace LavaCake {
 
   };
 
+
+
+
+
   using vec2f = v<float, 2>;
   using vec2d = v<double, 2>;
   using vec2i = v<int, 2>;
@@ -182,9 +189,9 @@ namespace LavaCake {
   using vec4u = v<uint32_t, 3>;
   using vec4b = v<bool, 4>;
 
-  using mat2 = std::array<float, 4>;
-  using mat3 = std::array<float, 9>;
-  using mat4 = std::array<float, 16>;
+  using mat2 = m<float, 2>;
+  using mat3 = m<float, 3>;
+  using mat4 = m<float, 4>;
 
   bool GetBinaryFileContents( std::string const          & filename,
                               std::vector<unsigned char> & contents );

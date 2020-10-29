@@ -112,7 +112,7 @@ namespace LavaCake {
 
   mat4 operator* (mat4 const & left,
     mat4 const & right ) {
-    return {
+    return mat4({
       left[0] * right[0] + left[4] * right[1] + left[8] * right[2] + left[12] * right[3],
       left[1] * right[0] + left[5] * right[1] + left[9] * right[2] + left[13] * right[3],
       left[2] * right[0] + left[6] * right[1] + left[10] * right[2] + left[14] * right[3],
@@ -132,7 +132,7 @@ namespace LavaCake {
       left[1] * right[12] + left[5] * right[13] + left[9] * right[14] + left[13] * right[15],
       left[2] * right[12] + left[6] * right[13] + left[10] * right[14] + left[14] * right[15],
       left[3] * right[12] + left[7] * right[13] + left[11] * right[14] + left[15] * right[15]
-    };
+    });
   }
 
 } // namespace LavaCake
