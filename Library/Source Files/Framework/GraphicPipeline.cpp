@@ -191,7 +191,7 @@ namespace LavaCake {
 			VkDeviceSize size(0);
 			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getHandle() }, { &size });
 			if (m_vertexBuffer->isIndexed()) {
-				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer(), VkDeviceSize(0), VK_INDEX_TYPE_UINT16);
+				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
 			}
 
 			if (m_descriptorCount > 0) {

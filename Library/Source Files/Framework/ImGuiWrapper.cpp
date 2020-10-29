@@ -192,9 +192,18 @@ namespace LavaCake {
     void ImGuiWrapper::initGui(Window* win, Queue* queue, CommandBuffer* cmdBuff) {
       IMGUI_CHECKVERSION();
       ImGui::CreateContext();
-      ImGuiIO& io = ImGui::GetIO(); (void)io;
       ImGui::StyleColorsDark();
       prepareImput(win->m_window);
+      ImGuiIO& io = ImGui::GetIO();
+     
+      // Setup display size (every frame to accommodate for window resizing)
+      int Wwidth, Wheight;
+      int display_w, display_h;
+      glfwGetWindowSize(win->m_window, &Wwidth, &Wheight);
+      glfwGetFramebufferSize(win->m_window, &display_w, &display_h);
+      io.DisplaySize = ImVec2((float)Wwidth, (float)Wheight);
+      if (Wwidth > 0 && Wheight > 0)
+        io.DisplayFramebufferScale = ImVec2((float)display_w / Wwidth, (float)display_h / Wheight);
 
       Framework::Device* d = Framework::Device::getDevice();
       LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
@@ -246,7 +255,7 @@ namespace LavaCake {
       std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
       memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
 
-      m_pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
+      m_pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
       VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
       m_pipeline->setVextexShader(sphereVertex);
 
@@ -262,6 +271,8 @@ namespace LavaCake {
     }
     
     void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer* cmdBuff) {
+
+
       LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
       VkExtent2D size = s->size();
       ImGui::Render();
@@ -294,7 +305,7 @@ namespace LavaCake {
         for (int j = 0; j < cmd_list->IdxBuffer.Size; j++) {
             m_mesh->index.push_back(static_cast<uint32_t>(cmd_list->IdxBuffer.Data[j] + offset));
         }
-        offset = m_mesh->Data.size()/8;
+        offset = uint32_t(m_mesh->Data.size()/8) ;
       }
 
 			

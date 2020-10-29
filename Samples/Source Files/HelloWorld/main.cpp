@@ -38,7 +38,7 @@ int main() {
 	triangle_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
 
 	RenderPass* pass = new RenderPass();
-	GraphicPipeline* pipeline = new GraphicPipeline(LavaCake::vec3f({ 0,0,0 }), LavaCake::vec3f({ float(size.width),float(size.height),1.0f }), LavaCake::vec2f({ 0,0 }), LavaCake::vec2f({ float(size.width),float(size.height) }));
+	GraphicPipeline* pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	VertexShaderModule* vertexShader = new VertexShaderModule("Data/Shaders/helloworld/shader.vert.spv");
 	FragmentShaderModule* fragmentShader = new FragmentShaderModule("Data/Shaders/helloworld/shader.frag.spv");
 
@@ -82,7 +82,7 @@ int main() {
 
 		pass->setSwapChainImage(*frameBuffers[f], image);
 
-		pass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), LavaCake::vec2u({ 0,0 }), LavaCake::vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		pass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 		commandBuffer[f].endRecord();
 

@@ -72,7 +72,7 @@ int main() {
 
 	//camera PushConstant
 	Framework::PushConstant* cameraConstant = new Framework::PushConstant();
-	vec4f camera = vec4f({ 0.f,0.f,4.f,1.0 });
+	vec4f camera = { 0.f,0.f,4.f,1.0 };
 	cameraConstant->addVariable("camera", camera);
 
 	//Color Attachment
@@ -83,7 +83,7 @@ int main() {
 	Framework::RenderPass renderPass = Framework::RenderPass( );
 
 	
-	Framework::GraphicPipeline* sphereRenderPipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
+	Framework::GraphicPipeline* sphereRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	Framework::VertexShaderModule* sphereVertex = new Framework::VertexShaderModule("Data/Shaders/PostProcess/model.vert.spv");
 	sphereRenderPipeline->setVextexShader(sphereVertex);
 
@@ -96,7 +96,7 @@ int main() {
 	sphereRenderPipeline->addPushContant(cameraConstant, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 
-	Framework::GraphicPipeline* skyRenderPipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
+	Framework::GraphicPipeline* skyRenderPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 
 	Framework::VertexShaderModule* skyVertex = new Framework::VertexShaderModule("Data/Shaders/PostProcess/skybox.vert.spv");
 	skyRenderPipeline->setVextexShader(skyVertex);
@@ -112,7 +112,7 @@ int main() {
 
 	renderPass.addSubPass({ sphereRenderPipeline,skyRenderPipeline }, Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
 
-	Framework::GraphicPipeline* postProcessPipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
+	Framework::GraphicPipeline* postProcessPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	Framework::VertexShaderModule* postProcessVertex = new Framework::VertexShaderModule("Data/Shaders/PostProcess/postprocess.vert.spv");
 	postProcessPipeline->setVextexShader(postProcessVertex);
 
@@ -167,7 +167,7 @@ int main() {
 	int f = 0;
 	vec2d* lastMousePos = nullptr;
 
-	vec2d polars = vec2d({ 0.0,0.0 });
+	vec2d polars = { 0.0,0.0 };
 	while (w.running()) {
 		w.updateInput();
 		f++;
@@ -199,8 +199,8 @@ int main() {
 
 			modelView = modelView * Helpers::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
 
-			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), vec3f({ 0 , 1, 0 }));
-			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), vec3f({ 1 , 0, 0 }));
+			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), { 0 , 1, 0 });
+			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), { 1 , 0, 0 });
 			//std::cout << w.m_mouse.position[0] << std::endl;
 			uniforms->setVariable("modelView", modelView);
 			lastMousePos = new vec2d({ mouse->position[0], mouse->position[1] });
@@ -231,7 +231,7 @@ int main() {
 
 		
 		renderPass.setSwapChainImage(*frameBuffers[f], image);
-		renderPass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } , { 0.1f, 0.2f, 0.3f, 1.0f } });
+		renderPass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } , { 0.1f, 0.2f, 0.3f, 1.0f } });
 
 
 

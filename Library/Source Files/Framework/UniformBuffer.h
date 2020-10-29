@@ -13,28 +13,16 @@ namespace LavaCake {
   namespace Framework{
     class UniformBuffer {
     public :
-
-      void addVariable(std::string name, Data* value) {
-        std::vector<int> v = value->rawMemory();
-        addArray(name, v);
-      }
-
-      void setVariable(std::string name, Data* value) {
-        std::vector<int> v = value->rawMemory();
-        setArray(name, v);
-      }
-
-
       template<typename T>
       void addVariable(std::string name, T value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+        std::vector<int> v = std::vector<int>(sizeof(value)  / sizeof(int));
         std::memcpy(&v[0], &value, sizeof(value));
         addArray(name, v);
       }
 
       template<typename T>
       void setVariable(std::string name, T value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
         std::memcpy(&v[0], &value, sizeof(value));
         setArray(name, v);
       }

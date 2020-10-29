@@ -45,8 +45,7 @@ int main() {
 	ComputeShaderModule* compute = new ComputeShaderModule("Data/Shaders/JumpFlooding/JumpFlooding.comp.spv");
 	jumpFloodPipeline->setComputeShader(compute);
 	UniformBuffer* passNumber = new UniformBuffer();
-	LavaCake::Data* dimention = new LavaCake::vec2i({ 512,512 });
-	passNumber->addVariable("dimention", dimention);
+	passNumber->addVariable("dimention", LavaCake::vec2i({ 512,512 }));
 	passNumber->addVariable("passNumber", unsigned int(0));
 	passNumber->end();
 	jumpFloodPipeline->addUniformBuffer(passNumber, VK_SHADER_STAGE_COMPUTE_BIT, 1);
@@ -63,7 +62,7 @@ int main() {
 	//renderPass
 	RenderPass* showPass = new RenderPass();
 
-	GraphicPipeline* pipeline = new GraphicPipeline(LavaCake::vec3f({ 0,0,0 }), LavaCake::vec3f({ float(size.width),float(size.height),1.0f }), LavaCake::vec2f({ 0,0 }), LavaCake::vec2f({ float(size.width),float(size.height) }));
+	GraphicPipeline* pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	VertexShaderModule* vertexShader = new VertexShaderModule("Data/Shaders/JumpFlooding/shader.vert.spv");
 	FragmentShaderModule* fragmentShader = new FragmentShaderModule("Data/Shaders/JumpFlooding/shader.frag.spv");
 	pipeline->setVextexShader(vertexShader);
@@ -115,7 +114,7 @@ int main() {
 		showPass->setSwapChainImage(*frameBuffer, image);
 
 
-		showPass->draw(cmbBuff->getHandle(), frameBuffer->getHandle(), LavaCake::vec2u({ 0,0 }), LavaCake::vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		showPass->draw(cmbBuff->getHandle(), frameBuffer->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 		cmbBuff->endRecord();
 
