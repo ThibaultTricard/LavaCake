@@ -1,7 +1,7 @@
 #include "Framework/Framework.h"
 
 using namespace LavaCake::Framework;
-
+using namespace LavaCake::Geometry;
 int main() {
 
 	Window w("Lavacake: JumpFlooding", 512, 512);
@@ -9,7 +9,7 @@ int main() {
 	d->initDevices(1, 1, w.m_windowParams);
 	SwapChain* s = SwapChain::getSwapChain();
 	s->init();
-	GraphicQueue* queue = d->getGraphicQueue(0);
+	Queue* queue = d->getGraphicQueue(0);
 
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	VkQueue& compute_queue = d->getComputeQueue(0)->getHandle();
@@ -18,7 +18,7 @@ int main() {
 
 	ComputePipeline* jumpFloodPipeline = new ComputePipeline();
 	VkExtent2D size = s->size();
-	TexelBuffer* seeds = new TexelBuffer();
+	Buffer* seeds = new Buffer();
 	std::vector<float> data(512 * 512 * 4);
 
 	for (uint32_t i = 0; i < data.size(); i++) {
@@ -38,7 +38,7 @@ int main() {
 		data[(x + y * 512) * 4 + 3] = 0.0;
 	}
 
-	seeds->allocate(queue->getHandle(), cmbBuff->getHandle(), data, uint32_t(4));
+	seeds->allocate(queue, *cmbBuff, data, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT, VK_FORMAT_R32G32B32A32_SFLOAT);
 
 	jumpFloodPipeline->addTexelBuffer(seeds, VK_SHADER_STAGE_COMPUTE_BIT, 0);
 
@@ -54,10 +54,23 @@ int main() {
 
 
 	//PostProcessQuad
-	LavaCake::Helpers::Mesh::Mesh* quad = new LavaCake::Helpers::Mesh::Mesh();
-	LavaCake::Helpers::Mesh::preparePostProcessQuad(*quad, true);
-	VertexBuffer* quad_vertex_buffer = new VertexBuffer({ quad }, { 3,2 });
-	quad_vertex_buffer->allocate(queue->getHandle(), cmbBuff->getHandle());
+	Mesh_t* quad = new IndexedMesh<TRIANGLE>(P3UV);
+
+	quad->appendVertex({ -1.0,-1.0,0.0,0.0,0.0 });
+	quad->appendVertex({ -1.0, 1.0,0.0,0.0,1.0 });
+	quad->appendVertex({ 1.0, 1.0,0.0,1.0,1.0 });
+	quad->appendVertex({ 1.0,-1.0,0.0,1.0,0.0 });
+
+	quad->appendIndex(0);
+	quad->appendIndex(1);
+	quad->appendIndex(2);
+
+	quad->appendIndex(2);
+	quad->appendIndex(3);
+	quad->appendIndex(0);
+
+	VertexBuffer* quad_vertex_buffer = new VertexBuffer({ quad });
+	quad_vertex_buffer->allocate(queue, *cmbBuff);
 
 	//renderPass
 	RenderPass* showPass = new RenderPass();
@@ -78,9 +91,32 @@ int main() {
 	FrameBuffer* frameBuffer = new FrameBuffer(s->size().width, s->size().height);
 	showPass->prepareOutputFrameBuffer(*frameBuffer);
 
+	std::vector<VkBufferMemoryBarrier> seed_memory_barriers;
+	std::vector<VkBufferMemoryBarrier> print_memory_barriers;
 
+	seed_memory_barriers.push_back({
+					VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,    // VkStructureType    sType
+					nullptr,                                    // const void       * pNext
+					VK_ACCESS_SHADER_READ_BIT ,                // VkAccessFlags      srcAccessMask
+					VK_ACCESS_SHADER_WRITE_BIT ,                // VkAccessFlags      dstAccessMask
+					d->getGraphicQueue(0)->getIndex(),          // uint32_t           srcQueueFamilyIndex
+					d->getComputeQueue(0)->getIndex(),          // uint32_t           dstQueueFamilyIndex
+					seeds->getHandle(),													// VkBuffer           buffer
+					0,                                          // VkDeviceSize       offset
+					VK_WHOLE_SIZE                               // VkDeviceSize       size
+		});
 
-	
+	print_memory_barriers.push_back({
+					VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,    // VkStructureType    sType
+					nullptr,                                    // const void       * pNext
+					VK_ACCESS_SHADER_WRITE_BIT ,                // VkAccessFlags      srcAccessMask
+					VK_ACCESS_SHADER_READ_BIT ,									// VkAccessFlags      dstAccessMask
+					d->getComputeQueue(0)->getIndex(),          // uint32_t           srcQueueFamilyIndex
+					d->getGraphicQueue(0)->getIndex(),          // uint32_t           dstQueueFamilyIndex
+					seeds->getHandle(),													// VkBuffer           buffer
+					0,                                          // VkDeviceSize       offset
+					VK_WHOLE_SIZE                               // VkDeviceSize       size
+		});
 
 	int pass = 0;
 	while (w.running()) {
@@ -92,6 +128,7 @@ int main() {
 		passNumber->setVariable("passNumber", pass + 1);
 		passNumber->update(cmbBuff->getHandle());
 		jumpFloodPipeline->compute(cmbBuff->getHandle(), 512, 512, 1);
+		LavaCake::vkCmdPipelineBarrier(cmbBuff->getHandle(), VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, nullptr, print_memory_barriers.size(), print_memory_barriers.data(), 0, nullptr);
 		cmbBuff->endRecord();
 		if (!LavaCake::Command::SubmitCommandBuffersToQueue(compute_queue, {}, { cmbBuff->getHandle() }, {  }, cmbBuff->getFence())) {
 
@@ -115,6 +152,7 @@ int main() {
 
 
 		showPass->draw(cmbBuff->getHandle(), frameBuffer->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		LavaCake::vkCmdPipelineBarrier(cmbBuff->getHandle(), VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, nullptr, seed_memory_barriers.size(), seed_memory_barriers.data(), 0, nullptr);
 
 		cmbBuff->endRecord();
 

@@ -2,6 +2,7 @@
 #include "AllHeaders.h"
 #include "Common.h"
 #include "VulkanDestroyer.h"
+#include "Geometry/meshLoader.h"
 
 using namespace LavaCake;
 
@@ -15,7 +16,7 @@ int main() {
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
 	VkExtent2D size = s->size();
-	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	Framework::Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
 	for (int i = 0; i < nbFrames; i++) {
@@ -24,12 +25,13 @@ int main() {
 	}
 
 	//vertex buffer
-	Helpers::Mesh::Mesh* m = new Helpers::Mesh::Mesh();
-	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/knot.obj", true, false, false, true, *m)) {
-		return false;
-	}
-	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3,3 });
-	v->allocate(queue, commandBuffer[0].getHandle());
+	//knot mesh
+	std::pair<std::vector<float>, Geometry::vertexFormat > knot = Geometry::Load3DModelFromObjFile("Data/Models/knot.obj", true, false, false, true);
+	Geometry::Mesh_t* knot_mesh = new Geometry::Mesh<Geometry::TRIANGLE>(knot.first,knot.second);
+
+
+	Framework::VertexBuffer* v = new Framework::VertexBuffer({ knot_mesh });
+	v->allocate(queue, commandBuffer[0]);
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
@@ -142,7 +144,7 @@ int main() {
 
 
 		
-		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!Command::SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 

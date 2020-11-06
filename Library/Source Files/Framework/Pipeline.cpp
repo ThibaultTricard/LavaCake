@@ -562,7 +562,7 @@ namespace LavaCake {
 			m_texelBufferDescriptorUpdate = {};
 			for (uint32_t i = 0; i < m_texelBuffers.size(); i++) {
 
-				Buffer::TexelBufferDescriptorInfo info = {
+				LavaCake::Buffer::TexelBufferDescriptorInfo info = {
 					m_descriptorSets[descriptorCount],
 					uint32_t(m_texelBuffers[i].binding),
 					0,

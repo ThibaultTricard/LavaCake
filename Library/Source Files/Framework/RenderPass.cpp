@@ -273,7 +273,7 @@ namespace LavaCake {
 			InitVkDestroyer(logical, frameBuffer.m_sampler);
 			InitVkDestroyer(logical, frameBuffer.m_imageMemory);
 		
-			if (!Buffer::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, 
+			if (!LavaCake::Buffer::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST,
 				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
 				0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, *frameBuffer.m_sampler)) {
 				ErrorCheck::setError("Can't create an image sampler for this FrameBuffer");
@@ -343,7 +343,7 @@ namespace LavaCake {
 				
 			}
 			if (m_khr_attachement == -1) {
-				if (!Buffer::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
+				if (!LavaCake::Buffer::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
 					ErrorCheck::setError("Can't create this FrameBuffer");
 				}
 			}
@@ -355,11 +355,11 @@ namespace LavaCake {
 				
 				Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				Buffer::DestroyFramebuffer(logical, *frameBuffer.m_frameBuffer);
+				LavaCake::Buffer::DestroyFramebuffer(logical, *frameBuffer.m_frameBuffer);
 				frameBuffer.m_images[m_khr_attachement] = image.getImage();
 				frameBuffer.m_imageViews[m_khr_attachement] = image.getView();
 				frameBuffer.m_swapChainImageIndex = m_khr_attachement;
-				if (!Buffer::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
+				if (!LavaCake::Buffer::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
 					ErrorCheck::setError("Can't create this FrameBuffer");
 				}
 			}

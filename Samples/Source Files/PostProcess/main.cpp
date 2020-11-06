@@ -2,8 +2,10 @@
 #include "AllHeaders.h"
 #include "Common.h"
 #include "VulkanDestroyer.h"
+#include "Geometry/meshLoader.h"
 
 using namespace LavaCake;
+using namespace LavaCake::Geometry;
 
 int main() {
 	int nbFrames = 3;
@@ -15,38 +17,50 @@ int main() {
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
 	VkExtent2D size = s->size();
-	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	Framework::Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
 	for (int i = 0; i < nbFrames; i++) {
 		commandBuffer[i].addSemaphore();
 	}
 
+	std::pair<std::vector<float>, vertexFormat > sphere = Load3DModelFromObjFile("Data/Models/sphere.obj", true, false, false, true);
+	Geometry::Mesh_t* sphere_mesh = new Geometry::Mesh<Geometry::TRIANGLE>(sphere.first, sphere.second);
 
-	// Sphere Data
-	Helpers::Mesh::Mesh* sphere = new Helpers::Mesh::Mesh();
-	if (!Load3DModelFromObjFile("Data/Models/sphere.obj", true, false, false, true, *sphere)) {
-		return false;
-	}
+	
 
-	Framework::VertexBuffer* sphere_vertex_buffer = new Framework::VertexBuffer({ sphere }, { 3,3 });
-	sphere_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
+	Framework::VertexBuffer* sphere_vertex_buffer = new Framework::VertexBuffer({ sphere_mesh });
+	sphere_vertex_buffer->allocate(queue, commandBuffer[0]);
 
 	//Skybox Data
-	Helpers::Mesh::Mesh* sky = new Helpers::Mesh::Mesh();
-	if (!Load3DModelFromObjFile("Data/Models/cube.obj", false, false, false, true, *sky)) {
-		return false;
-	}
 
-	Framework::VertexBuffer* sky_vertex_buffer = new Framework::VertexBuffer({ sky }, { 3 });
-	sky_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
+	std::pair<std::vector<float>, vertexFormat > sky = Load3DModelFromObjFile("Data/Models/cube.obj", true, false, false, true);
+	Geometry::Mesh_t* sky_mesh = new Geometry::Mesh<Geometry::TRIANGLE>(sky.first, sky.second);
+	
+
+
+	Framework::VertexBuffer* sky_vertex_buffer = new Framework::VertexBuffer({ sky_mesh });
+	sky_vertex_buffer->allocate(queue, commandBuffer[0]);
 
 
 	//PostProcessQuad
-	Helpers::Mesh::Mesh* quad = new Helpers::Mesh::Mesh();
-	Helpers::Mesh::preparePostProcessQuad(*quad);
-	Framework::VertexBuffer* quad_vertex_buffer = new Framework::VertexBuffer({ quad }, { 3 });
-	quad_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
+	Geometry::Mesh_t* quad = new Geometry::IndexedMesh<Geometry::TRIANGLE>(Geometry::P3UV);
+
+	quad->appendVertex({ -1.0,-1.0,0.0,0.0,0.0 });
+	quad->appendVertex({ -1.0, 1.0,0.0,0.0,1.0 });
+	quad->appendVertex({ 1.0, 1.0,0.0,1.0,1.0 });
+	quad->appendVertex({ 1.0,-1.0,0.0,1.0,0.0 });
+
+	quad->appendIndex(0);
+	quad->appendIndex(1);
+	quad->appendIndex(2);
+
+	quad->appendIndex(2);
+	quad->appendIndex(3);
+	quad->appendIndex(0);
+
+	Framework::VertexBuffer* quad_vertex_buffer = new Framework::VertexBuffer({ quad });
+	quad_vertex_buffer->allocate(queue, commandBuffer[0]);
 	
 
 	//Uniform Buffer
@@ -60,7 +74,7 @@ int main() {
 
 	//SkyBox texture
 	Framework::CubeMap* skyCubeMap = new Framework::CubeMap("Data/Textures/Skansen/", 4);
-	skyCubeMap->allocate(queue, commandBuffer[0].getHandle());
+	skyCubeMap->allocate(queue->getHandle(), commandBuffer[0].getHandle());
 
 
 
@@ -239,7 +253,7 @@ int main() {
 
 
 
-		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!Command::SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 

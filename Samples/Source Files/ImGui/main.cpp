@@ -15,7 +15,7 @@ int main() {
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init(); 
 	VkExtent2D size = s->size();
-	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	std::vector<CommandBuffer> commandBuffer = std::vector<CommandBuffer>(nbFrames);
 	for (int i = 0; i < nbFrames; i++) {
@@ -31,7 +31,7 @@ int main() {
 	triangle->appendVertex({ 0.0f , -0.75f, 0.0f, 0.0f	, 0.0f	, 1.0f });
 
 	VertexBuffer* triangle_vertex_buffer = new VertexBuffer({ triangle });
-	triangle_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
+	triangle_vertex_buffer->allocate(queue, commandBuffer[0]);
 
 	RenderPass* pass = new RenderPass();
 	GraphicPipeline* pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
@@ -152,7 +152,7 @@ int main() {
 		commandBuffer[f].endRecord();
 
 		
-		if (!LavaCake::Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!LavaCake::Command::SubmitCommandBuffersToQueue(queue->getHandle() , wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 

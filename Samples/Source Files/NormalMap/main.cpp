@@ -2,9 +2,10 @@
 #include "AllHeaders.h"
 #include "Common.h"
 #include "VulkanDestroyer.h"
+#include "Geometry/meshLoader.h"
 
 using namespace LavaCake;
-
+using namespace LavaCake::Geometry;
 
 int main() {
 	int nbFrames = 3;
@@ -17,7 +18,7 @@ int main() {
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
 	VkExtent2D size = s->size();
-	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	Framework::Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
 	for (int i = 0; i < nbFrames; i++) {
@@ -26,15 +27,17 @@ int main() {
 
 	//Normal map
 	Framework::TextureBuffer* normalMap = new Framework::TextureBuffer("Data/Textures/normal_map.png", 4);
-	normalMap->allocate(queue, commandBuffer[0].getHandle());
+	normalMap->allocate(queue->getHandle(), commandBuffer[0].getHandle());
 
 	//vertex buffer
-	Helpers::Mesh::Mesh*  m = new Helpers::Mesh::Mesh();
-	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/ice.obj", true, true, true, true, *m)) {
-		return false;
-	}
-	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3,3,2,3,3 });
-	v->allocate(queue, commandBuffer[0].getHandle());
+	//knot mesh
+	std::pair<std::vector<float>, vertexFormat > ice = Load3DModelFromObjFile("Data/Models/ice.obj", true,true, true, true);
+	Geometry::Mesh_t* ice_mesh = new Geometry::Mesh<Geometry::TRIANGLE>(ice.first, ice.second);
+
+
+
+	Framework::VertexBuffer* v = new Framework::VertexBuffer({ ice_mesh });
+	v->allocate(queue, commandBuffer[0]);
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
@@ -151,7 +154,7 @@ int main() {
 
 
 		
-		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!Command::SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 

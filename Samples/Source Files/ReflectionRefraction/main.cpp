@@ -2,8 +2,10 @@
 #include "AllHeaders.h"
 #include "Common.h"
 #include "VulkanDestroyer.h"
+#include "Geometry/meshLoader.h"
 
 using namespace LavaCake;
+using namespace LavaCake::Geometry;
 
 int main() {
 	int nbFrames = 3;
@@ -15,7 +17,7 @@ int main() {
 	d->initDevices(0, 1, w.m_windowParams);
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
-	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	Framework::Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	VkDevice logical = d->getLogicalDevice();
 	VkExtent2D size = s->size();
@@ -28,24 +30,25 @@ int main() {
 
 	//cubeMap
 	Framework::TextureBuffer* cubeMap = new Framework::CubeMap("Data/Textures/Skansen/", 4);
-	cubeMap->allocate(queue, commandBuffer[0].getHandle());
+	cubeMap->allocate(queue->getHandle(), commandBuffer[0].getHandle());
 
-	//cube vertices
-	Helpers::Mesh::Mesh*  m = new Helpers::Mesh::Mesh();
-	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/cube.obj", false, false, false, false, *m)) {
-		return false;
-	}
-	Framework::VertexBuffer* v = new Framework::VertexBuffer({ m }, { 3 });
-	v->allocate(queue, commandBuffer[0].getHandle());
+	//Skybox Data
+
+	std::pair<std::vector<float>, vertexFormat > sky = Load3DModelFromObjFile("Data/Models/cube.obj", true, false, false, true);
+	Geometry::Mesh_t* sky_mesh = new Geometry::Mesh<Geometry::TRIANGLE>(sky.first, sky.second);
+
+	Framework::VertexBuffer* v = new Framework::VertexBuffer({ sky_mesh });
+	v->allocate(queue, commandBuffer[0]);
 
 
 	//teapotVertices
-	Helpers::Mesh::Mesh*  teapot_mesh = new Helpers::Mesh::Mesh();
-	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/teapot.obj", true, false, false, true, *teapot_mesh)) {
-		return false;
-	}
-	Framework::VertexBuffer* teapot_vertex_buffer = new Framework::VertexBuffer({ teapot_mesh }, { 3,3 });
-	teapot_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
+
+	std::pair<std::vector<float>, vertexFormat > teapot = Load3DModelFromObjFile("Data/Models/teapot.obj", true, false, false, true);
+	Geometry::Mesh_t* teapot_mesh = new Geometry::Mesh<Geometry::TRIANGLE>(teapot.first, teapot.second);
+
+
+	Framework::VertexBuffer* teapot_vertex_buffer = new Framework::VertexBuffer({ teapot_mesh });
+	teapot_vertex_buffer->allocate(queue, commandBuffer[0]);
 
 	//uniform buffer
 	Framework::UniformBuffer* b = new Framework::UniformBuffer();
@@ -73,22 +76,22 @@ int main() {
 	skybox->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 
 	// teapot
-	Framework::GraphicPipeline* teapot = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	Framework::GraphicPipeline* teapotPipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
 	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/Refraction/model.vert.spv");
-	teapot->setVextexShader(vertex);
+	teapotPipeline->setVextexShader(vertex);
 	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/Refraction/model.frag.spv");
-	teapot->setFragmentModule(frag);
-	teapot->setVeritices(teapot_vertex_buffer);
-	teapot->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
-	teapot->addTextureBuffer(cubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
-	teapot->SetCullMode(VK_CULL_MODE_BACK_BIT);
+	teapotPipeline->setFragmentModule(frag);
+	teapotPipeline->setVeritices(teapot_vertex_buffer);
+	teapotPipeline->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
+	teapotPipeline->addTextureBuffer(cubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
+	teapotPipeline->SetCullMode(VK_CULL_MODE_BACK_BIT);
 
 	Framework::PushConstant* constant = new Framework::PushConstant();
 	vec3f camera = vec3f({ 0.f,0.f,4.f });
 	constant->addVariable("camera", camera);
-	teapot->addPushContant(constant, VK_SHADER_STAGE_FRAGMENT_BIT);
+	teapotPipeline->addPushContant(constant, VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	pass.addSubPass({ skybox, teapot }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
+	pass.addSubPass({ skybox, teapotPipeline }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
 	pass.addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	pass.addDependencies(0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	pass.compile();
@@ -163,7 +166,7 @@ int main() {
 		commandBuffer[f].endRecord();
 
 		
-		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(1) }, commandBuffer[f].getFence())) {
+		if (!Command::SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(1) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 

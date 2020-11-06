@@ -78,7 +78,7 @@ namespace LavaCake {
 
 				Image::DestroyImage(logical, *m_image);
 				Image::DestroyImageView(logical, *m_imageView);
-				Buffer::DestroySampler(logical, *m_sampler);
+				LavaCake::Buffer::DestroySampler(logical, *m_sampler);
 				Memory::FreeMemoryObject(logical, *m_imageMemory);
 			}
 
@@ -220,8 +220,8 @@ namespace LavaCake {
 					}
 				}
 
-				Buffer::DestroySampler(logical, *m_sampler);
-				Buffer::DestroyFramebuffer(logical, *m_frameBuffer);
+				LavaCake::Buffer::DestroySampler(logical, *m_sampler);
+				LavaCake::Buffer::DestroyFramebuffer(logical, *m_frameBuffer);
 				Memory::FreeMemoryObject(logical, *m_imageMemory);
 			}
 
@@ -316,37 +316,5 @@ namespace LavaCake {
 
 		};
 
-
-		class TexelBuffer {
-		public :
-			TexelBuffer();
-
-
-			void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, std::vector<float> rawdata, uint32_t dataSize = 1, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-
-			VkBuffer getBuffer();
-
-			VkBufferView getBufferView();
-
-
-			void readBack(VkQueue& queue, CommandBuffer* cmdBuff, std::vector<float>& data);
-
-			~TexelBuffer() {
-				Device* d = Device::getDevice();
-				VkDevice logical = d->getLogicalDevice();
-				Buffer::DestroyBuffer(logical, *m_buffer);
-				Buffer::DestroyBufferView(logical, *m_bufferView);
-				Memory::FreeMemoryObject(logical, *m_bufferMemory);
-			}
-
-		private : 
-
-			VkDestroyer(VkBuffer)																m_buffer;
-			VkDestroyer(VkDeviceMemory)													m_bufferMemory;
-			VkDestroyer(VkBufferView)														m_bufferView;
-
-			uint32_t																						m_dataSize = 0;
-
-		};
 	}
 }

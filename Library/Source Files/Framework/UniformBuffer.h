@@ -36,10 +36,10 @@ namespace LavaCake {
       ~UniformBuffer() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        Buffer::DestroyBuffer(logical, *m_buffer);
+        LavaCake::Buffer::DestroyBuffer(logical, *m_buffer);
         Memory::FreeMemoryObject(logical, *m_bufferMemory);
 
-        Buffer::DestroyBuffer(logical, *m_stagingBuffer);
+        LavaCake::Buffer::DestroyBuffer(logical, *m_stagingBuffer);
         Memory::FreeMemoryObject(logical, *m_stagingBufferMemory);
       }
 

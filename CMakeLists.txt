@@ -163,6 +163,7 @@ source_group( "Library\\Core\\Source" FILES ${LIBRARY_CORE_SOURCE} )
 set(LIBRARY_FRAMEWORK_DIR "Library/Source Files/Framework")
 
 set(LIBRARY_FRAMEWORK_HEADER 
+${LIBRARY_FRAMEWORK_DIR}/Buffer.h
 ${LIBRARY_FRAMEWORK_DIR}/CommandBuffer.h
 ${LIBRARY_FRAMEWORK_DIR}/ComputePipeline.h
 ${LIBRARY_FRAMEWORK_DIR}/Constant.h
@@ -208,6 +209,7 @@ set(LIBRARY_GEOMETRY_DIR "Library/Source Files/Geometry")
 set(LIBRARY_GEOMETRY_HEADER 
 ${LIBRARY_GEOMETRY_DIR}/format.h
 ${LIBRARY_GEOMETRY_DIR}/mesh.h
+${LIBRARY_GEOMETRY_DIR}/meshLoader.h
 )
 
 set(LIBRARY_GEOMETRY_SOURCE

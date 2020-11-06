@@ -2,6 +2,7 @@
 #include "AllHeaders.h"
 #include "Common.h"
 #include "VulkanDestroyer.h"
+#include "Geometry/meshLoader.h"
 
 using namespace LavaCake;
 
@@ -15,7 +16,7 @@ int main() {
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
 	VkDevice logical = d->getLogicalDevice();
-	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	Framework::Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 
 	VkExtent2D size = s->size();
@@ -29,21 +30,21 @@ int main() {
 	vec3f camera = vec3f({0.0f,0.0f,4.0f});
 
 	//knot mesh
-	Helpers::Mesh::Mesh*  knot_mesh = new Helpers::Mesh::Mesh();
-	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/knot.obj", true, false, false, true, *knot_mesh)) {
-		return false;
-	}
+	std::pair<std::vector<float>, Geometry::vertexFormat > knot = Geometry::Load3DModelFromObjFile("Data/Models/knot.obj", true, false, false, true);
+	Geometry::Mesh_t* knot_mesh = new Geometry::Mesh<Geometry::TRIANGLE>(knot.first, knot.second);
+
+
 	//plane mesh
-	Helpers::Mesh::Mesh*  plane_mesh = new Helpers::Mesh::Mesh();
-	if (!Helpers::Mesh::Load3DModelFromObjFile("Data/Models/plane.obj", true, false, false, false, *plane_mesh)) {
-		return false;
-	}
+	std::pair<std::vector<float>, Geometry::vertexFormat > plane = Geometry::Load3DModelFromObjFile("Data/Models/plane.obj", true, false, false, false);
+	Geometry::Mesh_t* plane_mesh = new Geometry::Mesh<Geometry::TRIANGLE>(plane.first, plane.second);
 
-	Framework::VertexBuffer* scene_vertex_buffer = new Framework::VertexBuffer({ plane_mesh, knot_mesh  }, { 3,3 });
-	scene_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
 
-	Framework::VertexBuffer* plane_buffer = new Framework::VertexBuffer({ plane_mesh }, { 3,3 });
-	plane_buffer->allocate(queue, commandBuffer[0].getHandle());
+
+	Framework::VertexBuffer* scene_vertex_buffer = new Framework::VertexBuffer({ plane_mesh, knot_mesh });
+	scene_vertex_buffer->allocate(queue, commandBuffer[0]);
+
+	Framework::VertexBuffer* plane_buffer = new Framework::VertexBuffer({ plane_mesh });
+	plane_buffer->allocate(queue, commandBuffer[0]);
 
 
 	//uniform buffer
@@ -215,7 +216,7 @@ int main() {
 		
 
 		
-		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(1) }, commandBuffer[f].getFence())) {
+		if (!Command::SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(1) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
@@ -225,7 +226,7 @@ int main() {
 			swapchain,                                    // VkSwapchainKHR         Swapchain
 			image.getIndex()                              // uint32_t               ImageIndex
 		};
-		if (!Presentation::PresentImage(queue, { commandBuffer[f].getSemaphore(1) }, { present_info })) {
+		if (!Presentation::PresentImage(queue->getHandle(), { commandBuffer[f].getSemaphore(1) }, { present_info })) {
 			continue;
 		}
 

@@ -241,7 +241,7 @@ namespace LavaCake {
 
 
       m_vertexBuffer = new Framework::VertexBuffer({ m_mesh });
-      m_vertexBuffer->allocate(queue->getHandle(), cmdBuff->getHandle());
+      m_vertexBuffer->allocate(queue, *cmdBuff);
 
       m_pushConstant = new PushConstant();
       m_pushConstant->addVariable("uScale", vec2f({0.0f,0.0f}));
@@ -305,7 +305,7 @@ namespace LavaCake {
 			
 
       m_vertexBuffer->swapMeshes({ m_mesh });
-      m_vertexBuffer->allocate(queue->getHandle(), cmdBuff->getHandle());
+      m_vertexBuffer->allocate(queue, *cmdBuff);
 
       vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
       vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });

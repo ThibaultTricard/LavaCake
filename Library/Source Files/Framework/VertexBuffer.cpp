@@ -4,10 +4,10 @@
 namespace LavaCake {
 	namespace Framework {
 
-		VertexBuffer::VertexBuffer(std::vector<LavaCake::Geometry::Mesh_t*> m, uint32_t binding, bool Computable ,VkVertexInputRate inputRate) {
+		VertexBuffer::VertexBuffer(std::vector<LavaCake::Geometry::Mesh_t*> m, uint32_t binding ,VkVertexInputRate inputRate) {
 
 			m_topology = m[0]->getTopology();
-			uint32_t offset = (uint32_t)m[0]->vertexSize();
+			m_stride = (uint32_t)m[0]->vertexSize();
 			
 			m_attributeDescriptions = m[0]->VkDescription();
 
@@ -15,54 +15,28 @@ namespace LavaCake {
 				m_attributeDescriptions[t].binding = binding;
 			}
 
-
 			m_bindingDescriptions.push_back(
 				{
 							binding,
-							uint32_t(offset * sizeof(float)),
+							uint32_t(m_stride * sizeof(float)),
 							inputRate
 				});
 
 			swapMeshes(m);
 		};
 
-		void VertexBuffer::allocate(VkQueue& queue, VkCommandBuffer& commandBuffer) {
+		void VertexBuffer::allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlagBits otherUsage) {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logicalDevice = d->getLogicalDevice();
 			VkPhysicalDevice physicalDevice = d->getPhysicalDevice();
 			
-
 			if (m_vertices.size() == 0)return;
 
-			InitVkDestroyer(logicalDevice, m_buffer);
-			InitVkDestroyer(logicalDevice, m_bufferMemory);
-			if (!Buffer::CreateBuffer(logicalDevice, sizeof(m_vertices[0]) * m_vertices.size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, *m_buffer)) {
-				ErrorCheck::setError("Can't create vertices buffer");
-			}
-			
-			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physicalDevice, logicalDevice, *m_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_bufferMemory)) {
-				ErrorCheck::setError("Can't allocate vertices buffer");
-			}
-			if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(float) * m_vertices.size(), &(m_vertices)[0], *m_buffer, 0, 0,
-				VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue, commandBuffer, {})) {
-				ErrorCheck::setError("Can't update buffer memory");
-			}
+			m_vertexBuffer.allocate(queue, cmdBuff, m_vertices, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT| otherUsage), VK_FORMAT_R32_SFLOAT, VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT);
 
 			if (m_indexed) {
 
-				InitVkDestroyer(logicalDevice, m_indexBuffer);
-				InitVkDestroyer(logicalDevice, m_indexBufferMemory);
-				if (!Buffer::CreateBuffer(logicalDevice, sizeof(m_indices[0]) * m_indices.size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, *m_indexBuffer)) {
-					ErrorCheck::setError("Can't create vertices buffer");
-				}
-				
-				if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physicalDevice, logicalDevice, *m_indexBuffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_indexBufferMemory)) {
-					ErrorCheck::setError("Can't allocate vertices buffer");
-				}
-				if (!Memory::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physicalDevice, logicalDevice, sizeof(uint32_t) * m_indices.size(), &(m_indices)[0], *m_indexBuffer, 0, 0,
-					VK_ACCESS_INDEX_READ_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, queue, commandBuffer, {})) {
-					ErrorCheck::setError("Can't update buffer memory");
-				}
+				m_indexBuffer.allocate(queue, cmdBuff, m_indices, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_INDEX_BUFFER_BIT| otherUsage), VK_FORMAT_R32_UINT, VK_ACCESS_INDEX_READ_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT);
 
 			}
 		}
@@ -70,11 +44,11 @@ namespace LavaCake {
 		
 		
 		VkBuffer& VertexBuffer::getHandle() {
-			return *m_buffer;
+			return m_vertexBuffer.getHandle();
 		}
 
 		VkBuffer& VertexBuffer::getIndexBuffer() {
-			return *m_indexBuffer;
+			return m_indexBuffer.getHandle();
 		}
 
 		std::vector<VkVertexInputAttributeDescription>& VertexBuffer::getAttributeDescriptions() {
@@ -108,12 +82,6 @@ namespace LavaCake {
 
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logicalDevice = d->getLogicalDevice();
-			if (m_indexed) {
-				Buffer::DestroyBuffer(logicalDevice, *m_indexBuffer);
-				Memory::FreeMemoryObject(logicalDevice, *m_indexBufferMemory);
-			}
-			Buffer::DestroyBuffer(logicalDevice, *m_buffer);
-			Memory::FreeMemoryObject(logicalDevice, *m_bufferMemory);
 		};
 	}
 }

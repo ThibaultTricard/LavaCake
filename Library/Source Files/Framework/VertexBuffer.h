@@ -4,6 +4,7 @@
 #include "Queue.h"
 #include "Device.h"
 #include "Geometry/mesh.h"
+#include "Buffer.h"
 
 namespace LavaCake {
 	namespace Framework {
@@ -11,10 +12,10 @@ namespace LavaCake {
 		class VertexBuffer {
 		public:
 			
-			VertexBuffer(std::vector<LavaCake::Geometry::Mesh_t*> m, uint32_t binding = 0, bool computable = false,  VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX);
+			VertexBuffer(std::vector<LavaCake::Geometry::Mesh_t*> m, uint32_t binding = 0,  VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX);
 
 
-			void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer);
+			void allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlagBits otherUsage = VkBufferUsageFlagBits(0) );
 			
 			VkBuffer& getHandle();
 			
@@ -68,7 +69,7 @@ namespace LavaCake {
 			}
 
 			size_t getVerticiesNumber() {
-				return m_vertices.size();
+				return m_vertices.size() / m_stride;
 			}
 			
 			bool isIndexed();
@@ -76,11 +77,6 @@ namespace LavaCake {
 			~VertexBuffer() {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				Buffer::DestroyBuffer(logical, *m_buffer);
-				Memory::FreeMemoryObject(logical, *m_bufferMemory);
-
-				Buffer::DestroyBuffer(logical, *m_indexBuffer);
-				Memory::FreeMemoryObject(logical, *m_indexBufferMemory);
 			}
 
 		private :
@@ -88,11 +84,10 @@ namespace LavaCake {
 
 			std::vector<VkVertexInputAttributeDescription>			m_attributeDescriptions;
 			std::vector<VkVertexInputBindingDescription>				m_bindingDescriptions;
-			VkDestroyer(VkBuffer)																m_buffer;
-			VkDestroyer(VkDeviceMemory)													m_bufferMemory;
+			Buffer																							m_vertexBuffer;
 			std::vector<float>																	m_vertices;
-			VkDestroyer(VkBuffer)																m_indexBuffer;
-			VkDestroyer(VkDeviceMemory)													m_indexBufferMemory;
+			uint32_t																						m_stride;
+			Buffer																							m_indexBuffer;
 			std::vector<uint32_t>																m_indices;
 			bool																								m_indexed;
 			LavaCake::Geometry::topology												m_topology;

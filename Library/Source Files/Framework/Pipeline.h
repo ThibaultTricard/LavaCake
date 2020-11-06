@@ -46,7 +46,7 @@ namespace LavaCake {
 		};
 
 		struct texelBuffer {
-			TexelBuffer* t;
+			Buffer* t;
 			int binding;
 			VkShaderStageFlags			stage;
 		};
@@ -90,7 +90,7 @@ namespace LavaCake {
 			};
 
 
-			virtual void addTexelBuffer(TexelBuffer* a, VkShaderStageFlags stage, int binding = 0) {
+			virtual void addTexelBuffer(Buffer* a, VkShaderStageFlags stage, int binding = 0) {
 				m_texelBuffers.push_back({ a,binding,stage });
 			};
 
@@ -236,26 +236,26 @@ namespace LavaCake {
 			
 
 
-			VkDestroyer(VkPipeline)																m_pipeline;
-			VkDestroyer(VkPipelineLayout)													m_pipelineLayout;
+			VkDestroyer(VkPipeline)																					m_pipeline;
+			VkDestroyer(VkPipelineLayout)																		m_pipelineLayout;
 
-			VkDestroyer(VkDescriptorSetLayout)										m_descriptorSetLayout;
-			VkDestroyer(VkDescriptorPool)													m_descriptorPool;
-			std::vector<VkDescriptorSet>													m_descriptorSets;
-			std::vector<VkDescriptorPoolSize>											m_descriptorPoolSize;
-			std::vector<VkDescriptorSetLayoutBinding>							m_descriptorSetLayoutBinding;
-			uint32_t																							m_descriptorCount;
+			VkDestroyer(VkDescriptorSetLayout)															m_descriptorSetLayout;
+			VkDestroyer(VkDescriptorPool)																		m_descriptorPool;
+			std::vector<VkDescriptorSet>																		m_descriptorSets;
+			std::vector<VkDescriptorPoolSize>																m_descriptorPoolSize;
+			std::vector<VkDescriptorSetLayoutBinding>												m_descriptorSetLayoutBinding;
+			uint32_t																												m_descriptorCount;
 
-			std::vector<Buffer::BufferDescriptorInfo>							m_bufferDescriptorUpdate;
-			std::vector<Image::ImageDescriptorInfo>								m_imageDescriptorUpdate;
-			std::vector<Buffer::TexelBufferDescriptorInfo>				m_texelBufferDescriptorUpdate;
+			std::vector<LavaCake::Buffer::BufferDescriptorInfo>							m_bufferDescriptorUpdate;
+			std::vector<Image::ImageDescriptorInfo>													m_imageDescriptorUpdate;
+			std::vector<LavaCake::Buffer::TexelBufferDescriptorInfo>				m_texelBufferDescriptorUpdate;
 
-			std::vector<uniform>																	m_uniforms;
-			std::vector<texture>																	m_textures;
-			std::vector<frameBuffer>															m_frameBuffers;
-			std::vector<attachment>																m_attachments;
-			std::vector<storageImage>															m_storageImages;
-			std::vector<texelBuffer>															m_texelBuffers;
+			std::vector<uniform>																						m_uniforms;
+			std::vector<texture>																						m_textures;
+			std::vector<frameBuffer>																				m_frameBuffers;
+			std::vector<attachment>																					m_attachments;
+			std::vector<storageImage>																				m_storageImages;
+			std::vector<texelBuffer>																				m_texelBuffers;
 
 		};
 	}

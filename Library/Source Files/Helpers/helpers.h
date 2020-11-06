@@ -63,30 +63,7 @@ namespace LavaCake {
 			int                        * image_num_components = nullptr,
 			int                        * image_data_size = nullptr);
 
-		namespace Mesh {
-			struct Mesh {
-				std::vector<float>  Data;
-				std::vector<uint32_t> index;
-
-				struct Part {
-					uint32_t  VertexOffset;
-					uint32_t  VertexCount;
-				};
-
-				std::vector<Part>   Parts;
-				bool								indexed = false;
-			};
-
-			bool Load3DModelFromObjFile(char const * filename,
-				bool         load_normals,
-				bool         load_texcoords,
-				bool         generate_tangent_space_vectors,
-				bool         unify,
-				Mesh       & mesh,
-				uint32_t   * vertex_stride = nullptr);
-
-			void preparePostProcessQuad(Mesh       & mesh, bool doUV = false);
-		}
+		
 	}
 } // namespace LavaCake
 

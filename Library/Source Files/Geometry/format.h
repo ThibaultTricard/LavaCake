@@ -9,9 +9,7 @@ namespace LavaCake {
     enum primitiveFormat {
       POS2,
       POS3,
-      POS4,
       NORM3,
-      NORM4,
       UV,
       COL3,
       COL4,
@@ -30,14 +28,8 @@ namespace LavaCake {
       case POS3:
         return 3;
         break;
-      case POS4:
-        return 4;
-        break;
       case NORM3:
         return 3;
-        break;
-      case NORM4:
-        return 4;
         break;
       case UV:
         return  2;
@@ -106,6 +98,10 @@ namespace LavaCake {
       
       }
       
+      std::vector<primitiveFormat>& description() {
+        return m_description;
+      }
+
       size_t size() {
         return m_size;
       }
@@ -120,6 +116,7 @@ namespace LavaCake {
     static vertexFormat P3 = vertexFormat({POS3});
     static vertexFormat PC3 = vertexFormat({ POS3,COL3});
     static vertexFormat PN3 = vertexFormat({POS3,NORM3} );
+    static vertexFormat P3UV = vertexFormat({ POS3,UV });
     static vertexFormat PN3UV = vertexFormat({POS3,NORM3,UV} );
     static vertexFormat PNC3 = vertexFormat({POS3,NORM3,COL3} );
 

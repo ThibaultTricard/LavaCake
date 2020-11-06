@@ -38,6 +38,11 @@ namespace LavaCake {
         m_format = format;
       }
 
+      Mesh(std::vector<float>& vertices, vertexFormat format) {
+        m_vertexSize = format.size();
+        m_format = format;
+        m_vertices = vertices;
+      }
 
       virtual void appendVertex(std::vector<float> vertex) override {
         if (vertex.size() == m_vertexSize)
@@ -45,7 +50,6 @@ namespace LavaCake {
       }
 
       virtual void appendIndex(uint32_t index) override {
-        m_indices.push_back(index);
       }
 
       virtual size_t vertexSize() override {
@@ -80,6 +84,21 @@ namespace LavaCake {
       IndexedMesh(vertexFormat format) : Mesh(format) {
         m_indexed = true;
       }
+
+
+      IndexedMesh(std::vector<float>& vertices, std::vector<uint32_t>& indices, vertexFormat format) {
+        m_vertexSize = format.size();
+        m_format = format;
+        m_vertices = vertices;
+        m_indices = indices;
+        m_indexed = true;
+      }
+
+
+      virtual void appendIndex(uint32_t index) override {
+        m_indices.push_back(index);
+      }
+
     };
 
 

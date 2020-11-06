@@ -14,7 +14,7 @@ int main() {
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
 
-	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	Framework::Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 
 	VkQueue& compute_queue = d->getComputeQueue(0)->getHandle();
@@ -29,22 +29,35 @@ int main() {
 	}
 
 	//PostProcessQuad
-	Helpers::Mesh::Mesh* quad = new Helpers::Mesh::Mesh();
-	Helpers::Mesh::preparePostProcessQuad(*quad,true);
-	Framework::VertexBuffer* quad_vertex_buffer = new Framework::VertexBuffer({ quad }, { 3,2 });
-	quad_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
+	Geometry::Mesh_t* quad = new Geometry::IndexedMesh<Geometry::TRIANGLE>(Geometry::P3UV);
+
+	quad->appendVertex({ -1.0,-1.0,0.0,0.0,0.0 });
+	quad->appendVertex({ -1.0, 1.0,0.0,0.0,1.0 });
+	quad->appendVertex({ 1.0, 1.0,0.0,1.0,1.0 });
+	quad->appendVertex({ 1.0,-1.0,0.0,1.0,0.0 });
+
+	quad->appendIndex(0);
+	quad->appendIndex(1);
+	quad->appendIndex(2);
+
+	quad->appendIndex(2);
+	quad->appendIndex(3);
+	quad->appendIndex(0);
+
+	Framework::VertexBuffer* quad_vertex_buffer = new Framework::VertexBuffer({ quad });
+	quad_vertex_buffer->allocate(queue, commandBuffer[0]);
 
 	//texture map
 	Framework::TextureBuffer* input = new Framework::TextureBuffer("Data/Textures/mandrill.png", 4);
-	input->allocate(queue, commandBuffer[0].getHandle());
+	input->allocate(queue->getHandle(), commandBuffer[0].getHandle());
 
 
-	Framework::TexelBuffer* output_pass1 = new Framework::TexelBuffer();
+	Framework::Buffer* output_pass1 = new Framework::Buffer();
 	std::vector<float> rawdata = std::vector<float>(input->width() * input->height() * uint32_t(2));
-	output_pass1->allocate(queue, commandBuffer[0].getHandle(),rawdata, uint32_t(1));
+	output_pass1->allocate(queue, commandBuffer[0],rawdata, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
 
-	Framework::TexelBuffer* output_pass2 = new Framework::TexelBuffer();
-	output_pass2->allocate(queue, commandBuffer[0].getHandle(),rawdata, uint32_t(1));
+	Framework::Buffer* output_pass2 = new Framework::Buffer();
+	output_pass2->allocate(queue, commandBuffer[0], rawdata, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
 
 	Framework::UniformBuffer* sizeBuffer = new Framework::UniformBuffer();
 	sizeBuffer->addVariable("width", input->width());
@@ -151,7 +164,7 @@ int main() {
 		commandBuffer[f].endRecord();
 
 
-		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!Command::SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
