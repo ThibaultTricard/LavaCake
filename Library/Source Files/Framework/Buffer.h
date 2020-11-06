@@ -50,7 +50,7 @@ namespace LavaCake {
 				return *m_bufferView;
 			}
 
-			void readBack(Queue& queue, CommandBuffer& cmdBuff, std::vector<float>& data) {
+			void readBack(Queue* queue, CommandBuffer& cmdBuff, std::vector<float>& data) {
 				Device* d = Device::getDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				VkDevice logical = d->getLogicalDevice();
@@ -81,7 +81,7 @@ namespace LavaCake {
 
 				cmdBuff.endRecord();
 
-				if (!Command::SubmitCommandBuffersToQueue(queue.getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
+				if (!Command::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
 
 				}
 
