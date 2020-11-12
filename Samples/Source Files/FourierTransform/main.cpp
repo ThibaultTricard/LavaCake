@@ -97,7 +97,7 @@ int main() {
 	Framework::FragmentShaderModule* fragmentShader = new Framework::FragmentShaderModule("Data/Shaders/FourierTransform/shader.frag.spv");
 	pipeline->setVextexShader(vertexShader);
 	pipeline->setFragmentModule(fragmentShader);
-	pipeline->setVeritices(quad_vertex_buffer);
+	pipeline->setVertices(quad_vertex_buffer);
 	pipeline->addTexelBuffer(output_pass2, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
 	pipeline->addUniformBuffer(sizeBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 

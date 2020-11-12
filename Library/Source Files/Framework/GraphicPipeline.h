@@ -53,7 +53,7 @@ namespace LavaCake {
 			/**
 			*set the vertex buffer to be used for this pipeline
 			*/
-			void setVeritices(VertexBuffer* buffer);
+			void setVertices(VertexBuffer* buffer);
 
 			/**
 			*draw call of the pipeline

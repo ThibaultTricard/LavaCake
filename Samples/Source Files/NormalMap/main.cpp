@@ -65,7 +65,7 @@ int main() {
 	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/NormalMap/shader.frag.spv");
 	pipeline->setFragmentModule(frag);
 
-	pipeline->setVeritices(v);
+	pipeline->setVertices(v);
 	pipeline->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
 	pipeline->addTextureBuffer(normalMap, VK_SHADER_STAGE_FRAGMENT_BIT,1);
 	pipeline->addPushContant(constant, VK_SHADER_STAGE_FRAGMENT_BIT);

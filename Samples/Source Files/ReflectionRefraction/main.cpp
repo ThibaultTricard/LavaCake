@@ -70,7 +70,7 @@ int main() {
 	skybox->setVextexShader(skyboxVertex);
 	Framework::FragmentShaderModule* skyboxFrag = new Framework::FragmentShaderModule("Data/Shaders/Refraction/skybox.frag.spv");
 	skybox->setFragmentModule(skyboxFrag);
-	skybox->setVeritices(v);
+	skybox->setVertices(v);
 	skybox->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
 	skybox->addTextureBuffer(cubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 	skybox->SetCullMode(VK_CULL_MODE_FRONT_BIT);
@@ -81,7 +81,7 @@ int main() {
 	teapotPipeline->setVextexShader(vertex);
 	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/Refraction/model.frag.spv");
 	teapotPipeline->setFragmentModule(frag);
-	teapotPipeline->setVeritices(teapot_vertex_buffer);
+	teapotPipeline->setVertices(teapot_vertex_buffer);
 	teapotPipeline->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
 	teapotPipeline->addTextureBuffer(cubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 	teapotPipeline->SetCullMode(VK_CULL_MODE_BACK_BIT);

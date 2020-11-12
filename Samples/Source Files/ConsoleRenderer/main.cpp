@@ -100,7 +100,7 @@ int main() {
 	shadowPipeline->setVextexShader(shadowVertex);
 
 
-	shadowPipeline->setVeritices(scene_vertex_buffer);
+	shadowPipeline->setVertices(scene_vertex_buffer);
 	shadowPipeline->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
 
 
@@ -123,7 +123,7 @@ int main() {
 	
 	renderPipeline->addPushContant(constant, VK_SHADER_STAGE_VERTEX_BIT);
 
-	renderPipeline->setVeritices(scene_vertex_buffer);
+	renderPipeline->setVertices(scene_vertex_buffer);
 	renderPipeline->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
 
 	renderPipeline->addFrameBuffer(shadow_map_buffer, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
@@ -145,7 +145,7 @@ int main() {
 	consolePipeline->setFragmentModule(consoleFrag);
 
 
-	consolePipeline->setVeritices(quad_vertex_buffer);
+	consolePipeline->setVertices(quad_vertex_buffer);
 
 	consolePipeline->addFrameBuffer(scene_buffer, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
 

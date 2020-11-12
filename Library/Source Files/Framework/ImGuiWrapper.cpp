@@ -258,7 +258,7 @@ namespace LavaCake {
 
       FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
       m_pipeline->setFragmentModule(sphereFrag);
-      m_pipeline->setVeritices(m_vertexBuffer);
+      m_pipeline->setVertices(m_vertexBuffer);
 
       m_pipeline->addPushContant(m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT);
       m_pipeline->addTextureBuffer(fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);

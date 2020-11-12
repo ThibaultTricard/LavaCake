@@ -40,7 +40,7 @@ int main() {
 
 	pipeline->setVextexShader(vertexShader);
 	pipeline->setFragmentModule(fragmentShader);
-	pipeline->setVeritices(triangle_vertex_buffer);
+	pipeline->setVertices(triangle_vertex_buffer);
 
 	pass->addSubPass({ pipeline, gui->getPipeline() }, RenderPassFlag::SHOW_ON_SCREEN | RenderPassFlag::USE_COLOR | RenderPassFlag::USE_DEPTH | RenderPassFlag::OP_STORE_COLOR);
 	pass->addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_DEPENDENCY_BY_REGION_BIT);

@@ -104,7 +104,7 @@ int main() {
 	Framework::FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule("Data/Shaders/PostProcess/model.frag.spv");
 	sphereRenderPipeline->setFragmentModule(sphereFrag);
 
-	sphereRenderPipeline->setVeritices(sphere_vertex_buffer);
+	sphereRenderPipeline->setVertices(sphere_vertex_buffer);
 	sphereRenderPipeline->addUniformBuffer(uniforms, VK_SHADER_STAGE_VERTEX_BIT, 0);
 	sphereRenderPipeline->addTextureBuffer(skyCubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 	sphereRenderPipeline->addPushContant(cameraConstant, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -119,7 +119,7 @@ int main() {
 	skyRenderPipeline->setFragmentModule(skyFrag);
 
 
-	skyRenderPipeline->setVeritices(sky_vertex_buffer);
+	skyRenderPipeline->setVertices(sky_vertex_buffer);
 	skyRenderPipeline->addUniformBuffer(uniforms, VK_SHADER_STAGE_VERTEX_BIT, 0);
 	skyRenderPipeline->addTextureBuffer(skyCubeMap, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 	skyRenderPipeline->SetCullMode(VK_CULL_MODE_FRONT_BIT);
@@ -134,7 +134,7 @@ int main() {
 	postProcessPipeline->setFragmentModule(postProcessFrag);
 
 	postProcessPipeline->addPushContant(timeConstant, VK_SHADER_STAGE_FRAGMENT_BIT);
-	postProcessPipeline->setVeritices(quad_vertex_buffer);
+	postProcessPipeline->setVertices(quad_vertex_buffer);
 	
 
 	

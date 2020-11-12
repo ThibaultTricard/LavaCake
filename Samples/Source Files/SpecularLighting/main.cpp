@@ -58,7 +58,7 @@ int main() {
 	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/SpecularLighting/shader.frag.spv");
 	pipeline->setFragmentModule(frag);
 	pipeline->addPushContant(constant, VK_SHADER_STAGE_FRAGMENT_BIT);
-	pipeline->setVeritices(v);
+	pipeline->setVertices(v);
 	pipeline->addUniformBuffer(b, VK_SHADER_STAGE_VERTEX_BIT, 0);
 
 	pass.addSubPass({ pipeline }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);

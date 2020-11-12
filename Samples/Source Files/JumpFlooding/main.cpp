@@ -80,7 +80,7 @@ int main() {
 	FragmentShaderModule* fragmentShader = new FragmentShaderModule("Data/Shaders/JumpFlooding/shader.frag.spv");
 	pipeline->setVextexShader(vertexShader);
 	pipeline->setFragmentModule(fragmentShader);
-	pipeline->setVeritices(quad_vertex_buffer);
+	pipeline->setVertices(quad_vertex_buffer);
 	pipeline->addTexelBuffer(seeds, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
 	pipeline->addUniformBuffer(passNumber, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 

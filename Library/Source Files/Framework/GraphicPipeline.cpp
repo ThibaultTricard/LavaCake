@@ -167,7 +167,7 @@ namespace LavaCake {
 			m_subpassNumber = number;
 		}
 
-		void GraphicPipeline::setVeritices(VertexBuffer* buffer) {
+		void GraphicPipeline::setVertices(VertexBuffer* buffer) {
 			m_vertexBuffer = buffer;
 			Pipeline::SpecifyPipelineVertexInputState(buffer->getBindingDescriptions(), buffer->getAttributeDescriptions(), m_vertexInfo);
 
