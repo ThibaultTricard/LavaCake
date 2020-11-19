@@ -120,7 +120,7 @@ namespace LavaCake {
           }
         }
         else {
-          for (int i = 0; i < vertices.size() / m->vertexSize() / 2; i += 2) {
+          for (int i = 0; i < vertices.size() / m->vertexSize() ; i += 2) {
             ofs << "" + std::to_string(i) + " " + std::to_string(i + 1) + "\n";
           }
         }
