@@ -18,8 +18,11 @@ namespace LavaCake {
       virtual bool isIndexed() = 0;
 
       virtual std::vector<float>& vertices() = 0;
-      virtual  std::vector<uint32_t>& indices() = 0;
-      virtual  topology getTopology() = 0;
+      virtual std::vector<uint32_t>& indices() = 0;
+      virtual topology getTopology() = 0;
+      virtual vertexFormat getFormat() = 0;
+
+
     };
 
     template <topology T>
@@ -76,6 +79,10 @@ namespace LavaCake {
         return T;
       }
       
+      virtual vertexFormat getFormat() override {
+        return m_format;
+      };
+
     };
 
     template <topology T>
