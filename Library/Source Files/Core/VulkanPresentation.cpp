@@ -30,7 +30,7 @@
 #include "VulkanDevice.h"
 
 namespace LavaCake {
-	namespace Presentation {
+	namespace Core {
 		bool CreatePresentationSurface(VkInstance         instance,
 			WindowParameters   window_parameters,
 			VkSurfaceKHR     & presentation_surface) {
@@ -86,7 +86,7 @@ namespace LavaCake {
 			VkSurfaceKHR       presentation_surface,
 			uint32_t         & queue_family_index) {
 			std::vector<VkQueueFamilyProperties> queue_families;
-			if (!Queue::CheckAvailableQueueFamiliesAndTheirProperties(physical_device, queue_families)) {
+			if (!CheckAvailableQueueFamiliesAndTheirProperties(physical_device, queue_families)) {
 				return false;
 			}
 

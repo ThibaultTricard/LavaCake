@@ -103,8 +103,8 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 				DestroyPipeline(logical, *m_pipeline);
 				DestroyPipelineLayout(logical, *m_pipelineLayout);
-				Descriptor::DestroyDescriptorPool(logical, *m_descriptorPool);
-				Descriptor::DestroyDescriptorSetLayout(logical, *m_descriptorSetLayout);
+				LavaCake::Core::DestroyDescriptorPool(logical, *m_descriptorPool);
+				LavaCake::Core::DestroyDescriptorSetLayout(logical, *m_descriptorSetLayout);
 			};
 
 		protected :
@@ -246,9 +246,9 @@ namespace LavaCake {
 			std::vector<VkDescriptorSetLayoutBinding>												m_descriptorSetLayoutBinding;
 			uint32_t																												m_descriptorCount;
 
-			std::vector<LavaCake::Buffer::BufferDescriptorInfo>							m_bufferDescriptorUpdate;
-			std::vector<Image::ImageDescriptorInfo>													m_imageDescriptorUpdate;
-			std::vector<LavaCake::Buffer::TexelBufferDescriptorInfo>				m_texelBufferDescriptorUpdate;
+			std::vector<Core::BufferDescriptorInfo>													m_bufferDescriptorUpdate;
+			std::vector<Core::ImageDescriptorInfo>													m_imageDescriptorUpdate;
+			std::vector<Core::TexelBufferDescriptorInfo>										m_texelBufferDescriptorUpdate;
 
 			std::vector<uniform>																						m_uniforms;
 			std::vector<texture>																						m_textures;

@@ -25,7 +25,7 @@ namespace LavaCake {
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				m_image = image;
 				InitVkDestroyer(logical, m_imageView);
-				if (!Image::CreateImageView(logical, m_image, VK_IMAGE_VIEW_TYPE_2D, imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageView)) {
+				if (!LavaCake::Core::CreateImageView(logical, m_image, VK_IMAGE_VIEW_TYPE_2D, imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageView)) {
 					ErrorCheck::setError("Can't create image view");
 				}
 
@@ -64,8 +64,8 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 
 
-				Image::DestroyImage(logical, m_image);
-				Image::DestroyImageView(logical, *m_imageView);
+				LavaCake::Core::DestroyImage(logical, m_image);
+				LavaCake::Core::DestroyImageView(logical, *m_imageView);
 
 				if (m_aquiredSemaphore != VK_NULL_HANDLE) {
 					vkDestroySemaphore(logical, *m_aquiredSemaphore, nullptr);
@@ -95,9 +95,9 @@ namespace LavaCake {
 					delete m_swapchainImages[i];
 				}
 				for (size_t i = 0; i < m_images.size(); i++) {
-					Image::DestroyImage(logical, m_images[i]);
+					LavaCake::Core::DestroyImage(logical, m_images[i]);
 				}
-				LavaCake::Swapchain::DestroySwapchain(logical, *m_handle);
+				LavaCake::Core::DestroySwapchain(logical, *m_handle);
 
 			};
 

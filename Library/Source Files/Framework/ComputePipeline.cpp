@@ -26,7 +26,7 @@ namespace LavaCake {
 		}
 
 		void ComputePipeline::compute(const VkCommandBuffer buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ) {
-			Descriptor::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_COMPUTE, *m_pipelineLayout, 0, m_descriptorSets, {});
+			LavaCake::Core::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_COMPUTE, *m_pipelineLayout, 0, m_descriptorSets, {});
 
 			Pipeline::BindPipelineObject(buffer, VK_PIPELINE_BIND_POINT_COMPUTE, *m_pipeline);
 

@@ -2,6 +2,9 @@
 
 
 using namespace LavaCake;
+using namespace LavaCake::Geometry;
+using namespace LavaCake::Framework;
+using namespace LavaCake::Core;
 
 int main() {
 
@@ -49,7 +52,7 @@ int main() {
 
 	//texture map
 	Framework::TextureBuffer* input = new Framework::TextureBuffer("Data/Textures/mandrill.png", 4);
-	input->allocate(queue->getHandle(), commandBuffer[0].getHandle());
+	input->allocate(queue, commandBuffer[0]);
 
 
 	Framework::Buffer* output_pass1 = new Framework::Buffer();
@@ -92,7 +95,7 @@ int main() {
 	//renderPass
 	Framework::RenderPass* showPass = new Framework::RenderPass();
 
-	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }) , vec3f({ float(size.width),float(size.height),1.0f }) , vec2f({ 0,0 }) , vec2f({ float(size.width),float(size.height) }));
 	Framework::VertexShaderModule* vertexShader = new Framework::VertexShaderModule("Data/Shaders/FourierTransform/shader.vert.spv");
 	Framework::FragmentShaderModule* fragmentShader = new Framework::FragmentShaderModule("Data/Shaders/FourierTransform/shader.frag.spv");
 	pipeline->setVextexShader(vertexShader);
@@ -129,7 +132,7 @@ int main() {
 	commandBuffer[0].endRecord();
 
 
-	if (!Command::SubmitCommandBuffersToQueue(compute_queue, {}, { commandBuffer[0].getHandle() }, { commandBuffer[0].getSemaphore(1) }, { commandBuffer[0].getFence()})) {
+	if (!SubmitCommandBuffersToQueue(compute_queue, {}, { commandBuffer[0].getHandle() }, { commandBuffer[0].getSemaphore(1) }, { commandBuffer[0].getFence()})) {
 	}
 
 
@@ -144,7 +147,7 @@ int main() {
 
 		Framework::SwapChainImage& image = s->AcquireImage();
 
-		std::vector<LavaCake::Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
+		std::vector<WaitSemaphoreInfo> wait_semaphore_infos = {};
 		wait_semaphore_infos.push_back({
 			image.getSemaphore(),                     // VkSemaphore            Semaphore
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
@@ -159,20 +162,20 @@ int main() {
 		showPass->setSwapChainImage(*frameBuffers[f], image);
 
 
-		showPass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		showPass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 		commandBuffer[f].endRecord();
 
 
-		if (!Command::SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
-		Presentation::PresentInfo present_info = {
+		PresentInfo present_info = {
 			s->getHandle(),                                    // VkSwapchainKHR         Swapchain
 			image.getIndex()                                   // uint32_t               ImageIndex
 		};
-		if (!Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
+		if (!PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
 			continue;
 		}
 	}

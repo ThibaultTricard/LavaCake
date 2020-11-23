@@ -1,7 +1,7 @@
 #include "VulkanQueue.h"
 
 namespace LavaCake {
-	namespace Queue {
+	namespace Core {
 		bool CheckAvailableQueueFamiliesAndTheirProperties(VkPhysicalDevice                       physical_device,
 			std::vector<VkQueueFamilyProperties> & queue_families) {
 			uint32_t queue_families_count = 0;

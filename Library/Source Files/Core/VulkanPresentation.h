@@ -33,7 +33,7 @@
 #include "VulkanQueue.h"
 
 namespace LavaCake {
-	namespace Presentation {
+	namespace Core {
 		struct PresentInfo {
 			VkSwapchainKHR  Swapchain;
 			uint32_t        ImageIndex;

@@ -29,7 +29,7 @@
 #include "Common.h"
 
 namespace LavaCake {
-	namespace Semaphore {
+	namespace Core {
 		struct WaitSemaphoreInfo {
 			VkSemaphore           Semaphore;
 			VkPipelineStageFlags  WaitingStage;

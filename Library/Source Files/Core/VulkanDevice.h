@@ -30,8 +30,7 @@
 #include "VulkanQueue.h"
 
 namespace LavaCake {
-	namespace Device {
-		namespace Physical {
+	namespace Core {
 			bool EnumerateAvailablePhysicalDevices(VkInstance                      instance,
 				std::vector<VkPhysicalDevice> & available_devices);
 
@@ -41,10 +40,9 @@ namespace LavaCake {
 			void GetFeaturesAndPropertiesOfPhysicalDevice(VkPhysicalDevice             physical_device,
 				VkPhysicalDeviceFeatures   & device_features,
 				VkPhysicalDeviceProperties & device_properties);
-		}
-		namespace Logical {
+
 			bool CreateLogicalDevice(VkPhysicalDevice                  physical_device,
-				std::vector< Queue::QueueInfo >          queue_infos,
+				std::vector< QueueInfo >          queue_infos,
 				std::vector<char const *> const & desired_extensions,
 				VkPhysicalDeviceFeatures        * desired_features,
 				VkDevice                        & logical_device);
@@ -55,7 +53,7 @@ namespace LavaCake {
 				VkQueue    & compute_queue);
 
 			void DestroyLogicalDevice(VkDevice & logical_device);
-		}
+
 	}
 }
 

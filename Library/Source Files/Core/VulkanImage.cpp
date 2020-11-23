@@ -27,7 +27,7 @@
 #include "VulkanBuffer.h"
 
 namespace LavaCake {
-	namespace Image {
+	namespace Core {
 		bool CreateImage(VkDevice                logical_device,
 			VkImageType             type,
 			VkFormat                format,
@@ -269,15 +269,15 @@ namespace LavaCake {
 				return false;
 			}
 
-			if (!Image::CreateImage(logical_device, type, format, size, num_mipmaps, num_layers, VK_SAMPLE_COUNT_1_BIT, usage | VK_IMAGE_USAGE_SAMPLED_BIT, cubemap, sampled_image)) {
+			if (!CreateImage(logical_device, type, format, size, num_mipmaps, num_layers, VK_SAMPLE_COUNT_1_BIT, usage | VK_IMAGE_USAGE_SAMPLED_BIT, cubemap, sampled_image)) {
 				return false;
 			}
 
-			if (!Image::AllocateAndBindMemoryObjectToImage(physical_device, logical_device, sampled_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
+			if (!AllocateAndBindMemoryObjectToImage(physical_device, logical_device, sampled_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
 				return false;
 			}
 
-			if (!Image::CreateImageView(logical_device, sampled_image, view_type, format, aspect, sampled_image_view)) {
+			if (!CreateImageView(logical_device, sampled_image, view_type, format, aspect, sampled_image_view)) {
 				return false;
 			}
 			return true;
@@ -313,7 +313,7 @@ namespace LavaCake {
 			VkImage              & sampled_image,
 			VkDeviceMemory       & memory_object,
 			VkImageView          & sampled_image_view) {
-			if (!Buffer::CreateSampler(logical_device, mag_filter, min_filter, mipmap_mode, u_address_mode, v_address_mode, w_address_mode, lod_bias, anisotropy_enable, max_anisotropy, compare_enable, compare_operator, min_lod, max_lod, border_color, unnormalized_coords, sampler)) {
+			if (!CreateSampler(logical_device, mag_filter, min_filter, mipmap_mode, u_address_mode, v_address_mode, w_address_mode, lod_bias, anisotropy_enable, max_anisotropy, compare_enable, compare_operator, min_lod, max_lod, border_color, unnormalized_coords, sampler)) {
 				return false;
 			}
 

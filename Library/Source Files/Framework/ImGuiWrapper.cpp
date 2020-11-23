@@ -216,7 +216,7 @@ namespace LavaCake {
       std::vector<unsigned char>* textureData = new std::vector<unsigned char>(pixels, pixels + width * height * 4);
 
       TextureBuffer* fontBuffer = new TextureBuffer(textureData, width, height, 4);
-      fontBuffer->allocate(queue->getHandle(), cmdBuff->getHandle());
+      fontBuffer->allocate(queue, *cmdBuff);
 
       m_mesh = (LavaCake::Geometry::Mesh_t*) (new LavaCake::Geometry::IndexedMesh<LavaCake::Geometry::TRIANGLE>(imguiformat));
 
@@ -244,15 +244,15 @@ namespace LavaCake {
       m_vertexBuffer->allocate(queue, *cmdBuff);
 
       m_pushConstant = new PushConstant();
-      m_pushConstant->addVariable("uScale", vec2f({0.0f,0.0f}));
-      m_pushConstant->addVariable("uTranslate", vec2f({0.0f,0.0f}));
+      m_pushConstant->addVariable("uScale", &vec2f({0.0f,0.0f}));
+      m_pushConstant->addVariable("uTranslate", &vec2f({0.0f,0.0f}));
 
       std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv)/sizeof(unsigned char));
       memcpy(&vertSpirv[0], __glsl_shader_vert_spv, sizeof(__glsl_shader_vert_spv));
       std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
       memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
 
-      m_pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+      m_pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
       VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
       m_pipeline->setVextexShader(sphereVertex);
 
@@ -309,8 +309,8 @@ namespace LavaCake {
 
       vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
       vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });
-      m_pushConstant->setVariable("uScale", scale);
-      m_pushConstant->setVariable("uTranslate", translate);
+      m_pushConstant->setVariable("uScale", &scale);
+      m_pushConstant->setVariable("uTranslate", &translate);
 
     }
 

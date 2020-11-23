@@ -30,7 +30,7 @@
 #include "VulkanImage.h"
 
 namespace LavaCake {
-	namespace Memory {
+	namespace Core {
 		bool MapUpdateAndUnmapHostVisibleMemory(VkDevice             logical_device,
 			VkDeviceMemory       memory_object,
 			VkDeviceSize         offset,
@@ -119,13 +119,13 @@ namespace LavaCake {
 
 			VkDestroyer(VkBuffer) staging_buffer;
 			InitVkDestroyer(logical_device, staging_buffer);
-			if (!Buffer::CreateBuffer(logical_device, data_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, *staging_buffer)) {
+			if (!CreateBuffer(logical_device, data_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, *staging_buffer)) {
 				return false;
 			}
 
 			VkDestroyer(VkDeviceMemory) memory_object;
 			InitVkDestroyer(logical_device, memory_object);
-			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
+			if (!AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
 				return false;
 			}
 
@@ -133,31 +133,31 @@ namespace LavaCake {
 				return false;
 			}
 
-			if (!Command::BeginCommandBufferRecordingOperation(command_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
+			if (!BeginCommandBufferRecordingOperation(command_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
 				return false;
 			}
 
-			Buffer::SetBufferMemoryBarrier(command_buffer, destination_buffer_generating_stages, VK_PIPELINE_STAGE_TRANSFER_BIT, { { destination_buffer, destination_buffer_current_access, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED } });
+			SetBufferMemoryBarrier(command_buffer, destination_buffer_generating_stages, VK_PIPELINE_STAGE_TRANSFER_BIT, { { destination_buffer, destination_buffer_current_access, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED } });
 
 			CopyDataBetweenBuffers(command_buffer, *staging_buffer, destination_buffer, { { 0, destination_offset, data_size } });
 
-			Buffer::SetBufferMemoryBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, destination_buffer_consuming_stages, { { destination_buffer, VK_ACCESS_TRANSFER_WRITE_BIT, destination_buffer_new_access, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED } });
+			SetBufferMemoryBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, destination_buffer_consuming_stages, { { destination_buffer, VK_ACCESS_TRANSFER_WRITE_BIT, destination_buffer_new_access, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED } });
 
-			if (!Command::EndCommandBufferRecordingOperation(command_buffer)) {
+			if (!EndCommandBufferRecordingOperation(command_buffer)) {
 				return false;
 			}
 
 			VkDestroyer(VkFence) fence;
 			InitVkDestroyer(logical_device, fence);
-			if (!Fence::CreateFence(logical_device, false, *fence)) {
+			if (!CreateFence(logical_device, false, *fence)) {
 				return false;
 			}
 
-			if (!Command::SubmitCommandBuffersToQueue(queue, {}, { command_buffer }, signal_semaphores, *fence)) {
+			if (!SubmitCommandBuffersToQueue(queue, {}, { command_buffer }, signal_semaphores, *fence)) {
 				return false;
 			}
 
-			if (!Fence::WaitForFences(logical_device, { *fence }, VK_FALSE, 500000000)) {
+			if (!WaitForFences(logical_device, { *fence }, VK_FALSE, 500000000)) {
 				return false;
 			}
 
@@ -185,13 +185,13 @@ namespace LavaCake {
 
 			VkDestroyer(VkBuffer) staging_buffer;
 			InitVkDestroyer(logical_device, staging_buffer);
-			if (!Buffer::CreateBuffer(logical_device, data_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, *staging_buffer)) {
+			if (!CreateBuffer(logical_device, data_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, *staging_buffer)) {
 				return false;
 			}
 
 			VkDestroyer(VkDeviceMemory) memory_object;
 			InitVkDestroyer(logical_device, memory_object);
-			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
+			if (!AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
 				return false;
 			}
 
@@ -199,11 +199,11 @@ namespace LavaCake {
 				return false;
 			}
 
-			if (!Command::BeginCommandBufferRecordingOperation(command_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
+			if (!BeginCommandBufferRecordingOperation(command_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
 				return false;
 			}
 
-			Image::SetImageMemoryBarrier(command_buffer, destination_image_generating_stages, VK_PIPELINE_STAGE_TRANSFER_BIT,
+			SetImageMemoryBarrier(command_buffer, destination_image_generating_stages, VK_PIPELINE_STAGE_TRANSFER_BIT,
 				{
 					{
 						destination_image,                        // VkImage            Image
@@ -227,7 +227,7 @@ namespace LavaCake {
 						destination_image_size,                   // VkExtent3D                 imageExtent
 					} });
 
-			Image::SetImageMemoryBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, destination_image_consuming_stages,
+			SetImageMemoryBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, destination_image_consuming_stages,
 				{
 					{
 						destination_image,                        // VkImage            Image
@@ -240,21 +240,21 @@ namespace LavaCake {
 						destination_image_aspect                  // VkImageAspectFlags Aspect
 					} });
 
-			if (!LavaCake::Command::EndCommandBufferRecordingOperation(command_buffer)) {
+			if (!EndCommandBufferRecordingOperation(command_buffer)) {
 				return false;
 			}
 
 			VkDestroyer(VkFence) fence;
 			InitVkDestroyer(logical_device, fence);
-			if (!Fence::CreateFence(logical_device, false, *fence)) {
+			if (!CreateFence(logical_device, false, *fence)) {
 				return false;
 			}
 
-			if (!Command::SubmitCommandBuffersToQueue(queue, {}, { command_buffer }, signal_semaphores, *fence)) {
+			if (!SubmitCommandBuffersToQueue(queue, {}, { command_buffer }, signal_semaphores, *fence)) {
 				return false;
 			}
 
-			if (!Fence::WaitForFences(logical_device, { *fence }, VK_FALSE, 500000000)) {
+			if (!WaitForFences(logical_device, { *fence }, VK_FALSE, 500000000)) {
 				return false;
 			}
 

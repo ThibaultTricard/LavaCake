@@ -111,7 +111,7 @@ namespace LavaCake {
 
 
 			VkPipelineViewportStateCreateInfo											m_viewportInfo;
-			Viewport::ViewportInfo																m_viewportscissor;
+			LavaCake::Core::ViewportInfo													m_viewportscissor;
 			VkPipelineVertexInputStateCreateInfo									m_vertexInfo;
 			VertexBuffer*																					m_vertexBuffer;
 			VkPipelineInputAssemblyStateCreateInfo								m_inputInfo;

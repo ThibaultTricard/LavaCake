@@ -17,19 +17,61 @@ namespace LavaCake {
 			/**
 			*add a Variable into the PushConstant
 			*/
-			template<typename T>
-			void addVariable(std::string name, T value) {
+			void addVariable(std::string name, Data* value) {
+				std::vector<int> v = value->rawMemory();
+				addArray(name, v);
+			}
+
+			void setVariable(std::string name, Data* value) {
+				std::vector<int> v = value->rawMemory();
+				setArray(name, v);
+			}
+
+			void addVariable(std::string name, int value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
 				std::memcpy(&v[0], &value, sizeof(value));
 				addArray(name, v);
 			}
 
+			void setVariable(std::string name, int value) {
+				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+				std::memcpy(&v[0], &value, sizeof(value));
+				setArray(name, v);
+			}
 
-			/**
-			* change one of value in the push constant using it's name 
-			*/
-			template<typename T>
-			void setVariable(std::string name, T value) {
+			void addVariable(std::string name, uint32_t value) {
+				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+				std::memcpy(&v[0], &value, sizeof(value));
+				addArray(name, v);
+			}
+
+			void setVariable(std::string name, uint32_t value) {
+				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+				std::memcpy(&v[0], &value, sizeof(value));
+				setArray(name, v);
+			}
+
+
+			void addVariable(std::string name, float value) {
+				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+				std::memcpy(&v[0], &value, sizeof(value));
+				addArray(name, v);
+			}
+
+			void setVariable(std::string name, float value) {
+				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+				std::memcpy(&v[0], &value, sizeof(value));
+				setArray(name, v);
+			}
+
+
+			void addVariable(std::string name, double value) {
+				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+				std::memcpy(&v[0], &value, sizeof(value));
+				addArray(name, v);
+			}
+
+			void setVariable(std::string name, double value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
 				std::memcpy(&v[0], &value, sizeof(value));
 				setArray(name, v);

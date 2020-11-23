@@ -35,24 +35,24 @@ namespace LavaCake {
 	
 	namespace Helpers {
 			mat4 Identity() {
-				mat4 I = {
+				mat4 I = mat4({
 					1,0,0,0,
 					0,1,0,0,
 					0,0,1,0,
 					0,0,0,1
-				};
+				});
 				return I;
 			}
 
 			mat4 PrepareTranslationMatrix(float x,
 				float y,
 				float z) {
-				mat4 translation_matrix = {
+				mat4 translation_matrix = mat4({
 					1.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 1.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 1.0f, 0.0f,
 						 x,    y,    z, 1.0f
-				};
+				});
 				return translation_matrix;
 			}
 
@@ -79,7 +79,7 @@ namespace LavaCake {
 				const float _1_c = 1.0f - c;
 				const float s = sin(Deg2Rad(angle));
 
-				mat4 rotation_matrix = {
+				mat4 rotation_matrix = mat4({
 					x * x * _1_c + c,
 					y * x * _1_c - z * s,
 					z * x * _1_c + y * s,
@@ -99,19 +99,19 @@ namespace LavaCake {
 					0.0f,
 					0.0f,
 					1.0f
-				};
+				});
 				return rotation_matrix;
 			}
 
 			mat4 PrepareScalingMatrix(float x,
 				float y,
 				float z) {
-				mat4 scaling_matrix = {
+				mat4 scaling_matrix = mat4({
 						 x, 0.0f, 0.0f, 0.0f,
 					0.0f,    y, 0.0f, 0.0f,
 					0.0f, 0.0f,    z, 0.0f,
 					0.0f, 0.0f, 0.0f, 1.0f
-				};
+				});
 				return scaling_matrix;
 			}
 
@@ -121,7 +121,7 @@ namespace LavaCake {
 				float far_plane) {
 				float f = 1.0f / tan(Deg2Rad(0.5f * field_of_view));
 
-				mat4 perspective_projection_matrix = {
+				mat4 perspective_projection_matrix = mat4({
 					f / aspect_ratio,
 					0.0f,
 					0.0f,
@@ -141,7 +141,7 @@ namespace LavaCake {
 					0.0f,
 					(near_plane * far_plane) / (near_plane - far_plane),
 					0.0f
-				};
+				});
 				return perspective_projection_matrix;
 			}
 
@@ -151,7 +151,7 @@ namespace LavaCake {
 				float top_plane,
 				float near_plane,
 				float far_plane) {
-				mat4 orthographic_projection_matrix = {
+				mat4 orthographic_projection_matrix = mat4({
 					2.0f / (right_plane - left_plane),
 					0.0f,
 					0.0f,
@@ -171,7 +171,7 @@ namespace LavaCake {
 					-(bottom_plane + top_plane) / (bottom_plane - top_plane),
 					near_plane / (near_plane - far_plane),
 					1.0f
-				};
+				});
 				return orthographic_projection_matrix;
 			}
 

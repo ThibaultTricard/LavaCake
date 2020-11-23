@@ -6,28 +6,30 @@
 
 using namespace LavaCake;
 using namespace LavaCake::Geometry;
+using namespace LavaCake::Framework;
+using namespace LavaCake::Core;
 
 int main() {
 	int nbFrames = 3;
-	Framework::ErrorCheck::PrintError(true);
-	Framework::Window w("LavaCake : Bump Mapping", 500, 500);
-	Framework::Mouse* mouse = Framework::Mouse::getMouse();
+	ErrorCheck::PrintError(true);
+	Window w("LavaCake : Bump Mapping", 500, 500);
+	Mouse* mouse = Mouse::getMouse();
 
-	LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
+	Device* d = Device::getDevice();
 	d->initDevices(0, 1, w.m_windowParams);
-	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
+	SwapChain* s = SwapChain::getSwapChain();
 	s->init();
 	VkExtent2D size = s->size();
-	Framework::Queue* queue = d->getGraphicQueue(0);
+	Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
-	std::vector<Framework::CommandBuffer> commandBuffer = std::vector<Framework::CommandBuffer>(nbFrames);
+	std::vector<CommandBuffer> commandBuffer = std::vector<CommandBuffer>(nbFrames);
 	for (int i = 0; i < nbFrames; i++) {
 		commandBuffer[i].addSemaphore();
 	}
 
 	//Normal map
-	Framework::TextureBuffer* normalMap = new Framework::TextureBuffer("Data/Textures/normal_map.png", 4);
-	normalMap->allocate(queue->getHandle(), commandBuffer[0].getHandle());
+	TextureBuffer* normalMap = new TextureBuffer("Data/Textures/normal_map.png", 4);
+	normalMap->allocate(queue, commandBuffer[0]);
 
 	//vertex buffer
 	//knot mesh
@@ -36,33 +38,33 @@ int main() {
 
 
 
-	Framework::VertexBuffer* v = new Framework::VertexBuffer({ ice_mesh });
+	VertexBuffer* v = new VertexBuffer({ ice_mesh });
 	v->allocate(queue, commandBuffer[0]);
 
 	//uniform buffer
-	Framework::UniformBuffer* b = new Framework::UniformBuffer();
+	UniformBuffer* b = new UniformBuffer();
 	mat4 proj = Helpers::PreparePerspectiveProjectionMatrix(static_cast<float>(size.width) / static_cast<float>(size.height),
 		50.0f, 0.5f, 10.0f);
 	mat4 modelView = Helpers::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
-	b->addVariable("modelView", modelView);
-	b->addVariable("projection", proj);
+	b->addVariable("modelView", &modelView);
+	b->addVariable("projection", &proj);
 	b->end();
 
 
 	//PushConstant
-	Framework::PushConstant* constant = new Framework::PushConstant();
+	PushConstant* constant = new PushConstant();
 	vec4f LigthPos = vec4f({ 0.f,4.f,0.7f,0.0 });
-	constant->addVariable("LigthPos", LigthPos);
+	constant->addVariable("LigthPos", &LigthPos);
 
 	// Render pass
-	Framework::RenderPass pass = Framework::RenderPass();
-	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	RenderPass pass = RenderPass();
+	GraphicPipeline* pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
 
-	Framework::VertexShaderModule* vertex = new Framework::VertexShaderModule("Data/Shaders/NormalMap/shader.vert.spv");
+	VertexShaderModule* vertex = new VertexShaderModule("Data/Shaders/NormalMap/shader.vert.spv");
 	pipeline->setVextexShader(vertex);
 
 
-	Framework::FragmentShaderModule* frag = new Framework::FragmentShaderModule("Data/Shaders/NormalMap/shader.frag.spv");
+	FragmentShaderModule* frag = new FragmentShaderModule("Data/Shaders/NormalMap/shader.frag.spv");
 	pipeline->setFragmentModule(frag);
 
 	pipeline->setVertices(v);
@@ -70,14 +72,14 @@ int main() {
 	pipeline->addTextureBuffer(normalMap, VK_SHADER_STAGE_FRAGMENT_BIT,1);
 	pipeline->addPushContant(constant, VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	pass.addSubPass({ pipeline }, Framework::RenderPassFlag::SHOW_ON_SCREEN | Framework::RenderPassFlag::USE_COLOR | Framework::RenderPassFlag::USE_DEPTH | Framework::RenderPassFlag::OP_STORE_COLOR);
+	pass.addSubPass({ pipeline }, RenderPassFlag::SHOW_ON_SCREEN | RenderPassFlag::USE_COLOR | RenderPassFlag::USE_DEPTH | RenderPassFlag::OP_STORE_COLOR);
 	pass.addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	pass.addDependencies(0, VK_SUBPASS_EXTERNAL, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_DEPENDENCY_BY_REGION_BIT);
 	pass.compile();
 
-	std::vector<Framework::FrameBuffer*> frameBuffers;
+	std::vector<FrameBuffer*> frameBuffers;
 	for (int i = 0; i < nbFrames; i++) {
-		frameBuffers.push_back(new Framework::FrameBuffer(s->size().width, s->size().height));
+		frameBuffers.push_back(new FrameBuffer(s->size().width, s->size().height));
 		pass.prepareOutputFrameBuffer(*frameBuffers[i]);
 	}
 
@@ -86,7 +88,7 @@ int main() {
 
 	vec2d* lastMousePos = nullptr;
 
-	vec2d polars = { 0.0,0.0 };
+	vec2d polars = vec2d({ 0.0,0.0 });
 
 	while (w.running()) {
 		w.updateInput();
@@ -95,9 +97,9 @@ int main() {
 
 		VkDevice logical = d->getLogicalDevice();
 		VkQueue& present_queue = d->getPresentQueue()->getHandle();
-		Framework::SwapChainImage& image = s->AcquireImage();
+		SwapChainImage& image = s->AcquireImage();
 
-		std::vector<Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
+		std::vector<WaitSemaphoreInfo> wait_semaphore_infos = {};
 		wait_semaphore_infos.push_back({
 			image.getSemaphore(),											        // VkSemaphore            Semaphore
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
@@ -118,10 +120,10 @@ int main() {
 
 			modelView = modelView * Helpers::PrepareTranslationMatrix(0.0f, 0.0f, -4.0f);
 
-			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), { 0 , 1, 0 });
-			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), { 1 , 0, 0 });
+			modelView = modelView * Helpers::PrepareRotationMatrix(-float(polars[0]), vec3f({ 0 , 1, 0 }));
+			modelView = modelView * Helpers::PrepareRotationMatrix(float(polars[1]), vec3f({ 1 , 0, 0 }));
 			//std::cout << w.m_mouse.position[0] << std::endl;
-			b->setVariable("modelView", modelView);
+			b->setVariable("modelView", &modelView);
 			lastMousePos = new vec2d({ mouse->position[0], mouse->position[1] });
 		}
 		else {
@@ -144,25 +146,25 @@ int main() {
 		pass.setSwapChainImage(*frameBuffers[f], image);
 
 
-		pass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		pass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 
-		if (!LavaCake::Command::EndCommandBufferRecordingOperation(commandBuffer[f].getHandle())) {
+		if (!EndCommandBufferRecordingOperation(commandBuffer[f].getHandle())) {
 			continue;
 		}
 
 
 		
-		if (!Command::SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
-		Presentation::PresentInfo present_info = {
+		PresentInfo present_info = {
 			swapchain,                                    // VkSwapchainKHR         Swapchain
 			image.getIndex()                              // uint32_t               ImageIndex
 		};
-		if (!Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
+		if (!PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
 			continue;
 		}
 	}

@@ -117,5 +117,34 @@ namespace LavaCake {
     typedef Mesh<TRIANGLE> TriangleMesh;
     typedef IndexedMesh<TRIANGLE> TriangleIndexedMesh;
 
+
+
+    static Mesh_t* generateQuad(bool addUV = false) {
+      Mesh_t* m = new TriangleIndexedMesh(P3UV);
+
+      if (addUV) {
+        m->appendVertex({ -1.0,-1.0,0.0,0.0,0.0 });
+        m->appendVertex({ -1.0, 1.0,0.0,0.0,1.0 });
+        m->appendVertex({ 1.0, 1.0,0.0,1.0,1.0 });
+        m->appendVertex({ 1.0,-1.0,0.0,1.0,0.0 });
+      }
+      else {
+        m->appendVertex({ -1.0,-1.0,0.0 });
+        m->appendVertex({ -1.0, 1.0,0.0 });
+        m->appendVertex({ 1.0, 1.0,0.0 });
+        m->appendVertex({ 1.0,-1.0,0.0});
+      }
+
+      m->appendIndex(0);
+      m->appendIndex(1);
+      m->appendIndex(2);
+
+      m->appendIndex(2);
+      m->appendIndex(3);
+      m->appendIndex(0);
+
+      return m;
+    }
+
   }
 }

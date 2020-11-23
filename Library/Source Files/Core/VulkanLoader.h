@@ -32,7 +32,7 @@
 #include "Common.h"
 
 namespace LavaCake {
-	namespace Loader {
+	namespace Core {
 		bool ConnectWithVulkanLoaderLibrary(LIBRARY_TYPE & vulkan_library);
 		bool LoadFunctionExportedFromVulkanLoaderLibrary(LIBRARY_TYPE const & vulkan_library);
 		bool LoadGlobalLevelFunctions();

@@ -13,16 +13,64 @@ namespace LavaCake {
   namespace Framework{
     class UniformBuffer {
     public :
-      template<typename T>
-      void addVariable(std::string name, T value) {
-        std::vector<int> v = std::vector<int>(sizeof(value)  / sizeof(int));
+
+      void addVariable(std::string name, Data* value) {
+        std::vector<int> v = value->rawMemory();
+        addArray(name, v);
+      }
+
+      void setVariable(std::string name, Data* value) {
+        std::vector<int> v = value->rawMemory();
+        setArray(name, v);
+      }
+
+      
+      void addVariable(std::string name, int value) {
+        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
         std::memcpy(&v[0], &value, sizeof(value));
         addArray(name, v);
       }
 
-      template<typename T>
-      void setVariable(std::string name, T value) {
-				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+      void setVariable(std::string name, int value) {
+        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+        std::memcpy(&v[0], &value, sizeof(value));
+        setArray(name, v);
+      }
+
+
+      void addVariable(std::string name, uint32_t value) {
+        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+        std::memcpy(&v[0], &value, sizeof(value));
+        addArray(name, v);
+      }
+
+      void setVariable(std::string name, uint32_t value) {
+        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+        std::memcpy(&v[0], &value, sizeof(value));
+        setArray(name, v);
+      }
+
+      void addVariable(std::string name, float value) {
+        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+        std::memcpy(&v[0], &value, sizeof(value));
+        addArray(name, v);
+      }
+
+      void setVariable(std::string name, float value) {
+        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+        std::memcpy(&v[0], &value, sizeof(value));
+        setArray(name, v);
+      }
+
+
+      void addVariable(std::string name, double value) {
+        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+        std::memcpy(&v[0], &value, sizeof(value));
+        addArray(name, v);
+      }
+
+      void setVariable(std::string name, double value) {
+        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
         std::memcpy(&v[0], &value, sizeof(value));
         setArray(name, v);
       }
@@ -36,11 +84,11 @@ namespace LavaCake {
       ~UniformBuffer() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        LavaCake::Buffer::DestroyBuffer(logical, *m_buffer);
-        Memory::FreeMemoryObject(logical, *m_bufferMemory);
+        LavaCake::Core::DestroyBuffer(logical, *m_buffer);
+        LavaCake::Core::FreeMemoryObject(logical, *m_bufferMemory);
 
-        LavaCake::Buffer::DestroyBuffer(logical, *m_stagingBuffer);
-        Memory::FreeMemoryObject(logical, *m_stagingBufferMemory);
+        LavaCake::Core::DestroyBuffer(logical, *m_stagingBuffer);
+        LavaCake::Core::FreeMemoryObject(logical, *m_stagingBufferMemory);
       }
 
     private :

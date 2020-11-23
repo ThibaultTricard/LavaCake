@@ -27,7 +27,7 @@
 
 namespace LavaCake {
 
-	namespace Fence {
+	namespace Core {
 		bool CreateFence(VkDevice   logical_device,
 			bool       signaled,
 			VkFence  & fence) {

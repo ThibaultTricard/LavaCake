@@ -1,7 +1,10 @@
 #include "Framework/Framework.h"
 
-using namespace LavaCake::Framework;
+using namespace LavaCake;
 using namespace LavaCake::Geometry;
+using namespace LavaCake::Framework;
+using namespace LavaCake::Core;
+
 int main() {
 
 	Window w("Lavacake: JumpFlooding", 512, 512);
@@ -45,7 +48,7 @@ int main() {
 	ComputeShaderModule* compute = new ComputeShaderModule("Data/Shaders/JumpFlooding/JumpFlooding.comp.spv");
 	jumpFloodPipeline->setComputeShader(compute);
 	UniformBuffer* passNumber = new UniformBuffer();
-	passNumber->addVariable("dimention", LavaCake::vec2i({ 512,512 }));
+	passNumber->addVariable("dimention", &LavaCake::vec2i({ 512,512 }));
 	passNumber->addVariable("passNumber", unsigned int(0));
 	passNumber->end();
 	jumpFloodPipeline->addUniformBuffer(passNumber, VK_SHADER_STAGE_COMPUTE_BIT, 1);
@@ -69,13 +72,15 @@ int main() {
 	quad->appendIndex(3);
 	quad->appendIndex(0);
 
+	
+
 	VertexBuffer* quad_vertex_buffer = new VertexBuffer({ quad });
 	quad_vertex_buffer->allocate(queue, *cmbBuff);
 
 	//renderPass
 	RenderPass* showPass = new RenderPass();
 
-	GraphicPipeline* pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	GraphicPipeline* pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
 	VertexShaderModule* vertexShader = new VertexShaderModule("Data/Shaders/JumpFlooding/shader.vert.spv");
 	FragmentShaderModule* fragmentShader = new FragmentShaderModule("Data/Shaders/JumpFlooding/shader.frag.spv");
 	pipeline->setVextexShader(vertexShader);
@@ -130,13 +135,13 @@ int main() {
 		jumpFloodPipeline->compute(cmbBuff->getHandle(), 512, 512, 1);
 		LavaCake::vkCmdPipelineBarrier(cmbBuff->getHandle(), VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, nullptr, print_memory_barriers.size(), print_memory_barriers.data(), 0, nullptr);
 		cmbBuff->endRecord();
-		if (!LavaCake::Command::SubmitCommandBuffersToQueue(compute_queue, {}, { cmbBuff->getHandle() }, {  }, cmbBuff->getFence())) {
+		if (!SubmitCommandBuffersToQueue(compute_queue, {}, { cmbBuff->getHandle() }, {  }, cmbBuff->getFence())) {
 
 		}
 		pass++;
 		SwapChainImage& image = s->AcquireImage();
 
-		std::vector<LavaCake::Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
+		std::vector<WaitSemaphoreInfo> wait_semaphore_infos = {};
 		wait_semaphore_infos.push_back({
 			image.getSemaphore(),                     // VkSemaphore            Semaphore
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
@@ -151,21 +156,21 @@ int main() {
 		showPass->setSwapChainImage(*frameBuffer, image);
 
 
-		showPass->draw(cmbBuff->getHandle(), frameBuffer->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		showPass->draw(cmbBuff->getHandle(), frameBuffer->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 		LavaCake::vkCmdPipelineBarrier(cmbBuff->getHandle(), VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, nullptr, seed_memory_barriers.size(), seed_memory_barriers.data(), 0, nullptr);
 
 		cmbBuff->endRecord();
 
 
-		if (!LavaCake::Command::SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { cmbBuff->getHandle() }, { cmbBuff->getSemaphore(0) }, cmbBuff->getFence())) {
+		if (!SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { cmbBuff->getHandle() }, { cmbBuff->getSemaphore(0) }, cmbBuff->getFence())) {
 			continue;
 		}
 
-		LavaCake::Presentation::PresentInfo present_info = {
+		PresentInfo present_info = {
 			s->getHandle(),                                    // VkSwapchainKHR         Swapchain
 			image.getIndex()                                   // uint32_t               ImageIndex
 		};
-		if (!LavaCake::Presentation::PresentImage(present_queue, { cmbBuff->getSemaphore(0) }, { present_info })) {
+		if (!PresentImage(present_queue, { cmbBuff->getSemaphore(0) }, { present_info })) {
 			continue;
 		}
 

@@ -29,7 +29,7 @@ namespace LavaCake {
 						}
 					}
 			};
-			Viewport::SpecifyPipelineViewportAndScissorTestState(m_viewportscissor, m_viewportInfo);
+			LavaCake::Core::SpecifyPipelineViewportAndScissorTestState(m_viewportscissor, m_viewportInfo);
 		};
 
 		void GraphicPipeline::setVextexShader(VertexShaderModule*	module) {
@@ -183,12 +183,12 @@ namespace LavaCake {
 
 		void GraphicPipeline::draw(const VkCommandBuffer buffer) {
 			VkViewport& viewport = m_viewportscissor.Viewports[0];
-			Viewport::SetViewportStateDynamically(buffer, 0, { viewport });
+			LavaCake::Core::SetViewportStateDynamically(buffer, 0, { viewport });
 
 			
 
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
-			Viewport::SetScissorStateDynamically(buffer, 0, { scissor });
+			LavaCake::Core::SetScissorStateDynamically(buffer, 0, { scissor });
 			if (m_vertexBuffer->getHandle() == VK_NULL_HANDLE)return;
 			VkDeviceSize size(0);
 			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getHandle() }, { &size });
@@ -197,7 +197,7 @@ namespace LavaCake {
 			}
 
 			if (m_descriptorCount > 0) {
-				Descriptor::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0, m_descriptorSets, {});
+				LavaCake::Core::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0, m_descriptorSets, {});
 			}
 
 			Pipeline::BindPipelineObject(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);

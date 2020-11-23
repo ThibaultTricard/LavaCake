@@ -28,7 +28,7 @@
 
 namespace LavaCake {
 
-	namespace Descriptor {
+	namespace Core {
 		bool CreateDescriptorSetLayout(VkDevice                                          logical_device,
 			std::vector<VkDescriptorSetLayoutBinding> const & bindings,
 			VkDescriptorSetLayout                           & descriptor_set_layout) {
@@ -97,9 +97,9 @@ namespace LavaCake {
 		}
 
 		void UpdateDescriptorSets(VkDevice                                       logical_device,
-			std::vector<Image::ImageDescriptorInfo> const       & image_descriptor_infos,
-			std::vector<Buffer::BufferDescriptorInfo> const      & buffer_descriptor_infos,
-			std::vector<Buffer::TexelBufferDescriptorInfo> const & texel_buffer_descriptor_infos,
+			std::vector<ImageDescriptorInfo> const       & image_descriptor_infos,
+			std::vector<BufferDescriptorInfo> const      & buffer_descriptor_infos,
+			std::vector<TexelBufferDescriptorInfo> const & texel_buffer_descriptor_infos,
 			std::vector<CopyDescriptorInfo> const        & copy_descriptor_infos) {
 			std::vector<VkWriteDescriptorSet> write_descriptors;
 			std::vector<VkCopyDescriptorSet> copy_descriptors;

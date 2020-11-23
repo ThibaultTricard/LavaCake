@@ -29,7 +29,7 @@
 #include "Common.h"
 
 namespace LavaCake {
-	namespace Viewport {
+	namespace Core {
 		struct ViewportInfo {
 			std::vector<VkViewport>   Viewports;
 			std::vector<VkRect2D>     Scissors;

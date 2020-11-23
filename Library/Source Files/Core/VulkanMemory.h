@@ -31,7 +31,7 @@
 #include "VulkanCommand.h"
 
 namespace LavaCake {
-	namespace Memory {
+	namespace Core {
 		bool MapUpdateAndUnmapHostVisibleMemory(VkDevice             logical_device,
 			VkDeviceMemory       memory_object,
 			VkDeviceSize         offset,

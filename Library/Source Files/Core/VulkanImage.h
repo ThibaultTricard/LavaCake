@@ -30,7 +30,7 @@
 #include "VulkanCommand.h"
 
 namespace LavaCake {
-	namespace Image {
+	namespace Core {
 
 		struct ImageTransition {
 			VkImage             Image;

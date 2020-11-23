@@ -28,7 +28,7 @@
 #include "VulkanLoader.h"
 
 namespace LavaCake {
-	namespace Loader {
+	namespace Core {
 		bool ConnectWithVulkanLoaderLibrary(LIBRARY_TYPE & vulkan_library) {
 #if defined _WIN32
 			vulkan_library = LoadLibrary("vulkan-1.dll");

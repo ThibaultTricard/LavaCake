@@ -32,7 +32,7 @@
 #include "VulkanPresentation.h"
 
 namespace LavaCake {
-	namespace Swapchain {
+	namespace Core {
 		bool SelectNumberOfSwapchainImages(VkSurfaceCapabilitiesKHR const & surface_capabilities,
 			uint32_t                       & number_of_images);
 

@@ -42,7 +42,7 @@ namespace LavaCake {
 			* create and allocate the Texture buffer on the device
 			*
 			*/
-			virtual void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+			virtual void allocate(Queue* queue, CommandBuffer& cmdBuff, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 			/**
 			* return the sampler of the texture buffer
@@ -76,10 +76,10 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 
 
-				Image::DestroyImage(logical, *m_image);
-				Image::DestroyImageView(logical, *m_imageView);
-				LavaCake::Buffer::DestroySampler(logical, *m_sampler);
-				Memory::FreeMemoryObject(logical, *m_imageMemory);
+				LavaCake::Core::DestroyImage(logical, *m_image);
+				LavaCake::Core::DestroyImageView(logical, *m_imageView);
+				LavaCake::Core::DestroySampler(logical, *m_sampler);
+				LavaCake::Core::FreeMemoryObject(logical, *m_imageMemory);
 			}
 
 		protected :
@@ -122,7 +122,7 @@ namespace LavaCake {
 			* create and allocate the Texture buffer on the device
 			*
 			*/
-			virtual void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+			virtual void allocate(Queue* queue, CommandBuffer& cmdBuff, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 		private:
 
@@ -148,7 +148,7 @@ namespace LavaCake {
 			* create and allocate the CubeMap on the device
 			*
 			*/
-			virtual void allocate(VkQueue& queue, VkCommandBuffer& commandBuffer, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT) override;
+			virtual void allocate(Queue* queue, CommandBuffer& cmdBuff, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT) override;
 
 		private:
 			std::string													m_path;
@@ -205,7 +205,7 @@ namespace LavaCake {
 			VkFramebuffer getHandle();
 
 			vec2u size() {
-				return { m_width , m_height };
+				return vec2u({ m_width , m_height });
 			}
 
 			~FrameBuffer() {
@@ -215,14 +215,14 @@ namespace LavaCake {
 
 				for (uint32_t i = 0; i < m_images.size(); i++) {
 					if (i != m_swapChainImageIndex) {
-						Image::DestroyImage(logical, m_images[i]);
-						Image::DestroyImageView(logical, m_imageViews[i]);
+						LavaCake::Core::DestroyImage(logical, m_images[i]);
+						LavaCake::Core::DestroyImageView(logical, m_imageViews[i]);
 					}
 				}
 
-				LavaCake::Buffer::DestroySampler(logical, *m_sampler);
-				LavaCake::Buffer::DestroyFramebuffer(logical, *m_frameBuffer);
-				Memory::FreeMemoryObject(logical, *m_imageMemory);
+				LavaCake::Core::DestroySampler(logical, *m_sampler);
+				LavaCake::Core::DestroyFramebuffer(logical, *m_frameBuffer);
+				LavaCake::Core::FreeMemoryObject(logical, *m_imageMemory);
 			}
 
 		private :
@@ -263,9 +263,9 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 
 
-				Image::DestroyImage(logical, *m_image);
-				Image::DestroyImageView(logical, *m_imageView);
-				Memory::FreeMemoryObject(logical, *m_imageMemory);
+				LavaCake::Core::DestroyImage(logical, *m_image);
+				LavaCake::Core::DestroyImageView(logical, *m_imageView);
+				LavaCake::Core::FreeMemoryObject(logical, *m_imageMemory);
 			}
 
 		private : 
@@ -297,9 +297,9 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 
 
-				Image::DestroyImage(logical, *m_image);
-				Image::DestroyImageView(logical, *m_imageView);
-				Memory::FreeMemoryObject(logical, *m_imageMemory);
+				LavaCake::Core::DestroyImage(logical, *m_image);
+				LavaCake::Core::DestroyImageView(logical, *m_imageView);
+				LavaCake::Core::FreeMemoryObject(logical, *m_imageMemory);
 			}
 
 

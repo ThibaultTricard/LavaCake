@@ -1,6 +1,11 @@
 #include "Framework/Framework.h"
 #include <windows.h>
+
+using namespace LavaCake;
+using namespace LavaCake::Geometry;
 using namespace LavaCake::Framework;
+using namespace LavaCake::Core;
+
 int main() {
 
 	Window w("LavaCake HelloWorld & Imgui", 1400, 1000);
@@ -25,7 +30,7 @@ int main() {
 	gui->initGui(&w,d->getGraphicQueue(0), &commandBuffer[0]);
 
 
-	LavaCake::Geometry::Mesh_t* triangle = new LavaCake::Geometry::Mesh<LavaCake::Geometry::TRIANGLE>(LavaCake::Geometry::PC3);
+	Mesh_t* triangle = new Mesh<TRIANGLE>(LavaCake::Geometry::PC3);
 	triangle->appendVertex({ -0.75f, 0.75f , 0.0f, 1.0f	, 0.0f	, 0.0f });
 	triangle->appendVertex({ 0.75f,	0.75f , 0.0f,  0.0f	, 1.0f	, 0.0f });
 	triangle->appendVertex({ 0.0f , -0.75f, 0.0f, 0.0f	, 0.0f	, 1.0f });
@@ -34,7 +39,7 @@ int main() {
 	triangle_vertex_buffer->allocate(queue, commandBuffer[0]);
 
 	RenderPass* pass = new RenderPass();
-	GraphicPipeline* pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	GraphicPipeline* pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
 	VertexShaderModule* vertexShader = new VertexShaderModule("Data/Shaders/helloworld/shader.vert.spv");
 	FragmentShaderModule* fragmentShader = new FragmentShaderModule("Data/Shaders/helloworld/shader.frag.spv");
 
@@ -132,7 +137,7 @@ int main() {
 
 
 
-		std::vector<LavaCake::Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
+		std::vector<WaitSemaphoreInfo> wait_semaphore_infos = {};
 		wait_semaphore_infos.push_back({
 			image.getSemaphore(),                     // VkSemaphore            Semaphore
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
@@ -146,23 +151,23 @@ int main() {
 
 		pass->setSwapChainImage(*frameBuffers[f], image);
 
-		pass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		pass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 		commandBuffer[f].endRecord();
 
 		
-		if (!LavaCake::Command::SubmitCommandBuffersToQueue(queue->getHandle() , wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!SubmitCommandBuffersToQueue(queue->getHandle() , wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
 
-		LavaCake::Presentation::PresentInfo present_info = {
+		PresentInfo present_info = {
 			swapchain,                                    // VkSwapchainKHR         Swapchain
 			image.getIndex()                              // uint32_t               ImageIndex
 		};
 
-		if (!LavaCake::Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
+		if (!PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
 			continue;
 		}
 

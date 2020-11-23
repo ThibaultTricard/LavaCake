@@ -428,7 +428,7 @@ namespace LavaCake {
 			}
 
 			InitVkDestroyer(logical, m_descriptorSetLayout);
-			if (!LavaCake::Descriptor::CreateDescriptorSetLayout(logical, m_descriptorSetLayoutBinding, *m_descriptorSetLayout)) {
+			if (!LavaCake::Core::CreateDescriptorSetLayout(logical, m_descriptorSetLayoutBinding, *m_descriptorSetLayout)) {
 				ErrorCheck::setError("Can't create descriptor set layout");
 			}
 
@@ -469,11 +469,11 @@ namespace LavaCake {
 			}
 
 			InitVkDestroyer(logical, m_descriptorPool);
-			if (!LavaCake::Descriptor::CreateDescriptorPool(logical, false, m_descriptorCount, m_descriptorPoolSize, *m_descriptorPool)) {
+			if (!LavaCake::Core::CreateDescriptorPool(logical, false, m_descriptorCount, m_descriptorPoolSize, *m_descriptorPool)) {
 				ErrorCheck::setError("Can't create descriptor pool");
 			}
 
-			if (!LavaCake::Descriptor::AllocateDescriptorSets(logical, *m_descriptorPool, { *m_descriptorSetLayout }, m_descriptorSets)) {
+			if (!LavaCake::Core::AllocateDescriptorSets(logical, *m_descriptorPool, { *m_descriptorSetLayout }, m_descriptorSets)) {
 				ErrorCheck::setError("Can't allocate descriptor set");
 			}
 			m_bufferDescriptorUpdate = { };
@@ -562,7 +562,7 @@ namespace LavaCake {
 			m_texelBufferDescriptorUpdate = {};
 			for (uint32_t i = 0; i < m_texelBuffers.size(); i++) {
 
-				LavaCake::Buffer::TexelBufferDescriptorInfo info = {
+				LavaCake::Core::TexelBufferDescriptorInfo info = {
 					m_descriptorSets[descriptorCount],
 					uint32_t(m_texelBuffers[i].binding),
 					0,
@@ -575,7 +575,7 @@ namespace LavaCake {
 				m_texelBufferDescriptorUpdate.push_back(info);
 			}
 			/////////////////////////////////////////////////////////////////////////////////////////////
-			Descriptor::UpdateDescriptorSets(logical, m_imageDescriptorUpdate, m_bufferDescriptorUpdate, { m_texelBufferDescriptorUpdate }, {});
+			LavaCake::Core::UpdateDescriptorSets(logical, m_imageDescriptorUpdate, m_bufferDescriptorUpdate, { m_texelBufferDescriptorUpdate }, {});
 		}
 	}
 }
