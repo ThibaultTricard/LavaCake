@@ -203,6 +203,146 @@ namespace LavaCake {
 			}
 			return { mesh,description };
     }
+		
 
+		std::pair < std::pair <std::vector<float>, std::vector<uint32_t>>, vertexFormat  > Load3DModelFromObjFile(char const* filename,
+			bool				 load_normal,
+			bool         unify)
+		{
+			// Load model
+			tinyobj::attrib_t                attribs;
+			std::vector<tinyobj::shape_t>    shapes;
+			std::vector<tinyobj::material_t> materials;
+			std::string                      error;
+
+
+
+
+			bool result = tinyobj::LoadObj(&attribs, &shapes, &materials, &error, filename);
+			if (!result) {
+				std::cout << "Could not open the '" << filename << "' file.";
+				if (0 < error.size()) {
+					std::cout << " " << error;
+				}
+				std::cout << std::endl;
+				return {};
+			}
+
+			std::vector<primitiveFormat> description = { POS3 };
+
+
+			if (attribs.normals.size() != 0 && load_normal) {
+				description.push_back(NORM3);
+			}
+
+			uint32_t stride = 3 + ((attribs.normals.size() != 0 && load_normal) ? 3 : 0);
+			// Load model data and unify (normalize) its size and position
+			float min_x = attribs.vertices[0];
+			float max_x = attribs.vertices[0];
+			float min_y = attribs.vertices[1];
+			float max_y = attribs.vertices[1];
+			float min_z = attribs.vertices[2];
+			float max_z = attribs.vertices[2];
+
+			//loading the position;
+
+			std::vector<float> mesh;
+
+			for (int i = 0; i < attribs.vertices.size(); i+=3) {
+				mesh.push_back(attribs.vertices[i]);
+				mesh.push_back(attribs.vertices[i+1]);
+				mesh.push_back(attribs.vertices[i+2]);
+				if (load_normal) {
+					mesh.push_back(0);
+					mesh.push_back(0);
+					mesh.push_back(0);
+				}
+				
+			}
+
+
+			std::vector<uint32_t>indices;
+			uint32_t offset = 0;
+			for (auto& shape : shapes) {
+				uint32_t part_offset = offset;
+
+				for (auto& index : shape.mesh.indices) {
+					indices.push_back(index.vertex_index);
+
+					
+					++offset;
+
+
+					if (attribs.normals.size() != 0 && load_normal) {
+						mesh[stride * index.vertex_index + 3] += attribs.normals[3 * index.normal_index + 0];
+						mesh[stride * index.vertex_index + 4] += attribs.normals[3 * index.normal_index + 1];
+						mesh[stride * index.vertex_index + 5] += attribs.normals[3 * index.normal_index + 2];
+					}
+
+					
+
+					if (unify) {
+						if (attribs.vertices[3 * index.vertex_index + 0] < min_x) {
+							min_x = attribs.vertices[3 * index.vertex_index + 0];
+						}
+						if (attribs.vertices[3 * index.vertex_index + 0] > max_x) {
+							max_x = attribs.vertices[3 * index.vertex_index + 0];
+						}
+						if (attribs.vertices[3 * index.vertex_index + 1] < min_y) {
+							min_y = attribs.vertices[3 * index.vertex_index + 1];
+						}
+						if (attribs.vertices[3 * index.vertex_index + 1] > max_y) {
+							max_y = attribs.vertices[3 * index.vertex_index + 1];
+						}
+						if (attribs.vertices[3 * index.vertex_index + 2] < min_z) {
+							min_z = attribs.vertices[3 * index.vertex_index + 2];
+						}
+						if (attribs.vertices[3 * index.vertex_index + 2] > max_z) {
+							max_z = attribs.vertices[3 * index.vertex_index + 2];
+						}
+					}
+				}
+			}
+
+
+
+			if (unify) {
+				float offset_x = 0.5f * (min_x + max_x);
+				float offset_y = 0.5f * (min_y + max_y);
+				float offset_z = 0.5f * (min_z + max_z);
+				float scale_x = abs(min_x - offset_x) > abs(max_x - offset_x) ? abs(min_x - offset_x) : abs(max_x - offset_x);
+				float scale_y = abs(min_y - offset_y) > abs(max_y - offset_y) ? abs(min_y - offset_y) : abs(max_y - offset_y);
+				float scale_z = abs(min_z - offset_z) > abs(max_z - offset_z) ? abs(min_z - offset_z) : abs(max_z - offset_z);
+				float scale = scale_x > scale_y ? scale_x : scale_y;
+				scale = scale_z > scale ? 1.0f / scale_z : 1.0f / scale;
+
+				for (size_t i = 0; i < mesh.size(); i += stride) {
+					mesh[i + 0] = scale * (mesh[i + 0] - offset_x);
+					mesh[i + 1] = scale * (mesh[i + 1] - offset_y);
+					mesh[i + 2] = scale * (mesh[i + 2] - offset_z);
+				}
+			}
+
+			if (load_normal) {
+				//renormalize normals
+				for (size_t i = 0; i < mesh.size(); i += stride) {
+					float nl = (mesh[i + 3] * mesh[i + 3]);
+					nl += (mesh[i + 4] * mesh[i + 4]);
+					nl += (mesh[i + 5] * mesh[i + 5]);
+					nl = sqrt(nl);
+
+					if (nl > 0) {
+						mesh[i + 3] = mesh[i + 3] / nl;
+						mesh[i + 4] = mesh[i + 4] / nl;
+						mesh[i + 5] = mesh[i + 5] / nl;
+					}
+				}
+			}
+			
+
+
+			return { {mesh, indices} ,description };
+		}
+	
   }
 }

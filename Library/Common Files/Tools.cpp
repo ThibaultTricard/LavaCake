@@ -80,10 +80,16 @@ namespace LavaCake {
 
   vec3f Normalize(vec3f const& vector) {
     float length = std::sqrt(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
+    if (length >0)
     return vec3f({
       vector[0] / length,
       vector[1] / length,
       vector[2] / length
+      });
+    return vec3f({
+      vector[0] ,
+      vector[1] ,
+      vector[2] 
       });
   }
 

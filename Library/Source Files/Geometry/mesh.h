@@ -93,7 +93,7 @@ namespace LavaCake {
       }
 
 
-      IndexedMesh(std::vector<float>& vertices, std::vector<uint32_t>& indices, vertexFormat format) {
+      IndexedMesh(std::vector<float>& vertices, std::vector<uint32_t>& indices, vertexFormat format) : Mesh(format) {
         m_vertexSize = format.size();
         m_format = format;
         m_vertices = vertices;
@@ -106,9 +106,9 @@ namespace LavaCake {
         m_indices.push_back(index);
       }
 
-    };
+     };
 
-
+    
 
 
     typedef Mesh<POINT> PointCloud;

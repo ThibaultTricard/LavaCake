@@ -21,6 +21,11 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 				m_dataSize = rawdata.size();
 
+
+				Core::DestroyBuffer(logical, *m_buffer);
+				Core::DestroyBufferView(logical, *m_bufferView);
+				Core::FreeMemoryObject(logical, *m_bufferMemory);
+
 				if (!LavaCake::Core::CreateBuffer(logical, sizeof(t) * rawdata.size(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, *m_buffer)) {
 					ErrorCheck::setError("Can't create Buffer");
 				}
