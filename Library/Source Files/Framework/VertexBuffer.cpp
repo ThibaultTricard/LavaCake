@@ -46,12 +46,12 @@ namespace LavaCake {
 
 		
 		
-		VkBuffer& VertexBuffer::getHandle() {
-			return m_vertexBuffer.getHandle();
+		Buffer& VertexBuffer::getVertexBuffer() {
+			return m_vertexBuffer;
 		}
 
-		VkBuffer& VertexBuffer::getIndexBuffer() {
-			return m_indexBuffer.getHandle();
+		Buffer& VertexBuffer::getIndexBuffer() {
+			return m_indexBuffer;
 		}
 
 		std::vector<VkVertexInputAttributeDescription>& VertexBuffer::getAttributeDescriptions() {

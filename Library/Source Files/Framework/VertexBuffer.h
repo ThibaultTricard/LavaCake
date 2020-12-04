@@ -17,9 +17,9 @@ namespace LavaCake {
 
 			void allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlagBits otherUsage = VkBufferUsageFlagBits(0) );
 			
-			VkBuffer& getHandle();
+			Buffer& getVertexBuffer();
 			
-			VkBuffer& getIndexBuffer();
+			Buffer& getIndexBuffer();
 
 			void swapMeshes(std::vector<LavaCake::Geometry::Mesh_t*>				m);
 

@@ -189,11 +189,11 @@ namespace LavaCake {
 
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
 			LavaCake::Core::SetScissorStateDynamically(buffer, 0, { scissor });
-			if (m_vertexBuffer->getHandle() == VK_NULL_HANDLE)return;
+			if (m_vertexBuffer->getVertexBuffer().getHandle() == VK_NULL_HANDLE)return;
 			VkDeviceSize size(0);
-			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getHandle() }, { &size });
+			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getVertexBuffer().getHandle() }, { &size });
 			if (m_vertexBuffer->isIndexed()) {
-				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
+				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer().getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
 			}
 
 			if (m_descriptorCount > 0) {

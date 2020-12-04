@@ -3,6 +3,8 @@
 #include "Common.h"
 #include "VulkanDestroyer.h"
 #include "Geometry/meshLoader.h"
+#include "Geometry/meshExporter.h"
+#include "Geometry/computationalMesh.h"
 
 using namespace LavaCake;
 using namespace LavaCake::Geometry;
@@ -29,9 +31,46 @@ int main() {
 
 	//vertex buffer
 	//knot mesh
-	std::pair<std::vector<float>, Geometry::vertexFormat > knot = Geometry::Load3DModelFromObjFile("Data/Models/knot.obj", true, false, false, true);
-	Geometry::Mesh_t* knot_mesh = new Geometry::Mesh<Geometry::TRIANGLE>(knot.first,knot.second);
+	auto knot = Load3DModelFromObjFile("Data/Models/mech.obj", true, true);
+	Mesh_t* knot_mesh = new IndexedMesh<TRIANGLE>(knot.first.first, knot.first.second,knot.second);
 
+	PolygonalMesh p((TriangleIndexedMesh*)knot_mesh);
+
+	auto curvature = p.GaussianCurvature(0.08);
+
+	float min = 1.0;
+	float max = 0.0f;
+	for (int i = 0; i < curvature.size(); i++) {
+		curvature[i] = abs(curvature[i]);
+		if (curvature[i] > max) {
+			max = curvature[i];
+		}
+
+		if (curvature[i] < min) {
+			min = curvature[i];
+		}
+	}
+	Mesh_t* out = new IndexedMesh<TRIANGLE>(PC3);
+
+	for (int i = 0; i < p.vertices.size(); i++) {
+		float c = (curvature[i] - min) / (max - min);
+		out->appendVertex({ 
+			p.vertices[i]->p[0],
+			p.vertices[i]->p[1],
+			p.vertices[i]->p[2] ,
+			c,
+			c,
+			c
+			});
+
+	}
+	for (int i = 0; i < p.faces.size(); i++) {
+		out->appendIndex(p.faces[i]->vertices[0]->indice);
+		out->appendIndex(p.faces[i]->vertices[1]->indice);
+		out->appendIndex(p.faces[i]->vertices[2]->indice);
+	}
+
+	exportToPly(out, "test.ply");
 
 	VertexBuffer* v = new VertexBuffer({ knot_mesh });
 	v->allocate(queue, commandBuffer[0]);
