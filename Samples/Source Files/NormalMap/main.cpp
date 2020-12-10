@@ -149,11 +149,7 @@ int main() {
 		pass.draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
-
-		if (!EndCommandBufferRecordingOperation(commandBuffer[f].getHandle())) {
-			continue;
-		}
-
+		commandBuffer[f].endRecord();
 
 		
 		if (!SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {

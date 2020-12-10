@@ -74,8 +74,7 @@ namespace LavaCake {
 				}
 
 
-				cmdBuff.wait(UINT32_MAX);
-				cmdBuff.resetFence();
+				
 				cmdBuff.beginRecord();
 
 				LavaCake::Core::SetBufferMemoryBarrier(cmdBuff.getHandle(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, { { *m_buffer, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED } });
