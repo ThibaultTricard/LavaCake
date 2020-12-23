@@ -225,8 +225,12 @@ namespace LavaCake {
   vec3f Normalize( vec3f const & vector );
 
   
+  mat4 operator* (mat4 const& left,
+    mat4 const& right);
+} // namespace VulkanCookbook
 
-} 
+
+
 
 
 
