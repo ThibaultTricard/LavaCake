@@ -27,7 +27,7 @@
 
 namespace LavaCake {
 
-	namespace Swapchain {
+	namespace Core {
 		bool SelectNumberOfSwapchainImages(VkSurfaceCapabilitiesKHR const & surface_capabilities,
 			uint32_t                       & number_of_images) {
 			number_of_images = surface_capabilities.minImageCount + 1;
@@ -219,12 +219,12 @@ namespace LavaCake {
 			VkSwapchainKHR       & swapchain,
 			std::vector<VkImage> & swapchain_images) {
 			VkPresentModeKHR desired_present_mode;
-			if (!Presentation::SelectDesiredPresentationMode(physical_device, presentation_surface, VK_PRESENT_MODE_MAILBOX_KHR, desired_present_mode)) {
+			if (!SelectDesiredPresentationMode(physical_device, presentation_surface, VK_PRESENT_MODE_MAILBOX_KHR, desired_present_mode)) {
 				return false;
 			}
 
 			VkSurfaceCapabilitiesKHR surface_capabilities;
-			if (!Presentation::GetCapabilitiesOfPresentationSurface(physical_device, presentation_surface, surface_capabilities)) {
+			if (!GetCapabilitiesOfPresentationSurface(physical_device, presentation_surface, surface_capabilities)) {
 				return false;
 			}
 

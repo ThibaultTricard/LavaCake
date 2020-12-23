@@ -27,7 +27,7 @@
 #include "VulkanImage.h"
 
 namespace LavaCake {
-	namespace Buffer {
+	namespace Core {
 		bool CreateBuffer(VkDevice             logical_device,
 			VkDeviceSize         size,
 			VkBufferUsageFlags   usage,
@@ -227,15 +227,15 @@ namespace LavaCake {
 				return false;
 			}
 
-			if (!Buffer::CreateBuffer(logical_device, size, usage | VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT, uniform_texel_buffer)) {
+			if (!CreateBuffer(logical_device, size, usage | VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT, uniform_texel_buffer)) {
 				return false;
 			}
 
-			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, uniform_texel_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
+			if (!AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, uniform_texel_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
 				return false;
 			}
 
-			if (!Buffer::CreateBufferView(logical_device, uniform_texel_buffer, format, 0, VK_WHOLE_SIZE, uniform_texel_buffer_view)) {
+			if (!CreateBufferView(logical_device, uniform_texel_buffer, format, 0, VK_WHOLE_SIZE, uniform_texel_buffer_view)) {
 				return false;
 			}
 			return true;
@@ -263,15 +263,15 @@ namespace LavaCake {
 				return false;
 			}
 
-			if (!Buffer::CreateBuffer(logical_device, size, usage | VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT, storage_texel_buffer)) {
+			if (!CreateBuffer(logical_device, size, usage | VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT, storage_texel_buffer)) {
 				return false;
 			}
 
-			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, storage_texel_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
+			if (!AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, storage_texel_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
 				return false;
 			}
 
-			if (!Buffer::CreateBufferView(logical_device, storage_texel_buffer, format, 0, VK_WHOLE_SIZE, storage_texel_buffer_view)) {
+			if (!CreateBufferView(logical_device, storage_texel_buffer, format, 0, VK_WHOLE_SIZE, storage_texel_buffer_view)) {
 				return false;
 			}
 			return true;
@@ -283,11 +283,11 @@ namespace LavaCake {
 			VkBufferUsageFlags   usage,
 			VkBuffer           & uniform_buffer,
 			VkDeviceMemory     & memory_object) {
-			if (!Buffer::CreateBuffer(logical_device, size, usage | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, uniform_buffer)) {
+			if (!CreateBuffer(logical_device, size, usage | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, uniform_buffer)) {
 				return false;
 			}
 
-			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, uniform_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
+			if (!AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, uniform_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
 				return false;
 			}
 			return true;
@@ -299,11 +299,11 @@ namespace LavaCake {
 			VkBufferUsageFlags   usage,
 			VkBuffer           & storage_buffer,
 			VkDeviceMemory     & memory_object) {
-			if (!Buffer::CreateBuffer(logical_device, size, usage | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, storage_buffer)) {
+			if (!CreateBuffer(logical_device, size, usage | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, storage_buffer)) {
 				return false;
 			}
 
-			if (!Buffer::AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, storage_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
+			if (!AllocateAndBindMemoryObjectToBuffer(physical_device, logical_device, storage_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
 				return false;
 			}
 			return true;

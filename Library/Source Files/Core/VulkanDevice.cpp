@@ -27,8 +27,7 @@
 #include "VulkanLoader.h"
 namespace LavaCake {
 
-	namespace Device {
-		namespace Physical {
+	namespace Core {
 			bool EnumerateAvailablePhysicalDevices(VkInstance                      instance,
 				std::vector<VkPhysicalDevice> & available_devices) {
 				uint32_t devices_count = 0;
@@ -82,16 +81,15 @@ namespace LavaCake {
 
 				vkGetPhysicalDeviceProperties(physical_device, &device_properties);
 			}
-		}
 
-		namespace Logical {
+
 			bool CreateLogicalDevice(VkPhysicalDevice                  physical_device,
-				std::vector<Queue::QueueInfo>            queue_infos,
+				std::vector<QueueInfo>            queue_infos,
 				std::vector<char const *> const & desired_extensions,
 				VkPhysicalDeviceFeatures        * desired_features,
 				VkDevice                        & logical_device) {
 				std::vector<VkExtensionProperties> available_extensions;
-				if (!Physical::CheckAvailableDeviceExtensions(physical_device, available_extensions)) {
+				if (!CheckAvailableDeviceExtensions(physical_device, available_extensions)) {
 					return false;
 				}
 
@@ -143,12 +141,12 @@ namespace LavaCake {
 				VkQueue    & graphics_queue,
 				VkQueue    & compute_queue) {
 				std::vector<VkPhysicalDevice> physical_devices;
-				Physical::EnumerateAvailablePhysicalDevices(instance, physical_devices);
+				EnumerateAvailablePhysicalDevices(instance, physical_devices);
 
 				for (auto & physical_device : physical_devices) {
 					VkPhysicalDeviceFeatures device_features;
 					VkPhysicalDeviceProperties device_properties;
-					Physical::GetFeaturesAndPropertiesOfPhysicalDevice(physical_device, device_features, device_properties);
+					GetFeaturesAndPropertiesOfPhysicalDevice(physical_device, device_features, device_properties);
 
 					if (!device_features.geometryShader) {
 						continue;
@@ -159,16 +157,16 @@ namespace LavaCake {
 					}
 
 					uint32_t graphics_queue_family_index;
-					if (!Queue::SelectIndexOfQueueFamilyWithDesiredCapabilities(physical_device, VK_QUEUE_GRAPHICS_BIT, graphics_queue_family_index)) {
+					if (!SelectIndexOfQueueFamilyWithDesiredCapabilities(physical_device, VK_QUEUE_GRAPHICS_BIT, graphics_queue_family_index)) {
 						continue;
 					}
 
 					uint32_t compute_queue_family_index;
-					if (!Queue::SelectIndexOfQueueFamilyWithDesiredCapabilities(physical_device, VK_QUEUE_COMPUTE_BIT, compute_queue_family_index)) {
+					if (!SelectIndexOfQueueFamilyWithDesiredCapabilities(physical_device, VK_QUEUE_COMPUTE_BIT, compute_queue_family_index)) {
 						continue;
 					}
 
-					std::vector<Queue::QueueInfo> requested_queues = { { graphics_queue_family_index, { 1.0f } } };
+					std::vector<QueueInfo> requested_queues = { { graphics_queue_family_index, { 1.0f } } };
 					if (graphics_queue_family_index != compute_queue_family_index) {
 						requested_queues.push_back({ compute_queue_family_index, { 1.0f } });
 					}
@@ -177,7 +175,7 @@ namespace LavaCake {
 						continue;
 					}
 					else {
-						if (!Loader::LoadDeviceLevelFunctions(logical_device, {})) {
+						if (!LoadDeviceLevelFunctions(logical_device, {})) {
 							return false;
 						}
 						LavaCake::vkGetDeviceQueue(logical_device, graphics_queue_family_index, 0, &graphics_queue);
@@ -195,7 +193,6 @@ namespace LavaCake {
 				}
 			}
 
-		}
 	}
 
 

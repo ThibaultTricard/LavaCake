@@ -30,7 +30,7 @@
 #include "VulkanQueue.h"
 
 namespace LavaCake {
-	namespace Instance {
+	namespace Core {
 
 
 		const std::vector<const char*> validationLayers = {
@@ -49,7 +49,7 @@ namespace LavaCake {
 			VkInstance                & instance);
 
 		bool CreateLogicalDeviceWithWsiExtensionsEnabled(VkPhysicalDevice            physical_device,
-			std::vector< Queue::QueueInfo >    queue_infos,
+			std::vector< QueueInfo >    queue_infos,
 			std::vector<char const *> & desired_extensions,
 			VkPhysicalDeviceFeatures  * desired_features,
 			VkDevice                  & logical_device);

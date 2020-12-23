@@ -29,7 +29,7 @@
 #include "Common.h"
 
 namespace LavaCake {
-	namespace Queue {
+	namespace Core {
 		struct QueueInfo {
 			uint32_t           FamilyIndex;
 			std::vector<float> Priorities;

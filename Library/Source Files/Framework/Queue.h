@@ -42,21 +42,21 @@ namespace LavaCake {
 		class ComputeQueue : public Queue {
 		public:
 			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
-				return LavaCake::Queue::SelectIndexOfQueueFamilyWithDesiredCapabilities(*physicalDevice, VK_QUEUE_GRAPHICS_BIT, m_familyIndex);
+				return LavaCake::Core::SelectIndexOfQueueFamilyWithDesiredCapabilities(*physicalDevice, VK_QUEUE_GRAPHICS_BIT, m_familyIndex);
 			}
 		};
 
 		class GraphicQueue : public Queue {
 		public:
 			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
-				return LavaCake::Queue::SelectIndexOfQueueFamilyWithDesiredCapabilities(*physicalDevice, VK_QUEUE_COMPUTE_BIT, m_familyIndex);
+				return LavaCake::Core::SelectIndexOfQueueFamilyWithDesiredCapabilities(*physicalDevice, VK_QUEUE_COMPUTE_BIT, m_familyIndex);
 			}
 		};
 
 		class PresentationQueue : public Queue {
 		public:
 			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
-				return Presentation::SelectQueueFamilyThatSupportsPresentationToGivenSurface(*physicalDevice, *surface, m_familyIndex);
+				return LavaCake::Core::SelectQueueFamilyThatSupportsPresentationToGivenSurface(*physicalDevice, *surface, m_familyIndex);
 			}
 		};
 	}

@@ -30,7 +30,7 @@
 
 
 namespace LavaCake {
-	namespace Instance {
+	namespace Core {
 
 
 		bool CheckAvailableInstanceExtensions(std::vector<VkExtensionProperties> & available_extensions) {
@@ -129,13 +129,13 @@ namespace LavaCake {
 		}
 
 		bool CreateLogicalDeviceWithWsiExtensionsEnabled(VkPhysicalDevice            physical_device,
-			std::vector< Queue::QueueInfo >    queue_infos,
+			std::vector< QueueInfo >    queue_infos,
 			std::vector<char const *> & desired_extensions,
 			VkPhysicalDeviceFeatures  * desired_features,
 			VkDevice                  & logical_device) {
 			desired_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
-			return Device::Logical::CreateLogicalDevice(physical_device, queue_infos, desired_extensions, desired_features, logical_device);
+			return CreateLogicalDevice(physical_device, queue_infos, desired_extensions, desired_features, logical_device);
 		}
 
 	}

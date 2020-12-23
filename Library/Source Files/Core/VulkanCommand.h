@@ -34,7 +34,7 @@
 
 namespace LavaCake {
 	
-	namespace Command {
+	namespace Core {
 		bool CreateCommandPool(VkDevice                   logical_device,
 			VkCommandPoolCreateFlags   command_pool_flags,
 			uint32_t                   queue_family,
@@ -60,15 +60,15 @@ namespace LavaCake {
 			bool          release_resources);
 
 		bool SubmitCommandBuffersToQueue(VkQueue                         queue,
-			std::vector<Semaphore::WaitSemaphoreInfo>  wait_semaphore_infos,
+			std::vector<WaitSemaphoreInfo>  wait_semaphore_infos,
 			std::vector<VkCommandBuffer>    command_buffers,
 			std::vector<VkSemaphore>        signal_semaphores,
 			VkFence                         fence);
 
 		bool SynchronizeTwoCommandBuffers(VkQueue                         first_queue,
-			std::vector<Semaphore::WaitSemaphoreInfo>  first_wait_semaphore_infos,
+			std::vector<WaitSemaphoreInfo>  first_wait_semaphore_infos,
 			std::vector<VkCommandBuffer>    first_command_buffers,
-			std::vector<Semaphore::WaitSemaphoreInfo>  synchronizing_semaphores,
+			std::vector<WaitSemaphoreInfo>  synchronizing_semaphores,
 			VkQueue                         second_queue,
 			std::vector<VkCommandBuffer>    second_command_buffers,
 			std::vector<VkSemaphore>        second_signal_semaphores,
@@ -76,7 +76,7 @@ namespace LavaCake {
 
 		bool CheckIfProcessingOfSubmittedCommandBufferHasFinished(VkDevice                         logical_device,
 			VkQueue                          queue,
-			std::vector<Semaphore::WaitSemaphoreInfo>   wait_semaphore_infos,
+			std::vector<WaitSemaphoreInfo>   wait_semaphore_infos,
 			std::vector<VkCommandBuffer>     command_buffers,
 			std::vector<VkSemaphore>         signal_semaphores,
 			VkFence                          fence,

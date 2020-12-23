@@ -32,7 +32,7 @@
 
 namespace LavaCake {
 	
-	namespace Buffer {
+	namespace Core {
 
 
 		struct BufferDescriptorInfo {

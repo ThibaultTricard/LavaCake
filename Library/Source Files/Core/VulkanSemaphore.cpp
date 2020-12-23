@@ -26,7 +26,7 @@
 #include "VulkanSemaphore.h"
 
 namespace LavaCake {
-	namespace Semaphore {
+	namespace Core {
 		bool CreateSemaphore(VkDevice      logical_device,
 			VkSemaphore & semaphore) {
 			VkSemaphoreCreateInfo semaphore_create_info = {

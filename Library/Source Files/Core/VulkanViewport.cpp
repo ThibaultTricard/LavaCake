@@ -26,7 +26,7 @@
 #include "VulkanViewport.h"
 
 namespace LavaCake {
-	namespace Viewport {
+	namespace Core {
 		
 		void SetViewportStateDynamically(VkCommandBuffer                 command_buffer,
 			uint32_t                        first_viewport,

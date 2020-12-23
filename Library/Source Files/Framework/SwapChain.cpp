@@ -17,7 +17,7 @@ namespace LavaCake {
 
 			
 
-			Command::WaitForAllSubmittedCommandsToBeFinished(logical);
+			LavaCake::Core::WaitForAllSubmittedCommandsToBeFinished(logical);
 
 			m_images.clear();
 
@@ -26,7 +26,7 @@ namespace LavaCake {
 			}
 			VkDestroyer(VkSwapchainKHR) old_swapchain = std::move(m_handle);
 			InitVkDestroyer(logical, m_handle);
-			if (!Swapchain::CreateSwapchainWithR8G8B8A8FormatAndMailboxPresentMode(physical, surface, logical, swapchain_image_usage, m_size, m_format, *old_swapchain, *m_handle, m_images)) {
+			if (!LavaCake::Core::CreateSwapchainWithR8G8B8A8FormatAndMailboxPresentMode(physical, surface, logical, swapchain_image_usage, m_size, m_format, *old_swapchain, *m_handle, m_images)) {
 				ErrorCheck::setError("Can't create swapchain");
 			}
 			if (!m_handle) {

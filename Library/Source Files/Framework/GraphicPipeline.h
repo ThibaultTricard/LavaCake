@@ -53,7 +53,7 @@ namespace LavaCake {
 			/**
 			*set the vertex buffer to be used for this pipeline
 			*/
-			void setVeritices(VertexBuffer* buffer);
+			void setVertices(VertexBuffer* buffer);
 
 			/**
 			*draw call of the pipeline
@@ -111,7 +111,7 @@ namespace LavaCake {
 
 
 			VkPipelineViewportStateCreateInfo											m_viewportInfo;
-			Viewport::ViewportInfo																m_viewportscissor;
+			LavaCake::Core::ViewportInfo													m_viewportscissor;
 			VkPipelineVertexInputStateCreateInfo									m_vertexInfo;
 			VertexBuffer*																					m_vertexBuffer;
 			VkPipelineInputAssemblyStateCreateInfo								m_inputInfo;

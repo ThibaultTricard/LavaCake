@@ -2,6 +2,9 @@
 
 
 using namespace LavaCake;
+using namespace LavaCake::Geometry;
+using namespace LavaCake::Framework;
+using namespace LavaCake::Core;
 
 int main() {
 
@@ -14,7 +17,7 @@ int main() {
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init();
 
-	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	Framework::Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 
 	VkQueue& compute_queue = d->getComputeQueue(0)->getHandle();
@@ -29,22 +32,35 @@ int main() {
 	}
 
 	//PostProcessQuad
-	Helpers::Mesh::Mesh* quad = new Helpers::Mesh::Mesh();
-	Helpers::Mesh::preparePostProcessQuad(*quad,true);
-	Framework::VertexBuffer* quad_vertex_buffer = new Framework::VertexBuffer({ quad }, { 3,2 });
-	quad_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
+	Geometry::Mesh_t* quad = new Geometry::IndexedMesh<Geometry::TRIANGLE>(Geometry::P3UV);
+
+	quad->appendVertex({ -1.0,-1.0,0.0,0.0,0.0 });
+	quad->appendVertex({ -1.0, 1.0,0.0,0.0,1.0 });
+	quad->appendVertex({ 1.0, 1.0,0.0,1.0,1.0 });
+	quad->appendVertex({ 1.0,-1.0,0.0,1.0,0.0 });
+
+	quad->appendIndex(0);
+	quad->appendIndex(1);
+	quad->appendIndex(2);
+
+	quad->appendIndex(2);
+	quad->appendIndex(3);
+	quad->appendIndex(0);
+
+	Framework::VertexBuffer* quad_vertex_buffer = new Framework::VertexBuffer({ quad });
+	quad_vertex_buffer->allocate(queue, commandBuffer[0]);
 
 	//texture map
 	Framework::TextureBuffer* input = new Framework::TextureBuffer("Data/Textures/mandrill.png", 4);
-	input->allocate(queue, commandBuffer[0].getHandle());
+	input->allocate(queue, commandBuffer[0]);
 
 
-	Framework::TexelBuffer* output_pass1 = new Framework::TexelBuffer();
+	Framework::Buffer* output_pass1 = new Framework::Buffer();
 	std::vector<float> rawdata = std::vector<float>(input->width() * input->height() * uint32_t(2));
-	output_pass1->allocate(queue, commandBuffer[0].getHandle(),rawdata, uint32_t(1));
+	output_pass1->allocate(queue, commandBuffer[0],rawdata, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
 
-	Framework::TexelBuffer* output_pass2 = new Framework::TexelBuffer();
-	output_pass2->allocate(queue, commandBuffer[0].getHandle(),rawdata, uint32_t(1));
+	Framework::Buffer* output_pass2 = new Framework::Buffer();
+	output_pass2->allocate(queue, commandBuffer[0], rawdata, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
 
 	Framework::UniformBuffer* sizeBuffer = new Framework::UniformBuffer();
 	sizeBuffer->addVariable("width", input->width());
@@ -79,12 +95,12 @@ int main() {
 	//renderPass
 	Framework::RenderPass* showPass = new Framework::RenderPass();
 
-	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	Framework::GraphicPipeline* pipeline = new Framework::GraphicPipeline(vec3f({ 0,0,0 }) , vec3f({ float(size.width),float(size.height),1.0f }) , vec2f({ 0,0 }) , vec2f({ float(size.width),float(size.height) }));
 	Framework::VertexShaderModule* vertexShader = new Framework::VertexShaderModule("Data/Shaders/FourierTransform/shader.vert.spv");
 	Framework::FragmentShaderModule* fragmentShader = new Framework::FragmentShaderModule("Data/Shaders/FourierTransform/shader.frag.spv");
 	pipeline->setVextexShader(vertexShader);
 	pipeline->setFragmentModule(fragmentShader);
-	pipeline->setVeritices(quad_vertex_buffer);
+	pipeline->setVertices(quad_vertex_buffer);
 	pipeline->addTexelBuffer(output_pass2, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
 	pipeline->addUniformBuffer(sizeBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 1);
 
@@ -116,7 +132,7 @@ int main() {
 	commandBuffer[0].endRecord();
 
 
-	if (!Command::SubmitCommandBuffersToQueue(compute_queue, {}, { commandBuffer[0].getHandle() }, { commandBuffer[0].getSemaphore(1) }, { commandBuffer[0].getFence()})) {
+	if (!SubmitCommandBuffersToQueue(compute_queue, {}, { commandBuffer[0].getHandle() }, { commandBuffer[0].getSemaphore(1) }, { commandBuffer[0].getFence()})) {
 	}
 
 
@@ -131,7 +147,7 @@ int main() {
 
 		Framework::SwapChainImage& image = s->AcquireImage();
 
-		std::vector<LavaCake::Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
+		std::vector<WaitSemaphoreInfo> wait_semaphore_infos = {};
 		wait_semaphore_infos.push_back({
 			image.getSemaphore(),                     // VkSemaphore            Semaphore
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
@@ -146,20 +162,20 @@ int main() {
 		showPass->setSwapChainImage(*frameBuffers[f], image);
 
 
-		showPass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		showPass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 		commandBuffer[f].endRecord();
 
 
-		if (!Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!SubmitCommandBuffersToQueue(queue->getHandle(), wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
-		Presentation::PresentInfo present_info = {
+		PresentInfo present_info = {
 			s->getHandle(),                                    // VkSwapchainKHR         Swapchain
 			image.getIndex()                                   // uint32_t               ImageIndex
 		};
-		if (!Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
+		if (!PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
 			continue;
 		}
 	}

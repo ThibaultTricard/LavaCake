@@ -29,7 +29,7 @@ namespace LavaCake {
 						}
 					}
 			};
-			Viewport::SpecifyPipelineViewportAndScissorTestState(m_viewportscissor, m_viewportInfo);
+			LavaCake::Core::SpecifyPipelineViewportAndScissorTestState(m_viewportscissor, m_viewportInfo);
 		};
 
 		void GraphicPipeline::setVextexShader(VertexShaderModule*	module) {
@@ -92,7 +92,9 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't create pipeline layout");
 			}
 
-			Pipeline::SpecifyPipelineRasterizationState(false, false, VK_POLYGON_MODE_FILL, m_CullMode, VK_FRONT_FACE_COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f, m_rasterizationStateCreateInfo);
+			
+
+			Pipeline::SpecifyPipelineRasterizationState(false, false, m_vertexBuffer->polygonMode(), m_CullMode, VK_FRONT_FACE_COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f, m_rasterizationStateCreateInfo);
 			Pipeline::SpecifyPipelineMultisampleState(VK_SAMPLE_COUNT_1_BIT, false, 0.0f, nullptr, false, false, m_multisampleStateCreateInfo);
 			Pipeline::SpecifyPipelineDepthAndStencilState(true, true, VK_COMPARE_OP_LESS_OR_EQUAL, false, 0.0f, 1.0f, false, {}, {}, m_depthStencilStateCreateInfo);
 			m_attachmentBlendStates = {
@@ -165,11 +167,11 @@ namespace LavaCake {
 			m_subpassNumber = number;
 		}
 
-		void GraphicPipeline::setVeritices(VertexBuffer* buffer) {
+		void GraphicPipeline::setVertices(VertexBuffer* buffer) {
 			m_vertexBuffer = buffer;
 			Pipeline::SpecifyPipelineVertexInputState(buffer->getBindingDescriptions(), buffer->getAttributeDescriptions(), m_vertexInfo);
 
-			Pipeline::SpecifyPipelineInputAssemblyState(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, false, m_inputInfo);
+			Pipeline::SpecifyPipelineInputAssemblyState(buffer->primitiveTopology(), false, m_inputInfo);
 			if (m_compiled) { 
 				m_pipelineCreateInfo.pVertexInputState = &m_vertexInfo;
 				m_pipelineCreateInfo.pInputAssemblyState = &m_inputInfo;
@@ -181,21 +183,21 @@ namespace LavaCake {
 
 		void GraphicPipeline::draw(const VkCommandBuffer buffer) {
 			VkViewport& viewport = m_viewportscissor.Viewports[0];
-			Viewport::SetViewportStateDynamically(buffer, 0, { viewport });
+			LavaCake::Core::SetViewportStateDynamically(buffer, 0, { viewport });
 
 			
 
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
-			Viewport::SetScissorStateDynamically(buffer, 0, { scissor });
-			if (m_vertexBuffer->getHandle() == VK_NULL_HANDLE)return;
+			LavaCake::Core::SetScissorStateDynamically(buffer, 0, { scissor });
+			if (m_vertexBuffer->getVertexBuffer().getHandle() == VK_NULL_HANDLE)return;
 			VkDeviceSize size(0);
-			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getHandle() }, { &size });
+			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getVertexBuffer().getHandle() }, { &size });
 			if (m_vertexBuffer->isIndexed()) {
-				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
+				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer().getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
 			}
 
 			if (m_descriptorCount > 0) {
-				Descriptor::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0, m_descriptorSets, {});
+				LavaCake::Core::BindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0, m_descriptorSets, {});
 			}
 
 			Pipeline::BindPipelineObject(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
@@ -205,20 +207,13 @@ namespace LavaCake {
 			}
 
 			if (m_vertexBuffer->isIndexed()) {
-				uint32_t count = 0;
-				for (size_t i = 0; i < m_vertexBuffer->getMeshs().size(); i++) {
-					for (size_t j = 0; j < m_vertexBuffer->getMeshs()[i]->Parts.size(); j++) {
-						count += m_vertexBuffer->getMeshs()[i]->index.size();
-					}
-				}
+				uint32_t count = (uint32_t)m_vertexBuffer->getIndicesNumber();
+				
 				LavaCake::vkCmdDrawIndexed(buffer, count, 1, 0, 0, 0);
 			}else{
-				uint32_t count = 0;
-				for (size_t i = 0; i < m_vertexBuffer->getMeshs().size(); i++) {
-					for (size_t j = 0; j < m_vertexBuffer->getMeshs()[i]->Parts.size(); j++) {
-						count += m_vertexBuffer->getMeshs()[i]->Parts[j].VertexCount;
-					}
-				}
+				
+				uint32_t count = (uint32_t)m_vertexBuffer->getVerticiesNumber();
+
 				LavaCake::vkCmdDraw(buffer, count, 1, 0, 0);
 			}
 			

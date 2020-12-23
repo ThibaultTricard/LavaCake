@@ -1,6 +1,11 @@
 #include "Framework/Framework.h"
 #include <windows.h>
+
+using namespace LavaCake;
+using namespace LavaCake::Geometry;
 using namespace LavaCake::Framework;
+using namespace LavaCake::Core;
+
 int main() {
 
 	Window w("LavaCake HelloWorld & Imgui", 1400, 1000);
@@ -15,7 +20,7 @@ int main() {
 	LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
 	s->init(); 
 	VkExtent2D size = s->size();
-	VkQueue queue = d->getGraphicQueue(0)->getHandle();
+	Queue* queue = d->getGraphicQueue(0);
 	VkQueue& present_queue = d->getPresentQueue()->getHandle();
 	std::vector<CommandBuffer> commandBuffer = std::vector<CommandBuffer>(nbFrames);
 	for (int i = 0; i < nbFrames; i++) {
@@ -24,27 +29,23 @@ int main() {
 
 	gui->initGui(&w,d->getGraphicQueue(0), &commandBuffer[0]);
 
-	LavaCake::Helpers::Mesh::Mesh* triangle = new LavaCake::Helpers::Mesh::Mesh();
-	triangle->Data = {
-		-0.75f, 0.75f , 0.0f,
-		1.0f	, 0.0f	, 0.0f,
-		 0.75f,	0.75f , 0.0f,
-		 0.0f	, 1.0f	, 0.0f,
-		 0.0f , -0.75f, 0.0f,
-		 0.0f	, 0.0f	, 1.0f
-	};
-	triangle->Parts = { {uint32_t(0),uint32_t(3)} };
-	VertexBuffer* triangle_vertex_buffer = new VertexBuffer({ triangle }, {3,3});
-	triangle_vertex_buffer->allocate(queue, commandBuffer[0].getHandle());
+
+	Mesh_t* triangle = new Mesh<TRIANGLE>(LavaCake::Geometry::PC3);
+	triangle->appendVertex({ -0.75f, 0.75f , 0.0f, 1.0f	, 0.0f	, 0.0f });
+	triangle->appendVertex({ 0.75f,	0.75f , 0.0f,  0.0f	, 1.0f	, 0.0f });
+	triangle->appendVertex({ 0.0f , -0.75f, 0.0f, 0.0f	, 0.0f	, 1.0f });
+
+	VertexBuffer* triangle_vertex_buffer = new VertexBuffer({ triangle });
+	triangle_vertex_buffer->allocate(queue, commandBuffer[0]);
 
 	RenderPass* pass = new RenderPass();
-	GraphicPipeline* pipeline = new GraphicPipeline({ 0,0,0 }, { float(size.width),float(size.height),1.0f }, { 0,0 }, { float(size.width),float(size.height) });
+	GraphicPipeline* pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
 	VertexShaderModule* vertexShader = new VertexShaderModule("Data/Shaders/helloworld/shader.vert.spv");
 	FragmentShaderModule* fragmentShader = new FragmentShaderModule("Data/Shaders/helloworld/shader.frag.spv");
 
 	pipeline->setVextexShader(vertexShader);
 	pipeline->setFragmentModule(fragmentShader);
-	pipeline->setVeritices(triangle_vertex_buffer);
+	pipeline->setVertices(triangle_vertex_buffer);
 
 	pass->addSubPass({ pipeline, gui->getPipeline() }, RenderPassFlag::SHOW_ON_SCREEN | RenderPassFlag::USE_COLOR | RenderPassFlag::USE_DEPTH | RenderPassFlag::OP_STORE_COLOR);
 	pass->addDependencies(VK_SUBPASS_EXTERNAL, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_DEPENDENCY_BY_REGION_BIT);
@@ -136,7 +137,7 @@ int main() {
 
 
 
-		std::vector<LavaCake::Semaphore::WaitSemaphoreInfo> wait_semaphore_infos = {};
+		std::vector<WaitSemaphoreInfo> wait_semaphore_infos = {};
 		wait_semaphore_infos.push_back({
 			image.getSemaphore(),                     // VkSemaphore            Semaphore
 			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
@@ -150,23 +151,23 @@ int main() {
 
 		pass->setSwapChainImage(*frameBuffers[f], image);
 
-		pass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), { 0,0 }, { size.width, size.height }, { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
+		pass->draw(commandBuffer[f].getHandle(), frameBuffers[f]->getHandle(), vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
 
 
 		commandBuffer[f].endRecord();
 
 		
-		if (!LavaCake::Command::SubmitCommandBuffersToQueue(queue, wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
+		if (!SubmitCommandBuffersToQueue(queue->getHandle() , wait_semaphore_infos, { commandBuffer[f].getHandle() }, { commandBuffer[f].getSemaphore(0) }, commandBuffer[f].getFence())) {
 			continue;
 		}
 
 
-		LavaCake::Presentation::PresentInfo present_info = {
+		PresentInfo present_info = {
 			swapchain,                                    // VkSwapchainKHR         Swapchain
 			image.getIndex()                              // uint32_t               ImageIndex
 		};
 
-		if (!LavaCake::Presentation::PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
+		if (!PresentImage(present_queue, { commandBuffer[f].getSemaphore(0) }, { present_info })) {
 			continue;
 		}
 

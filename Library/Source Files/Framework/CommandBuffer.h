@@ -14,7 +14,7 @@ namespace LavaCake {
         VkDevice logical = d->getLogicalDevice();
         VkCommandPool pool = d->getCommandPool();
         std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
-        if (!LavaCake::Command::AllocateCommandBuffers(logical, pool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1, buffers)) {
+        if (!LavaCake::Core::AllocateCommandBuffers(logical, pool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1, buffers)) {
           ErrorCheck::setError("Failed to allocate commande buffer");
         }
         m_commandBuffer = buffers[0];
@@ -70,13 +70,13 @@ namespace LavaCake {
       }
 
       void beginRecord() {
-        if (!LavaCake::Command::BeginCommandBufferRecordingOperation(m_commandBuffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
+        if (!LavaCake::Core::BeginCommandBufferRecordingOperation(m_commandBuffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
           //TODO : Raise error using error check
         }
       }
 
       void endRecord() {
-        if (!LavaCake::Command::EndCommandBufferRecordingOperation(m_commandBuffer)) {
+        if (!LavaCake::Core::EndCommandBufferRecordingOperation(m_commandBuffer)) {
           assert("ERROR");
         }
       }
@@ -108,7 +108,7 @@ namespace LavaCake {
         }
         if (m_commandBuffer != VK_NULL_HANDLE) {
           std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
-          LavaCake::Command::FreeCommandBuffers(logical, d->getCommandPool(), buffers);
+          LavaCake::Core::FreeCommandBuffers(logical, d->getCommandPool(), buffers);
         }
       };
 
