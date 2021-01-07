@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set( CMAKE_SUPPRESS_REGENERATION true )
 
-option(BUILD_LAVACAKE_EXAMPLES "Build LavaCake examples" true)
 
 ###############################################################
 # Environment setup                                           #
@@ -230,28 +229,5 @@ target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} )
 
 
 
-###############################################################
-# Sample projects                                             #
-###############################################################
-
-if (BUILD_LAVACAKE_EXAMPLES)
-# Sample projects generation
-macro( list_samples )
-		file( GLOB SAMPLES RELATIVE "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files" "${CMAKE_CURRENT_LIST_DIR}/Samples/Source Files/*" )
-
-		FOREACH( SAMPLE ${SAMPLES} )
-			file( GLOB SAMPLE_SOURCE_FILES "Samples/Source Files/${SAMPLE}/*.cpp" )
-			source_group( "" FILES ${SAMPLE_SOURCE_FILES} )
-
-			add_executable( ${SAMPLE} ${SAMPLE_SOURCE_FILES} )
-			target_link_libraries( ${SAMPLE} LavaCake )
-			set_property( TARGET ${SAMPLE} PROPERTY FOLDER "Samples" )
-		ENDFOREACH()
-endmacro()
-
-# Sample projects generation
-list_samples()
-file( COPY "${CMAKE_CURRENT_LIST_DIR}/Samples/Data" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}" )
-endif()
 
 
