@@ -2,28 +2,20 @@
 
 This library aims to simplify the usage of Vulkan.
 
-## Warning
-I conceived this Library while learning Vulkan hopping to use it for my own experiments.
-In consequence the code architecture might change drasticly as my understanding of Vulkan evolve.
-
-However if you dare use it, I'd be happy to listen to your feedback :).
-
-
 ## Installation
 
 git pull https://github.com/ThibaultTricard/LavaCake.git
 
-git submodule init
-
-git submodule update
+git submodule update --recursive --init
 
 Then use Cmake
 
+## Examples
+
+Multiple exemples of how to use this library is availlable at https://github.com/ThibaultTricard/LavaCake-Examples
 
 ## Credits
 
 The core of this library is based on the Vulkan Cookbook code.  
 
 The code repository for [Vulkan Cookbook](https://www.packtpub.com/game-development/vulkan-cookbook?utm_source=github&utm_medium=repository&utm_campaign=9781786468154), published by [Packt](https://www.packtpub.com/).
-
-
