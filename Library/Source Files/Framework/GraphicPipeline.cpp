@@ -72,7 +72,7 @@ namespace LavaCake {
 			return stage;
 		}
 
-		void GraphicPipeline::compile(VkRenderPass& renderpass) {
+		void GraphicPipeline::compile(VkRenderPass& renderpass, uint16_t nbColorAttachments) {
 			Device* d = Device::getDevice();
 			VkDevice& logical = d->getLogicalDevice();
 			generateDescriptorLayout();
@@ -97,21 +97,28 @@ namespace LavaCake {
 			Pipeline::SpecifyPipelineRasterizationState(false, false, m_vertexBuffer->polygonMode(), m_CullMode, VK_FRONT_FACE_COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f, m_rasterizationStateCreateInfo);
 			Pipeline::SpecifyPipelineMultisampleState(VK_SAMPLE_COUNT_1_BIT, false, 0.0f, nullptr, false, false, m_multisampleStateCreateInfo);
 			Pipeline::SpecifyPipelineDepthAndStencilState(true, true, VK_COMPARE_OP_LESS_OR_EQUAL, false, 0.0f, 1.0f, false, {}, {}, m_depthStencilStateCreateInfo);
-			m_attachmentBlendStates = {
-				{
-					m_alphablending,																// VkBool32                 blendEnable
-					VK_BLEND_FACTOR_SRC_ALPHA,											// VkBlendFactor            srcColorBlendFactor
-					VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,            // VkBlendFactor            dstColorBlendFactor
-					VK_BLEND_OP_ADD,																// VkBlendOp                colorBlendOp
-					VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,						// VkBlendFactor            srcAlphaBlendFactor
-					VK_BLEND_FACTOR_ZERO,														// VkBlendFactor            dstAlphaBlendFactor
-					VK_BLEND_OP_ADD,																// VkBlendOp                alphaBlendOp
-					VK_COLOR_COMPONENT_R_BIT |											// VkColorComponentFlags    colorWriteMask
-					VK_COLOR_COMPONENT_G_BIT |
-					VK_COLOR_COMPONENT_B_BIT |
-					VK_COLOR_COMPONENT_A_BIT
-				}
-			};
+			
+			m_attachmentBlendStates = {};
+			for (uint16_t c = 0; c < nbColorAttachments; c++) {
+				m_attachmentBlendStates.push_back(
+					{
+						m_alphablending,																// VkBool32                 blendEnable
+						VK_BLEND_FACTOR_SRC_ALPHA,											// VkBlendFactor            srcColorBlendFactor
+						VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,            // VkBlendFactor            dstColorBlendFactor
+						VK_BLEND_OP_ADD,																// VkBlendOp                colorBlendOp
+						VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,						// VkBlendFactor            srcAlphaBlendFactor
+						VK_BLEND_FACTOR_ZERO,														// VkBlendFactor            dstAlphaBlendFactor
+						VK_BLEND_OP_ADD,																// VkBlendOp                alphaBlendOp
+						VK_COLOR_COMPONENT_R_BIT |											// VkColorComponentFlags    colorWriteMask
+						VK_COLOR_COMPONENT_G_BIT |
+						VK_COLOR_COMPONENT_B_BIT |
+						VK_COLOR_COMPONENT_A_BIT
+					}
+				);
+				
+			}
+
+			
 			Pipeline::SpecifyPipelineBlendState(false, VK_LOGIC_OP_COPY, m_attachmentBlendStates, { 1.0f, 1.0f, 1.0f, 1.0f }, m_blendStateCreateInfo);
 			m_dynamicStates = {
 				VK_DYNAMIC_STATE_VIEWPORT,

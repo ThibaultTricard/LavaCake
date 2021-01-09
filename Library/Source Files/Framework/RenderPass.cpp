@@ -72,49 +72,62 @@ namespace LavaCake {
 		}
 
 
-		void RenderPass::addAttatchments(uint32_t AttachementFlag, std::vector<uint32_t> input_number) {
+		void RenderPass::addAttatchments(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
 			VkAttachmentReference* depth = new VkAttachmentReference();
 			uint32_t imageAttachementindex;
 			bool drawOnScreen = false;
-			if (AttachementFlag & SHOW_ON_SCREEN)
+			if (AttachementDescription.showOnScreen)
 				drawOnScreen = true;
 
 			SubpassParameters params = {};
 			
-			if (AttachementFlag & USE_COLOR) {
-				imageAttachementindex = static_cast<uint32_t>(m_attachmentDescriptions.size());
-				m_attachmentDescriptions.push_back(
-					{
-						0,																																																					// VkAttachmentDescriptionFlags     flags
-						m_imageFormat,																																															// VkFormat                         format
-						VK_SAMPLE_COUNT_1_BIT,																																											// VkSampleCountFlagBits            samples
-						VK_ATTACHMENT_LOAD_OP_CLEAR,																																								// VkAttachmentLoadOp               loadOp
-						AttachementFlag & OP_STORE_COLOR ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE,					// VkAttachmentStoreOp              storeOp
-						VK_ATTACHMENT_LOAD_OP_DONT_CARE,																																						// VkAttachmentLoadOp               stencilLoadOp
-						VK_ATTACHMENT_STORE_OP_DONT_CARE,																																						// VkAttachmentStoreOp              stencilStoreOp
-						VK_IMAGE_LAYOUT_UNDEFINED,																																									// VkImageLayout                    initialLayout
-						drawOnScreen ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL                   // VkImageLayout                    finalLayout
-					});
-				if (drawOnScreen) {
-					m_khr_attachement = static_cast<int>(m_attachmentype.size());
+			if (AttachementDescription.nbColor > 0) {
+				params.ColorAttachments = {};
+				for (uint16_t c = 0; c < AttachementDescription.nbColor; c++) {
+					imageAttachementindex = static_cast<uint32_t>(m_attachmentDescriptions.size());
+					m_attachmentDescriptions.push_back(
+						{
+							0,																																																					// VkAttachmentDescriptionFlags     flags
+							m_imageFormat,																																															// VkFormat                         format
+							VK_SAMPLE_COUNT_1_BIT,																																											// VkSampleCountFlagBits            samples
+							VK_ATTACHMENT_LOAD_OP_CLEAR,																																								// VkAttachmentLoadOp               loadOp
+							AttachementDescription.storeColor ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE,					// VkAttachmentStoreOp              storeOp
+							VK_ATTACHMENT_LOAD_OP_DONT_CARE,																																						// VkAttachmentLoadOp               stencilLoadOp
+							VK_ATTACHMENT_STORE_OP_DONT_CARE,																																						// VkAttachmentStoreOp              stencilStoreOp
+							VK_IMAGE_LAYOUT_UNDEFINED,																																									// VkImageLayout                    initialLayout
+							(c == AttachementDescription.nbColor -1 -AttachementDescription.showOnScreenIndex && drawOnScreen) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL                   // VkImageLayout                    finalLayout
+						});
+				
+					m_attachmentype.push_back(RENDERPASS_COLOR_ATTACHMENT);
+					params.ColorAttachments.push_back(
+						{
+							imageAttachementindex,
+							VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+						}
+					);
 				}
-				m_attachmentype.push_back(RENDERPASS_COLOR_ATTACHMENT);
-				params.ColorAttachments = 
+
+				if (drawOnScreen) {
+					m_khr_attachement = static_cast<int>(m_attachmentype.size()) -1 -AttachementDescription.showOnScreenIndex;
+				}
+				
+
+				/*params.ColorAttachments = 
 				{ 
 					{
 						imageAttachementindex,
 						VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 					} 
-				};
+				};*/
 			}
 
-			if (AttachementFlag & USE_DEPTH) {
+			if (AttachementDescription.useDepth) {
 				m_attachmentDescriptions.push_back({
 					0,																																																									// VkAttachmentDescriptionFlags     flags
 					m_depthFormat,																																																			// VkFormat                         format
 					VK_SAMPLE_COUNT_1_BIT,																																															// VkSampleCountFlagBits            samples
 					VK_ATTACHMENT_LOAD_OP_CLEAR,																																												// VkAttachmentLoadOp               loadOp
-					AttachementFlag & OP_STORE_DEPTH ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE ,								// VkAttachmentStoreOp              storeOp
+					AttachementDescription.storeDepth ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE ,								// VkAttachmentStoreOp              storeOp
 					VK_ATTACHMENT_LOAD_OP_DONT_CARE,																																										// VkAttachmentLoadOp               stencilLoadOp
 					VK_ATTACHMENT_STORE_OP_DONT_CARE,																																										// VkAttachmentStoreOp              stencilStoreOp
 					VK_IMAGE_LAYOUT_UNDEFINED,																																													// VkImageLayout                    initialLayout
@@ -131,7 +144,7 @@ namespace LavaCake {
 
 			}
 			m_subpassAttachements.push_back(input_number);
-			if (AttachementFlag & ADD_INPUT) {
+			if (AttachementDescription.addInput) {
 				std::vector<VkAttachmentReference>   inputAttachments = {};
 				for (size_t i = 0; i < input_number.size(); i++) {
 					inputAttachments.push_back({ input_number[i], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
@@ -163,13 +176,13 @@ namespace LavaCake {
 				});
 		}
 
-		void RenderPass::addSubPass(std::vector<GraphicPipeline*> p, uint32_t AttachementFlag, std::vector<uint32_t> input_number) {
+		void RenderPass::addSubPass(std::vector<GraphicPipeline*> p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
 			for (size_t i = 0; i < p.size(); i++) {
 				p[i]->setSubpassNumber(static_cast<uint32_t>(m_subpass.size()));
 			}
 			m_subpass.push_back(p);
 			
-			addAttatchments(AttachementFlag, input_number);
+			addAttatchments(AttachementDescription, input_number);
 		}
 
 		void RenderPass::compile() {
@@ -183,7 +196,7 @@ namespace LavaCake {
 
 			for (uint32_t i = 0; i < m_subpass.size(); i++) {
 				for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
-					m_subpass[i][j]->compile(*m_renderPass);
+					m_subpass[i][j]->compile(*m_renderPass, (uint16_t)m_subpassParameters[i].ColorAttachments.size());
 				}
 			}
 

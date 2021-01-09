@@ -45,7 +45,7 @@ namespace LavaCake {
 			*Warning : If a modification is made to the compute pipeline after this operation,
 			*The compute pipeline need to be compiled again before being used
 			*/
-			void compile(VkRenderPass& renderpass);
+			void compile(VkRenderPass& renderpass, uint16_t nbColorAttachments);
 
 
 			void reloadShaders();

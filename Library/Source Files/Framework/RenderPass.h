@@ -15,6 +15,20 @@ namespace LavaCake {
 			ADD_INPUT				= 32
 		};
 		
+		struct SubpassAttachment {
+			uint16_t nbColor = 0;
+			bool storeColor = false;
+
+			bool useDepth = false;
+			bool storeDepth = false;
+
+			bool addInput = false;
+
+			bool showOnScreen = false;
+			uint16_t showOnScreenIndex = 0;
+		};
+
+
 		inline RenderPassFlag operator|(RenderPassFlag a, RenderPassFlag b)
 		{
 			return static_cast<RenderPassFlag>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
@@ -58,7 +72,7 @@ namespace LavaCake {
 			/*
 			* add a subpass composed of multiple graphics pipeline and setup their attachments 
 			*/
-			void addSubPass(std::vector<GraphicPipeline*> p, uint32_t AttachementFlag = 0, std::vector<uint32_t> input_number = {});
+			void addSubPass(std::vector<GraphicPipeline*> p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
 
 			/*
 			* prepare the render pass for drawing 
@@ -96,7 +110,7 @@ namespace LavaCake {
 			/*
 			* add an attachment for a subpass
 			*/
-			void addAttatchments(uint32_t AttachementFlag, std::vector<uint32_t> input_number = {});
+			void addAttatchments(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
 
 			void SpecifySubpassDescriptions(std::vector<SubpassParameters> const& subpass_parameters,
 				std::vector<VkSubpassDescription>& subpass_descriptions);
