@@ -24,19 +24,20 @@ namespace LavaCake {
         setArray(name, v);
       }
 
-      void addVariable(std::string name, std::vector<Data*> value) {
+      void addVariable(std::string name, std::vector<Data*>* value) {
         std::vector<int> v;
-        for (size_t i = 0; i < value.size(); i++) {
-          std::vector<int> temp = value[i]->rawMemory();
+        for (size_t i = 0; i < value->size(); i++) {
+          
+          std::vector<int> temp = (*value)[i]->rawMemory();
           v.insert(v.end(), temp.begin(), temp.end());
         }
         addArray(name, v);
       }
 
-      void setVariable(std::string name, std::vector<Data*> value) {
+      void setVariable(std::string name, std::vector<Data*>* value) {
         std::vector<int> v;
-        for (size_t i = 0; i < value.size(); i++) {
-          std::vector<int> temp = value[i]->rawMemory();
+        for (size_t i = 0; i < value->size(); i++) {
+          std::vector<int> temp = (*value)[i]->rawMemory();
           v.insert(v.end(), temp.begin(), temp.end());
         }
         setArray(name, v);

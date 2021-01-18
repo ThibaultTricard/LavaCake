@@ -522,7 +522,7 @@ namespace LavaCake {
 				m_imageDescriptorUpdate.push_back({
 					m_descriptorSets[descriptorCount],							// VkDescriptorSet                      TargetDescriptorSet
 					uint32_t(m_frameBuffers[i].binding),						// uint32_t                             TargetDescriptorBinding
-					m_frameBuffers[i].viewIndex,										// uint32_t                             TargetArrayElement
+					0,																							// uint32_t                             TargetArrayElement
 					VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,			// VkDescriptorType                     TargetDescriptorType
 					descriptorInfo																	// std::vector<VkDescriptorBufferInfo>  BufferInfos
 					});
