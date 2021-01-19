@@ -7,6 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set( CMAKE_SUPPRESS_REGENERATION true )
 
 
+option(USE_NV_RAYTRACING "use NVidia Raytracing" ON)
+
+if(USE_NV_RAYTRACING)
+		add_definitions(-DUSE_NV_RAYTRACING)
+endif()
+
 ###############################################################
 # Environment setup                                           #
 ###############################################################
