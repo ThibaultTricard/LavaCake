@@ -75,9 +75,9 @@ namespace LavaCake {
 				nullptr,                                            // const void              * pNext
 				application_name,                                   // const char              * pApplicationName
 				VK_MAKE_VERSION(1, 0, 0),                         // uint32_t                  applicationVersion
-				"Vulkan Cookbook",                                  // const char              * pEngineName
-				VK_MAKE_VERSION(1, 0, 0),                         // uint32_t                  engineVersion
-				VK_MAKE_VERSION(1, 0, 0)                          // uint32_t                  apiVersion
+				"LavaCake",																				// const char              * pEngineName
+				VK_MAKE_VERSION(1, 2, 0),                         // uint32_t                  engineVersion
+				VK_MAKE_VERSION(1, 2, 0)                          // uint32_t                  apiVersion
 			};
 
 			VkInstanceCreateInfo instance_create_info = {

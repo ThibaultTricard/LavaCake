@@ -137,12 +137,21 @@ namespace LavaCake {
 			endConcPresent:;
 
 
-#ifdef USE_NV_RAYTRACING
-				device_extensions.push_back(VK_KHR_RAY_QUERY_EXTENSION_NAME);
+#ifdef RAYTRACING
+				device_extensions.push_back(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
+				device_extensions.push_back(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
+				device_extensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+				device_extensions.push_back(VK_KHR_MAINTENANCE3_EXTENSION_NAME);
+				device_extensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+				device_extensions.push_back(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
 				device_extensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
+				
 				device_extensions.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
 #endif // USE_NV_RAYTRACING
 
+#ifdef RAYQUERY
+				device_extensions.push_back(VK_KHR_RAY_QUERY_EXTENSION_NAME);
+#endif // RAYQUERY
 
 				InitVkDestroyer(m_logical);
 				if (!LavaCake::Core::CreateLogicalDeviceWithWsiExtensionsEnabled(physical_device, requested_queues, device_extensions, desired_device_features, *m_logical)) {
