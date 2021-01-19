@@ -7,11 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set( CMAKE_SUPPRESS_REGENERATION true )
 
 
-option(USE_NV_RAYTRACING "use NVidia Raytracing" ON)
-
-if(USE_NV_RAYTRACING)
-		add_definitions(-DUSE_NV_RAYTRACING)
-endif()
 
 ###############################################################
 # Environment setup                                           #
@@ -225,7 +220,16 @@ set(LIBRARY_GEOMETRY_SOURCE
 source_group( "Library\\Geometry\\Header" FILES ${LIBRARY_GEOMETRY_HEADER} )
 source_group( "Library\\Geometry\\Source" FILES ${LIBRARY_GEOMETRY_SOURCE} )
 
+option(RAYTRACING "Allow raytracing (gtx 1060 or higher)" ON)
+if(RAYTRACING)
+		add_definitions(-DRAYTRACING)
+endif()
 
+
+option(RAYQUERY "Allow ray query (rtx only)" OFF)
+if(RAYQUERY)
+		add_definitions(-DRAYQUERY)
+endif()
 
 # Recipes Library generation
 add_library( LavaCake STATIC ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${LIBRARY_COMMON_SOURCE_FILES} ${LIBRARY_HELPER_HEADER} ${LIBRARY_HELPER_SOURCE}  ${LIBRARY_CORE_HEADER} ${LIBRARY_CORE_SOURCE} ${LIBRARY_FRAMEWORK_HEADER} ${LIBRARY_FRAMEWORK_SOURCE} ${LIBRARY_GEOMETRY_HEADER} ${LIBRARY_GEOMETRY_SOURCE} ${IMGUI_SOURCE})
@@ -237,3 +241,6 @@ target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} )
 
 
 
+if(RAYQUERY)
+		message("Ray query is not implemented yet")
+endif()
