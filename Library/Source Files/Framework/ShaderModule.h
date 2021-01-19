@@ -129,7 +129,6 @@ namespace LavaCake {
 			}
 			VertexShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
 				ShaderModule(spirv, VK_SHADER_STAGE_VERTEX_BIT, entrypoint, specialization) {
-
 			}
 		};
 
@@ -137,11 +136,9 @@ namespace LavaCake {
 		public:
 			TessellationControlShaderModule( std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
 				ShaderModule( path, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, entrypoint, specialization) {
-
 			}
 			TessellationControlShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
 				ShaderModule(spirv, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, entrypoint, specialization) {
-
 			}
 		};
 
@@ -149,11 +146,9 @@ namespace LavaCake {
 		public:
 			TessellationEvaluationShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
 				ShaderModule(path, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, entrypoint, specialization) {
-
 			}
 			TessellationEvaluationShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
 				ShaderModule(spirv, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, entrypoint, specialization) {
-
 			}
 		};
 
@@ -161,11 +156,9 @@ namespace LavaCake {
 		public:
 			GeometryShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
 				ShaderModule(path, VK_SHADER_STAGE_GEOMETRY_BIT, entrypoint, specialization) {
-
 			}
 			GeometryShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
 				ShaderModule(spirv, VK_SHADER_STAGE_GEOMETRY_BIT, entrypoint, specialization) {
-
 			}
 		};
 
@@ -173,11 +166,9 @@ namespace LavaCake {
 		public:
 			FragmentShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
 				ShaderModule(path, VK_SHADER_STAGE_FRAGMENT_BIT, entrypoint, specialization) {
-
 			}
 			FragmentShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
 				ShaderModule(spirv, VK_SHADER_STAGE_FRAGMENT_BIT, entrypoint, specialization) {
-
 			}
 
 		};
@@ -186,12 +177,77 @@ namespace LavaCake {
 		public:
 			ComputeShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
 				ShaderModule(path, VK_SHADER_STAGE_COMPUTE_BIT, entrypoint, specialization) {
-
 			}
 
 			ComputeShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
 				ShaderModule(spirv, VK_SHADER_STAGE_COMPUTE_BIT, entrypoint, specialization) {
+			}
+		};
 
+		class RayGenShaderModule : public ShaderModule {
+		public:
+			RayGenShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(path, VK_SHADER_STAGE_RAYGEN_BIT_KHR, entrypoint, specialization) {
+			}
+
+			RayGenShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_RAYGEN_BIT_KHR, entrypoint, specialization) {
+			}
+		};
+
+		class AnyHitShaderModule : public ShaderModule {
+		public:
+			AnyHitShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(path, VK_SHADER_STAGE_ANY_HIT_BIT_KHR, entrypoint, specialization) {
+			}
+
+			AnyHitShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_ANY_HIT_BIT_KHR, entrypoint, specialization) {
+			}
+		};
+
+
+		class ClosestHitShaderModule : public ShaderModule {
+		public:
+			ClosestHitShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(path, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, entrypoint, specialization) {
+			}
+
+			ClosestHitShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR, entrypoint, specialization) {
+			}
+		};
+
+		class MissShaderModule : public ShaderModule {
+		public:
+			MissShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(path, VK_SHADER_STAGE_MISS_BIT_KHR, entrypoint, specialization) {
+			}
+
+			MissShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_MISS_BIT_KHR, entrypoint, specialization) {
+			}
+		};
+
+		class IntersectionShaderModule : public ShaderModule {
+		public:
+			IntersectionShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(path, VK_SHADER_STAGE_INTERSECTION_BIT_KHR, entrypoint, specialization) {
+			}
+
+			IntersectionShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_INTERSECTION_BIT_KHR, entrypoint, specialization) {
+			}
+		};
+
+		class CallableShaderModule : public ShaderModule {
+		public:
+			CallableShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(path, VK_SHADER_STAGE_CALLABLE_BIT_KHR, entrypoint, specialization) {
+			}
+
+			CallableShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_CALLABLE_BIT_KHR, entrypoint, specialization) {
 			}
 		};
 	}

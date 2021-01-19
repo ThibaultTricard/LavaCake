@@ -19,7 +19,7 @@ namespace LavaCake {
 				Device* d = Device::getDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				VkDevice logical = d->getLogicalDevice();
-				m_dataSize = rawdata.size();
+				m_dataSize = (uint32_t)rawdata.size();
 
 
 				Core::DestroyBuffer(logical, *m_buffer);
