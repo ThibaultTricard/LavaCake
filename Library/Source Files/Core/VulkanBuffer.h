@@ -68,7 +68,8 @@ namespace LavaCake {
 			VkDevice                   logical_device,
 			VkBuffer                   buffer,
 			VkMemoryPropertyFlagBits   memory_properties,
-			VkDeviceMemory           & memory_object);
+			VkDeviceMemory           & memory_object,
+			uint32_t									memorytype = 0);
 
 		void SetBufferMemoryBarrier(VkCommandBuffer               command_buffer,
 			VkPipelineStageFlags          generating_stages,

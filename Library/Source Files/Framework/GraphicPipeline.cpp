@@ -32,7 +32,7 @@ namespace LavaCake {
 			LavaCake::Core::SpecifyPipelineViewportAndScissorTestState(m_viewportscissor, m_viewportInfo);
 		};
 
-		void GraphicPipeline::setVextexShader(VertexShaderModule*	module) {
+		void GraphicPipeline::setVextexModule(VertexShaderModule*	module) {
 			m_vertexModule = module;
 		}
 

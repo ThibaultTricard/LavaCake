@@ -13,14 +13,26 @@ namespace LavaCake {
 
 			}
 
+			Buffer(const Buffer& a) {
+				*m_buffer = *(a.m_buffer);
+				*m_bufferMemory = *(a.m_bufferMemory);
+				*m_bufferView = *(a.m_bufferView);
+
+				m_dataSize = a.m_dataSize;
+			}
 
 			template <typename t>
-			void allocate(Queue* queue, CommandBuffer& cmdBuff, std::vector<t> rawdata, VkBufferUsageFlagBits usage, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT) {
+			void allocate(Queue* queue, CommandBuffer& cmdBuff, std::vector<t> rawdata, VkBufferUsageFlagBits usage, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT) {
 				Device* d = Device::getDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				VkDevice logical = d->getLogicalDevice();
 				m_dataSize = (uint32_t)rawdata.size();
 
+
+				uint32_t memProp = 0;
+				if (usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT) {
+					memProp = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
+				}
 
 				Core::DestroyBuffer(logical, *m_buffer);
 				Core::DestroyBufferView(logical, *m_bufferView);
@@ -30,7 +42,7 @@ namespace LavaCake {
 					ErrorCheck::setError("Can't create Buffer");
 				}
 
-				if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *m_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_bufferMemory)) {
+				if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *m_buffer, memPropertyFlag, *m_bufferMemory, memProp)) {
 					ErrorCheck::setError("Can't allocate Buffer");
 				}
 
@@ -47,12 +59,49 @@ namespace LavaCake {
 				}
       }
 
+
+			void allocate(Queue* queue, CommandBuffer& cmdBuff, uint64_t biteSize, VkBufferUsageFlagBits usage, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT) {
+				Device* d = Device::getDevice();
+				VkPhysicalDevice physical = d->getPhysicalDevice();
+				VkDevice logical = d->getLogicalDevice();
+				m_dataSize = biteSize;
+
+				uint32_t memProp = 0;
+				if (usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT) {
+					memProp = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
+				}
+
+				Core::DestroyBuffer(logical, *m_buffer);
+				Core::DestroyBufferView(logical, *m_bufferView);
+				Core::FreeMemoryObject(logical, *m_bufferMemory);
+
+				if (!LavaCake::Core::CreateBuffer(logical, m_dataSize, usage, *m_buffer)) {
+					ErrorCheck::setError("Can't create Buffer");
+				}
+
+				if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *m_buffer, memPropertyFlag, *m_bufferMemory, memProp)) {
+					ErrorCheck::setError("Can't allocate Buffer");
+				}
+
+				if (usage & VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT) {
+					if (!LavaCake::Core::CreateBufferView(logical, *m_buffer, format, 0, VK_WHOLE_SIZE, *m_bufferView)) {
+						ErrorCheck::setError("Can't create Buffer view");
+					}
+				}
+
+			}
+
 			VkBuffer& getHandle() {
 				return *m_buffer;
 			}
 
 			VkBufferView& getBufferView() {
 				return *m_bufferView;
+			}
+
+
+			VkDeviceMemory& getMemory() {
+				return *m_bufferMemory;
 			}
 
 			void readBack(Queue* queue, CommandBuffer& cmdBuff, std::vector<float>& data) {
@@ -104,6 +153,8 @@ namespace LavaCake {
 
 
 
+
+
     protected:
 
       VkDestroyer(VkBuffer)																m_buffer;
@@ -114,6 +165,31 @@ namespace LavaCake {
     };
 
 
-    
+		class TransformBuffer {
+		public : 
+			TransformBuffer(mat4 tranform) {
+				for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 4; j++) {
+						m_transformData.push_back(tranform[i * 4 + j]);
+					}
+				}
+
+			}
+
+			void allocate(Queue* queue, CommandBuffer& cmdBuff) {
+				m_buffer.allocate(queue, cmdBuff, m_transformData, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR));
+			}
+
+			Buffer& getBuffer() {
+				return m_buffer;
+			}
+
+		private :
+
+			std::vector<float> m_transformData;
+
+			Buffer m_buffer;
+
+		};
   }
 }

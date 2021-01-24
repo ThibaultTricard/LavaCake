@@ -15,7 +15,7 @@ namespace LavaCake {
 			*/
 			ComputePipeline() {};
 
-			void setComputeShader(ComputeShaderModule* module);
+			void setComputeModule(ComputeShaderModule* module);
 			
 			/**
 			*Prepare the Compute pipeline for it's usage

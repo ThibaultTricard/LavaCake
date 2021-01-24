@@ -16,7 +16,7 @@ namespace LavaCake {
 			/**
 			* setup the vertex shader module for this pipeline
 			*/
-			void setVextexShader(VertexShaderModule*	module);
+			void setVextexModule(VertexShaderModule*	module);
 
 			/**
 			* setup the tesselation control shader module for this pipeline
@@ -96,7 +96,7 @@ namespace LavaCake {
 
 
 
-			std::vector<constant>																	m_constants;
+			
 
 
 			VkPipelineRasterizationStateCreateInfo								m_rasterizationStateCreateInfo;

@@ -45,12 +45,9 @@ namespace LavaCake {
 				std::vector< QueueInfo >          queue_infos,
 				std::vector<char const *> const & desired_extensions,
 				VkPhysicalDeviceFeatures        * desired_features,
+				void*															pnext,	
 				VkDevice                        & logical_device);
 
-			bool CreateLogicalDeviceWithGeometryShadersAndGraphicsAndComputeQueues(VkInstance   instance,
-				VkDevice   & logical_device,
-				VkQueue    & graphics_queue,
-				VkQueue    & compute_queue);
 
 			void DestroyLogicalDevice(VkDevice & logical_device);
 

@@ -51,6 +51,8 @@ namespace LavaCake {
 			VkShaderStageFlags			stage;
 		};
 
+
+
 		class Pipeline {
 		public :
 			/**
@@ -256,7 +258,7 @@ namespace LavaCake {
 			std::vector<attachment>																					m_attachments;
 			std::vector<storageImage>																				m_storageImages;
 			std::vector<texelBuffer>																				m_texelBuffers;
-
+			std::vector<constant>																						m_constants;
 		};
 	}
 }

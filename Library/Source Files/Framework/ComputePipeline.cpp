@@ -21,7 +21,7 @@ namespace LavaCake {
 			}
 		}
 
-		void ComputePipeline::setComputeShader(ComputeShaderModule*	module) {
+		void ComputePipeline::setComputeModule(ComputeShaderModule*	module) {
 			m_computeModule = module;
 		}
 

@@ -35,6 +35,9 @@ namespace LavaCake {
 
 
 		void Device::initDevices(int nbComputeQueue, int nbGraphicQueue, WindowParameters&	WindowParams, VkPhysicalDeviceFeatures* desired_device_features) {
+
+
+
 			if (!LavaCake::Core::ConnectWithVulkanLoaderLibrary(m_vulkanLibrary)) {
 				ErrorCheck::setError("Could not connect with Vulkan while initializing the device");
 			}
@@ -49,7 +52,11 @@ namespace LavaCake {
 
 
 
+			
+
 			std::vector<char const*> instance_extensions;
+			instance_extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+
 			InitVkDestroyer(m_instance);
 			if (!LavaCake::Core::CreateVulkanInstanceWithWsiExtensionsEnabled(instance_extensions, "LavaCake", *m_instance)) {
 				ErrorCheck::setError("Could not load Vulkan while initializing the device");
@@ -145,21 +152,41 @@ namespace LavaCake {
 				device_extensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
 				device_extensions.push_back(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
 				device_extensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
-				
 				device_extensions.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
+
+
+				VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddresFeatures{};
+				enabledBufferDeviceAddresFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
+				enabledBufferDeviceAddresFeatures.bufferDeviceAddress = VK_TRUE;
+
+				VkPhysicalDeviceRayTracingPipelineFeaturesKHR enabledRayTracingPipelineFeatures{};
+				enabledRayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+				enabledRayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
+				enabledRayTracingPipelineFeatures.pNext = &enabledBufferDeviceAddresFeatures;
+
+				VkPhysicalDeviceAccelerationStructureFeaturesKHR enabledAccelerationStructureFeatures{};
+				enabledAccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+				enabledAccelerationStructureFeatures.accelerationStructure = VK_TRUE;
+				enabledAccelerationStructureFeatures.pNext = &enabledRayTracingPipelineFeatures;
 #endif // USE_NV_RAYTRACING
 
 #ifdef RAYQUERY
-				device_extensions.push_back(VK_KHR_RAY_QUERY_EXTENSION_NAME);
+				//device_extensions.push_back(VK_KHR_RAY_QUERY_EXTENSION_NAME);
 #endif // RAYQUERY
 
 				InitVkDestroyer(m_logical);
-				if (!LavaCake::Core::CreateLogicalDeviceWithWsiExtensionsEnabled(physical_device, requested_queues, device_extensions, desired_device_features, *m_logical)) {
+				device_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+				if (desired_device_features == nullptr) {
+					desired_device_features = new VkPhysicalDeviceFeatures();
+				}
+				if (!LavaCake::Core::CreateLogicalDevice(physical_device, requested_queues, device_extensions, desired_device_features, (void*)(&enabledAccelerationStructureFeatures), *m_logical)) {
 					continue;
 				}
 				else {
 					m_physical = physical_device;
 					LavaCake::Core::LoadDeviceLevelFunctions(*m_logical, device_extensions);
+					
 					//Todo Check if getHandle()  works
 					for (int i = 0; i < nbGraphicQueue; i++) {
 						LavaCake::vkGetDeviceQueue(*m_logical, m_graphicQueues[i].getIndex(), 0, &m_graphicQueues[i].getHandle());

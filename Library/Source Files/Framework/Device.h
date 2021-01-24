@@ -5,6 +5,10 @@
 
 
 namespace LavaCake {
+
+	
+
+
 	namespace Framework {
 
 		class Device {
@@ -43,6 +47,7 @@ namespace LavaCake {
 			//Make sure every command send to the device are finished
 			void end();
 
+			
 
 			private :
 				VkPhysicalDevice													m_physical;

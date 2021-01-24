@@ -72,6 +72,14 @@ namespace LavaCake {
 				return m_vertices.size() / m_stride;
 			}
 			
+			uint32_t getStrideSize() {
+				return m_stride;
+			}
+
+			uint32_t getByteStrideSize() {
+				return m_stride * sizeof(float);
+			}
+
 			bool isIndexed();
 
 			~VertexBuffer() {

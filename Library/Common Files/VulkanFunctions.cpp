@@ -36,6 +36,7 @@ namespace LavaCake {
 #define DEVICE_LEVEL_VULKAN_FUNCTION( name ) PFN_##name name;
 #define DEVICE_LEVEL_VULKAN_FUNCTION_FROM_EXTENSION( name, extension ) PFN_##name name;
 
+
 #include "ListOfVulkanFunctions.inl"
 
 } // namespace LavaCake

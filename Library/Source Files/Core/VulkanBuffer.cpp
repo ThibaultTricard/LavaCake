@@ -55,7 +55,9 @@ namespace LavaCake {
 			VkDevice                   logical_device,
 			VkBuffer                   buffer,
 			VkMemoryPropertyFlagBits   memory_properties,
-			VkDeviceMemory           & memory_object) {
+			VkDeviceMemory           & memory_object,
+			uint32_t									memorytype
+			) {
 			VkPhysicalDeviceMemoryProperties physical_device_memory_properties;
 			vkGetPhysicalDeviceMemoryProperties(physical_device, &physical_device_memory_properties);
 
@@ -67,11 +69,17 @@ namespace LavaCake {
 				if ((memory_requirements.memoryTypeBits & (1 << type)) &&
 					((physical_device_memory_properties.memoryTypes[type].propertyFlags & memory_properties) == memory_properties)) {
 
+					VkMemoryAllocateFlagsInfo next{
+					VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO,
+					nullptr,
+					memorytype,
+					};
+
 					VkMemoryAllocateInfo buffer_memory_allocate_info = {
 						VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,   // VkStructureType    sType
-						nullptr,                                  // const void       * pNext
+						&next,                                  // const void       * pNext
 						memory_requirements.size,                 // VkDeviceSize       allocationSize
-						type                                      // uint32_t           memoryTypeIndex
+						type                          // uint32_t           memoryTypeIndex
 					};
 
 					VkResult result = vkAllocateMemory(logical_device, &buffer_memory_allocate_info, nullptr, &memory_object);

@@ -48,11 +48,6 @@ namespace LavaCake {
 			char const * const          application_name,
 			VkInstance                & instance);
 
-		bool CreateLogicalDeviceWithWsiExtensionsEnabled(VkPhysicalDevice            physical_device,
-			std::vector< QueueInfo >    queue_infos,
-			std::vector<char const *> & desired_extensions,
-			VkPhysicalDeviceFeatures  * desired_features,
-			VkDevice                  & logical_device);
 
 	}
 }
