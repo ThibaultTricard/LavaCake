@@ -45,7 +45,7 @@ namespace LavaCake {
           instancesBuffers.push_back(instancesBuffer);
 
           VkDeviceOrHostAddressConstKHR instanceDataDeviceAddress{};
-          instanceDataDeviceAddress.deviceAddress = getBufferDeviceAddress(instancesBuffer.getHandle());
+          instanceDataDeviceAddress.deviceAddress = instancesBuffer.getBufferDeviceAddress();
 
           VkAccelerationStructureGeometryKHR asg{};
           asg.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;

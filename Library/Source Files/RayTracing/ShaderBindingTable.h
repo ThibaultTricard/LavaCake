@@ -31,79 +31,87 @@ namespace LavaCake {
       }
 
 
-      void compile(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff,VkPipeline raytracingPipeline, uint32_t handleSize) {
+      void compile(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff,VkPipeline raytracingPipeline) {
         Framework::Device* d = Framework::Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
+        VkPhysicalDevice physical = d->getPhysicalDevice();
 
-        Framework::Buffer sbtBuff;
-        VkDeviceSize shaderBindingTableSize = ComputeSBTSize(handleSize);
+        VkPhysicalDeviceRayTracingPipelinePropertiesKHR  rayTracingPipelineProperties{};
 
-        sbtBuff.allocate(queue, cmdBuff, shaderBindingTableSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_FORMAT_R32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
+        rayTracingPipelineProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
+        VkPhysicalDeviceProperties2 deviceProperties2{};
+        deviceProperties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+        deviceProperties2.pNext = &rayTracingPipelineProperties;
+        vkGetPhysicalDeviceProperties2(physical, &deviceProperties2);
 
-        uint32_t groupCount = static_cast<uint32_t>(m_rayGen.size())
-          + static_cast<uint32_t>(m_miss.size())
-          + static_cast<uint32_t>(m_hitGroup.size());
 
-        // Fetch all the shader handles used in the pipeline, so that they can be written in the SBT
-        // Note that this could be also done by fetching the handles one by one when writing the SBT entries
-        auto     shaderHandleStorage = new uint8_t[groupCount * m_progIdSize];
-        VkResult code =
-          vkGetRayTracingShaderGroupHandlesNV(logical, raytracingPipeline, 0, groupCount,
-            m_progIdSize * groupCount, shaderHandleStorage);
+        const uint32_t handleSize = rayTracingPipelineProperties.shaderGroupHandleSize;
+        const uint32_t handleSizeAligned = alignedSize(rayTracingPipelineProperties.shaderGroupHandleSize, rayTracingPipelineProperties.shaderGroupHandleAlignment);
+        const uint32_t groupCount = static_cast<uint32_t>(m_rayGen.size() + m_miss.size()  + m_hitGroup.size() );
+        const uint32_t sbtSize = groupCount * handleSizeAligned;
 
-        // Map the SBT
-        void* vData;
 
-        code = vkMapMemory(logical, sbtBuff.getMemory(), 0, m_sbtSize, 0, &vData);
-
-        if (code != VK_SUCCESS)
-        {
-          throw std::logic_error("SBT vkMapMemory failed");
-        }
-
-        auto* data = static_cast<uint8_t*>(vData);
-
-        // Copy the shader identifiers followed by their resource pointers or root constants: first the
-        // ray generation, then the miss shaders, and finally the set of hit groups
-        VkDeviceSize offset = 0;
-
-        offset = CopyShaderData(logical, raytracingPipeline, data, m_rayGen, m_rayGenEntrySize,
-          shaderHandleStorage);
-        data += offset;
-
-        offset = CopyShaderData(logical, raytracingPipeline, data, m_miss, m_missEntrySize,
-          shaderHandleStorage);
-        data += offset;
-
-        offset = CopyShaderData(logical, raytracingPipeline, data, m_hitGroup, m_hitGroupEntrySize,
-          shaderHandleStorage);
-
-        // Unmap the SBT
-        vkUnmapMemory(logical, sbtBuff.getMemory());
-
-        delete shaderHandleStorage;
-      }
+        std::vector<uint8_t> shaderHandleStorage(sbtSize);
+        vkGetRayTracingShaderGroupHandlesKHR(logical, raytracingPipeline, 0, groupCount, sbtSize, shaderHandleStorage.data());
 
 
       
-      VkDeviceSize ComputeSBTSize(
-        uint32_t handleSize)
-      {
-        // Size of a program identifier
-        m_progIdSize = handleSize;
+        // Create buffer to hold all shader handles for the SBT
+        Framework::Buffer raygenBuffer;
+        void* raygenMem;
+        raygenBuffer.allocate(queue, cmdBuff, handleSize * m_rayGen.size(), (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT), VK_FORMAT_R32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+        m_raygenShaderBindingTable = {};
+        m_raygenShaderBindingTable.deviceAddress = raygenBuffer.getBufferDeviceAddress();
+        m_raygenShaderBindingTable.stride = handleSizeAligned;
+        m_raygenShaderBindingTable.size = m_rayGen.size() * handleSizeAligned;
+        vkMapMemory(logical, raygenBuffer.getMemory(), 0, VK_WHOLE_SIZE, 0, &raygenMem);
 
-        // Compute the entry size of each program type depending on the maximum number of parameters in
-        // each category
-        m_rayGenEntrySize = GetEntrySize(m_rayGen);
-        m_missEntrySize = GetEntrySize(m_miss);
-        m_hitGroupEntrySize = GetEntrySize(m_hitGroup);
+        
+        Framework::Buffer missBuffer;
+        void* missMem;
+        missBuffer.allocate(queue, cmdBuff, handleSize * m_miss.size(), (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT), VK_FORMAT_R32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+        m_missShaderBindingTable = {};
+        m_missShaderBindingTable.deviceAddress = missBuffer.getBufferDeviceAddress();
+        m_missShaderBindingTable.stride = handleSizeAligned;
+        m_missShaderBindingTable.size = m_miss.size() * handleSizeAligned;
+        vkMapMemory(logical, missBuffer.getMemory(), 0, VK_WHOLE_SIZE, 0, &missMem);
 
-        // The total SBT size is the sum of the entries for ray generation, miss and hit groups
-        m_sbtSize = m_rayGenEntrySize * static_cast<VkDeviceSize>(m_rayGen.size())
-          + m_missEntrySize * static_cast<VkDeviceSize>(m_miss.size())
-          + m_hitGroupEntrySize * static_cast<VkDeviceSize>(m_hitGroup.size());
-        return m_sbtSize;
+
+        Framework::Buffer hitBuffer;
+        void* hitMem;
+        hitBuffer.allocate(queue, cmdBuff, handleSize * m_hitGroup.size(), (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT), VK_FORMAT_R32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+        m_hitShaderBindingTable = {};
+        m_hitShaderBindingTable.deviceAddress = hitBuffer.getBufferDeviceAddress();
+        m_hitShaderBindingTable.stride = handleSizeAligned;
+        m_hitShaderBindingTable.size = m_hitGroup.size() * handleSizeAligned;
+        vkMapMemory(logical, hitBuffer.getMemory(), 0, VK_WHOLE_SIZE, 0, &hitMem);
+
+        
+
+        // Copy handles
+        memcpy(raygenMem, shaderHandleStorage.data(), handleSize * m_rayGen.size());
+        memcpy(missMem, shaderHandleStorage.data() + handleSizeAligned * m_rayGen.size(), handleSize * m_miss.size());
+        memcpy(hitMem, shaderHandleStorage.data() + handleSizeAligned * (m_rayGen.size() + m_miss.size()) , handleSize * m_hitGroup.size());
       }
+
+
+      VkStridedDeviceAddressRegionKHR raygenShaderBindingTable() {
+        return m_raygenShaderBindingTable;
+      }
+
+      VkStridedDeviceAddressRegionKHR missShaderBindingTable() {
+        return m_missShaderBindingTable;
+      }
+
+      VkStridedDeviceAddressRegionKHR hitShaderBindingTable() {
+        return m_hitShaderBindingTable;
+      }
+      
+      
+      VkStridedDeviceAddressRegionKHR callableShaderBindingTable() {
+        return m_callableShaderBindingTable;
+      }
+
 
     private : 
       struct entry
@@ -112,50 +120,11 @@ namespace LavaCake {
         const std::vector<unsigned char> m_inlineData;
       };
 
-      VkDeviceSize CopyShaderData(VkDevice                     device,
-        VkPipeline                   pipeline,
-        uint8_t* outputData,
-        const std::vector<entry>& shaders,
-        VkDeviceSize                 entrySize,
-        const uint8_t* shaderHandleStorage)
+     
+
+      uint32_t alignedSize(uint32_t value, uint32_t alignment)
       {
-        uint8_t* pData = outputData;
-        for (const auto& shader : shaders)
-        {
-          // Copy the shader identifier that was previously obtained with
-          // vkGetRayTracingShaderGroupHandlesNV
-          memcpy(pData, shaderHandleStorage + shader.m_groupIndex * m_progIdSize, m_progIdSize);
-
-          // Copy all its resources pointers or values in bulk
-          if (!shader.m_inlineData.empty())
-          {
-            memcpy(pData + m_progIdSize, shader.m_inlineData.data(), shader.m_inlineData.size());
-          }
-
-          pData += entrySize;
-        }
-        // Return the number of bytes actually written to the output buffer
-        return static_cast<uint32_t>(shaders.size()) * entrySize;
-      }
-
-      VkDeviceSize GetEntrySize(const std::vector<entry>& entries)
-      {
-        // Find the maximum number of parameters used by a single entry
-        size_t maxArgs = 0;
-        for (const auto& shader : entries)
-        {
-          maxArgs = maxArgs > shader.m_inlineData.size() ? maxArgs : shader.m_inlineData.size();
-        }
-        // A SBT entry is made of a program ID and a set of 4-byte parameters (offsets or push constants)
-        VkDeviceSize entrySize = m_progIdSize + static_cast<VkDeviceSize>(maxArgs);
-
-        // The entries of the shader binding table must be 16-bytes-aligned
-        VkDeviceSize modEntrySize = entrySize % 16;
-        if (modEntrySize != 0) {
-          entrySize += 16 - modEntrySize;
-        }
-
-        return entrySize;
+        return (value + alignment - 1) & ~(alignment - 1);
       }
 
       // Ray generation shader entries
@@ -164,6 +133,12 @@ namespace LavaCake {
       std::vector<entry> m_miss;
       /// Hit group entries
       std::vector<entry> m_hitGroup;
+
+
+      VkStridedDeviceAddressRegionKHR m_raygenShaderBindingTable;
+      VkStridedDeviceAddressRegionKHR m_missShaderBindingTable;
+      VkStridedDeviceAddressRegionKHR m_hitShaderBindingTable;
+      VkStridedDeviceAddressRegionKHR m_callableShaderBindingTable;
 
       uint32_t m_rayGenEntrySize;
       uint32_t m_missEntrySize;

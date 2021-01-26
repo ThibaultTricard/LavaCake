@@ -4,14 +4,7 @@
 namespace LavaCake {
 	namespace RayTracing {
 
-		uint64_t getBufferDeviceAddress(VkBuffer buffer)
-		{
-			Framework::Device* d = Framework::Device::getDevice();
-			VkBufferDeviceAddressInfoKHR bufferDeviceAI{};
-			bufferDeviceAI.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-			bufferDeviceAI.buffer = buffer;
-			return vkGetBufferDeviceAddressKHR(d->getLogicalDevice(), &bufferDeviceAI);
-		}
+		
 
 		class BottomLevelAS {
 		public :
@@ -26,11 +19,11 @@ namespace LavaCake {
 				VkDeviceOrHostAddressConstKHR indexBufferDeviceAddress{};
 				VkDeviceOrHostAddressConstKHR transformBufferDeviceAddress{};
 
-				vertexBufferDeviceAddress.deviceAddress = getBufferDeviceAddress(vertexBuffer->getVertexBuffer().getHandle());
+				vertexBufferDeviceAddress.deviceAddress = vertexBuffer->getVertexBuffer().getBufferDeviceAddress();
 				if (vertexBuffer->isIndexed()) {
-					indexBufferDeviceAddress.deviceAddress = getBufferDeviceAddress(vertexBuffer->getIndexBuffer().getHandle());
+					indexBufferDeviceAddress.deviceAddress = vertexBuffer->getIndexBuffer().getBufferDeviceAddress();
 				}
-				transformBufferDeviceAddress.deviceAddress = getBufferDeviceAddress(transformBuffer->getBuffer().getHandle());
+				transformBufferDeviceAddress.deviceAddress = transformBuffer->getBuffer().getBufferDeviceAddress();
 
 				VkAccelerationStructureGeometryKHR accelerationStructureGeometry{};
 				accelerationStructureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;

@@ -116,7 +116,7 @@ namespace LavaCake {
 			}
 
 			void setClosestHitModule(ClosestHitShaderModule* module) {
-				if (m_isHitGroupOpen) {
+				if (!m_isHitGroupOpen) {
 					Framework::ErrorCheck::setError("No open hitgroup");
 					return;
 				}
@@ -136,7 +136,7 @@ namespace LavaCake {
 			}
 
 			void setAnyHitModule(AnyHitShaderModule* module) {
-				if (m_isHitGroupOpen) {
+				if (!m_isHitGroupOpen) {
 					Framework::ErrorCheck::setError("No open hitgroup");
 					return;
 				}
@@ -184,44 +184,26 @@ namespace LavaCake {
 					Framework::ErrorCheck::setError("No hit group open");
 					return;
 				}
+				m_isHitGroupOpen = false;
 				m_ShaderBindingTable.addHitGroup(m_currentGroupIndex, {});
 				m_currentGroupIndex++;
 			}
 
-			void compile() {
-					
+
+			void compile(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff) {
+
 				Framework::Device* d = Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 
 
 				generateDescriptorLayout();
-
 				InitVkDestroyer(logical, m_pipelineLayout);
-
-				std::vector<VkPushConstantRange> push_constant_ranges = {};
-				for (uint32_t i = 0; i < m_constants.size(); i++) {
-					push_constant_ranges.push_back(
-						{
-							m_constants[i].stage,																				// VkShaderStageFlags     stageFlags
-							0,																													// uint32_t               offset
-							m_constants[i].constant->size() * sizeof(float)		          // uint32_t               size
-						});
+				if (!CreatePipelineLayout(logical, { *m_descriptorSetLayout }, {}, *m_pipelineLayout)) {
+					Framework::ErrorCheck::setError("Can't create compute pipeline layout");
 				}
 
-				VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
-				pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-				pipelineLayoutCreateInfo.pNext = nullptr;
-				pipelineLayoutCreateInfo.flags = 0;
-				pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(1);
-				pipelineLayoutCreateInfo.pSetLayouts = &(*m_descriptorSetLayout);
-				pipelineLayoutCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(push_constant_ranges.size());
-				pipelineLayoutCreateInfo.pPushConstantRanges = push_constant_ranges.data();
 
-				VkResult code = vkCreatePipelineLayout(logical, &pipelineLayoutCreateInfo, nullptr, &*m_pipelineLayout);
-
-
-
-				VkRayTracingPipelineCreateInfoKHR rayPipelineInfo;
+				VkRayTracingPipelineCreateInfoKHR rayPipelineInfo{};
 				rayPipelineInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
 				rayPipelineInfo.pNext = nullptr;
 				rayPipelineInfo.flags = 0;
@@ -234,29 +216,45 @@ namespace LavaCake {
 				rayPipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 				rayPipelineInfo.basePipelineIndex = 0;
 
-				code = vkCreateRayTracingPipelinesKHR(logical, nullptr, nullptr ,1, &rayPipelineInfo, nullptr, &*m_pipeline);
+				std::vector<VkRayTracingPipelineCreateInfoKHR> pipelineInfos = { rayPipelineInfo };
+
+				InitVkDestroyer(logical, m_pipeline);
+				std::vector<VkPipeline> pipelines(pipelineInfos.size());
+				VkResult code = vkCreateRayTracingPipelinesKHR(logical, nullptr, nullptr, pipelineInfos.size(), pipelineInfos.data(), nullptr, pipelines.data());
+				*m_pipeline = pipelines[0];
+
+				
 
 				if (code != VK_SUCCESS)
 				{
 					//throw std::logic_error("rt vkCreateRayTracingPipelines failed");
 				}
+
+				std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+
+				m_ShaderBindingTable.compile(queue, cmdBuff, *m_pipeline);
+
 			}
 
       void trace(Framework::CommandBuffer& cmdbuff) {
 				vkCmdBindPipeline(cmdbuff.getHandle(), VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, *m_pipeline);
 				vkCmdBindDescriptorSets(cmdbuff.getHandle(), VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, *m_pipelineLayout, 0, (uint32_t)m_descriptorSets.size(), m_descriptorSets.data(), 0, 0);
 
-				/*vkCmdTraceRaysKHR(
+				VkStridedDeviceAddressRegionKHR callableShaderSbtEntry{};
+
+				vkCmdTraceRaysKHR(
 					cmdbuff.getHandle(),
-					&m_raygenShaderSbtEntry,
-					&m_missShaderSbtEntry,
-					&m_hitShaderSbtEntry,
-					&m_callableShaderSbtEntry,
+					&m_ShaderBindingTable.raygenShaderBindingTable(),
+					&m_ShaderBindingTable.missShaderBindingTable(),
+					&m_ShaderBindingTable.hitShaderBindingTable(),
+					&callableShaderSbtEntry,
 					m_width,
 					m_height,
-					1);*/
+					1);
       }
 
+
+			
 
 			void setMaxRecursion(uint16_t recursion = 1) {
 				m_maxRecursion = recursion;
@@ -556,7 +554,7 @@ namespace LavaCake {
 				}
 
 
-				// texel buffer descriptors
+				// acceleration structure descriptors
 				for (int i = 0; i < m_AS.size(); i++) {
 					write_descriptors.push_back({
 						VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType

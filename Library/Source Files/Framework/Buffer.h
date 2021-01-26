@@ -6,6 +6,8 @@
 namespace LavaCake {
   namespace Framework {
     
+		
+
     class Buffer {
     public :
 
@@ -150,7 +152,14 @@ namespace LavaCake {
 				vkUnmapMemory(logical, *memory_object);
 			}
 
-
+			uint64_t getBufferDeviceAddress()
+			{
+				Framework::Device* d = Framework::Device::getDevice();
+				VkBufferDeviceAddressInfoKHR bufferDeviceAI{};
+				bufferDeviceAI.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+				bufferDeviceAI.buffer = *m_buffer;
+				return vkGetBufferDeviceAddressKHR(d->getLogicalDevice(), &bufferDeviceAI);
+			}
 
 
 

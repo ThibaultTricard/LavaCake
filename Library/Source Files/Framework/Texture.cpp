@@ -316,6 +316,10 @@ namespace LavaCake {
 			if (!LavaCake::Core::CreateImageView(logical, *m_image, view, m_format, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageView)) {
 				ErrorCheck::setError("Can't create Image View");
 			}
+
+
+			
+
 		}
 
 		VkImageLayout StorageImage::getLayout() {
