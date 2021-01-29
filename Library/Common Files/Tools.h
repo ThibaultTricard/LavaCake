@@ -227,7 +227,12 @@ namespace LavaCake {
   
   mat4 operator* (mat4 const& left,
     mat4 const& right);
-} // namespace VulkanCookbook
+
+
+  mat4 inverse(mat4& m);
+
+  mat4 inverse(const mat4& m);
+} 
 
 
 

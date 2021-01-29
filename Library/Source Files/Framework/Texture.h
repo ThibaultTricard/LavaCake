@@ -7,6 +7,7 @@
 #include "ErrorCheck.h"
 #include "SwapChain.h"
 #include "CommandBuffer.h"
+#include "Image.h"
 
 namespace LavaCake {
 	namespace Framework {
@@ -64,11 +65,11 @@ namespace LavaCake {
 
 
 			uint32_t width() {
-				return m_width;
+				return m_image->width();
 			}
 
 			uint32_t height() {
-				return m_height;
+				return m_image->height();
 			}
 
 			~TextureBuffer() {
@@ -76,25 +77,22 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 
 
-				LavaCake::Core::DestroyImage(logical, *m_image);
-				LavaCake::Core::DestroyImageView(logical, *m_imageView);
 				LavaCake::Core::DestroySampler(logical, *m_sampler);
-				LavaCake::Core::FreeMemoryObject(logical, *m_imageMemory);
+
+				delete(m_image);
 			}
 
 		protected :
 
 			TextureBuffer() {};
 
-			uint32_t																	m_width = 0;
-			uint32_t																	m_height = 0;
+			Image*																		m_image;
+
 			uint32_t																	m_nbChannel = 0;
 			std::vector<unsigned char>*								m_data = new std::vector<unsigned char>();
 
 
-			VkDestroyer(VkImage)											m_image;
-			VkDestroyer(VkDeviceMemory)								m_imageMemory;
-			VkDestroyer(VkImageView)									m_imageView;
+			
 			VkDestroyer(VkSampler)										m_sampler;
 
 
@@ -259,25 +257,14 @@ namespace LavaCake {
 			VkImage getImage();
 
 			~Attachment() {
-				Device* d = Device::getDevice();
-				VkDevice logical = d->getLogicalDevice();
-
-
-				LavaCake::Core::DestroyImage(logical, *m_image);
-				LavaCake::Core::DestroyImageView(logical, *m_imageView);
-				LavaCake::Core::FreeMemoryObject(logical, *m_imageMemory);
+				delete(m_image);
 			}
 
 		private : 
 
-			int																	m_width = 0;
-			int																	m_height = 0;
-			VkFormat														m_format;
+			Image*															m_image;
 			attachmentType											m_type;
 
-			VkDestroyer(VkImage)                m_image;
-			VkDestroyer(VkDeviceMemory)         m_imageMemory;
-			VkDestroyer(VkImageView)            m_imageView;
 		};
 
 
@@ -286,33 +273,20 @@ namespace LavaCake {
 
 			StorageImage(uint32_t width, uint32_t height, uint32_t depth, VkFormat f);
 
-			void allocate();
+			void allocate(Queue* queue, CommandBuffer& cmdBuff);
 
 			virtual VkImageLayout getLayout();
 
 			VkImageView getImageView();
 
 			~StorageImage() {
-				Device* d = Device::getDevice();
-				VkDevice logical = d->getLogicalDevice();
-
-
-				LavaCake::Core::DestroyImage(logical, *m_image);
-				LavaCake::Core::DestroyImageView(logical, *m_imageView);
-				LavaCake::Core::FreeMemoryObject(logical, *m_imageMemory);
+				delete(m_image);
 			}
 
 
 		private:
 
-			uint32_t														m_width  = 0;
-			uint32_t														m_height = 0;
-			uint32_t														m_depth  = 0;
-			VkFormat														m_format;
-
-			VkDestroyer(VkImage)                m_image;
-			VkDestroyer(VkDeviceMemory)         m_imageMemory;
-			VkDestroyer(VkImageView)            m_imageView;
+			Image* m_image;
 
 		};
 

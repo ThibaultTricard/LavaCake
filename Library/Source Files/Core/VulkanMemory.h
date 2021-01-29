@@ -71,24 +71,6 @@ namespace LavaCake {
 			VkCommandBuffer            command_buffer,
 			std::vector<VkSemaphore>   signal_semaphores);
 
-		bool UseStagingBufferToUpdateImageWithDeviceLocalMemoryBound(VkPhysicalDevice           physical_device,
-			VkDevice                   logical_device,
-			VkDeviceSize               data_size,
-			void                     * data,
-			VkImage                    destination_image,
-			VkImageSubresourceLayers   destination_image_subresource,
-			VkOffset3D                 destination_image_offset,
-			VkExtent3D                 destination_image_size,
-			VkImageLayout              destination_image_current_layout,
-			VkImageLayout              destination_image_new_layout,
-			VkAccessFlags              destination_image_current_access,
-			VkAccessFlags              destination_image_new_access,
-			VkImageAspectFlags         destination_image_aspect,
-			VkPipelineStageFlags       destination_image_generating_stages,
-			VkPipelineStageFlags       destination_image_consuming_stages,
-			VkQueue                    queue,
-			VkCommandBuffer            command_buffer,
-			std::vector<VkSemaphore>   signal_semaphores);
 
 		void FreeMemoryObject(VkDevice         logical_device,
 			VkDeviceMemory & memory_object);

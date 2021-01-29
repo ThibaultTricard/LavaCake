@@ -13,15 +13,14 @@ namespace LavaCake {
 			if (!Helpers::LoadTextureDataFromFile(filename, nbChannel, *m_data, &width, &height)) {
 				ErrorCheck::setError("Could not load texture file");
 			}
-			m_width = width;
-			m_height = height;
-			m_format = f;
+			m_image = new Image(width, height, 1, f, VK_IMAGE_ASPECT_COLOR_BIT);
+		
+			m_nbChannel = nbChannel;
 		};
 
 		TextureBuffer::TextureBuffer(std::vector<unsigned char>* data, int width, int height, int nbChannel, VkFormat f) {
 			m_data = data;
-			m_width = width;
-			m_height = height;
+			m_image = new Image(width, height, 1, f, VK_IMAGE_ASPECT_COLOR_BIT);
 			m_nbChannel = nbChannel;
 			m_format = f;
 		};
@@ -32,17 +31,46 @@ namespace LavaCake {
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 
+
 			InitVkDestroyer(logical, m_sampler);
-			InitVkDestroyer(logical, m_image);
-			InitVkDestroyer(logical, m_imageMemory);
-			InitVkDestroyer(logical, m_imageView);
-			if (!LavaCake::Core::CreateCombinedImageSampler(physical, logical, VK_IMAGE_TYPE_2D, m_format, { (uint32_t)m_width, (uint32_t)m_height, 1 },
-				1, 1, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, false, VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT, VK_FILTER_LINEAR,
-				VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT,
-				VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
-				false, *m_sampler, *m_image, *m_imageMemory, *m_imageView)) {
-				ErrorCheck::setError("Can't create an image sampler for this TextureBuffer");
+			if (!LavaCake::Core::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, *m_sampler)) {
+				//return false;
 			}
+
+			m_image->allocate(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+			
+
+			VkDestroyer(VkBuffer) staging_buffer;
+			VkBufferCreateInfo buffer_create_info = {
+				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,						// VkStructureType        sType
+				nullptr,																				// const void           * pNext
+				0,																							// VkBufferCreateFlags    flags
+				static_cast<VkDeviceSize>(m_data->size()),      // VkDeviceSize           size
+				VK_BUFFER_USAGE_TRANSFER_SRC_BIT,								// VkBufferUsageFlags     usage
+				VK_SHARING_MODE_EXCLUSIVE,											// VkSharingMode          sharingMode
+				0,																							// uint32_t               queueFamilyIndexCount
+				nullptr																					// const uint32_t       * pQueueFamilyIndices
+			};
+
+			VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &*staging_buffer);
+			VkDestroyer(VkDeviceMemory) memory_object;
+
+			InitVkDestroyer(logical, memory_object);
+
+			if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
+				//return false;
+			}
+
+			if (!LavaCake::Core::MapUpdateAndUnmapHostVisibleMemory(logical, *memory_object, 0, static_cast<VkDeviceSize>(m_data->size()), m_data, true, nullptr)) {
+				//return false;
+			}
+
+			commandBuffer.beginRecord();
+
+			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+
+			m_image->setLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange, VK_PIPELINE_STAGE_TRANSFER_BIT);
+
 
 			VkImageSubresourceLayers image_subresource_layer = {
 				VK_IMAGE_ASPECT_COLOR_BIT,    // VkImageAspectFlags     aspectMask
@@ -50,12 +78,33 @@ namespace LavaCake {
 				0,                            // uint32_t               baseArrayLayer
 				1                             // uint32_t               layerCount
 			};
-			if (!LavaCake::Core::UseStagingBufferToUpdateImageWithDeviceLocalMemoryBound(physical, logical, static_cast<VkDeviceSize>(m_data->size()),
-				&(*m_data)[0], *m_image, image_subresource_layer, { 0, 0, 0 }, { (uint32_t)m_width, (uint32_t)m_height, 1 }, VK_IMAGE_LAYOUT_UNDEFINED,
-				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-				stageFlagBit, queue->getHandle(), commandBuffer.getHandle(), {})) {
-				ErrorCheck::setError("Can't send the TextureBuffer data to the GPU");
+
+			LavaCake::Core::CopyDataFromBufferToImage(commandBuffer.getHandle(), *staging_buffer, m_image->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+				{
+					{
+						0,																																								// VkDeviceSize               bufferOffset
+						0,																																								// uint32_t                   bufferRowLength
+						0,																																								// uint32_t                   bufferImageHeight
+						image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
+						{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
+						{ (uint32_t)m_image->width(), (uint32_t)m_image->height(), 1 },                   // VkExtent3D                 imageExtent
+					} });
+
+
+			m_image->setLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
+
+			
+			commandBuffer.endRecord();
+			
+
+			if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { commandBuffer.getHandle() }, {}, commandBuffer.getFence())) {
+				//return false;
 			}
+
+
+			commandBuffer.wait(UINT32_MAX);
+			commandBuffer.resetFence();
+
 		}
 
 
@@ -64,7 +113,7 @@ namespace LavaCake {
 		}
 
 		VkImageView TextureBuffer::getImageView() {
-			return *m_imageView;
+			return m_image->getImageView();
 		}
 
 		VkImageLayout TextureBuffer::getLayout() {
@@ -84,10 +133,9 @@ namespace LavaCake {
 
 		TextureBuffer3D::TextureBuffer3D(std::vector<unsigned char>* data, int width, int height, int depth, int nbChannel, VkFormat f) {
 			m_data = data;
-			m_width = width;
-			m_height = height;
+			m_image = new Image(width, height, depth, f, VK_IMAGE_ASPECT_COLOR_BIT);
+
 			m_nbChannel = nbChannel;
-			m_format = f;
 		};
 
 
@@ -97,16 +145,45 @@ namespace LavaCake {
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 
 			InitVkDestroyer(logical, m_sampler);
-			InitVkDestroyer(logical, m_image);
-			InitVkDestroyer(logical, m_imageMemory);
-			InitVkDestroyer(logical, m_imageView);
-			if (!LavaCake::Core::CreateCombinedImageSampler(physical, logical, VK_IMAGE_TYPE_2D, m_format, { m_width, m_height, m_depth },
-				1, 1, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, false, VK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_ASPECT_COLOR_BIT, VK_FILTER_LINEAR,
-				VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT,
-				VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
-				false, *m_sampler, *m_image, *m_imageMemory, *m_imageView)) {
-				ErrorCheck::setError("Can't create an image sampler for this TextureBuffer");
+
+			if (!LavaCake::Core::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, *m_sampler)) {
+				//return false;
 			}
+
+			m_image->allocate(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+
+			
+			VkDestroyer(VkBuffer) staging_buffer;
+			VkBufferCreateInfo buffer_create_info = {
+				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,						// VkStructureType        sType
+				nullptr,																				// const void           * pNext
+				0,																							// VkBufferCreateFlags    flags
+				static_cast<VkDeviceSize>(m_data->size()),      // VkDeviceSize           size
+				VK_BUFFER_USAGE_TRANSFER_SRC_BIT,								// VkBufferUsageFlags     usage
+				VK_SHARING_MODE_EXCLUSIVE,											// VkSharingMode          sharingMode
+				0,																							// uint32_t               queueFamilyIndexCount
+				nullptr																					// const uint32_t       * pQueueFamilyIndices
+			};
+
+			VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &*staging_buffer);
+			VkDestroyer(VkDeviceMemory) memory_object;
+
+			InitVkDestroyer(logical, memory_object);
+
+			if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
+				//return false;
+			}
+
+			if (!LavaCake::Core::MapUpdateAndUnmapHostVisibleMemory(logical, *memory_object, 0, static_cast<VkDeviceSize>(m_data->size()), m_data, true, nullptr)) {
+				//return false;
+			}
+
+			cmdBuff.beginRecord();
+
+			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange, VK_PIPELINE_STAGE_TRANSFER_BIT);
+
 
 			VkImageSubresourceLayers image_subresource_layer = {
 				VK_IMAGE_ASPECT_COLOR_BIT,    // VkImageAspectFlags     aspectMask
@@ -114,12 +191,33 @@ namespace LavaCake {
 				0,                            // uint32_t               baseArrayLayer
 				1                             // uint32_t               layerCount
 			};
-			if (!LavaCake::Core::UseStagingBufferToUpdateImageWithDeviceLocalMemoryBound(physical, logical, static_cast<VkDeviceSize>(m_data->size()),
-				&(*m_data)[0], *m_image, image_subresource_layer, { 0, 0, 0 }, { m_width, m_height, m_depth }, VK_IMAGE_LAYOUT_UNDEFINED,
-				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-				stageFlagBit, queue->getHandle(), cmdBuff.getHandle(), {})) {
+
+			LavaCake::Core::CopyDataFromBufferToImage(cmdBuff.getHandle(), *staging_buffer, m_image->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+				{
+					{
+						0,																																								// VkDeviceSize               bufferOffset
+						0,																																								// uint32_t                   bufferRowLength
+						0,																																								// uint32_t                   bufferImageHeight
+						image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
+						{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
+						{m_image->width(), m_image->height(), m_image->depth() },     // VkExtent3D                 imageExtent
+					} });
+
+
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
+
+
+			cmdBuff.endRecord();
+
+
+			if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
 				ErrorCheck::setError("Can't send the TextureBuffer data to the GPU");
 			}
+
+
+			cmdBuff.wait(UINT32_MAX);
+			cmdBuff.resetFence();
+
 		}
 
 
@@ -171,8 +269,9 @@ namespace LavaCake {
 				ErrorCheck::setError("Could not locate texture file");
 			}
 
-			m_width = width;
-			m_height = height;
+			m_image = new Image(width, height, 1, f, VK_IMAGE_ASPECT_COLOR_BIT, true);
+
+			
 		};
 
 		void CubeMap::allocate(Queue* queue, CommandBuffer& cmdBuff, VkPipelineStageFlagBits stageFlagBit) {
@@ -182,17 +281,16 @@ namespace LavaCake {
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 
 
-			InitVkDestroyer(logical, m_image);
-			InitVkDestroyer(logical, m_imageMemory);
-			InitVkDestroyer(logical, m_imageView);
+			
 			InitVkDestroyer(logical, m_sampler);
-			if (!LavaCake::Core::CreateCombinedImageSampler(physical, logical, VK_IMAGE_TYPE_2D, m_format, { uint32_t(m_width), uint32_t(m_height), 1 }, 1, 1,
-				VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, true, VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_ASPECT_COLOR_BIT, VK_FILTER_LINEAR,
-				VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
-				false, *m_sampler, *m_image, *m_imageMemory, *m_imageView)) {
-				ErrorCheck::setError("Can't create an image sampler for this CubeMap");
+
+			if (!LavaCake::Core::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, *m_sampler)) {
+				//return false;
 			}
+
+			m_image->allocate(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+
+			
 
 
 			for (size_t i = 0; i < m_images.size(); ++i) {
@@ -201,16 +299,71 @@ namespace LavaCake {
 				if (!Helpers::LoadTextureDataFromFile((m_path + m_images[i]).c_str(), m_nbChannel, cubemap_image_data, nullptr, nullptr, nullptr, &image_data_size)) {
 					ErrorCheck::setError("Could not load all texture file");
 				}
-				VkImageSubresourceLayers image_subresource = {
+
+				VkDestroyer(VkBuffer) staging_buffer;
+				VkBufferCreateInfo buffer_create_info = {
+					VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,						// VkStructureType        sType
+					nullptr,																				// const void           * pNext
+					0,																							// VkBufferCreateFlags    flags
+					static_cast<VkDeviceSize>(m_data->size()),      // VkDeviceSize           size
+					VK_BUFFER_USAGE_TRANSFER_SRC_BIT,								// VkBufferUsageFlags     usage
+					VK_SHARING_MODE_EXCLUSIVE,											// VkSharingMode          sharingMode
+					0,																							// uint32_t               queueFamilyIndexCount
+					nullptr																					// const uint32_t       * pQueueFamilyIndices
+				};
+
+				VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &*staging_buffer);
+				VkDestroyer(VkDeviceMemory) memory_object;
+
+				InitVkDestroyer(logical, memory_object);
+
+				if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
+					//return false;
+				}
+
+				if (!LavaCake::Core::MapUpdateAndUnmapHostVisibleMemory(logical, *memory_object, 0, static_cast<VkDeviceSize>(m_data->size()), m_data, true, nullptr)) {
+					//return false;
+				}
+
+				cmdBuff.beginRecord();
+
+				VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1,static_cast<uint32_t>(i), 1 };
+
+				m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange, VK_PIPELINE_STAGE_TRANSFER_BIT);
+
+
+				VkImageSubresourceLayers image_subresource_layer = {
 					VK_IMAGE_ASPECT_COLOR_BIT,    // VkImageAspectFlags     aspectMask
 					0,                            // uint32_t               mipLevel
-					static_cast<uint32_t>(i),     // uint32_t               baseArrayLayer
+					0,                            // uint32_t               baseArrayLayer
 					1                             // uint32_t               layerCount
 				};
-				LavaCake::Core::UseStagingBufferToUpdateImageWithDeviceLocalMemoryBound(physical, logical, image_data_size, &cubemap_image_data[0],
-					*m_image, image_subresource, { 0, 0, 0 }, { uint32_t(m_width), uint32_t(m_height), 1 }, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-					0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, stageFlagBit,
-					queue->getHandle(), cmdBuff.getHandle(), {});
+
+				LavaCake::Core::CopyDataFromBufferToImage(cmdBuff.getHandle(), *staging_buffer, m_image->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					{
+						{
+							0,																																								// VkDeviceSize               bufferOffset
+							0,																																								// uint32_t                   bufferRowLength
+							0,																																								// uint32_t                   bufferImageHeight
+							image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
+							{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
+							{m_image->width(), m_image->height(), m_image->depth() },     // VkExtent3D                 imageExtent
+						} });
+
+
+				m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
+
+
+				cmdBuff.endRecord();
+
+
+				if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
+					ErrorCheck::setError("Can't send the TextureBuffer data to the GPU");
+				}
+
+
+				cmdBuff.wait(UINT32_MAX);
+				cmdBuff.resetFence();
 			}
 		}
 
@@ -221,48 +374,43 @@ namespace LavaCake {
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		Attachment::Attachment(int width, int height, VkFormat f, attachmentType type) {
-			m_width = width;
-			m_height = height;
-			m_format = f;
+			
 			m_type = type;
+			
+			VkImageAspectFlagBits aspect;
+			if (m_type == COLOR_ATTACHMENT) {
+				aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+			}
+			else if (m_type == DEPTH_ATTACHMENT) {
+				aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
+			}
+			else {
+				aspect = VK_IMAGE_ASPECT_STENCIL_BIT;
+			}
+			m_image = new Image(width, height, 1, f, aspect);
 		}
 
 		void Attachment::allocate() {
 			Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 
-			InitVkDestroyer(logical, m_image);
-			InitVkDestroyer(logical, m_imageMemory);
-			InitVkDestroyer(logical, m_imageView);
+
+
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 
 			VkImageUsageFlagBits usage;
-			VkImageAspectFlagBits aspect;
 			if (m_type == COLOR_ATTACHMENT) {
 				usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-				aspect = VK_IMAGE_ASPECT_COLOR_BIT;
 			}
 			else if(m_type == DEPTH_ATTACHMENT) {
 				usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-				aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
 			}
 			else {
 				usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-				aspect = VK_IMAGE_ASPECT_STENCIL_BIT;
 			}
 
-			if (!LavaCake::Core::CreateImage(logical, VK_IMAGE_TYPE_2D, m_format, { (uint32_t)m_width,
-				(uint32_t)m_height, 1 }, 1, 1, VK_SAMPLE_COUNT_1_BIT, usage | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, false, *m_image)) {
-				ErrorCheck::setError("Can't create an Image for this Attachment");
-			}
+			m_image->allocate((VkImageUsageFlagBits)(usage | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT));
 
-			if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, *m_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_imageMemory)) {
-				ErrorCheck::setError("Can't create a Memory object for this Attachment");
-			}
-
-			if (!LavaCake::Core::CreateImageView(logical, *m_image, VK_IMAGE_VIEW_TYPE_2D, m_format, aspect, *m_imageView)) {
-				ErrorCheck::setError("Can't create an Image view for this Attachment");
-			}
 
 		}
 
@@ -271,63 +419,49 @@ namespace LavaCake {
 		}
 
 		VkImageView Attachment::getImageView() {
-			return *m_imageView;
+			return m_image->getImageView();
 		}
 
 
 		VkImage Attachment::getImage() {
-			return *m_image;
+			return m_image->getImage();
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//																																			Storage Image																																			//
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		StorageImage::StorageImage(uint32_t width, uint32_t height, uint32_t depth, VkFormat f) {
-			m_width = width;
-			m_height = height;
-			m_depth = depth;
-			m_format = f;
+			m_image = new Image(width, height, depth, f, VK_IMAGE_ASPECT_COLOR_BIT);
 		}
 
-		void StorageImage::allocate() {
-			Framework::Device* d = LavaCake::Framework::Device::getDevice();
-			VkDevice logical = d->getLogicalDevice();
+		void StorageImage::allocate(Queue* queue, CommandBuffer& cmdBuff) {
 
-			InitVkDestroyer(logical, m_image);
-			InitVkDestroyer(logical, m_imageMemory);
-			InitVkDestroyer(logical, m_imageView);
-			VkPhysicalDevice physical = d->getPhysicalDevice();
 
-			
+			m_image->allocate((VkImageUsageFlagBits)(VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT));
 
-			VkImageType type = VK_IMAGE_TYPE_1D;
-			VkImageViewType view = VK_IMAGE_VIEW_TYPE_1D;
-			if (m_height > 1) { type = VK_IMAGE_TYPE_2D; view = VK_IMAGE_VIEW_TYPE_2D; }
-			if (m_depth > 1) { type = VK_IMAGE_TYPE_3D; view = VK_IMAGE_VIEW_TYPE_3D; }
-			
-			if (!LavaCake::Core::CreateImage(logical, type, m_format, { m_width, m_height, m_depth }, 1, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, false, *m_image)) {
-				ErrorCheck::setError("Can't create Image");
-			}
+			cmdBuff.beginRecord();
 
-			if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, *m_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_imageMemory)) {
-				ErrorCheck::setError("Can't allocate Image memory");
-			}
+			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_GENERAL, subresourceRange, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
 
-			if (!LavaCake::Core::CreateImageView(logical, *m_image, view, m_format, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageView)) {
-				ErrorCheck::setError("Can't create Image View");
-			}
-
+			cmdBuff.endRecord();
 
 			
 
+			if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
+				//raiserror
+			}
+
+			cmdBuff.wait(UINT32_MAX);
+			cmdBuff.resetFence();
 		}
 
 		VkImageLayout StorageImage::getLayout() {
-			return VK_IMAGE_LAYOUT_GENERAL;
+			return m_image->getLayout();
 		}
 
 		VkImageView StorageImage::getImageView() {
-			return *m_imageView;
+			return m_image->getImageView();
 		}
 
 
