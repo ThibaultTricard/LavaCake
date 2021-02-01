@@ -1,4 +1,6 @@
 #include "UniformBuffer.h"
+
+
 namespace LavaCake {
 	namespace Framework {
 
@@ -14,35 +16,17 @@ namespace LavaCake {
 				m_bufferSize += s;
 			}
 
-			InitVkDestroyer(logical, m_stagingBuffer);
-			if (!LavaCake::Core::CreateBuffer(logical, m_bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, *m_stagingBuffer)) {
-				ErrorCheck::setError("Can't create staging buffer");
-			}
-			InitVkDestroyer(logical, m_stagingBufferMemory);
-			if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *m_stagingBuffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *m_stagingBufferMemory)) {
-				ErrorCheck::setError("Can't allocate staging buffer memory");
-			}
+			m_stagingBuffer.allocate(m_bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
-			InitVkDestroyer(logical, m_buffer);
-			InitVkDestroyer(logical, m_bufferMemory);
-			if (!LavaCake::Core::CreateUniformBuffer(physical, logical, m_bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-				*m_buffer, *m_bufferMemory)) {
-				ErrorCheck::setError("Can't create uniform buffer");
-			}
+			m_buffer.allocate(m_bufferSize, (VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
 			copyToStageMemory(true);
 		}
 
-		void UniformBuffer::update(VkCommandBuffer& commandBuffer, bool all) {
+		void UniformBuffer::update(CommandBuffer& commandBuffer, bool all) {
 			copyToStageMemory(all);
 
-			LavaCake::Core::BufferTransition pre_transfer_transition = {
-				*m_buffer,                      // VkBuffer         Buffer
-				VK_ACCESS_UNIFORM_READ_BIT,   // VkAccessFlags    CurrentAccess
-				VK_ACCESS_TRANSFER_WRITE_BIT, // VkAccessFlags    NewAccess
-				VK_QUEUE_FAMILY_IGNORED,      // uint32_t         CurrentQueueFamily
-				VK_QUEUE_FAMILY_IGNORED       // uint32_t         NewQueueFamily
-			};
-			LavaCake::Core::SetBufferMemoryBarrier(commandBuffer, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, { pre_transfer_transition });
+			m_buffer.setAccess(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
 
 			std::vector<VkBufferCopy> regions = {
 				{
@@ -51,20 +35,16 @@ namespace LavaCake {
 					m_bufferSize                // VkDeviceSize     size
 				}
 			};
-			LavaCake::Core::CopyDataBetweenBuffers(commandBuffer, *m_stagingBuffer, *m_buffer, regions);
 
-			LavaCake::Core::BufferTransition post_transfer_transition = {
-				*m_buffer,                      // VkBuffer         Buffer
-				VK_ACCESS_TRANSFER_WRITE_BIT, // VkAccessFlags    CurrentAccess
-				VK_ACCESS_UNIFORM_READ_BIT,   // VkAccessFlags    NewAccess
-				VK_QUEUE_FAMILY_IGNORED,      // uint32_t         CurrentQueueFamily
-				VK_QUEUE_FAMILY_IGNORED       // uint32_t         NewQueueFamily
-			};
-			LavaCake::Core::SetBufferMemoryBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, { post_transfer_transition });
+			m_stagingBuffer.copyToBuffer(commandBuffer, m_buffer, regions);
+
+
+			m_buffer.setAccess(commandBuffer, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT);
+
 		}
 
 		VkBuffer& UniformBuffer::getHandle() {
-			return *m_buffer;
+			return m_buffer.getHandle();
 		};
 
 		void UniformBuffer::copyToStageMemory(bool all) {
@@ -79,9 +59,9 @@ namespace LavaCake {
 					variable.push_back(m_variables[i][j]);
 				}
 			}
-			if (!LavaCake::Core::MapUpdateAndUnmapHostVisibleMemory(logical, *m_stagingBufferMemory, 0, size, &variable[0], true, nullptr)) {
-				ErrorCheck::setError("Can't map host visible memomry");
-			}
+
+
+			m_stagingBuffer.write(variable);
 		}
 
 		void UniformBuffer::addArray(std::string name, std::vector<int>& value) {

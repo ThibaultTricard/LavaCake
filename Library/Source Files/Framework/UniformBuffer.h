@@ -7,7 +7,8 @@
 #include "ErrorCheck.h"
 #include "Device.h"
 #include "VulkanDestroyer.h"
-
+#include "Buffer.h"
+#include "UniformBuffer.h"
 
 namespace LavaCake {
   namespace Framework{
@@ -95,18 +96,14 @@ namespace LavaCake {
 
 			void end();
 
-			void update(VkCommandBuffer& commandBuffer, bool all = true);
+			void update(CommandBuffer& commandBuffer, bool all = true);
 
 			VkBuffer& getHandle();
 
       ~UniformBuffer() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        LavaCake::Core::DestroyBuffer(logical, *m_buffer);
-        LavaCake::Core::FreeMemoryObject(logical, *m_bufferMemory);
 
-        LavaCake::Core::DestroyBuffer(logical, *m_stagingBuffer);
-        LavaCake::Core::FreeMemoryObject(logical, *m_stagingBufferMemory);
       }
 
     private :
@@ -118,11 +115,8 @@ namespace LavaCake {
 			void setArray(std::string name, std::vector<int>& value);
 
 
-      VkDestroyer(VkBuffer)                                     m_stagingBuffer;
-      VkDestroyer(VkDeviceMemory)                               m_stagingBufferMemory;
-
-      VkDestroyer(VkBuffer)                                     m_buffer;
-      VkDestroyer(VkDeviceMemory)                               m_bufferMemory;
+      Buffer                                                    m_buffer;
+      Buffer                                                    m_stagingBuffer;
 
       VkDeviceSize                                              m_bufferSize = 0;
       std::map<std::string, int>                                m_variableNames;

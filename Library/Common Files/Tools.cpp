@@ -143,7 +143,7 @@ namespace LavaCake {
 
 
   mat4 inverse(mat4& m) {
-    double inv[16], det;
+    float inv[16], det;
     int i;
 
     mat4 invM;
@@ -275,7 +275,7 @@ namespace LavaCake {
   }
 
   mat4 inverse(const mat4& m) {
-    double inv[16], det;
+    float inv[16], det;
     int i;
 
     mat4 invM;

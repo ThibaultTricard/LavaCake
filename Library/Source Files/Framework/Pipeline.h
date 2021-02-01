@@ -189,18 +189,6 @@ namespace LavaCake {
 				int32_t                                              base_pipeline_index,
 				VkGraphicsPipelineCreateInfo& graphics_pipeline_create_info);
 
-			bool CreatePipelineCacheObject(VkDevice                           logical_device,
-				std::vector<unsigned char> const& cache_data,
-				VkPipelineCache& pipeline_cache);
-
-			bool RetrieveDataFromPipelineCache(VkDevice                     logical_device,
-				VkPipelineCache              pipeline_cache,
-				std::vector<unsigned char>& pipeline_cache_data);
-
-			bool MergeMultiplePipelineCacheObjects(VkDevice                             logical_device,
-				VkPipelineCache                      target_pipeline_cache,
-				std::vector<VkPipelineCache> const& source_pipeline_caches);
-
 			bool CreateGraphicsPipelines(VkDevice                                             logical_device,
 				std::vector<VkGraphicsPipelineCreateInfo> const& graphics_pipeline_create_infos,
 				VkPipelineCache                                      pipeline_cache,
@@ -214,16 +202,6 @@ namespace LavaCake {
 				VkPipelineCache                         pipeline_cache,
 				VkPipeline& compute_pipeline);
 
-			void BindPipelineObject(VkCommandBuffer     command_buffer,
-				VkPipelineBindPoint pipeline_type,
-				VkPipeline          pipeline);
-
-
-			void DispatchComputeWork(
-				VkCommandBuffer command_buffer,
-				uint32_t        x_size,
-				uint32_t        y_size,
-				uint32_t        z_size);
 
 			void DestroyPipeline(VkDevice     logical_device,
 				VkPipeline& pipeline);
@@ -234,8 +212,6 @@ namespace LavaCake {
 			void DestroyPipelineLayout(VkDevice           logical_device,
 				VkPipelineLayout& pipeline_layout);
 
-
-			
 
 
 			VkDestroyer(VkPipeline)																					m_pipeline;

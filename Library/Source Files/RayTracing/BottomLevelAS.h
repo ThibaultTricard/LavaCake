@@ -1,5 +1,6 @@
 #pragma once
 #include "Framework/VertexBuffer.h"
+#include "Framework/ErrorCheck.h"
 
 namespace LavaCake {
 	namespace RayTracing {
@@ -66,6 +67,8 @@ namespace LavaCake {
 					numTriangles += m_geometry[i].geometry.triangles.maxVertex;
 				}
 
+
+
 				VkAccelerationStructureBuildSizesInfoKHR accelerationStructureBuildSizesInfo{};
 				accelerationStructureBuildSizesInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
 				vkGetAccelerationStructureBuildSizesKHR(
@@ -75,7 +78,7 @@ namespace LavaCake {
 					&numTriangles,
 					&accelerationStructureBuildSizesInfo);
 
-				m_ASBuffer.allocate(queue, cmdBuff, accelerationStructureBuildSizesInfo.accelerationStructureSize, VkBufferUsageFlagBits(VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT));
+				m_ASBuffer.allocate(accelerationStructureBuildSizesInfo.accelerationStructureSize, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 
 				VkAccelerationStructureCreateInfoKHR accelerationStructureCreateInfo{};
@@ -87,7 +90,7 @@ namespace LavaCake {
 
 
 				Framework::Buffer scratchBuffer;
-				scratchBuffer.allocate(queue, cmdBuff, accelerationStructureBuildSizesInfo.buildScratchSize, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT));
+				scratchBuffer.allocate(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 				VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};
 				scratchBufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
@@ -142,7 +145,7 @@ namespace LavaCake {
 
 
 					if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
-						//todo : use errocheck
+						Framework::ErrorCheck::setError("failled to build bottom acceleration structure");
 					}
 
 					cmdBuff.wait(MAXINT32);

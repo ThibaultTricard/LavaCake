@@ -97,7 +97,8 @@ namespace LavaCake {
 				for (size_t i = 0; i < m_images.size(); i++) {
 					LavaCake::Core::DestroyImage(logical, m_images[i]);
 				}
-				LavaCake::Core::DestroySwapchain(logical, *m_handle);
+				vkDestroySwapchainKHR(logical, *m_handle, nullptr);
+				*m_handle = VK_NULL_HANDLE;
 
 			};
 

@@ -78,15 +78,6 @@ namespace LavaCake {
 			VkSwapchainKHR       & swapchain,
 			std::vector<VkImage> & swapchain_images);
 
-		bool AcquireSwapchainImage(VkDevice         logical_device,
-			VkSwapchainKHR   swapchain,
-			VkSemaphore      semaphore,
-			VkFence          fence,
-			uint32_t       & image_index);
-
-		void DestroySwapchain(VkDevice         logical_device,
-			VkSwapchainKHR & swapchain);
-
 	}
 }
 

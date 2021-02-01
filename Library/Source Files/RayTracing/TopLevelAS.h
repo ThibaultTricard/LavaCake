@@ -37,9 +37,7 @@ namespace LavaCake {
           instancesBuffer.allocate(queue,
             cmdBuff,
             instance,
-            VkBufferUsageFlagBits(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR),
-            VK_FORMAT_R32_SFLOAT,
-            VK_ACCESS_TRANSFER_WRITE_BIT,
+            VkBufferUsageFlagBits(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR ),
             VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
 
           instancesBuffers.push_back(instancesBuffer);
@@ -84,7 +82,7 @@ namespace LavaCake {
 
         // Create a small scratch buffer used during build of the top level acceleration structure
         Framework::Buffer scratchBuffer;
-        scratchBuffer.allocate(queue, cmdBuff, accelerationStructureBuildSizesInfo.buildScratchSize, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT));
+        scratchBuffer.allocate(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         
         VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};
         scratchBufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
@@ -161,7 +159,7 @@ namespace LavaCake {
         VkDevice logical = d->getLogicalDevice();
 
         m_ASBuffer = new Framework::Buffer();
-        m_ASBuffer->allocate(queue, cmdBuff, buildSizeInfo.accelerationStructureSize, VkBufferUsageFlagBits(VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT));
+        m_ASBuffer->allocate(buildSizeInfo.accelerationStructureSize, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         // Buffer and memory
        
         

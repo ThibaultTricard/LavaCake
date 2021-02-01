@@ -175,9 +175,6 @@ namespace LavaCake {
 				m_shaderGroups[m_shaderGroups.size() - 1].intersectionShader = shaderIndex;
 			}
 
-
-			
-
 			void endHitGroup() {
 				if (!m_isHitGroupOpen)
 				{
@@ -189,19 +186,16 @@ namespace LavaCake {
 				m_currentGroupIndex++;
 			}
 
-
 			void compile(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff) {
 
 				Framework::Device* d = Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-
 
 				generateDescriptorLayout();
 				InitVkDestroyer(logical, m_pipelineLayout);
 				if (!CreatePipelineLayout(logical, { *m_descriptorSetLayout }, {}, *m_pipelineLayout)) {
 					Framework::ErrorCheck::setError("Can't create compute pipeline layout");
 				}
-
 
 				VkRayTracingPipelineCreateInfoKHR rayPipelineInfo{};
 				rayPipelineInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;

@@ -34,11 +34,6 @@ namespace LavaCake {
 			VkSemaphore           Semaphore;
 			VkPipelineStageFlags  WaitingStage;
 		};
-		bool CreateSemaphore(VkDevice      logical_device,
-			VkSemaphore & semaphore);
-
-		void DestroySemaphore(VkDevice      logical_device,
-			VkSemaphore & semaphore);
 	}
 }
 

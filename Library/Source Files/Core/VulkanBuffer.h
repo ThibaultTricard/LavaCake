@@ -59,37 +59,16 @@ namespace LavaCake {
 			uint32_t        NewQueueFamily;
 		};
 
-		bool CreateBuffer(VkDevice             logical_device,
-			VkDeviceSize         size,
-			VkBufferUsageFlags   usage,
-			VkBuffer           & buffer);
-
-		bool AllocateAndBindMemoryObjectToBuffer(VkPhysicalDevice           physical_device,
-			VkDevice                   logical_device,
-			VkBuffer                   buffer,
-			VkMemoryPropertyFlagBits   memory_properties,
-			VkDeviceMemory           & memory_object,
-			uint32_t									memorytype = 0);
-
+		
 		void SetBufferMemoryBarrier(VkCommandBuffer               command_buffer,
 			VkPipelineStageFlags          generating_stages,
 			VkPipelineStageFlags          consuming_stages,
 			std::vector<BufferTransition> buffer_transitions);
 
-		bool CreateBufferView(VkDevice       logical_device,
-			VkBuffer       buffer,
-			VkFormat       format,
-			VkDeviceSize   memory_offset,
-			VkDeviceSize   memory_range,
-			VkBufferView & buffer_view);
+		
 
 		void DestroyBufferView(VkDevice       logical_device,
 			VkBufferView & buffer_view);
-
-		void BindIndexBuffer(VkCommandBuffer   command_buffer,
-			VkBuffer          buffer,
-			VkDeviceSize      memory_offset,
-			VkIndexType       index_type);
 	
 		bool CreateSampler(VkDevice               logical_device,
 			VkFilter               mag_filter,
@@ -109,38 +88,6 @@ namespace LavaCake {
 			bool                   unnormalized_coords,
 			VkSampler            & sampler);
 
-		bool CreateUniformTexelBuffer(VkPhysicalDevice     physical_device,
-			VkDevice             logical_device,
-			VkFormat             format,
-			VkDeviceSize         size,
-			VkImageUsageFlags    usage,
-			VkBuffer           & uniform_texel_buffer,
-			VkDeviceMemory     & memory_object,
-			VkBufferView       & uniform_texel_buffer_view);
-
-		bool CreateStorageTexelBuffer(VkPhysicalDevice     physical_device,
-			VkDevice             logical_device,
-			VkFormat             format,
-			VkDeviceSize         size,
-			VkBufferUsageFlags   usage,
-			bool                 atomic_operations,
-			VkBuffer           & storage_texel_buffer,
-			VkDeviceMemory     & memory_object,
-			VkBufferView       & storage_texel_buffer_view);
-
-		bool CreateUniformBuffer(VkPhysicalDevice     physical_device,
-			VkDevice             logical_device,
-			VkDeviceSize         size,
-			VkBufferUsageFlags   usage,
-			VkBuffer           & uniform_buffer,
-			VkDeviceMemory     & memory_object);
-
-		bool CreateStorageBuffer(VkPhysicalDevice     physical_device,
-			VkDevice             logical_device,
-			VkDeviceSize         size,
-			VkBufferUsageFlags   usage,
-			VkBuffer           & storage_buffer,
-			VkDeviceMemory     & memory_object);
 
 		void DestroyBuffer(VkDevice   logical_device,
 			VkBuffer & buffer);

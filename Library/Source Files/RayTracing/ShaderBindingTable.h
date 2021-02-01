@@ -59,7 +59,7 @@ namespace LavaCake {
         // Create buffer to hold all shader handles for the SBT
         Framework::Buffer raygenBuffer;
         void* raygenMem;
-        raygenBuffer.allocate(queue, cmdBuff, handleSize * m_rayGen.size(), (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT), VK_FORMAT_R32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+        raygenBuffer.allocate(handleSize * m_rayGen.size(), VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
         m_raygenShaderBindingTable = {};
         m_raygenShaderBindingTable.deviceAddress = raygenBuffer.getBufferDeviceAddress();
         m_raygenShaderBindingTable.stride = handleSizeAligned;
@@ -69,7 +69,7 @@ namespace LavaCake {
         
         Framework::Buffer missBuffer;
         void* missMem;
-        missBuffer.allocate(queue, cmdBuff, handleSize * m_miss.size(), (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT), VK_FORMAT_R32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+        missBuffer.allocate(handleSize * m_miss.size(), VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
         m_missShaderBindingTable = {};
         m_missShaderBindingTable.deviceAddress = missBuffer.getBufferDeviceAddress();
         m_missShaderBindingTable.stride = handleSizeAligned;
@@ -79,7 +79,7 @@ namespace LavaCake {
 
         Framework::Buffer hitBuffer;
         void* hitMem;
-        hitBuffer.allocate(queue, cmdBuff, handleSize * m_hitGroup.size(), (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT), VK_FORMAT_R32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+        hitBuffer.allocate(handleSize * m_hitGroup.size(), VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
         m_hitShaderBindingTable = {};
         m_hitShaderBindingTable.deviceAddress = hitBuffer.getBufferDeviceAddress();
         m_hitShaderBindingTable.stride = handleSizeAligned;

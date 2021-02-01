@@ -227,62 +227,6 @@ namespace LavaCake {
 			};
 		}
 
-		bool Pipeline::CreatePipelineCacheObject(VkDevice                           logical_device,
-			std::vector<unsigned char> const& cache_data,
-			VkPipelineCache& pipeline_cache) {
-			VkPipelineCacheCreateInfo pipeline_cache_create_info = {
-				VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,     // VkStructureType                sType
-				nullptr,                                          // const void                   * pNext
-				0,                                                // VkPipelineCacheCreateFlags     flags
-				static_cast<uint32_t>(cache_data.size()),         // size_t                         initialDataSize
-				cache_data.data()                                 // const void                   * pInitialData
-			};
-
-			VkResult result = vkCreatePipelineCache(logical_device, &pipeline_cache_create_info, nullptr, &pipeline_cache);
-			if (VK_SUCCESS != result) {
-				std::cout << "Could not create pipeline cache." << std::endl;
-				return false;
-			}
-			return true;
-		}
-
-		bool Pipeline::RetrieveDataFromPipelineCache(VkDevice                     logical_device,
-			VkPipelineCache              pipeline_cache,
-			std::vector<unsigned char>& pipeline_cache_data) {
-			size_t data_size = 0;
-			VkResult result = VK_SUCCESS;
-
-			result = vkGetPipelineCacheData(logical_device, pipeline_cache, &data_size, nullptr);
-			if ((VK_SUCCESS != result) ||
-				(0 == data_size)) {
-				std::cout << "Could not get the size of the pipeline cache." << std::endl;
-				return false;
-			}
-			pipeline_cache_data.resize(data_size);
-
-			result = vkGetPipelineCacheData(logical_device, pipeline_cache, &data_size, pipeline_cache_data.data());
-			if ((VK_SUCCESS != result) ||
-				(0 == data_size)) {
-				std::cout << "Could not acquire pipeline cache data." << std::endl;
-				return false;
-			}
-
-			return true;
-		}
-
-		bool Pipeline::MergeMultiplePipelineCacheObjects(VkDevice                             logical_device,
-			VkPipelineCache                      target_pipeline_cache,
-			std::vector<VkPipelineCache> const& source_pipeline_caches) {
-			if (source_pipeline_caches.size() > 0) {
-				VkResult result = vkMergePipelineCaches(logical_device, target_pipeline_cache, static_cast<uint32_t>(source_pipeline_caches.size()), source_pipeline_caches.data());
-				if (VK_SUCCESS != result) {
-					std::cout << "Could not merge pipeline cache objects." << std::endl;
-					return false;
-				}
-				return true;
-			}
-			return false;
-		}
 
 		bool Pipeline::CreateGraphicsPipelines(VkDevice                                             logical_device,
 			std::vector<VkGraphicsPipelineCreateInfo> const& graphics_pipeline_create_infos,
@@ -323,19 +267,6 @@ namespace LavaCake {
 				return false;
 			}
 			return true;
-		}
-
-		void Pipeline::BindPipelineObject(VkCommandBuffer     command_buffer,
-			VkPipelineBindPoint pipeline_type,
-			VkPipeline          pipeline) {
-			vkCmdBindPipeline(command_buffer, pipeline_type, pipeline);
-		}
-
-		void Pipeline::DispatchComputeWork(VkCommandBuffer command_buffer,
-			uint32_t        x_size,
-			uint32_t        y_size,
-			uint32_t        z_size) {
-			vkCmdDispatch(command_buffer, x_size, y_size, z_size);
 		}
 
 

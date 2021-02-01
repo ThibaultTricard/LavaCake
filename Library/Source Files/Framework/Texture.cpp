@@ -1,6 +1,7 @@
 #include "Texture.h"
 #include "CommandBuffer.h"
 
+
 namespace LavaCake {
 	namespace Framework {
 
@@ -52,18 +53,10 @@ namespace LavaCake {
 				nullptr																					// const uint32_t       * pQueueFamilyIndices
 			};
 
-			VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &*staging_buffer);
-			VkDestroyer(VkDeviceMemory) memory_object;
 
-			InitVkDestroyer(logical, memory_object);
+			Buffer stagingBuffer;
 
-			if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
-				//return false;
-			}
-
-			if (!LavaCake::Core::MapUpdateAndUnmapHostVisibleMemory(logical, *memory_object, 0, static_cast<VkDeviceSize>(m_data->size()), m_data, true, nullptr)) {
-				//return false;
-			}
+			stagingBuffer.allocate(queue, commandBuffer, *m_data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 			commandBuffer.beginRecord();
 
@@ -79,17 +72,17 @@ namespace LavaCake {
 				1                             // uint32_t               layerCount
 			};
 
-			LavaCake::Core::CopyDataFromBufferToImage(commandBuffer.getHandle(), *staging_buffer, m_image->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-				{
-					{
+
+			VkBufferImageCopy region = {
 						0,																																								// VkDeviceSize               bufferOffset
 						0,																																								// uint32_t                   bufferRowLength
 						0,																																								// uint32_t                   bufferImageHeight
 						image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
 						{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
-						{ (uint32_t)m_image->width(), (uint32_t)m_image->height(), 1 },                   // VkExtent3D                 imageExtent
-					} });
+						{ m_image->width(), m_image->height(), m_image->depth() },												// VkExtent3D                 imageExtent
+			};
 
+			stagingBuffer.copyToImage(commandBuffer, *m_image, { region });
 
 			m_image->setLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
 
@@ -153,30 +146,9 @@ namespace LavaCake {
 			m_image->allocate(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 
 			
-			VkDestroyer(VkBuffer) staging_buffer;
-			VkBufferCreateInfo buffer_create_info = {
-				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,						// VkStructureType        sType
-				nullptr,																				// const void           * pNext
-				0,																							// VkBufferCreateFlags    flags
-				static_cast<VkDeviceSize>(m_data->size()),      // VkDeviceSize           size
-				VK_BUFFER_USAGE_TRANSFER_SRC_BIT,								// VkBufferUsageFlags     usage
-				VK_SHARING_MODE_EXCLUSIVE,											// VkSharingMode          sharingMode
-				0,																							// uint32_t               queueFamilyIndexCount
-				nullptr																					// const uint32_t       * pQueueFamilyIndices
-			};
+			Buffer stagingBuffer;
 
-			VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &*staging_buffer);
-			VkDestroyer(VkDeviceMemory) memory_object;
-
-			InitVkDestroyer(logical, memory_object);
-
-			if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
-				//return false;
-			}
-
-			if (!LavaCake::Core::MapUpdateAndUnmapHostVisibleMemory(logical, *memory_object, 0, static_cast<VkDeviceSize>(m_data->size()), m_data, true, nullptr)) {
-				//return false;
-			}
+			stagingBuffer.allocate(queue, cmdBuff, *m_data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 			cmdBuff.beginRecord();
 
@@ -192,16 +164,16 @@ namespace LavaCake {
 				1                             // uint32_t               layerCount
 			};
 
-			LavaCake::Core::CopyDataFromBufferToImage(cmdBuff.getHandle(), *staging_buffer, m_image->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-				{
-					{
+			VkBufferImageCopy region = {
 						0,																																								// VkDeviceSize               bufferOffset
 						0,																																								// uint32_t                   bufferRowLength
 						0,																																								// uint32_t                   bufferImageHeight
 						image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
 						{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
-						{m_image->width(), m_image->height(), m_image->depth() },     // VkExtent3D                 imageExtent
-					} });
+						{ m_image->width(), m_image->height(), m_image->depth() },												// VkExtent3D                 imageExtent
+			};
+
+			stagingBuffer.copyToImage(cmdBuff, *m_image, { region });
 
 
 			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
@@ -300,30 +272,9 @@ namespace LavaCake {
 					ErrorCheck::setError("Could not load all texture file");
 				}
 
-				VkDestroyer(VkBuffer) staging_buffer;
-				VkBufferCreateInfo buffer_create_info = {
-					VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,						// VkStructureType        sType
-					nullptr,																				// const void           * pNext
-					0,																							// VkBufferCreateFlags    flags
-					static_cast<VkDeviceSize>(m_data->size()),      // VkDeviceSize           size
-					VK_BUFFER_USAGE_TRANSFER_SRC_BIT,								// VkBufferUsageFlags     usage
-					VK_SHARING_MODE_EXCLUSIVE,											// VkSharingMode          sharingMode
-					0,																							// uint32_t               queueFamilyIndexCount
-					nullptr																					// const uint32_t       * pQueueFamilyIndices
-				};
+				Buffer stagingBuffer;
 
-				VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &*staging_buffer);
-				VkDestroyer(VkDeviceMemory) memory_object;
-
-				InitVkDestroyer(logical, memory_object);
-
-				if (!LavaCake::Core::AllocateAndBindMemoryObjectToBuffer(physical, logical, *staging_buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, *memory_object)) {
-					//return false;
-				}
-
-				if (!LavaCake::Core::MapUpdateAndUnmapHostVisibleMemory(logical, *memory_object, 0, static_cast<VkDeviceSize>(m_data->size()), m_data, true, nullptr)) {
-					//return false;
-				}
+				stagingBuffer.allocate(queue, cmdBuff, *m_data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 				cmdBuff.beginRecord();
 
@@ -339,16 +290,17 @@ namespace LavaCake {
 					1                             // uint32_t               layerCount
 				};
 
-				LavaCake::Core::CopyDataFromBufferToImage(cmdBuff.getHandle(), *staging_buffer, m_image->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-					{
-						{
-							0,																																								// VkDeviceSize               bufferOffset
-							0,																																								// uint32_t                   bufferRowLength
-							0,																																								// uint32_t                   bufferImageHeight
-							image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
-							{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
-							{m_image->width(), m_image->height(), m_image->depth() },     // VkExtent3D                 imageExtent
-						} });
+
+				VkBufferImageCopy region = {
+						0,																																								// VkDeviceSize               bufferOffset
+						0,																																								// uint32_t                   bufferRowLength
+						0,																																								// uint32_t                   bufferImageHeight
+						image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
+						{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
+						{ m_image->width(), m_image->height(), m_image->depth() },												// VkExtent3D                 imageExtent
+				};
+
+				stagingBuffer.copyToImage(cmdBuff, *m_image, { region });
 
 
 				m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);

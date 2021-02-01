@@ -151,9 +151,7 @@ ${LIBRARY_CORE_DIR}/VulkanLoader.cpp
 ${LIBRARY_CORE_DIR}/VulkanMemory.cpp
 ${LIBRARY_CORE_DIR}/VulkanPresentation.cpp
 ${LIBRARY_CORE_DIR}/VulkanQueue.cpp
-${LIBRARY_CORE_DIR}/VulkanSemaphore.cpp
 ${LIBRARY_CORE_DIR}/VulkanSwapChain.cpp
-${LIBRARY_CORE_DIR}/VulkanViewport.cpp
 )
 
 
@@ -185,12 +183,14 @@ ${LIBRARY_FRAMEWORK_DIR}/Window.h
 )
 
 set(LIBRARY_FRAMEWORK_SOURCE
+${LIBRARY_FRAMEWORK_DIR}/Buffer.cpp
 ${LIBRARY_FRAMEWORK_DIR}/CommandBuffer.cpp
 ${LIBRARY_FRAMEWORK_DIR}/ComputePipeline.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Constant.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Device.cpp
 ${LIBRARY_FRAMEWORK_DIR}/ErrorCheck.cpp
 ${LIBRARY_FRAMEWORK_DIR}/GraphicPipeline.cpp
+${LIBRARY_FRAMEWORK_DIR}/Image.cpp
 ${LIBRARY_FRAMEWORK_DIR}/ImGUIWrapper.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Pipeline.cpp
 ${LIBRARY_FRAMEWORK_DIR}/RenderPass.cpp
