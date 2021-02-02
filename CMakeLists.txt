@@ -127,11 +127,9 @@ ${LIBRARY_CORE_DIR}/VulkanBuffer.h
 ${LIBRARY_CORE_DIR}/VulkanCommand.h
 ${LIBRARY_CORE_DIR}/VulkanDescriptor.h
 ${LIBRARY_CORE_DIR}/VulkanDevice.h
-${LIBRARY_CORE_DIR}/VulkanFence.h
 ${LIBRARY_CORE_DIR}/VulkanImage.h
 ${LIBRARY_CORE_DIR}/VulkanInstance.h
 ${LIBRARY_CORE_DIR}/VulkanLoader.h
-${LIBRARY_CORE_DIR}/VulkanMemory.h
 ${LIBRARY_CORE_DIR}/VulkanPresentation.h
 ${LIBRARY_CORE_DIR}/VulkanQueue.h
 ${LIBRARY_CORE_DIR}/VulkanSemaphore.h
@@ -144,11 +142,9 @@ ${LIBRARY_CORE_DIR}/VulkanBuffer.cpp
 ${LIBRARY_CORE_DIR}/VulkanCommand.cpp
 ${LIBRARY_CORE_DIR}/VulkanDescriptor.cpp
 ${LIBRARY_CORE_DIR}/VulkanDevice.cpp
-${LIBRARY_CORE_DIR}/VulkanFence.cpp
 ${LIBRARY_CORE_DIR}/VulkanImage.cpp
 ${LIBRARY_CORE_DIR}/VulkanInstance.cpp
 ${LIBRARY_CORE_DIR}/VulkanLoader.cpp
-${LIBRARY_CORE_DIR}/VulkanMemory.cpp
 ${LIBRARY_CORE_DIR}/VulkanPresentation.cpp
 ${LIBRARY_CORE_DIR}/VulkanQueue.cpp
 ${LIBRARY_CORE_DIR}/VulkanSwapChain.cpp

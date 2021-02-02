@@ -27,7 +27,6 @@
 #define VULKAN_BUFFER
 
 #include "Common.h"
-#include "VulkanMemory.h"
 #include "Helpers/helpers.h"
 
 namespace LavaCake {
@@ -57,15 +56,7 @@ namespace LavaCake {
 			VkAccessFlags   NewAccess;
 			uint32_t        CurrentQueueFamily;
 			uint32_t        NewQueueFamily;
-		};
-
-		
-		void SetBufferMemoryBarrier(VkCommandBuffer               command_buffer,
-			VkPipelineStageFlags          generating_stages,
-			VkPipelineStageFlags          consuming_stages,
-			std::vector<BufferTransition> buffer_transitions);
-
-		
+		};		
 
 		void DestroyBufferView(VkDevice       logical_device,
 			VkBufferView & buffer_view);

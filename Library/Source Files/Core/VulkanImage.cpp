@@ -107,38 +107,6 @@ namespace LavaCake {
 			return true;
 		}
 
-		void SetImageMemoryBarrier(VkCommandBuffer              command_buffer,
-			VkPipelineStageFlags         generating_stages,
-			VkPipelineStageFlags         consuming_stages,
-			std::vector<ImageTransition> image_transitions) {
-			std::vector<VkImageMemoryBarrier> image_memory_barriers;
-
-			for (auto & image_transition : image_transitions) {
-				image_memory_barriers.push_back({
-					VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,   // VkStructureType            sType
-					nullptr,                                  // const void               * pNext
-					image_transition.CurrentAccess,           // VkAccessFlags              srcAccessMask
-					image_transition.NewAccess,               // VkAccessFlags              dstAccessMask
-					image_transition.CurrentLayout,           // VkImageLayout              oldLayout
-					image_transition.NewLayout,               // VkImageLayout              newLayout
-					image_transition.CurrentQueueFamily,      // uint32_t                   srcQueueFamilyIndex
-					image_transition.NewQueueFamily,          // uint32_t                   dstQueueFamilyIndex
-					image_transition.Image,                   // VkImage                    image
-					{                                         // VkImageSubresourceRange    subresourceRange
-						image_transition.Aspect,                  // VkImageAspectFlags         aspectMask
-						0,                                        // uint32_t                   baseMipLevel
-						VK_REMAINING_MIP_LEVELS,                  // uint32_t                   levelCount
-						0,                                        // uint32_t                   baseArrayLayer
-						VK_REMAINING_ARRAY_LAYERS                 // uint32_t                   layerCount
-					}
-					});
-			}
-
-			if (image_memory_barriers.size() > 0) {
-				vkCmdPipelineBarrier(command_buffer, generating_stages, consuming_stages, 0, 0, nullptr, 0, nullptr, static_cast<uint32_t>(image_memory_barriers.size()), image_memory_barriers.data());
-			}
-		}
-
 		bool CreateImageView(VkDevice             logical_device,
 			VkImage              image,
 			VkImageViewType      view_type,
@@ -173,73 +141,6 @@ namespace LavaCake {
 				return false;
 			}
 			return true;
-		}
-
-		bool Create2DImageAndView(VkPhysicalDevice        physical_device,
-			VkDevice                logical_device,
-			VkFormat                format,
-			VkExtent2D              size,
-			uint32_t                num_mipmaps,
-			uint32_t                num_layers,
-			VkSampleCountFlagBits   samples,
-			VkImageUsageFlags       usage,
-			VkImageAspectFlags      aspect,
-			VkImage               & image,
-			VkDeviceMemory        & memory_object,
-			VkImageView           & image_view) {
-			if (!CreateImage(logical_device, VK_IMAGE_TYPE_2D, format, { size.width, size.height, 1 }, num_mipmaps, num_layers, samples, usage, false, image)) {
-				return false;
-			}
-
-			if (!AllocateAndBindMemoryObjectToImage(physical_device, logical_device, image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
-				return false;
-			}
-
-			if (!CreateImageView(logical_device, image, VK_IMAGE_VIEW_TYPE_2D, format, aspect, image_view)) {
-				return false;
-			}
-
-			return true;
-		}
-
-		bool CreateLayered2DImageWithCubemapView(VkPhysicalDevice    physical_device,
-			VkDevice            logical_device,
-			uint32_t            size,
-			uint32_t            num_mipmaps,
-			VkImageUsageFlags   usage,
-			VkImageAspectFlags  aspect,
-			VkImage           & image,
-			VkDeviceMemory    & memory_object,
-			VkImageView       & image_view) {
-			if (!CreateImage(logical_device, VK_IMAGE_TYPE_2D, VK_FORMAT_R8G8B8A8_UNORM, { size, size, 1 }, num_mipmaps, 6, VK_SAMPLE_COUNT_1_BIT, usage, true, image)) {
-				return false;
-			}
-
-			if (!AllocateAndBindMemoryObjectToImage(physical_device, logical_device, image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object)) {
-				return false;
-			}
-
-			if (!CreateImageView(logical_device, image, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R8G8B8A8_UNORM, aspect, image_view)) {
-				return false;
-			}
-
-			return true;
-		}
-
-		void DestroyImageView(VkDevice      logical_device,
-			VkImageView & image_view) {
-			if (VK_NULL_HANDLE != image_view) {
-				vkDestroyImageView(logical_device, image_view, nullptr);
-				image_view = VK_NULL_HANDLE;
-			}
-		}
-
-		void DestroyImage(VkDevice   logical_device,
-			VkImage  & image) {
-			if (VK_NULL_HANDLE != image) {
-				vkDestroyImage(logical_device, image, nullptr);
-				image = VK_NULL_HANDLE;
-			}
 		}
 
 		bool CreateSampledImage(VkPhysicalDevice    physical_device,
@@ -283,46 +184,6 @@ namespace LavaCake {
 			return true;
 		}
 
-		bool CreateCombinedImageSampler(VkPhysicalDevice       physical_device,
-			VkDevice               logical_device,
-			VkImageType            type,
-			VkFormat               format,
-			VkExtent3D             size,
-			uint32_t               num_mipmaps,
-			uint32_t               num_layers,
-			VkImageUsageFlags      usage,
-			bool                   cubemap,
-			VkImageViewType        view_type,
-			VkImageAspectFlags     aspect,
-			VkFilter               mag_filter,
-			VkFilter               min_filter,
-			VkSamplerMipmapMode    mipmap_mode,
-			VkSamplerAddressMode   u_address_mode,
-			VkSamplerAddressMode   v_address_mode,
-			VkSamplerAddressMode   w_address_mode,
-			float                  lod_bias,
-			bool                   anisotropy_enable,
-			float                  max_anisotropy,
-			bool                   compare_enable,
-			VkCompareOp            compare_operator,
-			float                  min_lod,
-			float                  max_lod,
-			VkBorderColor          border_color,
-			bool                   unnormalized_coords,
-			VkSampler            & sampler,
-			VkImage              & sampled_image,
-			VkDeviceMemory       & memory_object,
-			VkImageView          & sampled_image_view) {
-			if (!CreateSampler(logical_device, mag_filter, min_filter, mipmap_mode, u_address_mode, v_address_mode, w_address_mode, lod_bias, anisotropy_enable, max_anisotropy, compare_enable, compare_operator, min_lod, max_lod, border_color, unnormalized_coords, sampler)) {
-				return false;
-			}
-
-			bool linear_filtering = (mag_filter == VK_FILTER_LINEAR) || (min_filter == VK_FILTER_LINEAR) || (mipmap_mode == VK_SAMPLER_MIPMAP_MODE_LINEAR);
-			if (!CreateSampledImage(physical_device, logical_device, type, format, size, num_mipmaps, num_layers, usage, cubemap, view_type, aspect, linear_filtering, sampled_image, memory_object, sampled_image_view)) {
-				return false;
-			}
-			return true;
-		}
 
 	}
 }

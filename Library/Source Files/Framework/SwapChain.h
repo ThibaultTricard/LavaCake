@@ -64,8 +64,15 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 
 
-				LavaCake::Core::DestroyImage(logical, m_image);
-				LavaCake::Core::DestroyImageView(logical, *m_imageView);
+				if (VK_NULL_HANDLE != m_image) {
+					vkDestroyImage(logical, m_image, nullptr);
+					m_image = VK_NULL_HANDLE;
+				}
+
+				if (VK_NULL_HANDLE != *m_imageView) {
+					vkDestroyImageView(logical, *m_imageView, nullptr);
+					*m_imageView = VK_NULL_HANDLE;
+				}
 
 				if (m_aquiredSemaphore != VK_NULL_HANDLE) {
 					vkDestroySemaphore(logical, *m_aquiredSemaphore, nullptr);
@@ -95,7 +102,10 @@ namespace LavaCake {
 					delete m_swapchainImages[i];
 				}
 				for (size_t i = 0; i < m_images.size(); i++) {
-					LavaCake::Core::DestroyImage(logical, m_images[i]);
+					if (VK_NULL_HANDLE != m_images[i]) {
+						vkDestroyImage(logical, m_images[i], nullptr);
+						m_images[i] = VK_NULL_HANDLE;
+					}
 				}
 				vkDestroySwapchainKHR(logical, *m_handle, nullptr);
 				*m_handle = VK_NULL_HANDLE;

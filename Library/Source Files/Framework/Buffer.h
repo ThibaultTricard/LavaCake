@@ -34,7 +34,12 @@ namespace LavaCake {
 
 				Core::DestroyBuffer(logical, *m_buffer);
 				Core::DestroyBufferView(logical, *m_bufferView);
-				Core::FreeMemoryObject(logical, *m_bufferMemory);
+
+				if (VK_NULL_HANDLE != *m_bufferMemory) {
+					vkFreeMemory(logical, *m_bufferMemory, nullptr);
+					*m_bufferMemory = VK_NULL_HANDLE;
+				}
+
 
 				VkBufferCreateInfo buffer_create_info = {
 				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,   // VkStructureType        sType

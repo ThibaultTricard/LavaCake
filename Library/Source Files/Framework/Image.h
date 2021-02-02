@@ -40,9 +40,21 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 
 
-				LavaCake::Core::DestroyImage(logical, *m_image);
-				LavaCake::Core::DestroyImageView(logical, *m_imageView);
-				LavaCake::Core::FreeMemoryObject(logical, *m_imageMemory);
+				if (VK_NULL_HANDLE != *m_image) {
+					vkDestroyImage(logical, *m_image, nullptr);
+					*m_image = VK_NULL_HANDLE;
+				}
+
+				if (VK_NULL_HANDLE != *m_imageView) {
+					vkDestroyImageView(logical, *m_imageView, nullptr);
+					*m_imageView = VK_NULL_HANDLE;
+				}
+
+				if (VK_NULL_HANDLE != *m_imageMemory) {
+					vkFreeMemory(logical, *m_imageMemory, nullptr);
+					*m_imageMemory = VK_NULL_HANDLE;
+				}
+
 			}
 
 			VkImageLayout getLayout();

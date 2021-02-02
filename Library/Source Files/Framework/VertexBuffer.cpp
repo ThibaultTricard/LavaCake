@@ -75,7 +75,7 @@ namespace LavaCake {
 				for (unsigned int i = 1; i < m.size(); i++) {
 					if (m_indexed) {
 						for (size_t j = 0; j < m[i]->indices().size(); j++) {
-							m_indices.push_back(m[i]->indices()[j] + uint32_t(m_vertices.size()));
+							m_indices.push_back(m[i]->indices()[j] + uint32_t(getVerticiesNumber()));
 						}
 					}
 					m_vertices.insert(m_vertices.end(), m[i]->vertices().begin(), m[i]->vertices().end());

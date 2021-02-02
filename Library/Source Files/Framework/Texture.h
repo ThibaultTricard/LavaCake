@@ -213,14 +213,24 @@ namespace LavaCake {
 
 				for (uint32_t i = 0; i < m_images.size(); i++) {
 					if (i != m_swapChainImageIndex) {
-						LavaCake::Core::DestroyImage(logical, m_images[i]);
-						LavaCake::Core::DestroyImageView(logical, m_imageViews[i]);
+						if (VK_NULL_HANDLE != m_images[i]) {
+							vkDestroyImage(logical, m_images[i], nullptr);
+							m_images[i] = VK_NULL_HANDLE;
+						}
+
+						if (VK_NULL_HANDLE != m_imageViews[i]) {
+							vkDestroyImageView(logical, m_imageViews[i], nullptr);
+							m_imageViews[i] = VK_NULL_HANDLE;
+						}
 					}
 				}
 
 				LavaCake::Core::DestroySampler(logical, *m_sampler);
 				LavaCake::Core::DestroyFramebuffer(logical, *m_frameBuffer);
-				LavaCake::Core::FreeMemoryObject(logical, *m_imageMemory);
+				if (VK_NULL_HANDLE != *m_imageMemory) {
+					vkFreeMemory(logical, *m_imageMemory, nullptr);
+					*m_imageMemory = VK_NULL_HANDLE;
+				}
 			}
 
 		private :

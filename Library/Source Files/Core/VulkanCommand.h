@@ -65,28 +65,6 @@ namespace LavaCake {
 			std::vector<VkSemaphore>        signal_semaphores,
 			VkFence                         fence);
 
-		bool SynchronizeTwoCommandBuffers(VkQueue                         first_queue,
-			std::vector<WaitSemaphoreInfo>  first_wait_semaphore_infos,
-			std::vector<VkCommandBuffer>    first_command_buffers,
-			std::vector<WaitSemaphoreInfo>  synchronizing_semaphores,
-			VkQueue                         second_queue,
-			std::vector<VkCommandBuffer>    second_command_buffers,
-			std::vector<VkSemaphore>        second_signal_semaphores,
-			VkFence                         second_fence);
-
-		bool CheckIfProcessingOfSubmittedCommandBufferHasFinished(VkDevice                         logical_device,
-			VkQueue                          queue,
-			std::vector<WaitSemaphoreInfo>   wait_semaphore_infos,
-			std::vector<VkCommandBuffer>     command_buffers,
-			std::vector<VkSemaphore>         signal_semaphores,
-			VkFence                          fence,
-			uint64_t                         timeout,
-			VkResult                       & wait_status);
-
-		void ExecuteSecondaryCommandBufferInsidePrimaryCommandBuffer(VkCommandBuffer                      primary_command_buffer,
-			std::vector<VkCommandBuffer> const & secondary_command_buffers);
-
-		bool WaitUntilAllCommandsSubmittedToQueueAreFinished(VkQueue queue);
 
 		bool WaitForAllSubmittedCommandsToBeFinished(VkDevice logical_device);
 

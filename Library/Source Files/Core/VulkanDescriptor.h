@@ -28,7 +28,6 @@
 #define VULKAN_DESCRIPTOR
 
 #include "Common.h"
-#include "VulkanMemory.h"
 #include "VulkanBuffer.h"
 #include "VulkanImage.h"
 

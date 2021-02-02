@@ -9,14 +9,14 @@ namespace LavaCake {
     
     class TopLevelAS {
     public:
-      void addInstance(BottomLevelAS* bottomLevelAS, VkTransformMatrixKHR& transform, uint32_t instanceID, uint32_t hitGroupIndex) {
-        m_instances.push_back({ bottomLevelAS ,transform , instanceID , hitGroupIndex });
+      void addInstance(BottomLevelAS* bottomLevelAS, VkTransformMatrixKHR& transform, uint32_t instanceID, uint32_t hitGroupOffset) {
+        m_instances.push_back({ bottomLevelAS ,transform , instanceID , hitGroupOffset });
 
         VkAccelerationStructureInstanceKHR instance{};
         instance.transform = transform;
-        instance.instanceCustomIndex = 0;
+        instance.instanceCustomIndex = instanceID;
         instance.mask = 0xFF;
-        instance.instanceShaderBindingTableRecordOffset = 0;
+        instance.instanceShaderBindingTableRecordOffset = hitGroupOffset;
         instance.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
         instance.accelerationStructureReference = bottomLevelAS->getDeviceAddress();
         m_AccelerationStructureInstances.push_back(instance);
@@ -29,7 +29,7 @@ namespace LavaCake {
         VkPhysicalDevice phyDevice = d->getPhysicalDevice();
         std::vector<Framework::Buffer> instancesBuffers;
         std::vector<VkAccelerationStructureGeometryKHR> accelerationStructureGeometry;
-
+        uint32_t primitive_count = 0;
         for (int i = 0; i < m_AccelerationStructureInstances.size(); i++) {
           // Buffer for instance data
           std::vector<VkAccelerationStructureInstanceKHR> instance = { m_AccelerationStructureInstances[i] };
@@ -55,6 +55,7 @@ namespace LavaCake {
 
           accelerationStructureGeometry.push_back(asg);
          
+          primitive_count += m_instances[i].bottomLevelAS->getPrimitiveNumber();
           m_primitive_count.push_back(m_instances[i].bottomLevelAS->getPrimitiveNumber());
         }
 
@@ -65,8 +66,6 @@ namespace LavaCake {
         accelerationStructureBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
         accelerationStructureBuildGeometryInfo.geometryCount = (uint32_t)accelerationStructureGeometry.size();
         accelerationStructureBuildGeometryInfo.pGeometries = accelerationStructureGeometry.data();
-
-        uint32_t primitive_count = 1;
 
         VkAccelerationStructureBuildSizesInfoKHR accelerationStructureBuildSizesInfo{};
 
@@ -100,7 +99,7 @@ namespace LavaCake {
         accelerationBuildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(logical, &scratchBufferDeviceAddressInfo);
 
         VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};
-        accelerationStructureBuildRangeInfo.primitiveCount = 1;
+        accelerationStructureBuildRangeInfo.primitiveCount = primitive_count;
         accelerationStructureBuildRangeInfo.primitiveOffset = 0;
         accelerationStructureBuildRangeInfo.firstVertex = 0;
         accelerationStructureBuildRangeInfo.transformOffset = 0;
