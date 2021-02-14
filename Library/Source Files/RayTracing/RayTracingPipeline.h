@@ -12,6 +12,7 @@ namespace LavaCake {
 		struct accelerationStructure {
 			TopLevelAS*							AS;
 			uint32_t								binding;
+			VkShaderStageFlags			stage;
 		};
 
 
@@ -254,8 +255,8 @@ namespace LavaCake {
 				m_maxRecursion = recursion;
 			}
 
-			void setAccelerationStructure(TopLevelAS* AS, uint32_t	binding) {
-				m_AS.push_back({ AS, binding });
+			void addAccelerationStructure(TopLevelAS* AS, VkShaderStageFlags stage, uint32_t	binding) {
+				m_AS.push_back({ AS, binding, stage });
 			};
 
 
@@ -321,12 +322,21 @@ namespace LavaCake {
 						nullptr
 						});
 				}
+				for (uint32_t i = 0; i < m_buffers.size(); i++) {
+					m_descriptorSetLayoutBinding.push_back({
+						uint32_t(m_buffers[i].binding),
+						VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+						1,
+						m_buffers[i].stage,
+						nullptr
+						});
+				}
 				for (uint32_t i = 0; i < m_AS.size(); i++) {
 					m_descriptorSetLayoutBinding.push_back({
 						uint32_t(m_AS[i].binding),
 						VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,
 						1,
-						VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR,
+						m_AS[i].stage,
 						nullptr
 						});
 				}
@@ -336,7 +346,7 @@ namespace LavaCake {
 					Framework::ErrorCheck::setError("Can't create descriptor set layout");
 				}
 
-				m_descriptorCount = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size() + m_AS.size());
+				m_descriptorCount = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size() + m_buffers.size() + m_AS.size());
 				if (m_descriptorCount == 0) return;
 
 				m_descriptorPoolSize = {};
@@ -369,6 +379,12 @@ namespace LavaCake {
 					m_descriptorPoolSize.push_back({
 						VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
 							uint32_t(m_texelBuffers.size())
+						});
+				}
+				if (m_buffers.size() > 0) {
+					m_descriptorPoolSize.push_back({
+						VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+							uint32_t(m_buffers.size())
 						});
 				}
 				if (m_AS.size() > 0) {
@@ -483,6 +499,27 @@ namespace LavaCake {
 
 					m_texelBufferDescriptorUpdate.push_back(info);
 				}
+
+				
+				for (uint32_t i = 0; i < m_buffers.size(); i++) {
+
+					LavaCake::Core::BufferDescriptorInfo info = {
+						m_descriptorSets[descriptorCount],
+						uint32_t(m_buffers[i].binding),
+						0,
+						VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+						{
+							{
+								m_buffers[i].t->getHandle(),
+								0,
+								VK_WHOLE_SIZE
+							}
+						}
+					};
+
+					m_bufferDescriptorUpdate.push_back(info);
+				}
+
 				/////////////////////////////////////////////////////////////////////////////////////////////
 				std::vector<VkWriteDescriptorSet> write_descriptors;
 				std::vector<VkCopyDescriptorSet> copy_descriptors;

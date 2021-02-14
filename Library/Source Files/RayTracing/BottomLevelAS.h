@@ -57,7 +57,7 @@ namespace LavaCake {
 			}
 
 
-			void allocate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, mat4 transform, bool allowUpdate = false) {
+			void allocate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false) {
 
 				Framework::Device* d = Framework::Device::getDevice();
 				VkDevice device = d->getLogicalDevice();

@@ -27,7 +27,7 @@ namespace LavaCake {
 			swapMeshes(m);
 		};
 
-		void VertexBuffer::allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlagBits otherUsage) {
+		void VertexBuffer::allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage) {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logicalDevice = d->getLogicalDevice();
 			VkPhysicalDevice physicalDevice = d->getPhysicalDevice();

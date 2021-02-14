@@ -217,17 +217,14 @@ namespace LavaCake {
 
 		class TransformBuffer {
 		public : 
-			TransformBuffer(mat4 tranform) {
-				for (int i = 0; i < 4; i++) {
-					for (int j = 0; j < 4; j++) {
-						m_transformData.push_back(tranform[i * 4 + j]);
-					}
-				}
+			TransformBuffer(VkTransformMatrixKHR& transform) {
+				m_transformData = transform;
 
 			}
 
 			void allocate(Queue* queue, CommandBuffer& cmdBuff) {
-				m_buffer.allocate(queue, cmdBuff, m_transformData, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR));
+				std::vector<VkTransformMatrixKHR> transform{ m_transformData };
+				m_buffer.allocate(queue, cmdBuff, transform, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR));
 			}
 
 			Buffer& getBuffer() {
@@ -236,7 +233,7 @@ namespace LavaCake {
 
 		private :
 
-			std::vector<float> m_transformData;
+			VkTransformMatrixKHR m_transformData;
 
 			Buffer m_buffer;
 

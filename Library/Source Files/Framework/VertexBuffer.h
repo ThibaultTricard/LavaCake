@@ -15,7 +15,7 @@ namespace LavaCake {
 			VertexBuffer(std::vector<LavaCake::Geometry::Mesh_t*> m, uint32_t binding = 0,  VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX);
 
 
-			void allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlagBits otherUsage = VkBufferUsageFlagBits(0) );
+			void allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0) );
 			
 			Buffer& getVertexBuffer();
 			
