@@ -40,37 +40,9 @@ namespace LavaCake {
 			uint32_t                   queue_family,
 			VkCommandPool            & command_pool);
 
-		bool AllocateCommandBuffers(VkDevice                       logical_device,
-			VkCommandPool                  command_pool,
-			VkCommandBufferLevel           level,
-			uint32_t                       count,
-			std::vector<VkCommandBuffer> & command_buffers);
-
-		bool BeginCommandBufferRecordingOperation(VkCommandBuffer                  command_buffer,
-			VkCommandBufferUsageFlags        usage,
-			VkCommandBufferInheritanceInfo * secondary_command_buffer_info);
-
-		bool ResetCommandBuffer(VkCommandBuffer command_buffer,
-			bool            release_resources);
-
-		bool EndCommandBufferRecordingOperation(VkCommandBuffer command_buffer);
-
 		bool ResetCommandPool(VkDevice      logical_device,
 			VkCommandPool command_pool,
 			bool          release_resources);
-
-		bool SubmitCommandBuffersToQueue(VkQueue                         queue,
-			std::vector<WaitSemaphoreInfo>  wait_semaphore_infos,
-			std::vector<VkCommandBuffer>    command_buffers,
-			std::vector<VkSemaphore>        signal_semaphores,
-			VkFence                         fence);
-
-
-		bool WaitForAllSubmittedCommandsToBeFinished(VkDevice logical_device);
-
-		void FreeCommandBuffers(VkDevice                       logical_device,
-			VkCommandPool                  command_pool,
-			std::vector<VkCommandBuffer> & command_buffers);
 
 		void DestroyCommandPool(VkDevice        logical_device,
 			VkCommandPool & command_pool);

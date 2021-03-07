@@ -135,10 +135,7 @@ namespace LavaCake {
             accelerationBuildStructureRangeInfos.data());
           cmdBuff.endRecord();
 
-
-          if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
-            //todo : use errocheck
-          }
+          cmdBuff.submit(queue, {}, {});
 
           cmdBuff.wait(MAXINT32);
           cmdBuff.resetFence();

@@ -42,6 +42,7 @@
 #include "Core/VulkanPresentation.h"
 #include "Core/VulkanQueue.h"
 #include "Core/VulkanSwapchain.h"
+#include "Core/VulkanSemaphore.h"
 #include "Core/VulkanViewport.h"
 
 #include "Helpers/helpers.h"

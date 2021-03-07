@@ -7,6 +7,7 @@
 
 namespace LavaCake {
 	namespace Framework {
+
 		class Queue {
 		public:
 
@@ -28,6 +29,7 @@ namespace LavaCake {
 				m_handle = handle;
 			}
 
+			
 
 			~Queue() {
 

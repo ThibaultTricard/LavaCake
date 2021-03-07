@@ -368,7 +368,10 @@ namespace LavaCake {
 				
 				Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				LavaCake::Core::DestroyFramebuffer(logical, *frameBuffer.m_frameBuffer);
+				if (VK_NULL_HANDLE != *frameBuffer.m_frameBuffer) {
+					vkDestroyFramebuffer(logical, *frameBuffer.m_frameBuffer, nullptr);
+					*frameBuffer.m_frameBuffer = VK_NULL_HANDLE;
+				}
 				frameBuffer.m_images[m_khr_attachement] = image.getImage();
 				frameBuffer.m_imageViews[m_khr_attachement] = image.getView();
 				frameBuffer.m_swapChainImageIndex = m_khr_attachement;

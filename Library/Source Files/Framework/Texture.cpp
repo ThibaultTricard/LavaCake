@@ -90,9 +90,8 @@ namespace LavaCake {
 			commandBuffer.endRecord();
 			
 
-			if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { commandBuffer.getHandle() }, {}, commandBuffer.getFence())) {
-				//return false;
-			}
+			commandBuffer.submit(queue, {}, {});
+
 
 
 			commandBuffer.wait(UINT32_MAX);
@@ -181,10 +180,8 @@ namespace LavaCake {
 
 			cmdBuff.endRecord();
 
+			cmdBuff.submit(queue, {}, {});
 
-			if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
-				ErrorCheck::setError("Can't send the TextureBuffer data to the GPU");
-			}
 
 
 			cmdBuff.wait(UINT32_MAX);
@@ -308,11 +305,8 @@ namespace LavaCake {
 
 				cmdBuff.endRecord();
 
-
-				if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
-					ErrorCheck::setError("Can't send the TextureBuffer data to the GPU");
-				}
-
+				cmdBuff.submit(queue, {}, {});
+				
 
 				cmdBuff.wait(UINT32_MAX);
 				cmdBuff.resetFence();
@@ -400,9 +394,7 @@ namespace LavaCake {
 
 			
 
-			if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
-				//raiserror
-			}
+			cmdBuff.submit(queue, {}, {});
 
 			cmdBuff.wait(UINT32_MAX);
 			cmdBuff.resetFence();

@@ -58,8 +58,6 @@ namespace LavaCake {
 			uint32_t        NewQueueFamily;
 		};		
 
-		void DestroyBufferView(VkDevice       logical_device,
-			VkBufferView & buffer_view);
 	
 		bool CreateSampler(VkDevice               logical_device,
 			VkFilter               mag_filter,
@@ -80,12 +78,6 @@ namespace LavaCake {
 			VkSampler            & sampler);
 
 
-		void DestroyBuffer(VkDevice   logical_device,
-			VkBuffer & buffer);
-
-		void DestroySampler(VkDevice    logical_device,
-			VkSampler & sampler);
-
 		bool CreateFramebuffer(VkDevice                         logical_device,
 			VkRenderPass                     render_pass,
 			std::vector<VkImageView> const & attachments,
@@ -93,9 +85,6 @@ namespace LavaCake {
 			uint32_t                         height,
 			uint32_t                         layers,
 			VkFramebuffer                  & framebuffer);
-
-		void DestroyFramebuffer(VkDevice        logical_device,
-			VkFramebuffer & framebuffer);
 
 	}
 }

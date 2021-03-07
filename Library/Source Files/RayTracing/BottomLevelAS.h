@@ -151,10 +151,8 @@ namespace LavaCake {
 						accelerationBuildStructureRangeInfos.data());
 					cmdBuff.endRecord();
 
+					cmdBuff.submit(queue, {}, {});
 
-					if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
-						Framework::ErrorCheck::setError("failled to build bottom acceleration structure");
-					}
 
 					cmdBuff.wait(MAXINT32);
 					cmdBuff.resetFence();

@@ -29,23 +29,6 @@
 namespace LavaCake {
 	namespace Core {
 
-		void DestroyBufferView(VkDevice       logical_device,
-			VkBufferView & buffer_view) {
-			if (VK_NULL_HANDLE != buffer_view) {
-				vkDestroyBufferView(logical_device, buffer_view, nullptr);
-				buffer_view = VK_NULL_HANDLE;
-			}
-		}
-
-		void DestroyBuffer(VkDevice   logical_device,
-			VkBuffer & buffer) {
-			if (VK_NULL_HANDLE != buffer) {
-				vkDestroyBuffer(logical_device, buffer, nullptr);
-				buffer = VK_NULL_HANDLE;
-			}
-		}
-
-
 		bool CreateSampler(VkDevice               logical_device,
 			VkFilter               mag_filter,
 			VkFilter               min_filter,
@@ -92,16 +75,6 @@ namespace LavaCake {
 			return true;
 		}
 
-
-		void DestroySampler(VkDevice    logical_device,
-			VkSampler & sampler) {
-			if (VK_NULL_HANDLE != sampler) {
-				vkDestroySampler(logical_device, sampler, nullptr);
-				sampler = VK_NULL_HANDLE;
-			}
-		}
-
-
 		bool CreateFramebuffer(VkDevice                         logical_device,
 			VkRenderPass                     render_pass,
 			std::vector<VkImageView> const & attachments,
@@ -129,12 +102,5 @@ namespace LavaCake {
 			return true;
 		}
 
-		void DestroyFramebuffer(VkDevice        logical_device,
-			VkFramebuffer & framebuffer) {
-			if (VK_NULL_HANDLE != framebuffer) {
-				vkDestroyFramebuffer(logical_device, framebuffer, nullptr);
-				framebuffer = VK_NULL_HANDLE;
-			}
-		}
 	}
 }

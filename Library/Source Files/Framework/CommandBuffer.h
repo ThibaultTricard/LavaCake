@@ -14,9 +14,21 @@ namespace LavaCake {
         VkDevice logical = d->getLogicalDevice();
         VkCommandPool pool = d->getCommandPool();
         std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
-        if (!LavaCake::Core::AllocateCommandBuffers(logical, pool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, 1, buffers)) {
+
+        VkCommandBufferAllocateInfo command_buffer_allocate_info = {
+        VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,   // VkStructureType          sType
+        nullptr,                                          // const void             * pNext
+        pool,                                     // VkCommandPool            commandPool
+        VK_COMMAND_BUFFER_LEVEL_PRIMARY,                                            // VkCommandBufferLevel     level
+        1                                             // uint32_t                 commandBufferCount
+        };
+
+
+        VkResult result = vkAllocateCommandBuffers(logical, &command_buffer_allocate_info, buffers.data());
+        if (VK_SUCCESS != result) {
           ErrorCheck::setError("Failed to allocate commande buffer");
         }
+
         m_commandBuffer = buffers[0];
 
         VkFenceCreateInfo fence_create_info = {
@@ -25,7 +37,7 @@ namespace LavaCake {
         VK_FENCE_CREATE_SIGNALED_BIT,                 // VkFenceCreateFlags     flags
         };
 
-        VkResult result = vkCreateFence(logical, &fence_create_info, nullptr, &*m_fence);
+        result = vkCreateFence(logical, &fence_create_info, nullptr, &*m_fence);
         if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
           //std::cout << "Could not create a fence." << std::endl;
@@ -70,14 +82,25 @@ namespace LavaCake {
       }
 
       void beginRecord() {
-        if (!LavaCake::Core::BeginCommandBufferRecordingOperation(m_commandBuffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, nullptr)) {
+        VkCommandBufferBeginInfo command_buffer_begin_info = {
+        VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,    // VkStructureType                        sType
+        nullptr,                                        // const void                           * pNext
+        VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,    // VkCommandBufferUsageFlags              flags
+        nullptr                                         // const VkCommandBufferInheritanceInfo * pInheritanceInfo
+        };
+
+        VkResult result = vkBeginCommandBuffer(m_commandBuffer, &command_buffer_begin_info);
+        if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
+          //std::cout << "Could not begin command buffer recording operation." << std::endl;
         }
       }
 
       void endRecord() {
-        if (!LavaCake::Core::EndCommandBufferRecordingOperation(m_commandBuffer)) {
-          assert("ERROR");
+        VkResult result = vkEndCommandBuffer(m_commandBuffer);
+        if (VK_SUCCESS != result) {
+          //TODO : Raise error using error check
+          //std::cout << "Error occurred during command buffer recording." << std::endl;
         }
       }
 
@@ -92,6 +115,35 @@ namespace LavaCake {
       VkFence& getFence() {
         return *m_fence;
       }
+
+      void submit(Queue* queue, std::vector<Core::WaitSemaphoreInfo> waitSemaphoreInfo, std::vector<VkSemaphore>  signal_semaphores) {
+        std::vector<VkSemaphore>          wait_semaphore_handles;
+        std::vector<VkPipelineStageFlags> wait_semaphore_stages;
+        for (auto& wait_semaphore_info : waitSemaphoreInfo) {
+          wait_semaphore_handles.emplace_back(wait_semaphore_info.Semaphore);
+          wait_semaphore_stages.emplace_back(wait_semaphore_info.WaitingStage);
+        }
+
+        std::vector<VkCommandBuffer> command_buffers = { getHandle() };
+
+        VkSubmitInfo submit_info = {
+          VK_STRUCTURE_TYPE_SUBMIT_INFO,                        // VkStructureType                sType
+          nullptr,                                              // const void                   * pNext
+          static_cast<uint32_t>(waitSemaphoreInfo.size()),			// uint32_t                       waitSemaphoreCount
+          wait_semaphore_handles.data(),                        // const VkSemaphore            * pWaitSemaphores
+          wait_semaphore_stages.data(),                         // const VkPipelineStageFlags   * pWaitDstStageMask
+          static_cast<uint32_t>(1),															// uint32_t                       commandBufferCount
+          command_buffers.data(),                               // const VkCommandBuffer        * pCommandBuffers
+          static_cast<uint32_t>(signal_semaphores.size()),      // uint32_t                       signalSemaphoreCount
+          signal_semaphores.data()                              // const VkSemaphore            * pSignalSemaphores
+        };
+
+        VkResult result = vkQueueSubmit(queue->getHandle(), 1, &submit_info, getFence());
+        if (VK_SUCCESS != result) {
+          std::cout << "Error occurred during command buffer submission." << std::endl;
+        }
+      }
+
 
       ~CommandBuffer() {
 
@@ -108,7 +160,7 @@ namespace LavaCake {
         }
         if (m_commandBuffer != VK_NULL_HANDLE) {
           std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
-          LavaCake::Core::FreeCommandBuffers(logical, d->getCommandPool(), buffers);
+          vkFreeCommandBuffers(logical, d->getCommandPool(), 1, &buffers[0]);
         }
       };
 

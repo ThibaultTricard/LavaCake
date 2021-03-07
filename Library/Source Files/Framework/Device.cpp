@@ -218,7 +218,10 @@ namespace LavaCake {
 
 		void Device::end() {
 			if (m_logical) {
-				LavaCake::Core::WaitForAllSubmittedCommandsToBeFinished(*m_logical);
+				VkResult result = vkDeviceWaitIdle(*m_logical);
+				if (result != VK_SUCCESS) {
+					ErrorCheck::setError("Waiting on a device failed.");
+				}
 			}
 		}
 

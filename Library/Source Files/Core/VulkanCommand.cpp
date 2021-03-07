@@ -47,65 +47,6 @@ namespace LavaCake {
 			return true;
 		}
 
-		bool AllocateCommandBuffers(VkDevice                       logical_device,
-			VkCommandPool                  command_pool,
-			VkCommandBufferLevel           level,
-			uint32_t                       count,
-			std::vector<VkCommandBuffer> & command_buffers) {
-			VkCommandBufferAllocateInfo command_buffer_allocate_info = {
-				VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,   // VkStructureType          sType
-				nullptr,                                          // const void             * pNext
-				command_pool,                                     // VkCommandPool            commandPool
-				level,                                            // VkCommandBufferLevel     level
-				count                                             // uint32_t                 commandBufferCount
-			};
-
-			command_buffers.resize(count);
-
-			VkResult result = vkAllocateCommandBuffers(logical_device, &command_buffer_allocate_info, command_buffers.data());
-			if (VK_SUCCESS != result) {
-				std::cout << "Could not allocate command buffers." << std::endl;
-				return false;
-			}
-			return true;
-		}
-
-		bool BeginCommandBufferRecordingOperation(VkCommandBuffer                  command_buffer,
-			VkCommandBufferUsageFlags        usage,
-			VkCommandBufferInheritanceInfo * secondary_command_buffer_info) {
-			VkCommandBufferBeginInfo command_buffer_begin_info = {
-				VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,    // VkStructureType                        sType
-				nullptr,                                        // const void                           * pNext
-				usage,                                          // VkCommandBufferUsageFlags              flags
-				secondary_command_buffer_info                   // const VkCommandBufferInheritanceInfo * pInheritanceInfo
-			};
-
-			VkResult result = vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info);
-			if (VK_SUCCESS != result) {
-				std::cout << "Could not begin command buffer recording operation." << std::endl;
-				return false;
-			}
-			return true;
-		}
-
-		bool EndCommandBufferRecordingOperation(VkCommandBuffer command_buffer) {
-			VkResult result = vkEndCommandBuffer(command_buffer);
-			if (VK_SUCCESS != result) {
-				std::cout << "Error occurred during command buffer recording." << std::endl;
-				return false;
-			}
-			return true;
-		}
-	
-		bool ResetCommandBuffer(VkCommandBuffer command_buffer,
-			bool            release_resources) {
-			VkResult result = vkResetCommandBuffer(command_buffer, release_resources ? VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT : 0);
-			if (VK_SUCCESS != result) {
-				std::cout << "Error occurred during command buffer reset." << std::endl;
-				return false;
-			}
-			return true;
-		}
 
 		bool ResetCommandPool(VkDevice      logical_device,
 			VkCommandPool command_pool,
@@ -118,57 +59,6 @@ namespace LavaCake {
 			return true;
 		}
 
-		bool SubmitCommandBuffersToQueue(VkQueue                         queue,
-			std::vector<WaitSemaphoreInfo>  wait_semaphore_infos,
-			std::vector<VkCommandBuffer>    command_buffers,
-			std::vector<VkSemaphore>        signal_semaphores,
-			VkFence                         fence) {
-			std::vector<VkSemaphore>          wait_semaphore_handles;
-			std::vector<VkPipelineStageFlags> wait_semaphore_stages;
-
-			for (auto & wait_semaphore_info : wait_semaphore_infos) {
-				wait_semaphore_handles.emplace_back(wait_semaphore_info.Semaphore);
-				wait_semaphore_stages.emplace_back(wait_semaphore_info.WaitingStage);
-			}
-
-			VkSubmitInfo submit_info = {
-				VK_STRUCTURE_TYPE_SUBMIT_INFO,                        // VkStructureType                sType
-				nullptr,                                              // const void                   * pNext
-				static_cast<uint32_t>(wait_semaphore_infos.size()),   // uint32_t                       waitSemaphoreCount
-				wait_semaphore_handles.data(),                        // const VkSemaphore            * pWaitSemaphores
-				wait_semaphore_stages.data(),                         // const VkPipelineStageFlags   * pWaitDstStageMask
-				static_cast<uint32_t>(command_buffers.size()),        // uint32_t                       commandBufferCount
-				command_buffers.data(),                               // const VkCommandBuffer        * pCommandBuffers
-				static_cast<uint32_t>(signal_semaphores.size()),      // uint32_t                       signalSemaphoreCount
-				signal_semaphores.data()                              // const VkSemaphore            * pSignalSemaphores
-			};
-
-			VkResult result = vkQueueSubmit(queue, 1, &submit_info, fence);
-			if (VK_SUCCESS != result) {
-				std::cout << "Error occurred during command buffer submission." << std::endl;
-				return false;
-			}
-			return true;
-		}
-
-
-		bool WaitForAllSubmittedCommandsToBeFinished(VkDevice logical_device) {
-			VkResult result = vkDeviceWaitIdle(logical_device);
-			if (VK_SUCCESS != result) {
-				std::cout << "Waiting on a device failed." << std::endl;
-				return false;
-			}
-			return true;
-		}
-
-		void FreeCommandBuffers(VkDevice                       logical_device,
-			VkCommandPool                  command_pool,
-			std::vector<VkCommandBuffer> & command_buffers) {
-			if (command_buffers.size() > 0) {
-				vkFreeCommandBuffers(logical_device, command_pool, static_cast<uint32_t>(command_buffers.size()), command_buffers.data());
-				command_buffers.clear();
-			}
-		}
 
 		void DestroyCommandPool(VkDevice        logical_device,
 			VkCommandPool & command_pool) {

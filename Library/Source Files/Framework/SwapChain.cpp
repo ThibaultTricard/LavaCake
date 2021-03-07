@@ -16,8 +16,10 @@ namespace LavaCake {
 			VkCommandPool pool = d->getCommandPool();
 
 			
-
-			LavaCake::Core::WaitForAllSubmittedCommandsToBeFinished(logical);
+			VkResult result = vkDeviceWaitIdle(logical);
+			if (result != VK_SUCCESS) {
+				ErrorCheck::setError("Waiting on a device failed.");
+			}
 
 			m_images.clear();
 

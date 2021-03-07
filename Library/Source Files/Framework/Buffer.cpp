@@ -30,8 +30,15 @@ namespace LavaCake{
 				memProp = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
 			}
 
-			Core::DestroyBuffer(logical, *m_buffer);
-			Core::DestroyBufferView(logical, *m_bufferView);
+			if (VK_NULL_HANDLE != *m_buffer) {
+				vkDestroyBuffer(logical, *m_buffer, nullptr);
+				*m_buffer = VK_NULL_HANDLE;
+			}
+
+			if (VK_NULL_HANDLE != *m_bufferView) {
+				vkDestroyBufferView(logical, *m_bufferView, nullptr);
+				*m_bufferView = VK_NULL_HANDLE;
+			}
 
 			if (VK_NULL_HANDLE != *m_bufferMemory) {
 				vkFreeMemory(logical, *m_bufferMemory, nullptr);
@@ -214,9 +221,7 @@ namespace LavaCake{
 
 			cmdBuff.endRecord();
 
-			if (!LavaCake::Core::SubmitCommandBuffersToQueue(queue->getHandle(), {}, { cmdBuff.getHandle() }, {}, cmdBuff.getFence())) {
-
-			}
+			cmdBuff.submit(queue, {}, {});
 
 			cmdBuff.wait(UINT32_MAX);
 			cmdBuff.resetFence();

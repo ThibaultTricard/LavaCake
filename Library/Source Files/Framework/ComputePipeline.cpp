@@ -16,7 +16,19 @@ namespace LavaCake {
 			SpecifyPipelineShaderStages({ m_computeModule->getStageParameter() }, shader_stage_create_infos);
 
 			InitVkDestroyer(logical, m_pipeline);
-			if (!CreateComputePipeline(logical, 0, shader_stage_create_infos[0], *m_pipelineLayout, VK_NULL_HANDLE, VK_NULL_HANDLE, *m_pipeline)) {
+
+			VkComputePipelineCreateInfo compute_pipeline_create_info = {
+				VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,   // VkStructureType                    sType
+				nullptr,                                          // const void                       * pNext
+				0,																								// VkPipelineCreateFlags              flags
+				shader_stage_create_infos[0],                     // VkPipelineShaderStageCreateInfo    stage
+				*m_pipelineLayout,																// VkPipelineLayout                   layout
+				VK_NULL_HANDLE,																		// VkPipeline                         basePipelineHandle
+				-1                                                // int32_t                            basePipelineIndex
+			};
+
+			VkResult result = vkCreateComputePipelines(logical, VK_NULL_HANDLE, 1, &compute_pipeline_create_info, nullptr, &*m_pipeline);
+			if (VK_SUCCESS != result) {
 				ErrorCheck::setError("Can't create compute pipeline");
 			}
 		}
