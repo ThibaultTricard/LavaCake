@@ -230,7 +230,7 @@ namespace LavaCake {
 
 
 
-			void RayTracingPipeline::setMaxRecursion(uint16_t recursion = 1) {
+			void RayTracingPipeline::setMaxRecursion(uint16_t recursion) {
 				m_maxRecursion = recursion;
 			}
 

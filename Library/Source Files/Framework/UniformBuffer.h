@@ -15,80 +15,16 @@ namespace LavaCake {
     class UniformBuffer {
     public :
 
-      void addVariable(std::string name, Data* value) {
-        std::vector<int> v = value->rawMemory();
-        addArray(name, v);
-      }
 
-      void setVariable(std::string name, Data* value) {
-        std::vector<int> v = value->rawMemory();
-        setArray(name, v);
-      }
-
-      void addVariable(std::string name, std::vector<Data*>* value) {
-        std::vector<int> v;
-        for (size_t i = 0; i < value->size(); i++) {
-          
-          std::vector<int> temp = (*value)[i]->rawMemory();
-          v.insert(v.end(), temp.begin(), temp.end());
-        }
-        addArray(name, v);
-      }
-
-      void setVariable(std::string name, std::vector<Data*>* value) {
-        std::vector<int> v;
-        for (size_t i = 0; i < value->size(); i++) {
-          std::vector<int> temp = (*value)[i]->rawMemory();
-          v.insert(v.end(), temp.begin(), temp.end());
-        }
-        setArray(name, v);
-      }
-      
-      void addVariable(std::string name, int value) {
+      template<typename T>
+      void addVariable(std::string name, T value) {
         std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
         std::memcpy(&v[0], &value, sizeof(value));
         addArray(name, v);
       }
 
-      void setVariable(std::string name, int value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
-        std::memcpy(&v[0], &value, sizeof(value));
-        setArray(name, v);
-      }
-
-
-      void addVariable(std::string name, uint32_t value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
-        std::memcpy(&v[0], &value, sizeof(value));
-        addArray(name, v);
-      }
-
-      void setVariable(std::string name, uint32_t value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
-        std::memcpy(&v[0], &value, sizeof(value));
-        setArray(name, v);
-      }
-
-      void addVariable(std::string name, float value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
-        std::memcpy(&v[0], &value, sizeof(value));
-        addArray(name, v);
-      }
-
-      void setVariable(std::string name, float value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
-        std::memcpy(&v[0], &value, sizeof(value));
-        setArray(name, v);
-      }
-
-
-      void addVariable(std::string name, double value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
-        std::memcpy(&v[0], &value, sizeof(value));
-        addArray(name, v);
-      }
-
-      void setVariable(std::string name, double value) {
+      template<typename T>
+      void setVariable(std::string name, T value) {
         std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
         std::memcpy(&v[0], &value, sizeof(value));
         setArray(name, v);

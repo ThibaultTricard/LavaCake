@@ -18,7 +18,7 @@ namespace LavaCake {
 
       }
 
-      void TopLevelAS::alloctate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false) {
+      void TopLevelAS::alloctate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
         Framework::Device* d = Framework::Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
         VkPhysicalDevice phyDevice = d->getPhysicalDevice();

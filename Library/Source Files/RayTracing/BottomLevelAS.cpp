@@ -3,7 +3,7 @@
 namespace LavaCake {
 	namespace RayTracing {
 
-			void BottomLevelAS::addVertexBuffer(Framework::VertexBuffer* vertexBuffer, Framework::TransformBuffer* transformBuffer, bool opaque = true) {
+			void BottomLevelAS::addVertexBuffer(Framework::VertexBuffer* vertexBuffer, Framework::TransformBuffer* transformBuffer, bool opaque ) {
 
 				VkDeviceOrHostAddressConstKHR vertexBufferDeviceAddress{};
 				VkDeviceOrHostAddressConstKHR indexBufferDeviceAddress{};
@@ -46,7 +46,7 @@ namespace LavaCake {
 			}
 
 
-			void BottomLevelAS::allocate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false) {
+			void BottomLevelAS::allocate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
 
 				Framework::Device* d = Framework::Device::getDevice();
 				VkDevice device = d->getLogicalDevice();

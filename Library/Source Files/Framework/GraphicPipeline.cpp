@@ -110,7 +110,7 @@ namespace LavaCake {
 				false,																											// VkBool32                                   depthClampEnable
 				false,																											// VkBool32                                   rasterizerDiscardEnable
 				m_vertexBuffer->polygonMode(),                              // VkPolygonMode                              polygonMode
-				m_CullMode,																									// VkCullModeFlags                            cullMode
+				VkCullModeFlags(m_CullMode),																// VkCullModeFlags                            cullMode
 				VK_FRONT_FACE_COUNTER_CLOCKWISE,                            // VkFrontFace                                frontFace
 				false,																											// VkBool32                                   depthBiasEnable
 				0.0f,																												// float                                      depthBiasConstantFactor
@@ -197,11 +197,6 @@ namespace LavaCake {
 			};
 
 			Pipeline::SpecifyPipelineShaderStages(getStageParameter(), m_shaderStageCreateInfos);
-			Pipeline::SpecifyGraphicsPipelineCreationParameters(0, m_shaderStageCreateInfos, m_vertexInfo, m_inputInfo,
-				nullptr, &m_viewportInfo, m_rasterizationStateCreateInfo, &m_multisampleStateCreateInfo, &m_depthStencilStateCreateInfo, &m_blendStateCreateInfo,
-				&m_dynamicStateCreateInfo, *m_pipelineLayout, renderpass, m_subpassNumber, VK_NULL_HANDLE, -1, m_pipelineCreateInfo);
-
-
 
 			m_pipelineCreateInfo = {
 				VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,            // VkStructureType                                sType

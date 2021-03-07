@@ -37,164 +37,69 @@
 
 namespace LavaCake {
 
+  using vec2f = std::array<float, 2>;
+  using vec2d = std::array<double, 2>;
+  using vec2i = std::array<int, 2>;
+  using vec2u = std::array<uint32_t, 2>;
+  using vec2b = std::array<bool, 2>;
 
-  class Data {
-  public:
-    virtual std::vector<int> rawMemory() = 0;
-  };
+  using vec3f = std::array<float, 3>;
+  using vec3d = std::array<double, 3>;
+  using vec3i = std::array<int, 3>;
+  using vec3u = std::array<uint32_t, 3>;
+  using vec3b = std::array<bool, 3>;
 
-  template<typename T, unsigned char N>
-  class v : public Data {
-  private:
-    std::array<T, N> data;
+  using vec4f = std::array<float, 4>;
+  using vec4d = std::array<double, 4>;
+  using vec4i = std::array<int, 4>;
+  using vec4u = std::array<uint32_t, 3>;
+  using vec4b = std::array<bool, 4>;
 
-  public:
-    v() {
-      for (unsigned char i = 0; i < N; i++) {
-        data[i] = T(0);
-      }
-    }
+  using mat2 = std::array<float, 4>;
+  using mat3 = std::array<float, 9>;
+  using mat4 = std::array<float, 16>;
 
-    v(const std::array<T, N>& d) {
-      data = std::array<T, N>(d);
-    }
-
-    std::vector<int> rawMemory() override {
-      std::vector<int> mem(length() * sizeof(T) / sizeof(int));
-      std::memcpy(&mem[0], &data, sizeof(int) * mem.size());
-      return mem;
-    }
-
-    size_t length() {
-      return size_t(N);
-    }
-
-    T& operator [](const int idx) {
-      return data[idx];
-    }
-
-    T operator [](const int idx) const {
-      return data[idx];
-    }
-  };
 
   template<typename T, unsigned char N>
-  v<T, N> operator*(const v<T, N>& b, const T a) {
+  std::array<T, N> operator*(const std::array<T, N>& b, const T a) {
     std::array<T, N> d = std::array<T, N>();
     for (unsigned char i = 0; i < N; i++) {
       d[i] = b[i] * a;
     }
-    return v<T, N>(d);
+    return std::array<T, N>(d);
   }
 
   template<typename T, unsigned char N>
-  v<T, N> operator*(const T a, const v<T, N>& b) {
+  std::array<T, N> operator*(const T a, const std::array<T, N>& b) {
     std::array<T, N> d = std::array<T, N>();
     for (unsigned char i = 0; i < N; i++) {
       d[i] = b[i] * a;
     }
-    return v<T, N>(d);
+    return std::array<T, N>(d);
   }
 
   template<typename T, unsigned char N>
-  v<T, N> operator-(const v<T, N> a, const v<T, N> b) {
+  std::array<T, N> operator-(const std::array<T, N> a, const std::array<T, N> b) {
     std::array<T, N> d = std::array<T, N>();
     for (unsigned char i = 0; i < N; i++) {
       d[i] = a[i] - b[i];
     }
-    return v<T, N>(d);
+    return std::array<T, N>(d);
   }
 
   template<typename T, unsigned char N>
-  v<T, N> operator+(const v<T, N> a, const v<T, N> b) {
+  std::array<T, N> operator+(const std::array<T, N> a, const std::array<T, N> b) {
     std::array<T, N> d = std::array<T, N>();
     for (unsigned char i = 0; i < N; i++) {
       d[i] = a[i] + b[i];
     }
-    return v<T, N>(d);
+    return std::array<T, N>(d);
   }
 
-
-  template<typename T, unsigned char N>
-  class m : public Data {
-    std::array<T, N* N> data;
-  public:
-
-    m() {
-      for (unsigned char i = 0; i < N * N; i++) {
-        data[i] = T(0);
-      }
-    }
-
-    m(const std::array<T, N* N>& d) {
-      data = std::array<T, N* N>(d);
-    }
-
-    std::vector<int> rawMemory() override {
-      std::vector<int> mem(length() * sizeof(T) / sizeof(int));
-      std::memcpy(&mem[0], &data, sizeof(int) * mem.size());
-      return mem;
-    }
-
-    T& operator [](const int idx) {
-      return data[idx];
-    }
-
-    T operator [](const int idx) const {
-      return data[idx];
-    }
-    size_t length() {
-      return size_t(N * N);
-    }
-
-    m<T, N> operator+(const m<T, N> a) {
-      std::array<T, N* N> d = std::array<T, N* N>(data);
-      for (unsigned char i = 0; i < N; i++) {
-        d[i] += a[i];
-      }
-      return m<T, N>(d);
-    }
-
-    m<T, N> operator-(const m<T, N> a) {
-      std::array<T, N* N> d = std::array<T, N* N>(data);
-      for (unsigned char i = 0; i < N; i++) {
-        d[i] -= a[i];
-      }
-      return m<T, N>(d);
-    }
-
-  };
-
-
-
-
-
-  using vec2f = v<float, 2>;
-  using vec2d = v<double, 2>;
-  using vec2i = v<int, 2>;
-  using vec2u = v<uint32_t, 2>;
-  using vec2b = v<bool, 2>;
-
-  using vec3f = v<float, 3>;
-  using vec3d = v<double, 3>;
-  using vec3i = v<int, 3>;
-  using vec3u = v<uint32_t, 3>;
-  using vec3b = v<bool, 3>;
-
-  using vec4f = v<float, 4>;
-  using vec4d = v<double, 4>;
-  using vec4i = v<int, 4>;
-  using vec4u = v<uint32_t, 3>;
-  using vec4b = v<bool, 4>;
-
-  using mat2 = m<float, 2>;
-  using mat3 = m<float, 3>;
-  using mat4 = m<float, 4>;
+  float Deg2Rad(float value);
 
   bool GetBinaryFileContents(std::string const& filename,
     std::vector<unsigned char>& contents);
-
-  radian Deg2Rad(degree value);
 
   float Dot(vec3f const& left,
     vec3f const& right);
@@ -202,17 +107,13 @@ namespace LavaCake {
   vec3f Cross(vec3f const& left,
     vec3f const& right);
 
-
   vec3f Normalize(vec3f const& vector);
-
 
   vec3f operator* (vec3f const& left,
     mat4 const& right);
 
-
   bool operator== (vec3f const& left,
     vec3f const& right);
-
 
   float Dot(vec3f const & left,
     vec3f const & right );
@@ -222,10 +123,8 @@ namespace LavaCake {
 
   vec3f Normalize( vec3f const & vector );
 
-  
   mat4 operator* (mat4 const& left,
     mat4 const& right);
-
 
   mat4 inverse(mat4& m);
 
