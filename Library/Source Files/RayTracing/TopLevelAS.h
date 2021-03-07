@@ -42,7 +42,7 @@ namespace LavaCake {
 
       std::vector<uint32_t> m_primitive_count;
 
-      Framework::Buffer* m_ASBuffer;
+      Framework::Buffer* m_ASBuffer = nullptr;
 		};
 	}
 }

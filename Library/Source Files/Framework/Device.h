@@ -50,7 +50,7 @@ namespace LavaCake {
 			
 
 			private :
-				VkPhysicalDevice													m_physical;
+				VkPhysicalDevice													m_physical = VK_NULL_HANDLE;
 				VkDestroyer(VkDevice)											m_logical;
 				LIBRARY_TYPE															m_vulkanLibrary;
 				VkDestroyer(VkInstance)										m_instance;

@@ -34,7 +34,7 @@ namespace LavaCake {
       GraphicPipeline* m_pipeline = nullptr;
       PushConstant* m_pushConstant = nullptr;
       Framework::VertexBuffer* m_vertexBuffer = nullptr;
-      LavaCake::Geometry::Mesh_t* m_mesh;
+      LavaCake::Geometry::Mesh_t* m_mesh = nullptr;
 
 
       
