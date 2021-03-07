@@ -37,8 +37,6 @@
 
 namespace LavaCake {
 
-  typedef float radian;
-  typedef float degree;
 
   class Data {
   public:
