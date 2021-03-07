@@ -103,10 +103,49 @@ namespace LavaCake {
 			}
 
 			
-			Pipeline::SpecifyPipelineRasterizationState(false, false, m_vertexBuffer->polygonMode(), m_CullMode, VK_FRONT_FACE_COUNTER_CLOCKWISE, false, 0.0f, 0.0f, 0.0f, 1.0f, m_rasterizationStateCreateInfo);
-			Pipeline::SpecifyPipelineMultisampleState(VK_SAMPLE_COUNT_1_BIT, false, 0.0f, nullptr, false, false, m_multisampleStateCreateInfo);
-			Pipeline::SpecifyPipelineDepthAndStencilState(true, true, VK_COMPARE_OP_LESS_OR_EQUAL, false, 0.0f, 1.0f, false, {}, {}, m_depthStencilStateCreateInfo);
-			
+			m_rasterizationStateCreateInfo = {
+				VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO, // VkStructureType                            sType
+				nullptr,                                                    // const void                               * pNext
+				0,                                                          // VkPipelineRasterizationStateCreateFlags    flags
+				false,																											// VkBool32                                   depthClampEnable
+				false,																											// VkBool32                                   rasterizerDiscardEnable
+				m_vertexBuffer->polygonMode(),                              // VkPolygonMode                              polygonMode
+				m_CullMode,																									// VkCullModeFlags                            cullMode
+				VK_FRONT_FACE_COUNTER_CLOCKWISE,                            // VkFrontFace                                frontFace
+				false,																											// VkBool32                                   depthBiasEnable
+				0.0f,																												// float                                      depthBiasConstantFactor
+				0.0f,																												// float                                      depthBiasClamp
+				0.0f,																												// float                                      depthBiasSlopeFactor
+				1.0f																												// float                                      lineWidth
+			};
+
+			m_multisampleStateCreateInfo = {
+				VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO, // VkStructureType                          sType
+				nullptr,                                                  // const void                             * pNext
+				0,                                                        // VkPipelineMultisampleStateCreateFlags    flags
+				VK_SAMPLE_COUNT_1_BIT,                                    // VkSampleCountFlagBits                    rasterizationSamples
+				false,																										// VkBool32                                 sampleShadingEnable
+				0.0f,																											// float                                    minSampleShading
+				nullptr,																								  // const VkSampleMask                     * pSampleMask
+				false,																										// VkBool32                                 alphaToCoverageEnable
+				false																											// VkBool32                                 alphaToOneEnable
+			};
+
+			m_depthStencilStateCreateInfo = {
+				VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,   // VkStructureType                            sType
+				nullptr,                                                      // const void                               * pNext
+				0,                                                            // VkPipelineDepthStencilStateCreateFlags     flags
+				true,																													// VkBool32                                   depthTestEnable
+				true,																													// VkBool32                                   depthWriteEnable
+				VK_COMPARE_OP_LESS_OR_EQUAL,                                  // VkCompareOp                                depthCompareOp
+				false,																												// VkBool32                                   depthBoundsTestEnable
+				false,																												// VkBool32                                   stencilTestEnable
+				{},																														// VkStencilOpState                           front
+				{},																														// VkStencilOpState                           back
+				0.0f,																													// float                                      minDepthBounds
+				1.0f																													// float                                      maxDepthBounds
+			};
+
 			m_attachmentBlendStates = {};
 			for (uint16_t c = 0; c < nbColorAttachments; c++) {
 				m_attachmentBlendStates.push_back(
@@ -128,16 +167,63 @@ namespace LavaCake {
 			}
 
 			
-			Pipeline::SpecifyPipelineBlendState(false, VK_LOGIC_OP_COPY, m_attachmentBlendStates, { 1.0f, 1.0f, 1.0f, 1.0f }, m_blendStateCreateInfo);
+			m_blendStateCreateInfo = {
+				VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,   // VkStructureType                              sType
+				nullptr,                                                    // const void                                 * pNext
+				0,                                                          // VkPipelineColorBlendStateCreateFlags         flags
+				false,																								      // VkBool32                                     logicOpEnable
+				VK_LOGIC_OP_COPY,                                           // VkLogicOp                                    logicOp
+				static_cast<uint32_t>(m_attachmentBlendStates.size()),      // uint32_t                                     attachmentCount
+				m_attachmentBlendStates.data(),                             // const VkPipelineColorBlendAttachmentState  * pAttachments
+				{                                                           // float                                        blendConstants[4]
+					1.0f,
+					1.0f,
+					1.0f,
+					1.0f
+				}
+			};
+
 			m_dynamicStates = {
 				VK_DYNAMIC_STATE_VIEWPORT,
 				VK_DYNAMIC_STATE_SCISSOR
 			};
-			Pipeline::SpecifyPipelineDynamicStates(m_dynamicStates, m_dynamicStateCreateInfo);
+
+			m_dynamicStateCreateInfo = {
+				VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,     // VkStructureType                      sType
+				nullptr,                                                  // const void                         * pNext
+				0,                                                        // VkPipelineDynamicStateCreateFlags    flags
+				static_cast<uint32_t>(m_dynamicStates.size()),             // uint32_t                             dynamicStateCount
+				m_dynamicStates.data()                                     // const VkDynamicState               * pDynamicStates
+			};
+
 			Pipeline::SpecifyPipelineShaderStages(getStageParameter(), m_shaderStageCreateInfos);
 			Pipeline::SpecifyGraphicsPipelineCreationParameters(0, m_shaderStageCreateInfos, m_vertexInfo, m_inputInfo,
 				nullptr, &m_viewportInfo, m_rasterizationStateCreateInfo, &m_multisampleStateCreateInfo, &m_depthStencilStateCreateInfo, &m_blendStateCreateInfo,
 				&m_dynamicStateCreateInfo, *m_pipelineLayout, renderpass, m_subpassNumber, VK_NULL_HANDLE, -1, m_pipelineCreateInfo);
+
+
+
+			m_pipelineCreateInfo = {
+				VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,            // VkStructureType                                sType
+				nullptr,                                                    // const void                                   * pNext
+				0,																													// VkPipelineCreateFlags                          flags
+				static_cast<uint32_t>(m_shaderStageCreateInfos.size()),			// uint32_t                                       stageCount
+				m_shaderStageCreateInfos.data(),														// const VkPipelineShaderStageCreateInfo        * pStages
+				& m_vertexInfo,																							// const VkPipelineVertexInputStateCreateInfo   * pVertexInputState
+				& m_inputInfo,																							// const VkPipelineInputAssemblyStateCreateInfo * pInputAssemblyState
+				nullptr,																										// const VkPipelineTessellationStateCreateInfo  * pTessellationState
+				& m_viewportInfo,																						// const VkPipelineViewportStateCreateInfo      * pViewportState
+				& m_rasterizationStateCreateInfo,                           // const VkPipelineRasterizationStateCreateInfo * pRasterizationState
+				& m_multisampleStateCreateInfo,                             // const VkPipelineMultisampleStateCreateInfo   * pMultisampleState
+				& m_depthStencilStateCreateInfo,														// const VkPipelineDepthStencilStateCreateInfo  * pDepthStencilState
+				& m_blendStateCreateInfo,                                   // const VkPipelineColorBlendStateCreateInfo    * pColorBlendState
+				& m_dynamicStateCreateInfo,                                 // const VkPipelineDynamicStateCreateInfo       * pDynamicState
+				* m_pipelineLayout,                                         // VkPipelineLayout                               layout
+				renderpass,																									// VkRenderPass                                   renderPass
+				m_subpassNumber,                                            // uint32_t                                       subpass
+				VK_NULL_HANDLE,																							// VkPipeline                                     basePipelineHandle
+				-1																													// int32_t                                        basePipelineIndex
+			};
 
 			std::vector<VkPipeline> pipelines;
 			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
@@ -194,8 +280,6 @@ namespace LavaCake {
 				static_cast<uint32_t>(buffer->getAttributeDescriptions().size()),         // uint32_t                                  vertexAttributeDescriptionCount
 				buffer->getAttributeDescriptions().data()                                 // const VkVertexInputAttributeDescription * pVertexAttributeDescriptions
 			};
-
-			Pipeline::SpecifyPipelineInputAssemblyState(buffer->primitiveTopology(), false, m_inputInfo);
 
 			m_inputInfo = {
 				VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,  // VkStructureType                           sType

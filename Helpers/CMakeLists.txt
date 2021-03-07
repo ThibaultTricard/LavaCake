@@ -27,11 +27,11 @@ macro(AutoSPIRV TARGET_NAME)
 		list(GET OUTPUT_SHADER ${val} val2)
 
 		get_property(path GLOBAL PROPERTY HELPERS_PATH)
-		#set(COMMANDS "python ${path}/AutoSPIRV.py ${val1} ${val2}")
-		set(COMMANDS glslc ${val1} -g -o  ${val2} --target-spv=spv1.4)
-		string(REGEX MATCH "[A-Za-z0-9]*\\.[A-Za-z0-9]*" FILENAME ${val1})
 
 		set(OUTPUT_FILE ${val2})
+
+		set(COMMANDS glslc ${val1} -g -o  ${val2} --target-spv=spv1.4)
+		
 		add_custom_command(
 			OUTPUT ${OUTPUT_FILE}
 			COMMAND ${COMMANDS}

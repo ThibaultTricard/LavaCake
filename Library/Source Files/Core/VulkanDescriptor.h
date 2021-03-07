@@ -79,12 +79,6 @@ namespace LavaCake {
 		bool ResetDescriptorPool(VkDevice          logical_device,
 			VkDescriptorPool  descriptor_pool);
 
-		void DestroyDescriptorPool(VkDevice           logical_device,
-			VkDescriptorPool & descriptor_pool);
-
-		void DestroyDescriptorSetLayout(VkDevice                logical_device,
-			VkDescriptorSetLayout & descriptor_set_layout);
-
 	}
 
 } // namespace LavaCake

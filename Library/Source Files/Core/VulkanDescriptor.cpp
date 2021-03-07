@@ -204,22 +204,6 @@ namespace LavaCake {
 			}
 			return true;
 		}
-
-		void DestroyDescriptorPool(VkDevice           logical_device,
-			VkDescriptorPool & descriptor_pool) {
-			if (VK_NULL_HANDLE != descriptor_pool) {
-				vkDestroyDescriptorPool(logical_device, descriptor_pool, nullptr);
-				descriptor_pool = VK_NULL_HANDLE;
-			}
-		}
-
-		void DestroyDescriptorSetLayout(VkDevice                logical_device,
-			VkDescriptorSetLayout & descriptor_set_layout) {
-			if (VK_NULL_HANDLE != descriptor_set_layout) {
-				vkDestroyDescriptorSetLayout(logical_device, descriptor_set_layout, nullptr);
-				descriptor_set_layout = VK_NULL_HANDLE;
-			}
-		}
 	}
 
 	
