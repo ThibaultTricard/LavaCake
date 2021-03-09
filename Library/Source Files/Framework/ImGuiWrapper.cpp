@@ -244,8 +244,8 @@ namespace LavaCake {
       m_vertexBuffer->allocate(queue, *cmdBuff);
 
       m_pushConstant = new PushConstant();
-      m_pushConstant->addVariable("uScale", &vec2f({0.0f,0.0f}));
-      m_pushConstant->addVariable("uTranslate", &vec2f({0.0f,0.0f}));
+      m_pushConstant->addVariable("uScale", (Data*) new vec2f({0.0f,0.0f}));
+      m_pushConstant->addVariable("uTranslate", (Data*) new vec2f({0.0f,0.0f}));
 
       std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv)/sizeof(unsigned char));
       memcpy(&vertSpirv[0], __glsl_shader_vert_spv, sizeof(__glsl_shader_vert_spv));

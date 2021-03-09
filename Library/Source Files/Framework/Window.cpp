@@ -69,13 +69,17 @@ namespace LavaCake {
 			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 			m_window = glfwCreateWindow(width, height, window_title, nullptr, nullptr);
-			m_windowParams = { GetModuleHandleW(NULL), glfwGetWin32Window(m_window) };
+#ifdef Win32
+            m_windowParams = { GetModuleHandleW(NULL), glfwGetWin32Window(m_window) };
 
 
 			if (!m_windowParams.HWnd) {
-        ErrorCheck::setError("Failed to create window");
+                ErrorCheck::setError("Failed to create window");
 			}
-
+#elif defined __linux
+            
+#elif defined __APPLE__
+#endif
 			
 			Mouse::init(m_window);
 
