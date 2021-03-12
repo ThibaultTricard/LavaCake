@@ -293,40 +293,40 @@ namespace LavaCake {
 
 
 
-		void GraphicPipeline::draw(const VkCommandBuffer buffer) {
+		void GraphicPipeline::draw(CommandBuffer& buffer) {
 			VkViewport& viewport = m_viewportscissor.Viewports[0];
-			vkCmdSetViewport(buffer, 0, 1, { &m_viewportscissor.Viewports[0] });
+			vkCmdSetViewport(buffer.getHandle(), 0, 1, { &m_viewportscissor.Viewports[0] });
 
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
-			vkCmdSetScissor(buffer, 0, 1, { &scissor });
+			vkCmdSetScissor(buffer.getHandle(), 0, 1, { &scissor });
 			if (m_vertexBuffer->getVertexBuffer().getHandle() == VK_NULL_HANDLE)return;
 			VkDeviceSize size(0);
-			vkCmdBindVertexBuffers(buffer, 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getVertexBuffer().getHandle() }, { &size });
+			vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getVertexBuffer().getHandle() }, { &size });
 			if (m_vertexBuffer->isIndexed()) {
-				vkCmdBindIndexBuffer(buffer, m_vertexBuffer->getIndexBuffer().getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
+				vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffer->getIndexBuffer().getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
 			}
 
 			if (m_descriptorCount > 0) {
-				vkCmdBindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0,
+				vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0,
 					static_cast<uint32_t>(m_descriptorSets.size()), m_descriptorSets.data(),
 					0, {});
 			}
 
-			vkCmdBindPipeline(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
+			vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
 
 			for (uint32_t i = 0; i < m_constants.size(); i++) {
-				m_constants[i].constant->push(buffer, *m_pipelineLayout, m_constants[i].stage);
+				m_constants[i].constant->push(buffer.getHandle(), *m_pipelineLayout, m_constants[i].stage);
 			}
 
 			if (m_vertexBuffer->isIndexed()) {
 				uint32_t count = (uint32_t)m_vertexBuffer->getIndicesNumber();
 				
-				vkCmdDrawIndexed(buffer, count, 1, 0, 0, 0);
+				vkCmdDrawIndexed(buffer.getHandle(), count, 1, 0, 0, 0);
 			}else{
 				
 				uint32_t count = (uint32_t)m_vertexBuffer->getVerticiesNumber();
 
-				vkCmdDraw(buffer, count, 1, 0, 0);
+				vkCmdDraw(buffer.getHandle(), count, 1, 0, 0);
 			}
 			
 		}

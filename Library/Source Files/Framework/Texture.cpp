@@ -261,56 +261,52 @@ namespace LavaCake {
 
 			
 
-
+			std::vector<unsigned char> data;
 			for (size_t i = 0; i < m_images.size(); ++i) {
 				std::vector<unsigned char> cubemap_image_data;
 				int image_data_size;
 				if (!Helpers::LoadTextureDataFromFile((m_path + m_images[i]).c_str(), m_nbChannel, cubemap_image_data, nullptr, nullptr, nullptr, &image_data_size)) {
 					ErrorCheck::setError("Could not load all texture file");
 				}
+				data.insert(data.end(), cubemap_image_data.begin(), cubemap_image_data.end());
+			}
 
-				Buffer stagingBuffer;
+			Buffer stagingBuffer;
 
-				stagingBuffer.allocate(queue, cmdBuff, *m_data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+			stagingBuffer.allocate(queue, cmdBuff, data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
-				cmdBuff.beginRecord();
+			cmdBuff.beginRecord();
 
-				VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1,static_cast<uint32_t>(i), 1 };
-
-				m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange, VK_PIPELINE_STAGE_TRANSFER_BIT);
-
-
-				VkImageSubresourceLayers image_subresource_layer = {
+			VkImageSubresourceLayers image_subresource_layer = {
 					VK_IMAGE_ASPECT_COLOR_BIT,    // VkImageAspectFlags     aspectMask
 					0,                            // uint32_t               mipLevel
-					0,                            // uint32_t               baseArrayLayer
-					1                             // uint32_t               layerCount
-				};
+					static_cast<uint32_t>(0),     // uint32_t               baseArrayLayer
+					6                             // uint32_t               layerCount
+			};
 
-
-				VkBufferImageCopy region = {
+			VkBufferImageCopy region = {
 						0,																																								// VkDeviceSize               bufferOffset
 						0,																																								// uint32_t                   bufferRowLength
 						0,																																								// uint32_t                   bufferImageHeight
 						image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
 						{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
 						{ m_image->width(), m_image->height(), m_image->depth() },												// VkExtent3D                 imageExtent
-				};
+			};
 
-				stagingBuffer.copyToImage(cmdBuff, *m_image, { region });
+			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1,static_cast<uint32_t>(0), 6 };
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange, VK_PIPELINE_STAGE_TRANSFER_BIT);
 
+			stagingBuffer.copyToImage(cmdBuff, *m_image, { region });
 
-				m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
 
+			cmdBuff.endRecord();
 
-				cmdBuff.endRecord();
+			cmdBuff.submit(queue, {}, {});
 
-				cmdBuff.submit(queue, {}, {});
-				
+			cmdBuff.wait(UINT32_MAX);
 
-				cmdBuff.wait(UINT32_MAX);
-				cmdBuff.resetFence();
-			}
+			cmdBuff.resetFence();
 		}
 
 

@@ -37,15 +37,15 @@ namespace LavaCake {
 			m_computeModule = module;
 		}
 
-		void ComputePipeline::compute(const VkCommandBuffer buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ) {
+		void ComputePipeline::compute(CommandBuffer& buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ) {
 
-			vkCmdBindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_COMPUTE, *m_pipelineLayout, 0,
+			vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, *m_pipelineLayout, 0,
 				static_cast<uint32_t>(m_descriptorSets.size()), m_descriptorSets.data(),
 				0, {});
 
-			vkCmdBindPipeline(buffer, VK_PIPELINE_BIND_POINT_COMPUTE, *m_pipeline);
+			vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, *m_pipeline);
 
-			vkCmdDispatch(buffer, dimX, dimY, dimZ);
+			vkCmdDispatch(buffer.getHandle(), dimX, dimY, dimZ);
 
 		}
 

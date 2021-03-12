@@ -84,7 +84,7 @@ namespace LavaCake {
 			/*
 			* Draw the render pass using a specific command buffer into a framebuffer
 			*/
-			void draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const & clear_values = {{ 1.0f, 0 }});
+			void draw(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const & clear_values = {{ 1.0f, 0 }});
 
 			/*
 			*	return the handle of the render pass

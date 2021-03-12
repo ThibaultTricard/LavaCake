@@ -47,6 +47,7 @@ namespace LavaCake {
 			//Make sure every command send to the device are finished
 			void end();
 
+			void waitForAllCommands();
 			
 
 			private :

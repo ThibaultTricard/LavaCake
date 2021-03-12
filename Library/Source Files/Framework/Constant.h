@@ -19,14 +19,14 @@ namespace LavaCake {
 			*/
 
 			template<typename T>
-			void addVariable(std::string name, T value) {
+			void addVariable(std::string name, T& value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
 				std::memcpy(&v[0], &value, sizeof(T));
 				addArray(name, v);
 			}
 
 			template<typename T>
-			void setVariable(std::string name, T value) {
+			void setVariable(std::string name, T& value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
 				std::memcpy(&v[0], &value, sizeof(value));
 				setArray(name, v);

@@ -244,23 +244,23 @@ namespace LavaCake {
 
 		}
 
-		void RenderPass::draw(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const & clear_values) {
+		void RenderPass::draw(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const & clear_values) {
 
 			VkRenderPassBeginInfo renderPassBeginInfo = {
 				VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,																																														 // VkStructureType        sType
 				nullptr,																																																														 // const void           * pNext
 				* m_renderPass,																																																											 // VkRenderPass           renderPass
-				frameBuffer,																																																												 // VkFramebuffer          framebuffer
+				frameBuffer.getHandle(),																																																						 // VkFramebuffer          framebuffer
 				{ { 0, 0 },{uint32_t(viewportMax[0] - viewportMin[0]),uint32_t(viewportMax[1] - viewportMin[1])} },                                  // VkRect2D               renderArea
 				static_cast<uint32_t>(clear_values.size()),																																													 // uint32_t               clearValueCount
 				clear_values.data()																																																									 // const VkClearValue   * pClearValues
 			};
 
-			vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+			vkCmdBeginRenderPass(commandBuffer.getHandle(), &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 			for (uint32_t i = 0; i < m_subpass.size(); i++) {
 
 				if (i > 0) {
-					vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+					vkCmdNextSubpass(commandBuffer.getHandle(), VK_SUBPASS_CONTENTS_INLINE);
 				}
 				
 				for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
@@ -268,7 +268,7 @@ namespace LavaCake {
 				}
 			}
 
-			vkCmdEndRenderPass(commandBuffer);
+			vkCmdEndRenderPass(commandBuffer.getHandle());
 		}
 
 

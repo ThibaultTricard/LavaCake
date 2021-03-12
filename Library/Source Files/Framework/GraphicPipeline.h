@@ -58,7 +58,7 @@ namespace LavaCake {
 			/**
 			*draw call of the pipeline
 			*/
-			void draw(const VkCommandBuffer buffer);
+			void draw(CommandBuffer& buffer);
 
 			/**
 			set the cull mode for the pipeline, if not set the pipeline cull the back faces

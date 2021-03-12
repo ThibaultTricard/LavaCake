@@ -26,6 +26,7 @@ namespace LavaCake {
       VkImageViewType view = VK_IMAGE_VIEW_TYPE_1D;
       if (m_height > 1) { type = VK_IMAGE_TYPE_2D; view = VK_IMAGE_VIEW_TYPE_2D; }
       if (m_depth > 1) { type = VK_IMAGE_TYPE_3D; view = VK_IMAGE_VIEW_TYPE_3D; }
+			if (m_cubemap) { type = VK_IMAGE_TYPE_2D; view = VK_IMAGE_VIEW_TYPE_CUBE; }
 
       if (!LavaCake::Core::CreateImage(logical, type, m_format, { m_width, m_height, m_depth }, 1, 1, VK_SAMPLE_COUNT_1_BIT, usage, m_cubemap, *m_image)) {
         ErrorCheck::setError("Can't create Image");

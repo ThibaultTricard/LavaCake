@@ -32,7 +32,7 @@ namespace LavaCake {
 			/**
 			*dispach the compute shader
 			*/
-			void compute(const VkCommandBuffer buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ);
+			void compute(CommandBuffer& buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ);
 
 			~ComputePipeline() {
 			

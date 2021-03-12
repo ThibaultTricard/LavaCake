@@ -203,6 +203,25 @@ namespace LavaCake {
 				unmap();
 			}
 
+			~Buffer() {
+				Device* d = Device::getDevice();
+				VkDevice logical = d->getLogicalDevice();
+				if (VK_NULL_HANDLE != *m_buffer) {
+					vkDestroyBuffer(logical, *m_buffer, nullptr);
+					*m_buffer = VK_NULL_HANDLE;
+				}
+
+				if (VK_NULL_HANDLE != *m_bufferView) {
+					vkDestroyBufferView(logical, *m_bufferView, nullptr);
+					*m_bufferView = VK_NULL_HANDLE;
+				}
+
+				if (VK_NULL_HANDLE != *m_bufferMemory) {
+					vkFreeMemory(logical, *m_bufferMemory, nullptr);
+					*m_bufferMemory = VK_NULL_HANDLE;
+				}
+			}
+
     protected:
 
       VkDestroyer(VkBuffer)																m_buffer;
