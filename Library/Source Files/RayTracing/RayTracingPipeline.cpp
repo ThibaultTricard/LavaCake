@@ -194,7 +194,7 @@ namespace LavaCake {
 
 				InitVkDestroyer(logical, m_pipeline);
 				std::vector<VkPipeline> pipelines(pipelineInfos.size());
-				VkResult code = vkCreateRayTracingPipelinesKHR(logical, nullptr, nullptr, pipelineInfos.size(), pipelineInfos.data(), nullptr, pipelines.data());
+				VkResult code = vkCreateRayTracingPipelinesKHR(logical, nullptr, nullptr, (uint32_t)pipelineInfos.size(), pipelineInfos.data(), nullptr, pipelines.data());
 				*m_pipeline = pipelines[0];
 
 

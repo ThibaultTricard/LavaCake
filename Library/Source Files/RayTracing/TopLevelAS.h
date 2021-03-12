@@ -41,8 +41,10 @@ namespace LavaCake {
       VkAccelerationStructureKHR m_accelerationStructure;
 
       std::vector<uint32_t> m_primitive_count;
-
+      VkAccelerationStructureBuildGeometryInfoKHR m_accelerationBuildGeometryInfo = {};
       Framework::Buffer* m_ASBuffer = nullptr;
+      Framework::Buffer m_scratchBuffer;
+      std::vector<Framework::Buffer> m_instancesBuffers;
 		};
 	}
 }

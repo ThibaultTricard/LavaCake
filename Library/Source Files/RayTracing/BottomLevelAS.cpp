@@ -22,7 +22,7 @@ namespace LavaCake {
 				accelerationStructureGeometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR;
 				accelerationStructureGeometry.geometry.triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
 				accelerationStructureGeometry.geometry.triangles.vertexData = vertexBufferDeviceAddress;
-				accelerationStructureGeometry.geometry.triangles.maxVertex = vertexBuffer->getVerticiesNumber();
+				accelerationStructureGeometry.geometry.triangles.maxVertex = (uint32_t)vertexBuffer->getVerticiesNumber();
 				accelerationStructureGeometry.geometry.triangles.vertexStride = vertexBuffer->getByteStrideSize();
 				if (vertexBuffer->isIndexed()) {
 					accelerationStructureGeometry.geometry.triangles.indexType = VK_INDEX_TYPE_UINT32;
@@ -36,10 +36,10 @@ namespace LavaCake {
 				accelerationStructureGeometry.geometry.triangles.transformData = transformBufferDeviceAddress;
 
 				if (vertexBuffer->isIndexed()) {
-					m_primCount += vertexBuffer->getIndicesNumber();
+					m_primCount += (uint32_t)vertexBuffer->getIndicesNumber();
 				}
 				else {
-					m_primCount += vertexBuffer->getVerticiesNumber();
+					m_primCount += (uint32_t)vertexBuffer->getVerticiesNumber();
 				}
 
 				m_geometry.push_back(accelerationStructureGeometry);
@@ -56,7 +56,7 @@ namespace LavaCake {
 				accelerationStructureBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
 				accelerationStructureBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
 				accelerationStructureBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
-				accelerationStructureBuildGeometryInfo.geometryCount = m_geometry.size();
+				accelerationStructureBuildGeometryInfo.geometryCount = (uint32_t)m_geometry.size();
 				accelerationStructureBuildGeometryInfo.pGeometries = m_geometry.data();
 
 
@@ -87,12 +87,12 @@ namespace LavaCake {
 				vkCreateAccelerationStructureKHR(device, &accelerationStructureCreateInfo, nullptr, &m_accelerationStructure);
 
 
-				Framework::Buffer scratchBuffer;
-				scratchBuffer.allocate(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+				
+				m_scratchBuffer.allocate(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 				VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};
 				scratchBufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-				scratchBufferDeviceAddressInfo.buffer = scratchBuffer.getHandle();
+				scratchBufferDeviceAddressInfo.buffer = m_scratchBuffer.getHandle();
 
 				VkAccelerationStructureBuildGeometryInfoKHR accelerationBuildGeometryInfo{};
 				accelerationBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
@@ -100,7 +100,7 @@ namespace LavaCake {
 				accelerationBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
 				accelerationBuildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
 				accelerationBuildGeometryInfo.dstAccelerationStructure = m_accelerationStructure;
-				accelerationBuildGeometryInfo.geometryCount = m_geometry.size();
+				accelerationBuildGeometryInfo.geometryCount = (uint32_t)m_geometry.size();
 				accelerationBuildGeometryInfo.pGeometries = m_geometry.data();
 				accelerationBuildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(device, &scratchBufferDeviceAddressInfo);
 

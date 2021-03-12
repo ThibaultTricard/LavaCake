@@ -88,8 +88,7 @@ namespace LavaCake {
 
 			TextureBuffer() {};
 
-			Image*																		m_image;
-
+			Image*																		m_image = nullptr;
 			uint32_t																	m_nbChannel = 0;
 			std::vector<unsigned char>*								m_data = new std::vector<unsigned char>();
 

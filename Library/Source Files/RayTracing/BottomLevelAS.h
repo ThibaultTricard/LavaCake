@@ -30,6 +30,7 @@ namespace LavaCake {
 			VkAccelerationStructureKHR m_accelerationStructure{};
 			uint64_t m_deviceAddress;
 			VkAccelerationStructureDeviceAddressInfoKHR m_accelerationDeviceAddressInfo{};
+			Framework::Buffer														m_scratchBuffer;
 			std::vector<VkAccelerationStructureGeometryKHR> m_geometry;
 		};
 

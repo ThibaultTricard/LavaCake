@@ -22,23 +22,22 @@ namespace LavaCake {
         Framework::Device* d = Framework::Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
         VkPhysicalDevice phyDevice = d->getPhysicalDevice();
-        std::vector<Framework::Buffer> instancesBuffers;
+        m_instancesBuffers = std::vector<Framework::Buffer>(m_AccelerationStructureInstances.size());
         std::vector<VkAccelerationStructureGeometryKHR> accelerationStructureGeometry;
         uint32_t primitive_count = 0;
         for (int i = 0; i < m_AccelerationStructureInstances.size(); i++) {
           // Buffer for instance data
           std::vector<VkAccelerationStructureInstanceKHR> instance = { m_AccelerationStructureInstances[i] };
-          Framework::Buffer instancesBuffer;
-          instancesBuffer.allocate(queue,
+
+          m_instancesBuffers[i].allocate(queue,
             cmdBuff,
             instance,
             VkBufferUsageFlagBits(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR),
             VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
-
-          instancesBuffers.push_back(instancesBuffer);
+          m_instancesBuffers[i];
 
           VkDeviceOrHostAddressConstKHR instanceDataDeviceAddress{};
-          instanceDataDeviceAddress.deviceAddress = instancesBuffer.getBufferDeviceAddress();
+          instanceDataDeviceAddress.deviceAddress = m_instancesBuffers[i].getBufferDeviceAddress();
 
           VkAccelerationStructureGeometryKHR asg{};
           asg.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
@@ -75,23 +74,21 @@ namespace LavaCake {
         createAccelerationStructure(queue, cmdBuff, VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, accelerationStructureBuildSizesInfo);
 
         // Create a small scratch buffer used during build of the top level acceleration structure
-        Framework::Buffer scratchBuffer;
-        scratchBuffer.allocate(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        m_scratchBuffer.allocate(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
         VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};
         scratchBufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-        scratchBufferDeviceAddressInfo.buffer = scratchBuffer.getHandle();
+        scratchBufferDeviceAddressInfo.buffer = m_scratchBuffer.getHandle();
 
 
-        VkAccelerationStructureBuildGeometryInfoKHR accelerationBuildGeometryInfo = {};
-        accelerationBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
-        accelerationBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
-        accelerationBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
-        accelerationBuildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
-        accelerationBuildGeometryInfo.dstAccelerationStructure = m_accelerationStructure;
-        accelerationBuildGeometryInfo.geometryCount = (uint32_t)accelerationStructureGeometry.size();
-        accelerationBuildGeometryInfo.pGeometries = accelerationStructureGeometry.data();
-        accelerationBuildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(logical, &scratchBufferDeviceAddressInfo);
+        m_accelerationBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+        m_accelerationBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
+        m_accelerationBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+        m_accelerationBuildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+        m_accelerationBuildGeometryInfo.dstAccelerationStructure = m_accelerationStructure;
+        m_accelerationBuildGeometryInfo.geometryCount = (uint32_t)accelerationStructureGeometry.size();
+        m_accelerationBuildGeometryInfo.pGeometries = accelerationStructureGeometry.data();
+        m_accelerationBuildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(logical, &scratchBufferDeviceAddressInfo);
 
         VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};
         accelerationStructureBuildRangeInfo.primitiveCount = primitive_count;
@@ -115,7 +112,7 @@ namespace LavaCake {
             logical,
             VK_NULL_HANDLE,
             1,
-            &accelerationBuildGeometryInfo,
+            &m_accelerationBuildGeometryInfo,
             accelerationBuildStructureRangeInfos.data());
         }
         else
@@ -126,7 +123,7 @@ namespace LavaCake {
           vkCmdBuildAccelerationStructuresKHR(
             cmdBuff.getHandle(),
             1,
-            &accelerationBuildGeometryInfo,
+            &m_accelerationBuildGeometryInfo,
             accelerationBuildStructureRangeInfos.data());
           cmdBuff.endRecord();
 

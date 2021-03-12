@@ -81,7 +81,7 @@ namespace LavaCake {
 
 		private:
 			uint32_t																	m_index =0;
-			VkImage																		m_image;
+			VkImage																		m_image = VK_NULL_HANDLE;
 			VkDestroyer(VkImageView)									m_imageView;
 			VkDestroyer(VkSemaphore)									m_aquiredSemaphore;
 			friend class SwapChain;

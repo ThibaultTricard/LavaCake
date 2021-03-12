@@ -161,7 +161,7 @@ namespace LavaCake {
 			std::vector<VkDescriptorSet>																		m_descriptorSets;
 			std::vector<VkDescriptorPoolSize>																m_descriptorPoolSize;
 			std::vector<VkDescriptorSetLayoutBinding>												m_descriptorSetLayoutBinding;
-			uint32_t																												m_descriptorCount;
+			uint32_t																												m_descriptorCount = 0;
 
 			std::vector<Core::BufferDescriptorInfo>													m_bufferDescriptorUpdate;
 			std::vector<Core::ImageDescriptorInfo>													m_imageDescriptorUpdate;

@@ -72,18 +72,21 @@ namespace LavaCake {
       std::vector<entry> m_hitGroup;
 
 
-      VkStridedDeviceAddressRegionKHR m_raygenShaderBindingTable;
-      VkStridedDeviceAddressRegionKHR m_missShaderBindingTable;
-      VkStridedDeviceAddressRegionKHR m_hitShaderBindingTable;
-      VkStridedDeviceAddressRegionKHR m_callableShaderBindingTable;
+      VkStridedDeviceAddressRegionKHR m_raygenShaderBindingTable = VkStridedDeviceAddressRegionKHR();
+      VkStridedDeviceAddressRegionKHR m_missShaderBindingTable = VkStridedDeviceAddressRegionKHR();
+      VkStridedDeviceAddressRegionKHR m_hitShaderBindingTable = VkStridedDeviceAddressRegionKHR();
+      VkStridedDeviceAddressRegionKHR m_callableShaderBindingTable = VkStridedDeviceAddressRegionKHR();
 
-      uint32_t m_rayGenEntrySize;
-      uint32_t m_missEntrySize;
-      uint32_t m_hitGroupEntrySize;
+      uint32_t m_rayGenEntrySize = 0;
+      uint32_t m_missEntrySize = 0;
+      uint32_t m_hitGroupEntrySize = 0;
 
       UINT m_progIdSize;
       VkDeviceSize m_sbtSize;
-
+      
+      Framework::Buffer m_raygenBuffer;
+      Framework::Buffer m_missBuffer;
+      Framework::Buffer m_hitBuffer;
     };
 
   }

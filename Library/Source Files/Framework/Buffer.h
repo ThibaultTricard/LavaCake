@@ -236,6 +236,7 @@ namespace LavaCake {
 
 			void*																								m_mapped;
 
+
     };
 
 
