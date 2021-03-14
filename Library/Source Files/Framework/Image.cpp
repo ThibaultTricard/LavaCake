@@ -29,15 +29,15 @@ namespace LavaCake {
 			if (m_cubemap) { type = VK_IMAGE_TYPE_2D; view = VK_IMAGE_VIEW_TYPE_CUBE; }
 
       if (!LavaCake::Core::CreateImage(logical, type, m_format, { m_width, m_height, m_depth }, 1, 1, VK_SAMPLE_COUNT_1_BIT, usage, m_cubemap, *m_image)) {
-        ErrorCheck::setError("Can't create Image");
+        ErrorCheck::setError((char*)"Can't create Image");
       }
 
       if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, *m_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_imageMemory)) {
-        ErrorCheck::setError("Can't allocate Image memory");
+        ErrorCheck::setError((char*)"Can't allocate Image memory");
       }
 
       if (!LavaCake::Core::CreateImageView(logical, *m_image, view, m_format, m_aspect, *m_imageView)) {
-        ErrorCheck::setError("Can't create Image View");
+        ErrorCheck::setError((char*)"Can't create Image View");
       }
 
 			m_layout = VK_IMAGE_LAYOUT_UNDEFINED;

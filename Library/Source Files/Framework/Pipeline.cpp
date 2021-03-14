@@ -121,7 +121,7 @@ namespace LavaCake {
 
 			InitVkDestroyer(logical, m_descriptorSetLayout);
 			if (!LavaCake::Core::CreateDescriptorSetLayout(logical, m_descriptorSetLayoutBinding, *m_descriptorSetLayout)) {
-				ErrorCheck::setError("Can't create descriptor set layout");
+				ErrorCheck::setError((char*)"Can't create descriptor set layout");
 			}
 
 			m_descriptorCount = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size());
@@ -162,11 +162,11 @@ namespace LavaCake {
 
 			InitVkDestroyer(logical, m_descriptorPool);
 			if (!LavaCake::Core::CreateDescriptorPool(logical, false, m_descriptorCount, m_descriptorPoolSize, *m_descriptorPool)) {
-				ErrorCheck::setError("Can't create descriptor pool");
+				ErrorCheck::setError((char*)"Can't create descriptor pool");
 			}
 
 			if (!LavaCake::Core::AllocateDescriptorSets(logical, *m_descriptorPool, { *m_descriptorSetLayout }, m_descriptorSets)) {
-				ErrorCheck::setError("Can't allocate descriptor set");
+				ErrorCheck::setError((char*)"Can't allocate descriptor set");
 			}
 			m_bufferDescriptorUpdate = { };
 			int descriptorCount = 0;

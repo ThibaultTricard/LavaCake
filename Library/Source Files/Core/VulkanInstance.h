@@ -18,7 +18,7 @@
 //
 // Vulkan Cookbook
 // ISBN: 9781786468154
-// © Packt Publishing Limited
+// ï¿½ Packt Publishing Limited
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
@@ -32,10 +32,14 @@
 namespace LavaCake {
 	namespace Core {
 
-
+    
+#ifdef _WIN32
 		const std::vector<const char*> validationLayers = {
 		"VK_LAYER_KHRONOS_validation"
 		};
+#else
+        const std::vector<const char*> validationLayers = {};
+#endif
 
 
 		bool CreateVulkanInstance(std::vector<char const *> const & desired_extensions,

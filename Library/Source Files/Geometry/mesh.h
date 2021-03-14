@@ -88,22 +88,22 @@ namespace LavaCake {
     template <topology T>
     class IndexedMesh : public Mesh<T> {
     public :
-      IndexedMesh(vertexFormat format) : Mesh(format) {
-        m_indexed = true;
+      IndexedMesh(vertexFormat format) : Mesh<T>(format) {
+        this->m_indexed = true;
       }
 
 
-      IndexedMesh(std::vector<float>& vertices, std::vector<uint32_t>& indices, vertexFormat format) : Mesh(format) {
-        m_vertexSize = format.size();
-        m_format = format;
-        m_vertices = vertices;
-        m_indices = indices;
-        m_indexed = true;
+      IndexedMesh(std::vector<float>& vertices, std::vector<uint32_t>& indices, vertexFormat format) : Mesh<T>(format) {
+        this->m_vertexSize = format.size();
+        this->m_format = format;
+        this->m_vertices = vertices;
+        this->m_indices = indices;
+        this->m_indexed = true;
       }
 
 
       virtual void appendIndex(uint32_t index) override {
-        m_indices.push_back(index);
+        this->m_indices.push_back(index);
       }
 
      };

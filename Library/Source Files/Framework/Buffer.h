@@ -2,7 +2,7 @@
 
 #include "CommandBuffer.h"
 #include "Queue.h"
-#include "image.h"
+#include "Image.h"
 
 namespace LavaCake {
   namespace Framework {
@@ -62,7 +62,7 @@ namespace LavaCake {
 				VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &*m_buffer);
 
 				if (result != VK_SUCCESS) {
-					ErrorCheck::setError("Can't create Buffer");
+					ErrorCheck::setError((char*)"Can't create Buffer");
 				}
 
 
@@ -98,12 +98,12 @@ namespace LavaCake {
 				}
 
 				if (VK_NULL_HANDLE == *m_bufferMemory) {
-					ErrorCheck::setError("Could not allocate memory for a buffer.");
+					ErrorCheck::setError((char*)"Could not allocate memory for a buffer.");
 				}
 
 				result = vkBindBufferMemory(logical, *m_buffer, *m_bufferMemory, 0);
 				if (VK_SUCCESS != result) {
-					ErrorCheck::setError("Could not bind memory object to a buffer.");
+					ErrorCheck::setError((char*)"Could not bind memory object to a buffer.");
 				}
 
 				if (usage & VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT) {
@@ -119,7 +119,7 @@ namespace LavaCake {
 
 					result = vkCreateBufferView(logical, &buffer_view_create_info, nullptr, &*m_bufferView);
 					if (VK_SUCCESS != result) {
-						ErrorCheck::setError("Could not creat buffer view.");
+						ErrorCheck::setError((char*)"Could not creat buffer view.");
 					}
 				}
 

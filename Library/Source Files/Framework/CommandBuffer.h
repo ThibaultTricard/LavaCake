@@ -26,7 +26,7 @@ namespace LavaCake {
 
         VkResult result = vkAllocateCommandBuffers(logical, &command_buffer_allocate_info, buffers.data());
         if (VK_SUCCESS != result) {
-          ErrorCheck::setError("Failed to allocate commande buffer");
+          ErrorCheck::setError((char*)"Failed to allocate commande buffer");
         }
 
         m_commandBuffer = buffers[0];

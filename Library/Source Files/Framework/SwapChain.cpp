@@ -18,7 +18,7 @@ namespace LavaCake {
 			
 			VkResult result = vkDeviceWaitIdle(logical);
 			if (result != VK_SUCCESS) {
-				ErrorCheck::setError("Waiting on a device failed.");
+				ErrorCheck::setError((char*)"Waiting on a device failed.");
 			}
 
 			m_images.clear();
@@ -29,10 +29,10 @@ namespace LavaCake {
 			VkDestroyer(VkSwapchainKHR) old_swapchain = std::move(m_handle);
 			InitVkDestroyer(logical, m_handle);
 			if (!LavaCake::Core::CreateSwapchainWithR8G8B8A8FormatAndMailboxPresentMode(physical, surface, logical, swapchain_image_usage, m_size, m_format, *old_swapchain, *m_handle, m_images)) {
-				ErrorCheck::setError("Can't create swapchain");
+				ErrorCheck::setError((char*)"Can't create swapchain");
 			}
 			if (!m_handle) {
-				ErrorCheck::setError("Swapchain not created");
+				ErrorCheck::setError((char*)"Swapchain not created");
 			}
 
 			for (uint32_t i = 0; i < m_images.size(); ++i) {

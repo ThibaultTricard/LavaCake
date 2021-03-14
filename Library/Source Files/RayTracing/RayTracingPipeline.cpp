@@ -9,7 +9,7 @@ namespace LavaCake {
 			void RayTracingPipeline::addRayGenModule(RayGenShaderModule* module) {
 				if (m_isHitGroupOpen)
 				{
-					Framework::ErrorCheck::setError("Cannot add raygen stage in when hit group open");
+					Framework::ErrorCheck::setError((char*)"Cannot add raygen stage in when hit group open");
 					return;
 				}
 
@@ -44,7 +44,7 @@ namespace LavaCake {
 			void RayTracingPipeline::addMissModule(MissShaderModule* module) {
 				if (m_isHitGroupOpen)
 				{
-					Framework::ErrorCheck::setError("Cannot add miss stage in when hit group open");
+					Framework::ErrorCheck::setError((char*)"Cannot add miss stage in when hit group open");
 					return;
 				}
 
@@ -77,7 +77,7 @@ namespace LavaCake {
 			void RayTracingPipeline::startHitGroup() {
 				if (m_isHitGroupOpen)
 				{
-					Framework::ErrorCheck::setError("Hit group already open");
+					Framework::ErrorCheck::setError((char*)"Hit group already open");
 					return;
 				}
 
@@ -97,7 +97,7 @@ namespace LavaCake {
 
 			void RayTracingPipeline::setClosestHitModule(ClosestHitShaderModule* module) {
 				if (!m_isHitGroupOpen) {
-					Framework::ErrorCheck::setError("No open hitgroup");
+					Framework::ErrorCheck::setError((char*)"No open hitgroup");
 					return;
 				}
 				VkPipelineShaderStageCreateInfo stageCreate;
@@ -117,7 +117,7 @@ namespace LavaCake {
 
 			void RayTracingPipeline::setAnyHitModule(AnyHitShaderModule* module) {
 				if (!m_isHitGroupOpen) {
-					Framework::ErrorCheck::setError("No open hitgroup");
+					Framework::ErrorCheck::setError((char*)"No open hitgroup");
 					return;
 				}
 				VkPipelineShaderStageCreateInfo stageCreate;
@@ -137,7 +137,7 @@ namespace LavaCake {
 
 			void RayTracingPipeline::setIntersectionModule(IntersectionShaderModule* module) {
 				if (m_isHitGroupOpen) {
-					Framework::ErrorCheck::setError("No open hitgroup");
+					Framework::ErrorCheck::setError((char*)"No open hitgroup");
 					return;
 				}
 				VkPipelineShaderStageCreateInfo stageCreate;
@@ -158,7 +158,7 @@ namespace LavaCake {
 			void RayTracingPipeline::endHitGroup() {
 				if (!m_isHitGroupOpen)
 				{
-					Framework::ErrorCheck::setError("No hit group open");
+					Framework::ErrorCheck::setError((char*)"No hit group open");
 					return;
 				}
 				m_isHitGroupOpen = false;
@@ -174,7 +174,7 @@ namespace LavaCake {
 				generateDescriptorLayout();
 				InitVkDestroyer(logical, m_pipelineLayout);
 				if (!CreatePipelineLayout(logical, { *m_descriptorSetLayout }, {}, *m_pipelineLayout)) {
-					Framework::ErrorCheck::setError("Can't create compute pipeline layout");
+					Framework::ErrorCheck::setError((char*)"Can't create compute pipeline layout");
 				}
 
 				VkRayTracingPipelineCreateInfoKHR rayPipelineInfo{};
@@ -215,7 +215,7 @@ namespace LavaCake {
 				vkCmdBindDescriptorSets(cmdbuff.getHandle(), VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, *m_pipelineLayout, 0, (uint32_t)m_descriptorSets.size(), m_descriptorSets.data(), 0, 0);
 
 				VkStridedDeviceAddressRegionKHR callableShaderSbtEntry{};
-
+                
 				vkCmdTraceRaysKHR(
 					cmdbuff.getHandle(),
 					&m_ShaderBindingTable.raygenShaderBindingTable(),
@@ -322,7 +322,7 @@ namespace LavaCake {
 
 				InitVkDestroyer(logical, m_descriptorSetLayout);
 				if (!LavaCake::Core::CreateDescriptorSetLayout(logical, m_descriptorSetLayoutBinding, *m_descriptorSetLayout)) {
-					Framework::ErrorCheck::setError("Can't create descriptor set layout");
+					Framework::ErrorCheck::setError((char*)"Can't create descriptor set layout");
 				}
 
 				m_descriptorCount = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size() + m_buffers.size() + m_AS.size());
@@ -374,11 +374,11 @@ namespace LavaCake {
 				}
 				InitVkDestroyer(logical, m_descriptorPool);
 				if (!LavaCake::Core::CreateDescriptorPool(logical, false, m_descriptorCount, m_descriptorPoolSize, *m_descriptorPool)) {
-					Framework::ErrorCheck::setError("Can't create descriptor pool");
+					Framework::ErrorCheck::setError((char*)"Can't create descriptor pool");
 				}
 
 				if (!LavaCake::Core::AllocateDescriptorSets(logical, *m_descriptorPool, { *m_descriptorSetLayout }, m_descriptorSets)) {
-					Framework::ErrorCheck::setError("Can't allocate descriptor set");
+					Framework::ErrorCheck::setError((char*)"Can't allocate descriptor set");
 				}
 				m_bufferDescriptorUpdate = { };
 				int descriptorCount = 0;

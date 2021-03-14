@@ -32,15 +32,15 @@ namespace LavaCake {
 
       void compile(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, VkPipeline raytracingPipeline);
 
-      VkStridedDeviceAddressRegionKHR raygenShaderBindingTable() {
+      VkStridedDeviceAddressRegionKHR& raygenShaderBindingTable() {
         return m_raygenShaderBindingTable;
       }
 
-      VkStridedDeviceAddressRegionKHR missShaderBindingTable() {
+      VkStridedDeviceAddressRegionKHR& missShaderBindingTable() {
         return m_missShaderBindingTable;
       }
 
-      VkStridedDeviceAddressRegionKHR hitShaderBindingTable() {
+      VkStridedDeviceAddressRegionKHR& hitShaderBindingTable() {
         return m_hitShaderBindingTable;
       }
       
@@ -81,7 +81,6 @@ namespace LavaCake {
       uint32_t m_missEntrySize = 0;
       uint32_t m_hitGroupEntrySize = 0;
 
-      UINT m_progIdSize;
       VkDeviceSize m_sbtSize;
       
       Framework::Buffer m_raygenBuffer;

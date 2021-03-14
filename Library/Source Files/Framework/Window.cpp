@@ -1,6 +1,5 @@
 #include "Window.h"
 
-
 namespace LavaCake {
 	namespace Framework {
 
@@ -57,29 +56,7 @@ namespace LavaCake {
 			glfwSetMouseButtonCallback(window, callbackMouseButton);
 		}
 
-		Window::Window(
-			const char               * window_title,
-			int                        width,
-			int                        height) {
-
-			glfwInit();
-
-
-			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-			m_window = glfwCreateWindow(width, height, window_title, nullptr, nullptr);
-			m_windowParams = { GetModuleHandleW(NULL), glfwGetWin32Window(m_window) };
-
-
-			if (!m_windowParams.HWnd) {
-        ErrorCheck::setError("Failed to create window");
-			}
-
-			
-			Mouse::init(m_window);
-
-		}
+		
 
 
 		void Window::updateInput() {

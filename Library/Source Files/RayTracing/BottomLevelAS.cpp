@@ -143,7 +143,7 @@ namespace LavaCake {
 					cmdBuff.submit(queue, {}, {});
 
 
-					cmdBuff.wait(MAXINT32);
+					cmdBuff.wait(std::numeric_limits<uint32_t>::max());
 					cmdBuff.resetFence();
 				}
 

@@ -26,7 +26,7 @@ namespace LavaCake {
 				m_image = image;
 				InitVkDestroyer(logical, m_imageView);
 				if (!LavaCake::Core::CreateImageView(logical, m_image, VK_IMAGE_VIEW_TYPE_2D, imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageView)) {
-					ErrorCheck::setError("Can't create image view");
+					ErrorCheck::setError((char*)"Can't create image view");
 				}
 
 				VkSemaphoreCreateInfo semaphore_create_info = {

@@ -90,16 +90,17 @@ namespace LavaCake {
 
 			std::vector<VkPushConstantRange> push_constant_ranges = {};
 			for (uint32_t i = 0; i < m_constants.size(); i++) {
+                const uint32_t size =(const uint32_t) m_constants[i].constant->size() * sizeof(float);
 				push_constant_ranges.push_back(
 					{
 						m_constants[i].stage,																				// VkShaderStageFlags     stageFlags
 						0,																													// uint32_t               offset
-						m_constants[i].constant->size() * sizeof(float)		          // uint32_t               size
+                        size// uint32_t               size
 					});
 			}
 
 			if (!Pipeline::CreatePipelineLayout(logical, { *m_descriptorSetLayout }, push_constant_ranges, *m_pipelineLayout)) {
-				ErrorCheck::setError("Can't create pipeline layout");
+				ErrorCheck::setError((char*)"Can't create pipeline layout");
 			}
 
 			
@@ -222,7 +223,7 @@ namespace LavaCake {
 
 			std::vector<VkPipeline> pipelines;
 			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
-				ErrorCheck::setError("Can't create Graphics piepeline");
+				ErrorCheck::setError((char*)"Can't create Graphics piepeline");
 			}
 			InitVkDestroyer(logical, m_pipeline);
 			*m_pipeline = pipelines[0];
@@ -235,7 +236,7 @@ namespace LavaCake {
 
 			std::vector<VkPipeline> pipelines;
 			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
-				ErrorCheck::setError("Can't create Graphics piepeline");
+				ErrorCheck::setError((char*)"Can't create Graphics piepeline");
 			}
 			*m_pipeline = pipelines[0];
 		}

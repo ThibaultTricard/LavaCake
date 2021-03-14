@@ -39,15 +39,15 @@ namespace LavaCake {
 
 
 			if (!LavaCake::Core::ConnectWithVulkanLoaderLibrary(m_vulkanLibrary)) {
-				ErrorCheck::setError("Could not connect with Vulkan while initializing the device");
+				ErrorCheck::setError((char*)"Could not connect with Vulkan while initializing the device");
 			}
 
 			if (!LavaCake::Core::LoadFunctionExportedFromVulkanLoaderLibrary(m_vulkanLibrary)) {
-				ErrorCheck::setError("Could not load Vulkan library while initializing the device");
+				ErrorCheck::setError((char*)"Could not load Vulkan library while initializing the device");
 			}
 
 			if (!LavaCake::Core::LoadGlobalLevelFunctions()) {
-				ErrorCheck::setError("Could not load global level Vulkan functions while initializing the device");
+				ErrorCheck::setError((char*)"Could not load global level Vulkan functions while initializing the device");
 			}
 
 
@@ -59,16 +59,16 @@ namespace LavaCake {
 
 			InitVkDestroyer(m_instance);
 			if (!LavaCake::Core::CreateVulkanInstanceWithWsiExtensionsEnabled(instance_extensions, "LavaCake", *m_instance)) {
-				ErrorCheck::setError("Could not load Vulkan while initializing the device");
+				ErrorCheck::setError((char*)"Could not load Vulkan while initializing the device");
 			}
 
 			if (!LavaCake::Core::LoadInstanceLevelFunctions(*m_instance, instance_extensions)) {
-				ErrorCheck::setError("Could not load instance level Vulkan functions while initializing the device");
+				ErrorCheck::setError((char*)"Could not load instance level Vulkan functions while initializing the device");
 			}
 
 			InitVkDestroyer(m_instance, m_presentationSurface);
 			if (!LavaCake::Core::CreatePresentationSurface(*m_instance, WindowParams, *m_presentationSurface)) {
-				ErrorCheck::setError("Failed to create presentation surface");
+				ErrorCheck::setError((char*)"Failed to create presentation surface");
 			}
 
 			std::vector<VkPhysicalDevice> physical_devices;
@@ -83,6 +83,9 @@ namespace LavaCake {
 			}
 
 			for (auto& physical_device : physical_devices) {
+                VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddresFeatures{};
+                VkPhysicalDeviceRayTracingPipelineFeaturesKHR enabledRayTracingPipelineFeatures{};
+                VkPhysicalDeviceAccelerationStructureFeaturesKHR enabledAccelerationStructureFeatures{};
 				std::vector<char const*> device_extensions;
 				std::vector <LavaCake::Core::QueueInfo > requested_queues;
 				for (int i = 0; i < nbGraphicQueue; i++) {
@@ -155,16 +158,15 @@ namespace LavaCake {
 				device_extensions.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
 
 
-				VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddresFeatures{};
+				
 				enabledBufferDeviceAddresFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
 				enabledBufferDeviceAddresFeatures.bufferDeviceAddress = VK_TRUE;
 
-				VkPhysicalDeviceRayTracingPipelineFeaturesKHR enabledRayTracingPipelineFeatures{};
 				enabledRayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
 				enabledRayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
 				enabledRayTracingPipelineFeatures.pNext = &enabledBufferDeviceAddresFeatures;
 
-				VkPhysicalDeviceAccelerationStructureFeaturesKHR enabledAccelerationStructureFeatures{};
+
 				enabledAccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
 				enabledAccelerationStructureFeatures.accelerationStructure = VK_TRUE;
 				enabledAccelerationStructureFeatures.pNext = &enabledRayTracingPipelineFeatures;
@@ -204,13 +206,13 @@ namespace LavaCake {
 			}
 
 			if (!m_logical) {
-				ErrorCheck::setError("The logical device could not be created");
+				ErrorCheck::setError((char*)"The logical device could not be created");
 			}
 
 
 			InitVkDestroyer(m_logical, m_commandPool);
 			if (!LavaCake::Core::CreateCommandPool(*m_logical, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, m_graphicQueues[0].getIndex(), *m_commandPool)) {
-				ErrorCheck::setError("The command pool could not be created");
+				ErrorCheck::setError((char*)"The command pool could not be created");
 			}
 		}
 
@@ -219,7 +221,7 @@ namespace LavaCake {
 			if (m_logical) {
 				VkResult result = vkDeviceWaitIdle(*m_logical);
 				if (result != VK_SUCCESS) {
-					ErrorCheck::setError("Waiting on a device failed.");
+					ErrorCheck::setError((char*)"Waiting on a device failed.");
 				}
 			}
 		}

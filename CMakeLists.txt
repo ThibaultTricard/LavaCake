@@ -24,28 +24,36 @@ if( NOT DEFINED VK_USE_PLATFORM )
 	endif()
 endif()
 
-if( VK_USE_PLATFORM STREQUAL "VK_USE_PLATFORM_WIN32_KHR" )
-	set( CMAKE_C_FLAGS_RELWITHDEBINFO    "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MT" )
-	set( CMAKE_C_FLAGS_RELEASE           "${CMAKE_C_FLAGS_RELEASE} /MT" )
-	set( CMAKE_C_FLAGS_DEBUG             "${CMAKE_C_FLAGS_DEBUG} /MTd" )
-	set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT" )
-	set( CMAKE_CXX_FLAGS_RELEASE         "${CMAKE_CXX_FLAGS_RELEASE} /MT" )
-	set( CMAKE_CXX_FLAGS_DEBUG           "${CMAKE_CXX_FLAGS_DEBUG} /MTd" )
-	set( PLATFORM_LIBRARY                "" )
-elseif( VK_USE_PLATFORM STREQUAL "XCB" )
-	add_definitions( -std=c++11 )
-	set( PLATFORM_LIBRARY dl xcb )
-elseif( VK_USE_PLATFORM STREQUAL "XLIB" )
-	add_definitions( -std=c++11 )
-	set( PLATFORM_LIBRARY dl X11 )
+if ( APPLE )
+	add_definitions( -DVK_USE_PLATFORM_MACOS_MVK )
+	add_definitions( -DVK_USE_PLATFORM_METAL_EXT )
+
+else()
+
+	if( VK_USE_PLATFORM STREQUAL "VK_USE_PLATFORM_WIN32_KHR" )
+		set( CMAKE_C_FLAGS_RELWITHDEBINFO    "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MT" )
+		set( CMAKE_C_FLAGS_RELEASE           "${CMAKE_C_FLAGS_RELEASE} /MT" )
+		set( CMAKE_C_FLAGS_DEBUG             "${CMAKE_C_FLAGS_DEBUG} /MTd" )
+		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT" )
+		set( CMAKE_CXX_FLAGS_RELEASE         "${CMAKE_CXX_FLAGS_RELEASE} /MT" )
+		set( CMAKE_CXX_FLAGS_DEBUG           "${CMAKE_CXX_FLAGS_DEBUG} /MTd" )
+		set( PLATFORM_LIBRARY                "" )
+	elseif( VK_USE_PLATFORM STREQUAL "XCB" )
+		add_definitions( -std=c++11 )
+		set( PLATFORM_LIBRARY dl xcb )
+	elseif( VK_USE_PLATFORM STREQUAL "XLIB" )
+		add_definitions( -std=c++11 )
+		set( PLATFORM_LIBRARY dl X11 )
+	endif()
+
+	#add_definitions( -DVK_NO_PROTOTYPES )
+	add_definitions( -DVK_USE_PLATFORM_${VK_USE_PLATFORM}_KHR )
 endif()
 
 if( CMAKE_BUILD_TYPE STREQUAL "debug" )
 	add_definitions(-D_DEBUG)
 endif()
 
-#add_definitions( -DVK_NO_PROTOTYPES )
-add_definitions( -DVK_USE_PLATFORM_${VK_USE_PLATFORM}_KHR )
 
 ###############################################################
 # External Library                                            #
@@ -74,8 +82,8 @@ add_subdirectory(Helpers)
 ###############################################################
 
 # External files
-find_package(vulkan)
-
+find_package(Vulkan)
+message(STATUS ${Vulkan_INCLUDE_DIRS})
 set(EXTERNAL_HEADER_FILES
 ./External/stb_image.h
 ./External/tiny_obj_loader.h
@@ -83,8 +91,12 @@ set(EXTERNAL_HEADER_FILES
 ./External/vulkan.h
 ./External/vulkan_core.h
 ./External/vulkan_win32.h
+./External/vulkan_metal.h
 ./External/lib/glfw/include/GLFW/glfw3.h
 ./External/lib/glfw/include/GLFW/glfw3native.h 
+./External/mvk_datatypes.h
+./External/mvk_vulkan.h
+./External/vk_mvk_moltenvk.h
 )
 
 
@@ -257,16 +269,34 @@ if(RAYQUERY)
 		add_definitions(-DRAYQUERY)
 endif()
 
+
+
+
 # Recipes Library generation
+if ( APPLE )
+set(ALL_SOURCE_FILES ${LIBRARY_COMMON_SOURCE_FILES} ${LIBRARY_CORE_SOURCE} ${LIBRARY_RAYTRACING_SOURCE} ${LIBRARY_FRAMEWORK_SOURCE})
+set(OBJECTIV_C_FILES )
+
+	foreach(source ${ALL_SOURCE_FILES})
+		#string(REPLACE ".cpp" ".mm" objectivC ${source})
+		#execute_process (
+		#	COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/${source} ${CMAKE_CURRENT_SOURCE_DIR}/${objectivC}
+		#	OUTPUT_VARIABLE outVar
+		#)
+		set(OBJECTIV_C_FILES ${OBJECTIV_C_FILES} ${source})
+	endforeach()
+
+
+add_library( LavaCake STATIC ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${LIBRARY_HELPER_HEADER} ${LIBRARY_HELPER_SOURCE} ${LIBRARY_CORE_HEADER} ${LIBRARY_FRAMEWORK_HEADER} ${LIBRARY_RAYTRACING_HEADER} ${OBJECTIV_C_FILES} ${LIBRARY_GEOMETRY_HEADER} ${LIBRARY_GEOMETRY_SOURCE} ${IMGUI_SOURCE})
+else ()
 add_library( LavaCake STATIC ${EXTERNAL_HEADER_FILES} ${LIBRARY_COMMON_HEADER_FILES} ${LIBRARY_COMMON_SOURCE_FILES} ${LIBRARY_HELPER_HEADER} ${LIBRARY_HELPER_SOURCE}  ${LIBRARY_CORE_HEADER} ${LIBRARY_CORE_SOURCE} ${LIBRARY_FRAMEWORK_HEADER} ${LIBRARY_RAYTRACING_HEADER} ${LIBRARY_RAYTRACING_SOURCE} ${LIBRARY_FRAMEWORK_SOURCE} ${LIBRARY_GEOMETRY_HEADER} ${LIBRARY_GEOMETRY_SOURCE} ${IMGUI_SOURCE})
-target_link_libraries( LavaCake ${PLATFORM_LIBRARY} glfw )
-target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} )
-
-
-
-
-
+endif ()
+target_link_libraries( LavaCake ${PLATFORM_LIBRARY} ${Vulkan_LIBRARY} glfw )
+target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS})
 
 if(RAYQUERY)
 		message("Ray query is not implemented yet")
 endif()
+
+
+

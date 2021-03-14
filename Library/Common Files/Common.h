@@ -22,7 +22,7 @@
 //
 // Vulkan Cookbook
 // ISBN: 9781786468154
-// © Packt Publishing Limited
+// ï¿½ Packt Publishing Limited
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
@@ -35,6 +35,8 @@
 #ifdef _WIN32
 #include <Windows.h>
 #elif defined __linux
+#include <dlfcn.h>
+#elif defined __APPLE__
 #include <dlfcn.h>
 #endif
 
@@ -49,12 +51,25 @@
 #include <memory>
 #include "VulkanDestroyer.h"
 
+#define GLFW_INCLUDE_NONE
+#ifdef _WIN32
+    #include <Windows.h>
+    #define GLFW_EXPOSE_NATIVE_WIN32 true
+#elif __APPLE__
+    #define GLFW_INCLUDE_VULKAN
+#endif
+
+#include "glfw3.h"
+#include "glfw3native.h"
+
 namespace LavaCake {
 
   // Vulkan library type
 #ifdef _WIN32
 #define LIBRARY_TYPE HMODULE
 #elif defined __linux
+#define LIBRARY_TYPE void*
+#elif defined __APPLE__
 #define LIBRARY_TYPE void*
 #endif
 
@@ -75,7 +90,11 @@ namespace LavaCake {
     xcb_connection_t * Connection;
     xcb_window_t       Window;
 
+#elif defined __APPLE__
+    GLFWwindow*     Window;
+    
 #endif
+      
   };
 
   // Extension availability check

@@ -1,4 +1,4 @@
-﻿// Permission is hereby granted, free of charge, to any person obtaining a
+// Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
 // the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -34,6 +34,8 @@ namespace LavaCake {
 			vulkan_library = LoadLibrary("vulkan-1.dll");
 #elif defined __linux
 			vulkan_library = dlopen("libvulkan.so.1", RTLD_NOW);
+#elif defined __APPLE__
+            vulkan_library = dlopen("libvulkan.1.dylib", RTLD_NOW);
 #endif
 
 			if (vulkan_library == nullptr) {
@@ -47,6 +49,8 @@ namespace LavaCake {
 #if defined _WIN32
 #define LoadFunction GetProcAddress
 #elif defined __linux
+#define LoadFunction dlsym
+#elif defined __APPLE__
 #define LoadFunction dlsym
 #endif
 
@@ -183,6 +187,8 @@ namespace LavaCake {
 				FreeLibrary(vulkan_library);
 #elif defined __linux
 				dlclose(vulkan_library);
+#elif defined __APPLE__
+                dlclose(vulkan_library);
 #endif
 				vulkan_library = nullptr;
 			}

@@ -66,7 +66,7 @@ namespace LavaCake {
 
 		void UniformBuffer::addArray(std::string name, std::vector<int>& value) {
 			if (m_variableNames.find(name) != m_variableNames.end()) {
-				ErrorCheck::setError("The variable allready exist in this UniformBuffer");
+				ErrorCheck::setError((char*)"The variable allready exist in this UniformBuffer");
 				return;
 			}
 			int i = int(m_variables.size());
@@ -76,13 +76,13 @@ namespace LavaCake {
 
 		void UniformBuffer::setArray(std::string name, std::vector<int>& value) {
 			if (m_variableNames.find(name) == m_variableNames.end()) {
-				ErrorCheck::setError("The variable does not exist in this UniformBuffer");
+				ErrorCheck::setError((char*)"The variable does not exist in this UniformBuffer");
 				return;
 			}
 			int i = m_variableNames[name];
 			std::vector<int> v = m_variables[i];
 			if (v.size() != value.size()) {
-				ErrorCheck::setError("The new value does not match the type of the one currently stored in this UniformBuffer");
+				ErrorCheck::setError((char*)"The new value does not match the type of the one currently stored in this UniformBuffer");
 				return;
 			}
 

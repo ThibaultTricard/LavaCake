@@ -18,12 +18,12 @@
 //
 // Vulkan Cookbook
 // ISBN: 9781786468154
-// © Packt Publishing Limited
+// ï¿½ Packt Publishing Limited
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
 
-#include "VulkanSwapchain.h"
+#include "VulkanSwapChain.h"
 
 namespace LavaCake {
 
@@ -125,7 +125,7 @@ namespace LavaCake {
 			}
 
 			for (auto & surface_format : surface_formats) {
-				if ((desired_surface_format.format == surface_format.format)) {
+				if (desired_surface_format.format == surface_format.format) {
 					image_format = desired_surface_format.format;
 					image_color_space = surface_format.colorSpace;
 					std::cout << "Desired combination of format and colorspace is not supported. Selecting other colorspace." << std::endl;

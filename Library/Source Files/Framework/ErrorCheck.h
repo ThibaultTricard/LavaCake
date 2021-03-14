@@ -9,7 +9,7 @@ namespace LavaCake {
 
       static ErrorCheck*       m_instance ;
       bool                     m_printError = false;
-      char*                    m_errorMessage = "";
+      char*                    m_errorMessage = (char*)"";
 
     public :
 

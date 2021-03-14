@@ -22,12 +22,12 @@ namespace LavaCake {
 				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logicalDevice = d->getLogicalDevice();
 				if (!GetBinaryFileContents(path, m_spirv)) {
-					ErrorCheck::setError("Can't read the Shader file ");
+					ErrorCheck::setError((char*)"Can't read the Shader file ");
 				}
 				
 				InitVkDestroyer(logicalDevice, m_module);
 				if (!CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
-					ErrorCheck::setError("Can't create the Shader module");
+					ErrorCheck::setError((char*)"Can't create the Shader module");
 				}
 				
 				m_stageParameter = {
@@ -46,7 +46,7 @@ namespace LavaCake {
 
 				InitVkDestroyer(logicalDevice, m_module);
 				if (!CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
-					ErrorCheck::setError("Can't create the Shader module");
+					ErrorCheck::setError((char*)"Can't create the Shader module");
 				}
 
 				m_stageParameter = {
@@ -65,12 +65,12 @@ namespace LavaCake {
 				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logicalDevice = d->getLogicalDevice();
 				if (!GetBinaryFileContents(m_path, m_spirv)) {
-					ErrorCheck::setError("Can't read the Shader file ");
+					ErrorCheck::setError((char*)"Can't read the Shader file ");
 				}
 
 				InitVkDestroyer(logicalDevice, m_module);
 				if (!CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
-					ErrorCheck::setError("Can't create the Shader module");
+					ErrorCheck::setError((char*)"Can't create the Shader module");
 				}
 
 				m_stageParameter.ShaderModule = *m_module;
