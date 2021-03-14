@@ -23,36 +23,28 @@ if( NOT DEFINED VK_USE_PLATFORM )
 	endif()
 endif()
 
-if ( APPLE )
-	add_definitions( -DVK_USE_PLATFORM_MACOS_MVK )
-	add_definitions( -DVK_USE_PLATFORM_METAL_EXT )
-else()
-
-	if( VK_USE_PLATFORM STREQUAL "VK_USE_PLATFORM_WIN32_KHR" )
-		set( CMAKE_C_FLAGS_RELWITHDEBINFO    "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MT" )
-		set( CMAKE_C_FLAGS_RELEASE           "${CMAKE_C_FLAGS_RELEASE} /MT" )
-		set( CMAKE_C_FLAGS_DEBUG             "${CMAKE_C_FLAGS_DEBUG} /MTd" )
-		set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT" )
-		set( CMAKE_CXX_FLAGS_RELEASE         "${CMAKE_CXX_FLAGS_RELEASE} /MT" )
-		set( CMAKE_CXX_FLAGS_DEBUG           "${CMAKE_CXX_FLAGS_DEBUG} /MTd" )
-		set( PLATFORM_LIBRARY                "" )
-	elseif( VK_USE_PLATFORM STREQUAL "XCB" )
-		add_definitions( -std=c++11 )
-		set( PLATFORM_LIBRARY dl xcb )
-	elseif( VK_USE_PLATFORM STREQUAL "XLIB" )
-		add_definitions( -std=c++11 )
-		set( PLATFORM_LIBRARY dl X11 )
-	endif()
-
-
-
-	#add_definitions( -DVK_NO_PROTOTYPES )
-	add_definitions( -DVK_USE_PLATFORM_${VK_USE_PLATFORM}_KHR )
+if( VK_USE_PLATFORM STREQUAL "VK_USE_PLATFORM_WIN32_KHR" )
+	set( CMAKE_C_FLAGS_RELWITHDEBINFO    "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MT" )
+	set( CMAKE_C_FLAGS_RELEASE           "${CMAKE_C_FLAGS_RELEASE} /MT" )
+	set( CMAKE_C_FLAGS_DEBUG             "${CMAKE_C_FLAGS_DEBUG} /MTd" )
+	set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT" )
+	set( CMAKE_CXX_FLAGS_RELEASE         "${CMAKE_CXX_FLAGS_RELEASE} /MT" )
+	set( CMAKE_CXX_FLAGS_DEBUG           "${CMAKE_CXX_FLAGS_DEBUG} /MTd" )
+	set( PLATFORM_LIBRARY                "" )
+elseif( VK_USE_PLATFORM STREQUAL "XCB" )
+	add_definitions( -std=c++11 )
+	set( PLATFORM_LIBRARY dl xcb )
+elseif( VK_USE_PLATFORM STREQUAL "XLIB" )
+	add_definitions( -std=c++11 )
+	set( PLATFORM_LIBRARY dl X11 )
 endif()
 
 if( CMAKE_BUILD_TYPE STREQUAL "debug" )
 	add_definitions(-D_DEBUG)
 endif()
+
+#add_definitions( -DVK_NO_PROTOTYPES )
+add_definitions( -DVK_USE_PLATFORM_${VK_USE_PLATFORM}_KHR )
 
 ###############################################################
 # External Library                                            #
@@ -84,8 +76,6 @@ set(EXTERNAL_HEADER_FILES
 ./External/vulkan.h
 ./External/vulkan_core.h
 ./External/vulkan_win32.h
-./External/vulkan_macos.h
-./External/vulkan_metal.h
 ./External/lib/glfw/include/GLFW/glfw3.h
 ./External/lib/glfw/include/GLFW/glfw3native.h 
 )
