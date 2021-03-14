@@ -83,7 +83,7 @@ add_subdirectory(Helpers)
 
 # External files
 find_package(Vulkan)
-message(STATUS ${Vulkan_INCLUDE_DIRS})
+
 set(EXTERNAL_HEADER_FILES
 ./External/stb_image.h
 ./External/tiny_obj_loader.h
@@ -259,16 +259,18 @@ source_group( "Library\\Geometry\\Header" FILES ${LIBRARY_GEOMETRY_HEADER} )
 source_group( "Library\\Geometry\\Source" FILES ${LIBRARY_GEOMETRY_SOURCE} )
 
 if ( APPLE )
-	option(RAYTRACING "Allow raytracing (gtx 1060 or higher)" OFF)
+
 else()
 	option(RAYTRACING "Allow raytracing (gtx 1060 or higher)" ON)
+	option(RAYQUERY "Allow ray query (rtx only)" OFF)
 endif()
+
 if(RAYTRACING)
 		add_definitions(-DRAYTRACING)
 endif()
 
 
-option(RAYQUERY "Allow ray query (rtx only)" OFF)
+
 if(RAYQUERY)
 		add_definitions(-DRAYQUERY)
 endif()
