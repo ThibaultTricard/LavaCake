@@ -9,9 +9,9 @@ namespace LavaCake {
 		//																																				Textrue Buffer 																																	//
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		TextureBuffer::TextureBuffer(char const * filename, int nbChannel, VkFormat f) {
+		TextureBuffer::TextureBuffer(std::string filename, int nbChannel, VkFormat f) {
 			int width, height;
-			if (!Helpers::LoadTextureDataFromFile(filename, nbChannel, *m_data, &width, &height)) {
+			if (!Helpers::LoadTextureDataFromFile(filename.data(), nbChannel, *m_data, &width, &height)) {
 				ErrorCheck::setError((char*)"Could not load texture file");
 			}
 			m_image = new Image(width, height, 1, f, VK_IMAGE_ASPECT_COLOR_BIT);

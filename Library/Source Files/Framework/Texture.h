@@ -23,7 +23,7 @@ namespace LavaCake {
 			* @param VkFormat f : the format of theTexture buffer.
       *
 			*/
-			TextureBuffer(char const * filename, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
+			TextureBuffer(std::string filename, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
 
 
 			/**

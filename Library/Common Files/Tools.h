@@ -22,7 +22,7 @@
 //
 // Vulkan Cookbook
 // ISBN: 9781786468154
-// © Packt Publishing Limited
+// ï¿½ Packt Publishing Limited
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
@@ -60,7 +60,7 @@ namespace LavaCake {
   using mat4 = std::array<float, 16>;
 
 
-  template<typename T, unsigned char N>
+  template<typename T, unsigned long N>
   std::array<T, N> operator*(const std::array<T, N>& b, const T a) {
     std::array<T, N> d = std::array<T, N>();
     for (unsigned char i = 0; i < N; i++) {
@@ -69,7 +69,7 @@ namespace LavaCake {
     return std::array<T, N>(d);
   }
 
-  template<typename T, unsigned char N>
+  template<typename T, unsigned long N>
   std::array<T, N> operator*(const T a, const std::array<T, N>& b) {
     std::array<T, N> d = std::array<T, N>();
     for (unsigned char i = 0; i < N; i++) {
@@ -78,7 +78,7 @@ namespace LavaCake {
     return std::array<T, N>(d);
   }
 
-  template<typename T, unsigned char N>
+  template<typename T, unsigned long N>
   std::array<T, N> operator-(const std::array<T, N> a, const std::array<T, N> b) {
     std::array<T, N> d = std::array<T, N>();
     for (unsigned char i = 0; i < N; i++) {
@@ -87,7 +87,7 @@ namespace LavaCake {
     return std::array<T, N>(d);
   }
 
-  template<typename T, unsigned char N>
+  template<typename T, unsigned long N>
   std::array<T, N> operator+(const std::array<T, N> a, const std::array<T, N> b) {
     std::array<T, N> d = std::array<T, N>();
     for (unsigned char i = 0; i < N; i++) {

@@ -74,7 +74,7 @@ namespace LavaCake {
 			}
 		}
     
-		std::pair < std::vector<float>, vertexFormat  > Load3DModelFromObjFile(char const* filename,
+		std::pair < std::vector<float>, vertexFormat  > Load3DModelFromObjFile(std::string filename,
 			bool				 load_normal,
 			bool				 load_uv,
 			bool         generate_tangent_space_vectors,
@@ -89,7 +89,7 @@ namespace LavaCake {
 
 
 
-			bool result = tinyobj::LoadObj(&attribs, &shapes, &materials, &error, filename);
+			bool result = tinyobj::LoadObj(&attribs, &shapes, &materials, &error, filename.data());
 			if (!result) {
 				std::cout << "Could not open the '" << filename << "' file.";
 				if (0 < error.size()) {
@@ -205,7 +205,7 @@ namespace LavaCake {
     }
 		
 
-		std::pair < std::pair <std::vector<float>, std::vector<uint32_t>>, vertexFormat  > Load3DModelFromObjFile(char const* filename,
+		std::pair < std::pair <std::vector<float>, std::vector<uint32_t>>, vertexFormat  > Load3DModelFromObjFile(std::string filename,
 			bool				 load_normal,
 			bool         unify)
 		{
@@ -218,7 +218,7 @@ namespace LavaCake {
 
 
 
-			bool result = tinyobj::LoadObj(&attribs, &shapes, &materials, &error, filename);
+			bool result = tinyobj::LoadObj(&attribs, &shapes, &materials, &error, filename.data());
 			if (!result) {
 				std::cout << "Could not open the '" << filename << "' file.";
 				if (0 < error.size()) {
