@@ -1,3 +1,4 @@
+#ifdef RAYTRACING
 #include "BottomLevelAS.h"
 
 namespace LavaCake {
@@ -169,3 +170,4 @@ namespace LavaCake {
 
 	}
 }
+#endif

@@ -6,17 +6,6 @@
 #include "ErrorCheck.h"
 
 
-#ifdef __APPLE__
-
-#endif
-
-#define GLFW_INCLUDE_NONE
-#ifdef _WIN32
-    #include <Windows.h>
-#elif __APPLE__
-#endif
-
-
 namespace LavaCake {
 	namespace Framework {
 
@@ -66,21 +55,8 @@ namespace LavaCake {
                 
                 m_window = glfwCreateWindow(width, height, window_title, nullptr, nullptr);
                 
-    #ifdef _WIN32
-								m_windowParams.HInstance = GetModuleHandleW(NULL);
-								m_windowParams.HWnd = glfwGetWin32Window(m_window);
-
-
-                if (!m_windowParams.HWnd) {
-                    ErrorCheck::setError("Failed to create window");
-                }
-                
-    #elif defined __linux
-                
-    #elif defined __APPLE__
-             
                 m_windowParams.Window = m_window;
-    #endif
+
                 Mouse::init(m_window);
 
             }
@@ -92,7 +68,6 @@ namespace LavaCake {
 			bool running() {
 				return !glfwWindowShouldClose(m_window);
 			}
-
 
 
 

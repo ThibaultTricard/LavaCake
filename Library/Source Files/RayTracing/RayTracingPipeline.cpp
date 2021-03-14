@@ -1,5 +1,5 @@
+#ifdef RAYTRACING
 #include "RayTracingPipeline.h"
-
 
 namespace LavaCake {
 	namespace RayTracing {
@@ -584,3 +584,4 @@ namespace LavaCake {
 			}
 	}
 }
+#endif

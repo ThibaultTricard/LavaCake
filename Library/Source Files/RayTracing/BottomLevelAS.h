@@ -1,4 +1,5 @@
 #pragma once
+#ifdef RAYTRACING
 #include "Framework/VertexBuffer.h"
 #include "Framework/ErrorCheck.h"
 
@@ -32,7 +33,9 @@ namespace LavaCake {
 			VkAccelerationStructureDeviceAddressInfoKHR m_accelerationDeviceAddressInfo{};
 			Framework::Buffer														m_scratchBuffer;
 			std::vector<VkAccelerationStructureGeometryKHR> m_geometry;
+
 		};
 
 	}
 }
+#endif 

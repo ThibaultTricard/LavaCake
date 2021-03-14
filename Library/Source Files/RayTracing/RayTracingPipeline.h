@@ -1,3 +1,4 @@
+#ifdef RAYTRACING
 #pragma once
 #include "RayTracingShaderModule.h"
 #include "Framework/CommandBuffer.h"
@@ -74,3 +75,4 @@ namespace LavaCake {
     };
   }
 }
+#endif

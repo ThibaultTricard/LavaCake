@@ -1,3 +1,4 @@
+#ifdef RAYTRACING
 #pragma once
 #include "Framework/ShaderModule.h"
 
@@ -74,3 +75,4 @@ namespace LavaCake {
 		};
 	}
 }
+#endif

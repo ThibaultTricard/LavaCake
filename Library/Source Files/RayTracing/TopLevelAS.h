@@ -1,3 +1,4 @@
+#ifdef RAYTRACING
 #pragma once
 #include "AllHeaders.h"
 #include "BottomLevelAS.h"
@@ -48,3 +49,4 @@ namespace LavaCake {
 		};
 	}
 }
+#endif

@@ -73,27 +73,11 @@ namespace LavaCake {
 #define LIBRARY_TYPE void*
 #endif
 
-  // OS-specific parameters
+ 
   struct WindowParameters {
-#ifdef _WIN32
 
-    HINSTANCE          HInstance;
-    HWND               HWnd;
-
-#elif defined VK_USE_PLATFORM_XLIB_KHR
-
-    Display          * Dpy;
-    Window             Window;
-
-#elif defined VK_USE_PLATFORM_XCB_KHR
-
-    xcb_connection_t * Connection;
-    xcb_window_t       Window;
-
-#elif defined __APPLE__
     GLFWwindow*     Window;
     
-#endif
       
   };
 
