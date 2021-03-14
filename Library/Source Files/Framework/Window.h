@@ -67,7 +67,8 @@ namespace LavaCake {
                 m_window = glfwCreateWindow(width, height, window_title, nullptr, nullptr);
                 
     #ifdef _WIN32
-                m_windowParams = { GetModuleHandleW(NULL), glfwGetWin32Window(m_window) };
+								m_windowParams.HInstance = GetModuleHandleW(NULL);
+								m_windowParams.HWnd = glfwGetWin32Window(m_window);
 
 
                 if (!m_windowParams.HWnd) {

@@ -75,7 +75,7 @@ namespace LavaCake {
 
   // OS-specific parameters
   struct WindowParameters {
-#ifdef VK_USE_PLATFORM_WIN32_KHR
+#ifdef _WIN32
 
     HINSTANCE          HInstance;
     HWND               HWnd;
