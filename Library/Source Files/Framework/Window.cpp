@@ -69,7 +69,7 @@ namespace LavaCake {
 			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 			m_window = glfwCreateWindow(width, height, window_title, nullptr, nullptr);
-#ifdef _WIN32
+#ifdef Win32
             m_windowParams = { GetModuleHandleW(NULL), glfwGetWin32Window(m_window) };
 
 
