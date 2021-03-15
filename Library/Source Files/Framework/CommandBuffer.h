@@ -61,20 +61,24 @@ namespace LavaCake {
         }
       }
 
-      void wait(uint32_t waitingTime) {
-        Device* d = Device::getDevice();
-        VkDevice logical = d->getLogicalDevice();
-        VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1), { &*m_fence }, true, waitingTime);
-        if (VK_SUCCESS != result) {
-          //TODO : Raise error using error check
-          //std::cout << "Waiting on fence failed." << std::endl;
+      void wait(uint32_t waitingTime = UINT32_MAX, bool force = false) {
+        if(m_submitted || force){
+          Device* d = Device::getDevice();
+          VkDevice logical = d->getLogicalDevice();
+          
+          VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1),  &*m_fence , true, waitingTime);
+          if (VK_SUCCESS != result) {
+            //TODO : Raise error using error check
+            //std::cout << "Waiting on fence failed." << std::endl;
+          }
         }
+        m_submitted = false;
       }
 
       void resetFence() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        VkResult result = vkResetFences(logical, static_cast<uint32_t>(1), { &*m_fence });
+        VkResult result = vkResetFences(logical, static_cast<uint32_t>(1),  &*m_fence );
         if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
           //std::cout << "Error occurred when tried to reset fences." << std::endl;
@@ -107,7 +111,7 @@ namespace LavaCake {
       VkCommandBuffer& getHandle() {
         return m_commandBuffer;
       }
-
+      
       VkSemaphore& getSemaphore(int i) {
         return *m_semaphores[i];
       }
@@ -141,7 +145,9 @@ namespace LavaCake {
         VkResult result = vkQueueSubmit(queue->getHandle(), 1, &submit_info, getFence());
         if (VK_SUCCESS != result) {
           std::cout << "Error occurred during command buffer submission." << std::endl;
+            return;
         }
+        m_submitted =true;
       }
 
 
@@ -168,6 +174,8 @@ namespace LavaCake {
       VkCommandBuffer                           m_commandBuffer;
       std::vector<VkDestroyer(VkSemaphore)>     m_semaphores;
       VkDestroyer(VkFence)                      m_fence;
+        
+      bool                                      m_submitted = false;
     };
   }
 }

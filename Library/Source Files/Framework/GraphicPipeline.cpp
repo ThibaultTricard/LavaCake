@@ -296,13 +296,13 @@ namespace LavaCake {
 
 		void GraphicPipeline::draw(CommandBuffer& buffer) {
 			VkViewport& viewport = m_viewportscissor.Viewports[0];
-			vkCmdSetViewport(buffer.getHandle(), 0, 1, { &m_viewportscissor.Viewports[0] });
+			vkCmdSetViewport(buffer.getHandle(), 0, 1,  &m_viewportscissor.Viewports[0] );
 
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
-			vkCmdSetScissor(buffer.getHandle(), 0, 1, { &scissor });
+			vkCmdSetScissor(buffer.getHandle(), 0, 1,  &scissor );
 			if (m_vertexBuffer->getVertexBuffer().getHandle() == VK_NULL_HANDLE)return;
 			VkDeviceSize size(0);
-			vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1), { &m_vertexBuffer->getVertexBuffer().getHandle() }, { &size });
+			vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1),  &m_vertexBuffer->getVertexBuffer().getHandle() ,  &size );
 			if (m_vertexBuffer->isIndexed()) {
 				vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffer->getIndexBuffer().getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
 			}

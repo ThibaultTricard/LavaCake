@@ -143,7 +143,7 @@ namespace LavaCake{
 			bufferMemoryBarrier.size = VK_WHOLE_SIZE;
 
 
-			vkCmdPipelineBarrier(cmdBuff.getHandle(), m_stage, dstStage, 0, 0, nullptr, 1, { &bufferMemoryBarrier }, 0, nullptr);
+			vkCmdPipelineBarrier(cmdBuff.getHandle(), m_stage, dstStage, 0, 0, nullptr, 1,  &bufferMemoryBarrier , 0, nullptr);
 
 
 			m_stage = dstStage;
