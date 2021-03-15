@@ -40,7 +40,7 @@ LavaCake is compatible with MacOS and Metal in it's 1.2 version through MoltenVK
 
 # Examples
 
-Multiple exemples of how to use this library is availlable at https://github.com/ThibaultTricard/LavaCake-Examples
+Multiple exemples of how to use this library is availlable at https://github.com/ThibaultTricard/LavaCake-Examples/tree/dev-1.2
 
 # Credits
 
