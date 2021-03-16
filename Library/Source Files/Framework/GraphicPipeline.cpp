@@ -117,7 +117,7 @@ namespace LavaCake {
 				0.0f,																												// float                                      depthBiasConstantFactor
 				0.0f,																												// float                                      depthBiasClamp
 				0.0f,																												// float                                      depthBiasSlopeFactor
-				1.0f																												// float                                      lineWidth
+        m_lineWidth																									// float                                      lineWidth
 			};
 
 			m_multisampleStateCreateInfo = {

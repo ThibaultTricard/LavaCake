@@ -79,6 +79,10 @@ namespace LavaCake {
 			void setAlphaBlending(bool v) {
 				m_alphablending = v ? VK_TRUE : VK_FALSE;
 			};
+      
+      void setLineWidth(float width){
+        m_lineWidth =width;
+      }
 			
 			~GraphicPipeline() {
 
@@ -122,6 +126,7 @@ namespace LavaCake {
 
 
 			VkBool32																							m_alphablending = VK_FALSE;
+      float                                                 m_lineWidth = 1.0f;
 
 			bool																									m_compiled = false;
 		};
