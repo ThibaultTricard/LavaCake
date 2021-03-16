@@ -186,7 +186,17 @@ namespace LavaCake {
 				m_swapchainImages[index]->m_index = index;
 				return *m_swapchainImages[index];
 			}
-
+      
+      void presentImage(PresentationQueue* queue, SwapChainImage& image, std::vector<VkSemaphore> semaphores){
+        Core::PresentInfo present_info = {
+          *m_handle,                                    // VkSwapchainKHR         Swapchain
+          image.getIndex()                              // uint32_t               ImageIndex
+        };
+        if (!Core::PresentImage(queue->getHandle(), semaphores, { present_info })) {
+          //raiseError
+        }
+      }
+      
 		private :
 
 			

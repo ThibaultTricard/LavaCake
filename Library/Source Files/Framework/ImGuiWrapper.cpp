@@ -256,7 +256,7 @@ namespace LavaCake {
 
       m_pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
       VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
-      m_pipeline->setVextexModule(sphereVertex);
+      m_pipeline->setVertexModule(sphereVertex);
 
       FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
       m_pipeline->setFragmentModule(sphereFrag);
