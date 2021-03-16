@@ -16,7 +16,7 @@ namespace LavaCake {
 			/**
 			* setup the vertex shader module for this pipeline
 			*/
-			void setVextexModule(VertexShaderModule*	module);
+			void setVertexModule(VertexShaderModule*	module);
 
 			/**
 			* setup the tesselation control shader module for this pipeline

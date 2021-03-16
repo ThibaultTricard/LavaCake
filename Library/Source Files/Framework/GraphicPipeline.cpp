@@ -42,7 +42,7 @@ namespace LavaCake {
 
 		};
 
-		void GraphicPipeline::setVextexModule(VertexShaderModule*	module) {
+		void GraphicPipeline::setVertexModule(VertexShaderModule*	module) {
 			m_vertexModule = module;
 		}
 
