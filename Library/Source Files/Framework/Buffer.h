@@ -8,14 +8,36 @@ namespace LavaCake {
   namespace Framework {
     
 		class Image;
-
+  
+  /**
+      This class helps manage Vulkan Buffers their memory and view
+  */
     class Buffer {
     public :
-
+      
+      /**
+        Default constructor
+       */
 			Buffer();
 
-			Buffer(const Buffer& a);
-
+      /**
+        Copy constructor
+        \param buffer : the buffer to be copied
+       */
+			Buffer(const Buffer& buffer);
+      
+      
+      /**
+        Allocate and initialise the Buffer with a list of data
+        \param queue : a pointer to the queue that will be used to copy data to the Buffer
+        \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+        \param rawdata : a vector of data to be pushed to the buffer
+        \param usage : the usage of the buffer see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a>
+        \param memPropertyFlag : the memory property of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
+        \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
+        \param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
+        \param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
+       */
 			template <typename t>
 			void allocate(Queue* queue, CommandBuffer& cmdBuff, std::vector<t> rawdata, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
 				Device* d = Device::getDevice();
@@ -154,28 +176,127 @@ namespace LavaCake {
 				}*/
       }
 
-			void allocate(uint64_t biteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT);
-
+      
+      
+      /**
+        Allocate a Buffer of a given size
+        \param byteSize : the size in byte of the buffer
+        \param usage : the usage of the buffer see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a>
+        \param memPropertyFlag : the memory property of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
+        \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
+        \param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
+        \param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
+       */
+			void allocate(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT);
+      
+      /**
+        Change the acces mode of the buffer
+        \param cmdBuff : the command buffer used for this opperation, must be in a recording state
+        \param dstStage : the new stage of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
+        \param dstAccessMode : the new access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
+        \param dstQueueFamily : (optional) the new family queue of  the buffer, if ignored the buffer will remain on the same family queue
+       */
 			void setAccess(CommandBuffer& cmdBuff, VkPipelineStageFlags dstStage, VkAccessFlagBits dstAccessMode, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED);
 
+      /**
+       Return the handle of the buffer
+       \return a VkBuffer : the vulkan representation of the buffer
+       */
 			VkBuffer& getHandle();
 
+      /**
+       Return the buffer view
+       \return a VkBuffer : the vulkan representation of the buffer
+       */
 			VkBufferView& getBufferView();
 
+      /**
+       Return the buffer memory
+       \return a VkDeviceMemory : the memory of the buffer on the GPU
+       */
+      VkDeviceMemory& getMemory();
+      
+      /**
+       Copy a region(s) of an image to this buffer
+       \param cmdBuff : the command buffer used for this operation, must be in a  recording state
+       \param image : the source image
+       \param regions : The listt of regions of the image to be copied to the buffer;
+       */
 			void copyToImage(CommandBuffer& cmdBuff, Image& image, std::vector<VkBufferImageCopy> regions);
-
+      
+      /**
+       Copy a region(s) of an buffer to this buffer
+       \param cmdBuff : the command buffer used for this operation, must be in a  recording state
+       \param buffer : the source buffer
+       \param regions : The listt of regions of the image to be copied to the buffer;
+       */
 			void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, std::vector<VkBufferCopy> regions);
-
-			VkDeviceMemory& getMemory();
-
+      
+			
+      /**
+       Map the buffer memory to a pointer
+       \return a void* pointer to mapped memory
+       */
 			void* map();
 
+      /**
+       Unmap the buffer memory
+       
+       */
 			void unmap();
+      
+      /**
+       Read  back the data contained in a buffer and return it in a vector
+       \param queue : a pointer to the queue that will be used to copy data to the Buffer
+       \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+       \param data: the vector on witch the content of the data will be written
+       */
+      template <typename t>
+			void readBack(Queue* queue, CommandBuffer& cmdBuff, std::vector<t>& data){
+        Device* d = Device::getDevice();
+        VkPhysicalDevice physical = d->getPhysicalDevice();
+        VkDevice logical = d->getLogicalDevice();
 
-			void readBack(Queue* queue, CommandBuffer& cmdBuff, std::vector<float>& data);
+        Buffer stagingBuffer;
 
+        stagingBuffer.allocate(m_dataSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+
+        data = std::vector<t>(m_dataSize);
+
+        cmdBuff.beginRecord();
+
+        VkPipelineStageFlags                                stage = m_stage;
+        VkAccessFlagBits                                    access = m_access;
+
+        setAccess(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED);
+
+        copyToBuffer(cmdBuff, stagingBuffer, { { 0, 0,  m_dataSize } });
+
+        setAccess(cmdBuff, m_stage, m_access, VK_QUEUE_FAMILY_IGNORED);
+
+        cmdBuff.endRecord();
+
+        cmdBuff.submit(queue, {}, {});
+
+        cmdBuff.wait(UINT32_MAX);
+        cmdBuff.resetFence();
+        void* local_pointer = stagingBuffer.map();
+
+        std::memcpy(&data[0], local_pointer, static_cast<size_t>(m_dataSize));
+
+        stagingBuffer.unmap();
+      }
+
+      /**
+       Get the Buffer device address,
+       \return the address of the buffer on the device
+       */
 			uint64_t getBufferDeviceAddress();
 
+      /**
+       Write a set of data to the buffer,
+       The buffer must be host visible for this operation to succeed
+       */
 			template <typename t>
 			void write(std::vector<t> data) {
 				Device* d = Device::getDevice();

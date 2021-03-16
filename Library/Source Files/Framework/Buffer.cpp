@@ -16,11 +16,11 @@ namespace LavaCake{
 			m_dataSize = a.m_dataSize;
 		}
 
-		void Buffer::allocate(uint64_t biteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag , VkPipelineStageFlagBits stageFlagBit , VkFormat format ) {
+		void Buffer::allocate(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag , VkPipelineStageFlagBits stageFlagBit , VkFormat format ) {
 			Device* d = Device::getDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkDevice logical = d->getLogicalDevice();
-			m_dataSize = biteSize;
+			m_dataSize = byteSize;
 
 			m_stage = stageFlagBit;
 			m_access = VkAccessFlagBits(0);
@@ -197,40 +197,6 @@ namespace LavaCake{
 			vkUnmapMemory(logical, *m_bufferMemory);
 		}
 
-		void Buffer::readBack(Queue* queue, CommandBuffer& cmdBuff, std::vector<float>& data) {
-			Device* d = Device::getDevice();
-			VkPhysicalDevice physical = d->getPhysicalDevice();
-			VkDevice logical = d->getLogicalDevice();
-
-			Buffer stagingBuffer;
-
-			stagingBuffer.allocate(m_dataSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-
-			data = std::vector<float>(m_dataSize);
-
-			cmdBuff.beginRecord();
-
-			VkPipelineStageFlags																stage = m_stage;
-			VkAccessFlagBits																		access = m_access;
-
-			setAccess(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED);
-
-			copyToBuffer(cmdBuff, stagingBuffer, { { 0, 0,  m_dataSize } });
-
-			setAccess(cmdBuff, m_stage, m_access, VK_QUEUE_FAMILY_IGNORED);
-
-			cmdBuff.endRecord();
-
-			cmdBuff.submit(queue, {}, {});
-
-			cmdBuff.wait(UINT32_MAX);
-			cmdBuff.resetFence();
-			void* local_pointer = stagingBuffer.map();
-
-			std::memcpy(&data[0], local_pointer, static_cast<size_t>( m_dataSize));
-
-			stagingBuffer.unmap();
-		}
 
 		uint64_t Buffer::getBufferDeviceAddress()
 		{
