@@ -261,7 +261,7 @@ namespace LavaCake {
 
         stagingBuffer.allocate(m_dataSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
-        data = std::vector<t>(m_dataSize);
+        data = std::vector<t>(m_dataSize/sizeof(t));
 
         cmdBuff.beginRecord();
 
