@@ -155,7 +155,7 @@ namespace LavaCake {
 				return m_size;
 			}
 
-			SwapChainImage& AcquireImage() {
+			SwapChainImage& acquireImage() {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 				VkSemaphoreCreateInfo semaphore_create_info = {
