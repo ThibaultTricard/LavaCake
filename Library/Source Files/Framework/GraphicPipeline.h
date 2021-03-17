@@ -6,80 +6,104 @@
 namespace LavaCake {
 	namespace Framework {
 
+  /**
+   Class GraphicPipeline :
+   \brief Helps manage a compute pipeline and it's binding
+   Inherit the pipeline Pipeline class
+   */
 		class GraphicPipeline : public Pipeline
 		{
 		public:
 
-
-			GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax);
+      /**
+       \brief Constructor for the gaphic pipelin class
+       \param viewportMin the minimum coordinate of view port
+       \param viewportMax the maximum coordinate of view port
+       \param scisorMin the minimum coordinate on wich the graphic pipeline will draw
+       \param scisorMax the maximum coordinate on wich the graphic pipeline will draw
+      */
+			GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scissorMin, vec2f scissorMax);
 
 			/**
-			* setup the vertex shader module for this pipeline
+       \brief Set the vertex shader module for the pipeline
+       \param module a pointer to a vertex shader module
 			*/
 			void setVertexModule(VertexShaderModule*	module);
 
-			/**
-			* setup the tesselation control shader module for this pipeline
-			*/
+      /**
+       \brief Set the vertex shader module for the pipeline
+       \param module a pointer to a tessellation control shader module
+      */
 			void setTesselationControlModule(TessellationControlShaderModule*	module);
 
-			/**
-			* setup the tesselation evaluation shader module for this pipeline
-			*/
+      /**
+       \brief Set the vertex shader module for the pipeline
+       \param module a pointer to a tessellation evaluation shader module
+      */
 			void setTesselationEvaluationModule(TessellationEvaluationShaderModule*	module);
 
-			/**
-			* setup the geometry shader module for this pipeline
-			*/
+      /**
+       \brief Set the vertex shader module for the pipeline
+       \param module a pointer to a geomety shader module
+      */
 			void setGeometryModule(GeometryShaderModule*	module);
 
-			/**
-			* setup the fragment shader module for this pipeline
-			*/
+      /**
+       \brief Set the vertex shader module for the pipeline
+       \param module a pointer to a fragment shader module
+      */
 			void setFragmentModule(FragmentShaderModule*	module);
 
 			std::vector<ShaderStageParameters> getStageParameter();
 
-			/**
-			*Prepare the Compute pipeline for it's usage
-			*Warning : If a modification is made to the compute pipeline after this operation,
-			*The compute pipeline need to be compiled again before being used
-			*/
+			
 			void compile(VkRenderPass& renderpass, uint16_t nbColorAttachments);
 
-
+      /**
+      \brief Reload all the spirv shaders module from source
+       */
 			void reloadShaders();
 
 			/**
-			*set the vertex buffer to be used for this pipeline
+			\brief Set the vertex buffer that will be used by the pipeline
+      \param vertexBuffer the vertex buffer
 			*/
-			void setVertices(VertexBuffer* buffer);
+			void setVertices(VertexBuffer* vertexBuffer);
 
 			/**
-			*draw call of the pipeline
+			\brief Register a the draw call of the pipeline into a command buffer
+      \param cmdBuff the command buffer
 			*/
-			void draw(CommandBuffer& buffer);
+			void draw(CommandBuffer& cmdBuff);
 
 			/**
-			set the cull mode for the pipeline, if not set the pipeline cull the back faces
+      \brief Set the cull mode for the pipeline, if not set the pipeline cull the back faces
 			*/
 			void SetCullMode(VkCullModeFlagBits cullMode);
 
 			/**
-			add a push constant and specify it's shader stage
+			\brief Register a push constant to the pand specify it's shader stage,
+       only one push constant can be used per shader stage
+      \param constat a pointer to the push constant
+      \param shadeStage a flag representing the shader in witch the constant will be pushed
 			*/
-			void addPushContant(PushConstant* constant, VkShaderStageFlags flag);
+			void addPushContant(PushConstant* constant, VkShaderStageFlags shadeStage);
 
-			/**
-			specify in which subpass this graphics pipeline will be used 
-			*/
+	
 			void setSubpassNumber(uint32_t number);
 
-
-			void setAlphaBlending(bool v) {
-				m_alphablending = v ? VK_TRUE : VK_FALSE;
+      /**
+       \brief enable or disable the alpha blending, if not set the alpha blendig is disable
+       \param alphaBlending a boolean representing wether or not to enable the alphablending
+       */
+			void setAlphaBlending(bool alphaBlending) {
+				m_alphablending = alphaBlending ? VK_TRUE : VK_FALSE;
 			};
       
+      /**
+       \brief set the line width used to draw line in the pipeline, if not set the line width will be set to 1.0f
+       \param width the line width
+       */
       void setLineWidth(float width){
         m_lineWidth =width;
       }
