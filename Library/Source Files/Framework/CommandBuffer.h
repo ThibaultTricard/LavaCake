@@ -7,8 +7,18 @@
 
 namespace LavaCake {
   namespace Framework {
+  
+  /**
+   Class CommandBuffer :
+   \brief Helps manage VkCommandBuffer and their synchornisation
+   */
     class CommandBuffer {
     public:
+      
+      /**
+       Constructor the CommandBuffer class
+       \brief Initialise a VkCommandBuffer and a VkFence for it's synchronisation
+       */
       CommandBuffer() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
@@ -43,7 +53,10 @@ namespace LavaCake {
           //std::cout << "Could not create a fence." << std::endl;
         }
       };
-
+      
+      /**
+       \brief Create a VkSemaphore and add it into an intern list
+       */
       void addSemaphore() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
@@ -61,6 +74,11 @@ namespace LavaCake {
         }
       }
 
+      /**
+       \brief Wait for the CommandBuffer to be executed if it was submitted
+       \param waitingTime (optional) the maximum waiting time allowed to this function in nanoseconds
+       \param force (optional) if set to true, will wait even if it was not submited
+       */
       void wait(uint32_t waitingTime = UINT32_MAX, bool force = false) {
         if(m_submitted || force){
           Device* d = Device::getDevice();
@@ -74,7 +92,11 @@ namespace LavaCake {
         }
         m_submitted = false;
       }
-
+      
+      /**
+       \brief Reset the fence associated with this buffer.
+       Must be called before re-submiting the command buffer
+       */
       void resetFence() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
@@ -84,7 +106,10 @@ namespace LavaCake {
           //std::cout << "Error occurred when tried to reset fences." << std::endl;
         }
       }
-
+      
+      /**
+       \brief Put the command buffer in a recording state
+       */
       void beginRecord() {
         VkCommandBufferBeginInfo command_buffer_begin_info = {
         VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,    // VkStructureType                        sType
@@ -99,7 +124,10 @@ namespace LavaCake {
           //std::cout << "Could not begin command buffer recording operation." << std::endl;
         }
       }
-
+      
+      /**
+       \brief Put the command buffer out of recording state
+       */
       void endRecord() {
         VkResult result = vkEndCommandBuffer(m_commandBuffer);
         if (VK_SUCCESS != result) {
@@ -108,19 +136,38 @@ namespace LavaCake {
         }
       }
 
+      /**
+       \brief Return the handle of command buffer
+       \return a handle to the VkCommandBuffer
+       */
       VkCommandBuffer& getHandle() {
         return m_commandBuffer;
       }
       
+      /**
+       \brief Return the semaphore at a given index
+       \param i the index of the wanted semaphore
+       \return a handle to a VkSemaphore
+       */
       VkSemaphore& getSemaphore(int i) {
         return *m_semaphores[i];
       }
 
+      /**
+       \brief Return the fence of the command buffer
+       \return a handle to a VkFence
+       */
       VkFence& getFence() {
         return *m_fence;
       }
 
-      void submit(Queue* queue, std::vector<Core::WaitSemaphoreInfo> waitSemaphoreInfo, std::vector<VkSemaphore>  signal_semaphores) {
+      /**
+       \brief Submit the command buffer to a queue
+       \param queue : a pointer to the queue that will be used to submit this command buffer
+       \param waitSemaphoreInfo : description of the semaphores to to wait on before executing it
+       \param signalSemaphores : the list of that will be raised by the execution of this command buffer
+       */
+      void submit(Queue* queue, std::vector<Core::WaitSemaphoreInfo> waitSemaphoreInfo, std::vector<VkSemaphore>  signalSemaphores) {
         std::vector<VkSemaphore>          wait_semaphore_handles;
         std::vector<VkPipelineStageFlags> wait_semaphore_stages;
         for (auto& wait_semaphore_info : waitSemaphoreInfo) {
@@ -138,8 +185,8 @@ namespace LavaCake {
           wait_semaphore_stages.data(),                         // const VkPipelineStageFlags   * pWaitDstStageMask
           static_cast<uint32_t>(1),															// uint32_t                       commandBufferCount
           command_buffers.data(),                               // const VkCommandBuffer        * pCommandBuffers
-          static_cast<uint32_t>(signal_semaphores.size()),      // uint32_t                       signalSemaphoreCount
-          signal_semaphores.data()                              // const VkSemaphore            * pSignalSemaphores
+          static_cast<uint32_t>(signalSemaphores.size()),      // uint32_t                       signalSemaphoreCount
+          signalSemaphores.data()                              // const VkSemaphore            * pSignalSemaphores
         };
 
         VkResult result = vkQueueSubmit(queue->getHandle(), 1, &submit_info, getFence());

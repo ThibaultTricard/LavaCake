@@ -11,13 +11,18 @@
 
 namespace LavaCake {
 	namespace Framework {
+  /**
+   Push Constant class : help manage pushConstant creation and sending them to shaders
+   \brief this class is mainly a dictionary of variable of different type that can be pushed to a shader.
+  */
 		class PushConstant {
 		public:
 
 			/**
-			*add a Variable into the PushConstant
+			\brief add a variable into the dictionary
+      \param name : the name of constant
+      \param value : the variable
 			*/
-
 			template<typename T>
 			void addVariable(std::string name, T& value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
@@ -25,6 +30,11 @@ namespace LavaCake {
 				addArray(name, v);
 			}
 
+      /**
+      \briefset a variable into the dictionary
+      \param name : the name of constant
+      \param value : the variable
+      */
 			template<typename T>
 			void setVariable(std::string name, T& value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
@@ -32,9 +42,6 @@ namespace LavaCake {
 				setArray(name, v);
 			}
 
-			/**
-			*push the constant into the command buffer
-			*/
 			void push(VkCommandBuffer buffer, VkPipelineLayout layout, VkShaderStageFlags flag);
 
 			uint32_t size();

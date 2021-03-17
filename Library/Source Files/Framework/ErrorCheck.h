@@ -3,6 +3,10 @@
 
 namespace LavaCake {
   namespace Framework {
+  /**
+   Class ErrorCheck :
+   \brief a singleton that hold the description of the last error encountered by the program
+   */
     class ErrorCheck {
 
       ErrorCheck(){};
@@ -13,8 +17,9 @@ namespace LavaCake {
 
     public :
 
-			/*
-			* return the last error the program has encountered
+			/**
+      \brief Return the last error the program has encountered
+      \brief a char* containing the description of the last error encontered by the program
 			*/
       static char* getError() {
         if (m_instance == nullptr) {
@@ -23,8 +28,9 @@ namespace LavaCake {
         return m_instance->m_errorMessage;
       }
 
-			/*
-			*	raise and error
+			/**
+      \brief Register an error
+      \param msg : the error message
 			*/
       static void setError(char* msg) {
         if (m_instance == nullptr) {
@@ -37,8 +43,9 @@ namespace LavaCake {
         }
       }
 
-			/*
-			*	enable automatic console error printing
+			/**
+       \brief Define if the ErrorCheck singleton can print error on console
+       \param print a boolean that define if ErrorCheck can print error on console
 			*/
       static void PrintError(bool print = true) {
         if (m_instance == nullptr) {

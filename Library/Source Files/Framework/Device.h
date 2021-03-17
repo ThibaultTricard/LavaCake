@@ -5,12 +5,13 @@
 
 
 namespace LavaCake {
+  namespace Framework {
 
-	
-
-
-	namespace Framework {
-
+  /**
+   Class Device :
+   \brief helps manage Vulkan device related task
+   
+   */
 		class Device {
 			static Device* m_device;
 			Device() {};

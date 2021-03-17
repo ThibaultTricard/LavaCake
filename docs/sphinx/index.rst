@@ -59,14 +59,10 @@ The code repository for `Vulkan Cookbook <https://www.packtpub.com/game-developm
    Getting Started
    HelloWorld
    AutoSPIRV
+   Framework
 
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 
 

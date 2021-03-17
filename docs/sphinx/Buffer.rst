@@ -1,4 +1,4 @@
-Buffer Class
+Buffer
 ############
 
 	.. doxygenclass:: LavaCake::Framework::Buffer

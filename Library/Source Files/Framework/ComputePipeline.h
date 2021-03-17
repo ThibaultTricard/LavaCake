@@ -6,33 +6,40 @@
 namespace LavaCake {
 	namespace Framework {
 
+  /**
+   Class ComputePipeline :
+   \brief Helps manage a compute pipeline and it's binding
+   Inherit the pipeline Pipeline class
+  */
 		class ComputePipeline : public Pipeline{
 
 		public : 
 
 			/**
-			*Constructor of the class
+       \brief Default Constructor
 			*/
 			ComputePipeline() {};
 
+      /**
+       \brief set the compute shader module that will be used by the pipeline
+       */
 			void setComputeModule(ComputeShaderModule* module);
 			
 			/**
-			*Prepare the Compute pipeline for it's usage
-			*Warning : If a modification is made to the compute pipeline after this operation,
-			*The compute pipeline need to be compiled again before being used
+       \brief Compile the pipeline
 			*/
 			void compile();
 			
-			/**
-			*add an attachment to the pipeline and scpecify it's binding and shader stage
-			*/
 			virtual void addAttachment(Attachment* a, VkShaderStageFlags stage, int binding = 0) override {};
 
 			/**
-			*dispach the compute shader
+			\brief register the execution of the pipeline in  a command buffer
+      \param cmdBuff the command buffer in witch the compute pipieline will be registered
+      \param dimX : the number of work group for X dimention
+      \param dimY : the number of work group for Y dimention
+      \param dimZ : the number of work group for Z dimention
 			*/
-			void compute(CommandBuffer& buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ);
+			void compute(CommandBuffer& cmdBuff, uint32_t dimX, uint32_t dimY, uint32_t dimZ);
 
 			~ComputePipeline() {
 			
