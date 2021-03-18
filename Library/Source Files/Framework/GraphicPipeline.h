@@ -60,32 +60,32 @@ namespace LavaCake {
 			void compile(VkRenderPass& renderpass, uint16_t nbColorAttachments);
 
       /**
-      \brief Reload all the spirv shaders module from source
+       \brief Reload all the spirv shaders module from source
        */
 			void reloadShaders();
 
 			/**
-			\brief Set the vertex buffer that will be used by the pipeline
-      \param vertexBuffer the vertex buffer
+       \brief Set the vertex buffer that will be used by the pipeline
+       \param vertexBuffer the vertex buffer
 			*/
 			void setVertices(VertexBuffer* vertexBuffer);
 
 			/**
-			\brief Register a the draw call of the pipeline into a command buffer
-      \param cmdBuff the command buffer
+       \brief Register a the draw call of the pipeline into a command buffer
+       \param cmdBuff the command buffer
 			*/
 			void draw(CommandBuffer& cmdBuff);
 
 			/**
-      \brief Set the cull mode for the pipeline, if not set the pipeline cull the back faces
+       \brief Set the cull mode for the pipeline, if not set the pipeline cull the back faces
 			*/
 			void SetCullMode(VkCullModeFlagBits cullMode);
 
 			/**
-			\brief Register a push constant to the pand specify it's shader stage,
+       \brief Register a push constant to the pand specify it's shader stage,
        only one push constant can be used per shader stage
-      \param constat a pointer to the push constant
-      \param shadeStage a flag representing the shader in witch the constant will be pushed
+       \param constat a pointer to the push constant
+       \param shadeStage a flag representing the shader in witch the constant will be pushed
 			*/
 			void addPushContant(PushConstant* constant, VkShaderStageFlags shadeStage);
 

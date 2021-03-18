@@ -6,3 +6,9 @@ Framework
 
    Buffer
    CommandBuffer
+   ComputePipeline
+   Device
+   ErrorCheck
+   GraphicPipeline
+   ImGuiWrapper
+   Constant
