@@ -6,17 +6,21 @@
 namespace LavaCake {
   namespace Geometry {
 
+  /**
+   \brief Enum  : primitive format
+   Format of variable allowed in a mesh
+  */
     enum primitiveFormat {
-      POS2,
-      POS3,
-      NORM3,
-      UV,
-      COL3,
-      COL4,
-      F1,
-      F2,
-      F3,
-      F4
+      POS2,  /*!< a 2D position */
+      POS3,  /*!< a 3D position */
+      NORM3, /*!< a 3D vector representing a normal */
+      UV,    /*!< a uv coordinate*/
+      COL3,  /*!< a RGB value */
+      COL4,  /*!< a RGBA value */
+      F1,    /*!< a 1 dimensional */
+      F2,    /*!< a 2 dimensional float */
+      F3,    /*!< a 3 dimensional float */
+      F4     /*!< a 4 dimensional float */
     };
 
 
@@ -58,15 +62,26 @@ namespace LavaCake {
     }
 
 
-
+/**
+ \brief Class vertexFormat : help define the stride of mesh
+ */
     class vertexFormat {
     private : 
       std::vector<primitiveFormat> m_description;
       size_t m_size = 0;
       std::vector<VkVertexInputAttributeDescription> m_vulkanDescription;
 
+      
     public :
+      /**
+       \brief Default constructor
+       */
       vertexFormat() {};
+      
+      /**
+       \brief Create a vertex format, with a lis of primitive format
+       \param description a list of primitive formats that define the stride
+       */
       vertexFormat(std::vector<primitiveFormat> description) {
         m_description = description;
         for (size_t t = 0; t < m_description.size(); t++) {
