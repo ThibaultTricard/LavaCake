@@ -23,7 +23,7 @@ namespace LavaCake {
       F4     /*!< a 4 dimensional float */
     };
 
-
+  
     size_t static toSize(primitiveFormat f) {
       switch (f) {
       case POS2:
@@ -113,20 +113,30 @@ namespace LavaCake {
       
       }
       
+      /**
+       \brief Return the vertex format
+       */
       std::vector<primitiveFormat>& description() {
         return m_description;
       }
-
+      
+      /**
+       * \brief Return the number of float in a vertex
+       */
       size_t size() {
         return m_size;
       }
 
+      /**
+       \brief Return the vulkan input attribute description of the mesh format
+       */
       std::vector<VkVertexInputAttributeDescription> VkDescription() {
         return m_vulkanDescription;
       }
 
     };
 
+  
 
     static vertexFormat P3 = vertexFormat({POS3});
     static vertexFormat PC3 = vertexFormat({ POS3,COL3});
@@ -135,10 +145,13 @@ namespace LavaCake {
     static vertexFormat PN3UV = vertexFormat({POS3,NORM3,UV} );
     static vertexFormat PNC3 = vertexFormat({POS3,NORM3,COL3} );
 
+  /**
+   \brief Enum : topology
+   */
     enum topology {
-      POINT,
-      LINE,
-      TRIANGLE,
+      POINT, /*!< Point mesh */
+      LINE, /*!< Line mesh */
+      TRIANGLE, /*!< Triangle mesh */
     };
   }
 }
