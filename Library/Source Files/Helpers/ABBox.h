@@ -15,7 +15,7 @@ namespace LavaCake {
         m_max = max;
       }
       
-      std::array<float, N> min(){
+      std::array<float, N> A(){
         return m_min;
       }
       
@@ -23,7 +23,7 @@ namespace LavaCake {
         return m_max-m_min;
       }
       
-      std::array<float, N> max(){
+      std::array<float, N> B(){
         return m_max;
       }
       

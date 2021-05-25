@@ -20,26 +20,6 @@ layout(set = 0, binding = 1) uniform UniformBuffer{
 
 
 
-float gaussian(vec3 p)
-{
-  return exp(-dot(p, p) * 2.1);
-}
-
-vec2 kernelAt(vec3 kpos, vec3 kdir, float kphase, float kfrequ, vec3 at)
-{
-  float g = gaussian(at - kpos);
-  float a = kfrequ * dot((at - kpos), kdir) * 2.0 * M_PI + kphase;
-  return vec2(g * cos(a), g * sin(a));
-}
-
-vec2 kernelAtOrtho(vec3 kpos, vec3 kdir, float kphase, float kfrequ, vec3 at)
-{
-  float g = gaussian(at - kpos);
-  float a = kfrequ * dot((at - kpos),kdir) * 2.0 * M_PI + kphase;
-  return vec2(g * cos(a), g * sin(a));
-}
-
-
 shared float[K * NFLOATS * 27] kernels;
 void main()
 {

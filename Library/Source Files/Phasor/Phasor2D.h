@@ -49,6 +49,7 @@ namespace LavaCake {
     private :
     vec2u                             m_cellsDim;
     std::vector<phasor2DCell>         m_cells;
+    float                             m_cellsize;
     Helpers::ABBox<2>                 m_kernelBoundingBox;
     Helpers::ABBox<2>                 m_tightBoundingBox;
     

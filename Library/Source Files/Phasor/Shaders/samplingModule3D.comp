@@ -7,12 +7,13 @@
 layout( local_size_x = 1) in;
 layout(set = 0, binding = 1, r32f)    coherent uniform imageBuffer kernels;
 layout(set = 0, binding = 2) uniform UniformBuffer{
-  ivec3 gridSize;
-  ivec3 fieldSize;
-  ivec3 resultSize;
-  vec3  resultOrigin; // within grid coordinante
-  vec3  resultEnd; 
-  vec3 globalSize;
+  uvec3 cellSize;
+  uvec3 resultSize;
+  vec3  sampleMin;
+  vec3  sampleMax;
+  vec3  gridMin;
+  vec3  gridMax;
+  float  singleCellSize_mm;
 };
 layout(set = 0, binding = 3, r32f)    coherent uniform imageBuffer frequencyBuffer;
 layout(set = 0, binding = 4, rgba32f) coherent uniform imageBuffer directionBuffer;
@@ -54,19 +55,20 @@ vec2 kernelAt(vec3 kpos, vec3 wi, float kphase, float kfrequ, vec3 at)
 void main()
 {
 
-  vec3 sampleSize = resultEnd - resultOrigin;
+  vec3 sampleSize = sampleMax - sampleMin;
+  //vec2 gridSize   = gridMax - gridMin;
   
-  vec3 gridcoord  = (vec3(gl_WorkGroupID.xyz)/vec3(resultSize)  * sampleSize) +  resultOrigin;
+  vec3 gridcoord  = (vec2(gl_WorkGroupID.xy)/vec2(resultSize)  * sampleSize) +  sampleMin;
   
-  vec3 fieldcoord =  gridcoord/ globalSize * vec3(fieldSize);
+  gridcoord = (gridcoord - gridMin)/ vec2(singleCellSize_mm);
 
 
   {
-    ivec3 coord = ivec3(fieldcoord);
+    ivec3 coord = ivec3(gl_WorkGroupID.xyy);
 
-    f = imageLoad(frequencyBuffer, coord.x + coord.y * fieldSize.x + coord.z * fieldSize.x * fieldSize.y).x;
-    du = imageLoad(directionBuffer, coord.x + coord.y * fieldSize.x + coord.z * fieldSize.x * fieldSize.y).xyz;
-    div = imageLoad(divergenceBuffer, coord.x + coord.y * fieldSize.x + coord.z * fieldSize.x * fieldSize.y).x;
+    f = imageLoad(frequencyBuffer, coord.x + coord.y * resultSize.x + coord.z * resultSize.x * resultSize.y).x;
+    du = imageLoad(directionBuffer, coord.x + coord.y * resultSize.x + coord.z * resultSize.x * resultSize.y).xyz;
+    div = imageLoad(divergenceBuffer, coord.x + coord.y * resultSize.x + coord.z * resultSize.x * resultSize.y).x;
   } 
  
 
@@ -79,15 +81,15 @@ void main()
   for (int nj = gj - 2; nj <= gj + 2; nj++) {
     for (int ni = gi - 2; ni <= gi + 2; ni++) {
       for (int nk = gk - 2; nk <= gk + 2; nk++) {
-      int ci = clamp(ni, 0, gridSize.x - 1);
-      int cj = clamp(nj, 0, gridSize.y - 1);
-      int ck = clamp(nk, 0, gridSize.z - 1);
+      int ci = clamp(ni, 0, cellSize.x - 1);
+      int cj = clamp(nj, 0, cellSize.y - 1);
+      int ck = clamp(nk, 0, cellSize.z - 1);
         if(ci == ni && cj == nj && nk==ck){
           for (int k = 0; k < K; k++) {
             // fetch kernel
             vec3 npos, ndir;
             float nphase, nfrequ;
-            int idx = ((ci + cj * gridSize.x + ck * gridSize.x * gridSize.y) * K + k) * NFLOATS;
+            int idx = ((ci + cj * cellSize.x + ck * cellSize.x * cellSize.y) * K + k) * NFLOATS;
             npos.x = float(ci) + imageLoad(kernels, (int(idx) + 0)).x;
             npos.y = float(cj) + imageLoad(kernels, (int(idx) + 1)).x;
             npos.z = float(ck) + imageLoad(kernels, (int(idx) + 2)).x;

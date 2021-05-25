@@ -1,6 +1,6 @@
 #version 450
 #define K 8
-#define NFLOATS 8
+#define NFLOATS 6
 
 #define M_PI 3.14159265358979323846
 
@@ -13,6 +13,7 @@ layout(set = 0, binding = 2) uniform UniformBuffer{
   vec2  sampleMax;
   vec2  gridMin;
   vec2  gridMax;
+  float  singleCellSize_mm;
 };
 layout(set = 0, binding = 3, r32f)    coherent uniform imageBuffer frequencyBuffer;
 layout(set = 0, binding = 4, rg32f)   coherent uniform imageBuffer directionBuffer;
@@ -59,7 +60,7 @@ void main()
   
   vec2 gridcoord  = (vec2(gl_WorkGroupID.xy)/vec2(resultSize)  * sampleSize) +  sampleMin;
   
-  gridcoord = (gridcoord - gridMin)/ vec2(cellSize);
+  gridcoord = (gridcoord - gridMin)/ vec2(singleCellSize_mm);
   
   {
     ivec2 coord = ivec2(gl_WorkGroupID.xy);
@@ -100,10 +101,10 @@ void main()
   
   
   
-  //float ph = atan(kv.y, kv.x);
+  float ph = atan(kv.y, kv.x);
   
-  //imageStore(result, int(gl_WorkGroupID.x + gl_WorkGroupID.y * resultSize.x), vec4(ph/(2.0*M_PI) +0.5,0.0,0.0,0.0));
-  imageStore(result, int(gl_WorkGroupID.x + gl_WorkGroupID.y * resultSize.x), vec4(1.0f,0.0,0.0,0.0));
+  imageStore(result, int(gl_WorkGroupID.x + gl_WorkGroupID.y * resultSize.x), vec4(ph/(2.0*M_PI) +0.5,0.0,0.0,0.0));
+  //imageStore(result, int(gl_WorkGroupID.x + gl_WorkGroupID.y * resultSize.x), vec4(gi/12.0,0.0,0.0,0.0));
 }
 
 // --------------------------------------------
