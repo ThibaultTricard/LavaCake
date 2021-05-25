@@ -52,12 +52,13 @@ namespace LavaCake {
   using vec4f = std::array<float, 4>;
   using vec4d = std::array<double, 4>;
   using vec4i = std::array<int, 4>;
-  using vec4u = std::array<uint32_t, 3>;
+  using vec4u = std::array<uint32_t, 4>;
   using vec4b = std::array<bool, 4>;
 
   using mat2 = std::array<float, 4>;
   using mat3 = std::array<float, 9>;
   using mat4 = std::array<float, 16>;
+
 
 
   template<typename T, unsigned long N>
@@ -77,6 +78,34 @@ namespace LavaCake {
     }
     return std::array<T, N>(d);
   }
+
+  template<typename T, unsigned long N>
+  std::array<T, N> operator*(const std::array<T, N>& a, const std::array<T, N>& b) {
+    std::array<T, N> d = std::array<T, N>();
+    for (unsigned char i = 0; i < N; i++) {
+      d[i] = b[i] * a[i];
+    }
+    return std::array<T, N>(d);
+  }
+
+  template<typename T, unsigned long N>
+  std::array<T, N> operator/(const std::array<T, N>& a, const std::array<T, N>& b) {
+    std::array<T, N> d = std::array<T, N>();
+    for (unsigned char i = 0; i < N; i++) {
+      d[i] = a[i] / b[i];
+    }
+    return std::array<T, N>(d);
+  }
+
+  template<typename T, unsigned long N>
+  std::array<T, N> operator/(const std::array<T, N>& b, const T a) {
+    std::array<T, N> d = std::array<T, N>();
+    for (unsigned char i = 0; i < N; i++) {
+      d[i] = b[i] / a;
+    }
+    return std::array<T, N>(d);
+  }
+
 
   template<typename T, unsigned long N>
   std::array<T, N> operator-(const std::array<T, N> a, const std::array<T, N> b) {

@@ -1,0 +1,114 @@
+#version 450
+#define K 8
+#define NFLOATS 8
+
+#define M_PI 3.14159265358979323846
+
+layout( local_size_x = 1) in;
+layout(set = 0, binding = 1, r32f)    coherent uniform imageBuffer kernels;
+layout(set = 0, binding = 2) uniform UniformBuffer{
+  ivec3 gridSize;
+  ivec3 fieldSize;
+  ivec3 resultSize;
+  vec3  resultOrigin; // within grid coordinante
+  vec3  resultEnd; 
+  vec3 globalSize;
+};
+layout(set = 0, binding = 3, r32f)    coherent uniform imageBuffer frequencyBuffer;
+layout(set = 0, binding = 4, rgba32f) coherent uniform imageBuffer directionBuffer;
+layout(set = 0, binding = 5, r32f)    coherent uniform imageBuffer divergenceBuffer;  
+layout(set = 0, binding = 6, r32f)    coherent uniform imageBuffer result;
+
+
+float b = 9.0;
+float a = 5.0;
+
+vec3 du;
+float f;
+float div;
+// -------------------------------------------- 
+
+float gaussian(vec3 p)
+{
+  return exp(-dot(p, p) * b);
+}
+
+// -------------------------------------------- 
+
+vec2 kernelAt(vec3 kpos, vec3 wi, float kphase, float kfrequ, vec3 at)
+{
+  vec3   x = at - kpos;
+  vec3   w = du;
+  float  fi = kfrequ;
+  vec3 dfw = (fi * wi - f * w)*div;
+
+  float g = exp(-(a*b / (a + b)) * dot(x, x))
+      * exp(-M_PI * M_PI * (dot(dfw, dfw) / (a + b)));
+
+  float  ocs =  (2.0 * M_PI * fi * dot(x, wi) + kphase) + (2.0 * M_PI * f * dot(dfw,x) * a/(a+b));
+  return vec2(g * cos(ocs), g * sin(ocs));
+}
+
+// --------------------------------------------
+
+void main()
+{
+
+  vec3 sampleSize = resultEnd - resultOrigin;
+  
+  vec3 gridcoord  = (vec3(gl_WorkGroupID.xyz)/vec3(resultSize)  * sampleSize) +  resultOrigin;
+  
+  vec3 fieldcoord =  gridcoord/ globalSize * vec3(fieldSize);
+
+
+  {
+    ivec3 coord = ivec3(fieldcoord);
+
+    f = imageLoad(frequencyBuffer, coord.x + coord.y * fieldSize.x + coord.z * fieldSize.x * fieldSize.y).x;
+    du = imageLoad(directionBuffer, coord.x + coord.y * fieldSize.x + coord.z * fieldSize.x * fieldSize.y).xyz;
+    div = imageLoad(divergenceBuffer, coord.x + coord.y * fieldSize.x + coord.z * fieldSize.x * fieldSize.y).x;
+  } 
+ 
+
+  int gi   = int(gridcoord.x);
+  int gj   = int(gridcoord.y);
+  int gk   = int(gridcoord.z);
+  vec2 kv  = vec2(0.0);
+
+
+  for (int nj = gj - 2; nj <= gj + 2; nj++) {
+    for (int ni = gi - 2; ni <= gi + 2; ni++) {
+      for (int nk = gk - 2; nk <= gk + 2; nk++) {
+      int ci = clamp(ni, 0, gridSize.x - 1);
+      int cj = clamp(nj, 0, gridSize.y - 1);
+      int ck = clamp(nk, 0, gridSize.z - 1);
+        if(ci == ni && cj == nj && nk==ck){
+          for (int k = 0; k < K; k++) {
+            // fetch kernel
+            vec3 npos, ndir;
+            float nphase, nfrequ;
+            int idx = ((ci + cj * gridSize.x + ck * gridSize.x * gridSize.y) * K + k) * NFLOATS;
+            npos.x = float(ci) + imageLoad(kernels, (int(idx) + 0)).x;
+            npos.y = float(cj) + imageLoad(kernels, (int(idx) + 1)).x;
+            npos.z = float(ck) + imageLoad(kernels, (int(idx) + 2)).x;
+            nfrequ = imageLoad(kernels, (int(idx) + 3)).x;
+            nphase = imageLoad(kernels, (int(idx) + 4)).x;
+            ndir.x = imageLoad(kernels, (int(idx) + 5)).x;
+            ndir.y = imageLoad(kernels, (int(idx) + 6)).x;
+            ndir.z = imageLoad(kernels, (int(idx) + 7)).x;
+            // evaluate
+            kv.xy += kernelAt(npos, ndir, nphase, nfrequ, gridcoord);
+          }
+        }
+      }
+    }
+  }
+
+
+
+  float ph = atan(kv.y, kv.x);
+  imageStore(result, int(gl_WorkGroupID.x +gl_WorkGroupID.y* resultSize.x +gl_WorkGroupID.z *resultSize.x *resultSize.y), vec4(ph/(2.0*M_PI) +0.5,0.0,0.0,0.0));
+  //imageStore(result, int(gl_WorkGroupID.x +gl_WorkGroupID.y* resultSize.x +gl_WorkGroupID.z *resultSize.x *resultSize.y), vec4(kv.y,0.0,0.0,0.0));
+}
+
+// -------------------------------------------- 
