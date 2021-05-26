@@ -103,7 +103,7 @@ namespace LavaCake {
     }
     
     T sample(vec3f pos) override{
-      vec3f X = (pos - m_boundingbox.min()) / (m_boundingbox.max() - m_boundingbox.min());
+      vec3f X = (pos - m_boundingbox.A()) / (m_boundingbox.B() - m_boundingbox.A());
       X = X * vec3f({float(m_width-1), float(m_height-1), float(m_depth-1)});
       
       X = vec3f({fmax(0.0f, X[0]), fmax(0.0f, X[1]), fmax(0.0f, X[2])});
