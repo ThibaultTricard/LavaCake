@@ -328,7 +328,7 @@ addShader(
 "${CMAKE_BINARY_DIR}/LavacakeShaders/Phasor/optimisationModule3D.comp.spv"
 )
 addShader(
-"${CMAKE_CURRENT_LIST_DIR}/Library/Source Files/Phasor/Shaders/samplingModule2D.comp"
+"${CMAKE_CURRENT_LIST_DIR}/Library/Source Files/Phasor/Shaders/samplingModule3D.comp"
 "${CMAKE_BINARY_DIR}/LavacakeShaders/Phasor/samplingModule3D.comp.spv"
 )
 addShader(

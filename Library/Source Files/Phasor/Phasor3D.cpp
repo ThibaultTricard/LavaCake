@@ -65,7 +65,7 @@ namespace LavaCake {
 
               kernel.f = F->sample(pos) / Fmin;
               auto dir = D->sample(pos);
-              kernel.direction = dir / sqrt((dir[0] * dir[0] + dir[1] * dir[1]));
+              kernel.direction = dir / sqrt((dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]));
               kernel.phase = 0.0f;
 
               m_cells[index].kernels[l] = kernel;
@@ -87,7 +87,7 @@ namespace LavaCake {
     void Phasor3D::init(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff) {
 
       m_kernelBuffer = new Framework::Buffer();
-      m_kernelBuffer->allocate(queue, cmdBuff, m_cells, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
+      m_kernelBuffer->allocate(queue, cmdBuff, m_cells, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT );
 
       m_optimisationModule = new Framework::ComputeShaderModule(phasorModulePath + "/Phasor/optimisationModule3D.comp.spv");
 
@@ -95,7 +95,7 @@ namespace LavaCake {
       m_optimisationPipeline->setComputeModule(m_optimisationModule);
 
       m_optimisationBuffer = new Framework::UniformBuffer();
-      m_optimisationBuffer->addVariable("GridSize", m_cellsDim);
+      m_optimisationBuffer->addVariable("GridSize", vec4u({ m_cellsDim[0],m_cellsDim[1],m_cellsDim[2],0 }));
       m_optimisationBuffer->end();
 
       m_optimisationPipeline->addTexelBuffer(m_kernelBuffer, VK_SHADER_STAGE_COMPUTE_BIT, 0);
@@ -111,7 +111,7 @@ namespace LavaCake {
       m_samplingUniformBuffer->addVariable("sampleMax", vec4f({ 0,0,0,0 }));
       m_samplingUniformBuffer->addVariable("gridMin", vec4f({ m_kernelBoundingBox.A()[0],m_kernelBoundingBox.A()[1],m_kernelBoundingBox.A()[2], 0}));
       m_samplingUniformBuffer->addVariable("gridMax", vec4f({ m_kernelBoundingBox.B()[0],m_kernelBoundingBox.B()[1],m_kernelBoundingBox.B()[2], 0 }));
-      m_samplingUniformBuffer->addVariable("singleCellSize_mm", m_cellsize);
+      m_samplingUniformBuffer->addVariable("singleCellSize_mm", vec4f({m_cellsize,0.0f,0.0f,0.0f}));
       m_samplingUniformBuffer->end();
 
 
@@ -130,6 +130,7 @@ namespace LavaCake {
         cmdBuff.submit(queue, {}, {});
         cmdBuff.wait(UINT32_MAX);
       }
+      cmdBuff.resetFence();
     }
 
 
@@ -143,25 +144,26 @@ namespace LavaCake {
       }
 
       m_samplingBuffer = new Framework::Buffer();
-      m_samplingBuffer->allocate(sampleResolution[0] * sampleResolution[1] * sizeof(float), VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
+      m_samplingBuffer->allocate(sampleResolution[0] * sampleResolution[1] * sampleResolution[2] * sizeof(float), VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
 
-      std::vector<float> f(sampleResolution[0] * sampleResolution[1]);
-      std::vector<vec4f> dir(sampleResolution[0] * sampleResolution[1]);
-      std::vector<float> div(sampleResolution[0] * sampleResolution[1]);
+      std::vector<float> f(sampleResolution[0] * sampleResolution[1] * sampleResolution[2]);
+      std::vector<vec4f> dir(sampleResolution[0] * sampleResolution[1] * sampleResolution[2]);
+      std::vector<float> div(sampleResolution[0] * sampleResolution[1] * sampleResolution[2]);
 
       for (int i = 0; i < sampleResolution[0]; i++) {
         for (int j = 0; j < sampleResolution[1]; j++) {
-          for (int k = 0; k < sampleResolution[1]; k++) {
+          for (int k = 0; k < sampleResolution[2]; k++) {
             vec3f pos = sampleBoundingBox.A() + vec3f({ float(i) / float(sampleResolution[0]),float(j) / float(sampleResolution[1]),float(k) / float(sampleResolution[2]) }) * sampleBoundingBox.diag();
 
             f[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]] = m_F->sample(pos);
             auto d = m_D->sample(pos);
             dir[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]] = vec4f({ d[0],d[1],d[2],0.0f});
-            div[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]] = 0;
+            div[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]] = 0.0f;
           }
         }
       }
-
+      cmdBuff.wait(UINT32_MAX);
+      cmdBuff.resetFence();
       Framework::Buffer* dirBuffer = new Framework::Buffer();
       dirBuffer->allocate(queue, cmdBuff, dir, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_FORMAT_R32G32B32A32_SFLOAT);
 

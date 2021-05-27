@@ -65,6 +65,8 @@ void main()
                         kernels[kid + 3] = 0.0;
                         kernels[kid + 4] = 0.0;
                         kernels[kid + 5] = 0.0;
+                        kernels[kid + 6] = 0.0;
+                        kernels[kid + 7] = 0.0;
                     }
                 }
             }
@@ -107,7 +109,7 @@ void main()
         }
         // check the one with most votes
         {
-            imageStore(u_Kernels, int(gl_GlobalInvocationID.x * NFLOATS) + 4, vec4(atan(phi.y, phi.x)));
+            imageStore(u_Kernels, int(gl_GlobalInvocationID.x * NFLOATS) + 4, vec4(atan(phi.y, phi.x),0,0,0));
         }
     }
 }
