@@ -18,7 +18,7 @@
 //
 // Vulkan Cookbook
 // ISBN: 9781786468154
-// © Packt Publishing Limited
+// ï¿½ Packt Publishing Limited
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
@@ -66,34 +66,34 @@ namespace LavaCake {
 
   float Dot(vec3f const& left,
     vec3f const& right) {
-    return left[0] * right[0] + left[1] * right[1] + left[2] * right[2];
+    return dot(left,right);
   }
 
   vec3f Cross(vec3f const& left,
     vec3f const& right) {
+    return  cross(left, right);
+  }
+
+  vec3f Normalize(vec3f const& vector) {
+    return normalize(vector);
+  }
+
+
+  float dot(vec3f const& left,
+            vec3f const& right) {
+    return left[0] * right[0] + left[1] * right[1] + left[2] * right[2];
+  }
+
+  vec3f cross(vec3f const& left,
+              vec3f const& right) {
     return  vec3f({
       left[1] * right[2] - left[2] * right[1],
       left[2] * right[0] - left[0] * right[2],
       left[0] * right[1] - left[1] * right[0]
-      });
+    });
   }
 
-  vec3f Normalize(vec3f const& vector) {
-    float length = std::sqrt(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
-    if (length >0)
-    return vec3f({
-      vector[0] / length,
-      vector[1] / length,
-      vector[2] / length
-      });
-    return vec3f({
-      vector[0] ,
-      vector[1] ,
-      vector[2] 
-      });
-  }
-
-
+  
 
   vec3f operator* (vec3f const& left,
     mat4 const& right) {

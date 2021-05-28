@@ -152,6 +152,26 @@ namespace LavaCake {
 
   vec3f Normalize( vec3f const & vector );
 
+  vec3f cross( vec3f const & left,
+              vec3f const & right );
+
+  template<typename T, unsigned long N>
+  T dot(std::array<T, N> const & left,
+        std::array<T, N> const & right ){
+    T sum = static_cast<T>(0);
+    for(unsigned long u = 0; u< N ; u++){
+      sum +=  left[u] * right[u];
+    }
+  };
+
+  template<typename T, unsigned long N>
+  std::array<T, N> normalize(std::array<T, N> const vector) {
+    float length = dot(vector,vector);
+    if (length >0)
+      return vector/length;
+    return vector;
+  }
+
   mat4 operator* (mat4 const& left,
     mat4 const& right);
 
