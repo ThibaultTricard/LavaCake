@@ -162,6 +162,7 @@ namespace LavaCake {
     for(unsigned long u = 0; u< N ; u++){
       sum +=  left[u] * right[u];
     }
+    return sum;
   };
 
   template<typename T, unsigned long N>
