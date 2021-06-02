@@ -31,7 +31,7 @@ namespace LavaCake {
   class Field2DGrid : public Field2D<T>{
     public:
     
-    Field2DGrid(std::vector<T>& data, uint32_t width, uint32_t height, ABBox<2> boundingbox, T (*interpolate)(T, T, float) = nullptr): Field2D<T>(){
+    Field2DGrid(std::vector<T>& data, uint32_t width, uint32_t height, ABBox<2> boundingbox, T (*interpolate)(T&, T&, float) = nullptr): Field2D<T>(){
       m_fields = data;
       m_width = width;
       m_height = height;
@@ -85,7 +85,7 @@ namespace LavaCake {
     std::vector<T>  m_fields;
     ABBox<2>        m_boundingbox;
 
-    T (*m_interpolate)(T, T, float);
+    T (*m_interpolate)(T&, T&, float);
   };
 
 
@@ -93,7 +93,7 @@ namespace LavaCake {
   class Field3DGrid : public Field3D<T>{
   public:
     
-    Field3DGrid(std::vector<T>& data, uint32_t width, uint32_t height, uint32_t depth, ABBox<3> boundingbox, T (*interpolate)(T, T, float) = nullptr){
+    Field3DGrid(std::vector<T>& data, uint32_t width, uint32_t height, uint32_t depth, ABBox<3> boundingbox, T (*interpolate)(T&, T&, float) = nullptr){
       m_fields = data;
       m_width = width;
       m_height = height;
@@ -171,7 +171,7 @@ namespace LavaCake {
     std::vector<T>  m_fields;
     ABBox<3>        m_boundingbox;
 
-    T (*m_interpolate)(T, T, float);
+    T (*m_interpolate)(T&, T&, float);
   };
   
   
