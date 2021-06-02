@@ -157,7 +157,11 @@ namespace LavaCake {
 
             f[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]] = m_F->sample(pos);
             auto d = m_D->sample(pos);
-            dir[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]] = vec4f({ d[0],d[1],d[2],0.0f});
+            
+            dir[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]][0] = d[0];
+            dir[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]][1] = d[1];
+            dir[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]][2] = d[2];
+            
             div[i + j * sampleResolution[0] + k * sampleResolution[0] * sampleResolution[1]] = 0.0f;
           }
         }
