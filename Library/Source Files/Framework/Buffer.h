@@ -344,6 +344,9 @@ namespace LavaCake {
 				}
 			}
 
+      VkPipelineStageFlags getStage(){return m_stage;}
+      VkAccessFlagBits     getAccess(){return m_access;}
+      
     protected:
 
       VkDestroyer(VkBuffer)																m_buffer;

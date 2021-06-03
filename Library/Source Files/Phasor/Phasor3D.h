@@ -3,20 +3,22 @@
 #include "../Helpers/Field.h"
 #include "../Framework/Framework.h"
 
+
+
 namespace LavaCake {
   namespace Phasor {
 
-
-    struct phasor3DKernel {
-      vec3f pos;
-      float f;
-      float phase;
-      vec3f direction;
-    };
-
-    struct phasor3DCell {
-      std::array<phasor3DKernel, 8> kernels;
-    };
+  struct phasor3DKernel {
+    vec3f pos;
+    float f;
+    float phase;
+    vec3f direction;
+  };
+  
+  struct phasor3DCell {
+    std::array<phasor3DKernel, 8> kernels;
+  };
+    
 
     /**
      *\brief Phasor 2D a helper class to compute optimized phasor noise field in 2D
