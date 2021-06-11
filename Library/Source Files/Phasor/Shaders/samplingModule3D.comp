@@ -2,9 +2,11 @@
 #define K 8
 #define NFLOATS 8
 
+#define GROUP_SIZE 16
+
 #define M_PI 3.14159265358979323846
 
-layout( local_size_x = 1) in;
+layout( local_size_x = GROUP_SIZE) in;
 layout(set = 0, binding = 1, r32f)    coherent uniform imageBuffer kernels;
 layout(set = 0, binding = 2) uniform UniformBuffer{
   uvec4 cellSize;
@@ -57,13 +59,19 @@ void main()
 
   vec4 sampleSize = sampleMax - sampleMin;
   
-  vec4 gridcoord  = (vec4(gl_WorkGroupID.xyz,0)/vec4(resultSize)  * sampleSize) +  sampleMin;
+  vec3 callID = vec3(gl_WorkGroupID.xyz) * vec3(GROUP_SIZE,1,1) + gl_LocalInvocationID.xyz;
+
+  vec4 gridcoord  = (vec4(callID.xyz,0)/vec4(resultSize)  * sampleSize) +  sampleMin;
   
   gridcoord = (gridcoord - gridMin)/ singleCellSize_mm;
 
 
+  if(callID.x >= resultSize.x){
+    return;
+  }
+
   {
-    ivec3 coord = ivec3(gl_WorkGroupID.xyz);
+    ivec3 coord = ivec3(callID.xyz);
 
     f = imageLoad(frequencyBuffer, int(coord.x + coord.y * resultSize.x + coord.z * resultSize.x * resultSize.y)).x;
     du = imageLoad(directionBuffer, int(coord.x + coord.y * resultSize.x + coord.z * resultSize.x * resultSize.y)).xyz;
@@ -109,7 +117,7 @@ void main()
 
   float ph = atan(kv.y, kv.x);
   //imageStore(result, int(gl_WorkGroupID.x +gl_WorkGroupID.y* resultSize.x +gl_WorkGroupID.z *resultSize.x *resultSize.y), vec4(1.0,0.0,0.0,0.0));
-  imageStore(result, int(gl_WorkGroupID.x +gl_WorkGroupID.y* resultSize.x +gl_WorkGroupID.z *resultSize.x *resultSize.y), vec4(ph/(2.0*M_PI) +0.5,0.0,0.0,0.0));
+  imageStore(result, int(callID.x +callID.y* resultSize.x +callID.z *resultSize.x *resultSize.y), vec4(ph/(2.0*M_PI) +0.5,0.0,0.0,0.0));
 }
 
 // -------------------------------------------- 

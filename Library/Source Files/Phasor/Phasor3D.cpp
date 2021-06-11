@@ -197,7 +197,7 @@ namespace LavaCake {
       cmdBuff.beginRecord();
 
       m_samplingUniformBuffer->update(cmdBuff);
-      m_samplingPipeline->compute(cmdBuff, sampleResolution[0], sampleResolution[1], sampleResolution[2]);
+      m_samplingPipeline->compute(cmdBuff, sampleResolution[0]/16+1, sampleResolution[1], sampleResolution[2]);
 
       cmdBuff.endRecord();
       cmdBuff.submit(queue, {}, {});
