@@ -10,100 +10,130 @@ namespace LavaCake {
 	namespace Framework {
 
 		struct uniform {
-			UniformBuffer* buffer;
+			UniformBuffer*          buffer;
 			int											binding;
 			VkShaderStageFlags			stage;
 		};
 
 		struct texture {
-			TextureBuffer* t;
-			int binding;
+			TextureBuffer*          t;
+			int                     binding;
 			VkShaderStageFlags			stage;
 		};
 
 		struct frameBuffer {
-			FrameBuffer* f;
-			int binding;
+			FrameBuffer*            f;
+			int                     binding;
 			VkShaderStageFlags			stage;
-			uint32_t viewIndex;
+			uint32_t                viewIndex;
 		};
 
 		struct attachment {
-			Attachment* a;
-			int binding;
+			Attachment*             a;
+			int                     binding;
 			VkShaderStageFlags			stage;
 		};
 
 		struct storageImage {
-			StorageImage* s;
-			int binding;
+			StorageImage*           s;
+			int                     binding;
 			VkShaderStageFlags			stage;
 		};
 
 		struct constant {
-			PushConstant* constant;
+			PushConstant*           constant;
 			VkShaderStageFlags			stage;
 		};
 
 		struct texelBuffer {
-			Buffer* t;
-			int binding;
+			Buffer*                 t;
+			int                     binding;
 			VkShaderStageFlags			stage;
 		};
 		struct buffer {
-			Buffer* t;
-			int binding;
+			Buffer*                 t;
+			int                     binding;
 			VkShaderStageFlags			stage;
 		};
 
-
+    /**
+     Class Pipeline :
+     \brief A generic class to help manage VkPipelines, inherited by the classes ComputePipeline and GraphicPipeline
+     */
 		class Pipeline {
 		public :
 			/**
-				*add a uniform Buffer to the pipeline and scpecify it's binding and shader stage
-				*/
-			virtual void addUniformBuffer(UniformBuffer* b, VkShaderStageFlags stage, int binding = 0) {
-				m_uniforms.push_back({ b,binding,stage });
+       \brief Add a uniform Buffer to the pipeline and scpecify it's binding and shader stage
+       \param uniform a pointer to the uniform buffer
+       \param stage the shader stage where the uniform buffer is going to be used
+       \param binding the binding point of the uniform shader, 0 by default
+      */
+			virtual void addUniformBuffer(UniformBuffer* uniform, VkShaderStageFlags stage, int binding = 0) {
+				m_uniforms.push_back({uniform ,binding,stage});
 			};
 
 			/**
-			*add a Texture Buffer to the pipeline and scpecify it's binding and shader stage
+			 \brief Add a texture Buffer to the pipeline and scpecify it's binding and shader stage
+       \param texture a pointer to the texture buffer
+       \param stage the shader stage where the texture buffer is going to be used
+       \param binding the binding point of the texture buffer, 0 by default
 			*/
-			virtual void addTextureBuffer(TextureBuffer* t, VkShaderStageFlags stage, int binding = 0) {
-				m_textures.push_back({ t,binding,stage });
+			virtual void addTextureBuffer(TextureBuffer* texture, VkShaderStageFlags stage, int binding = 0) {
+				m_textures.push_back({ texture,binding,stage});
 			};
 
 			/**
-			*add a FrameBuffer Buffer to the pipeline and scpecify it's binding and shader stage
+			 \brief Add a frame Buffer to the pipeline and scpecify it's binding and shader stage
+       \param frame a pointer to the frame buffer
+       \param stage the shader stage where the frame buffer is going to be used
+       \param binding the binding point of the frame buffer, 0 by default
 			*/
-			virtual void addFrameBuffer(FrameBuffer* f, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
-				m_frameBuffers.push_back({ f, binding, stage, view });
+			virtual void addFrameBuffer(FrameBuffer* frame, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
+				m_frameBuffers.push_back({frame,binding,stage,view});
 			}; 
 
 			/**
-			*add a StorageImage to the pipeline and scpecify it's binding and shader stage
+			 \brief Add a storage Image to the pipeline and scpecify it's binding and shader stage
+       \param storage a pointer to the frame buffer
+       \param stage the shader stage where the storage image is going to be used
+       \param binding the binding point of the storage image, 0 by default
 			*/
-			virtual void addStorageImage(StorageImage* s, VkShaderStageFlags stage, int binding = 0) {
-				m_storageImages.push_back({ s,binding,stage });
+			virtual void addStorageImage(StorageImage* storage, VkShaderStageFlags stage, int binding = 0) {
+				m_storageImages.push_back({ storage,binding,stage });
 			}; 
 
 
 			/**
-			*add an attachment to the pipeline and scpecify it's binding and shader stage
+			 \brief Add an attachment to the pipeline and scpecify it's binding and shader stage
+       \param attachement a pointer to the attachement
+       \param stage the shader stage where the storage image is going to be used
+       \param binding the binding point of the storage image, 0 by default
 			*/
-			virtual void addAttachment(Attachment* a, VkShaderStageFlags stage, int binding = 0) {
-				m_attachments.push_back({ a,binding,stage });
+			virtual void addAttachment(Attachment* attachement, VkShaderStageFlags stage, int binding = 0) {
+				m_attachments.push_back({ attachement,binding,stage });
 			};
 
-
-			virtual void addTexelBuffer(Buffer* a, VkShaderStageFlags stage, int binding = 0) {
-				m_texelBuffers.push_back({ a,binding,stage });
+      /**
+       \brief Add a texel buffer to the pipeline and scpecify it's binding and shader stage
+       \param texel a pointer to the texel buffer
+       \param stage the shader stage where the texel buffer is going to be used
+       \param binding the binding point of the texel buffer, 0 by default
+       */
+			virtual void addTexelBuffer(Buffer* texel, VkShaderStageFlags stage, int binding = 0) {
+				m_texelBuffers.push_back({ texel,binding,stage });
+			};
+      
+      /**
+       \brief Add a buffer to the pipeline and scpecify it's binding and shader stage
+       \param buffer a pointer to the texel buffer
+       \param stage the shader stage where the texel buffer is going to be used
+       \param binding the binding point of the texel buffer, 0 by default
+       */
+			virtual void addBuffer(Buffer* buffer, VkShaderStageFlags stage, int binding = 0) {
+				m_buffers.push_back({ buffer,binding,stage });
 			};
 
-			virtual void addBuffer(Buffer* a, VkShaderStageFlags stage, int binding = 0) {
-				m_buffers.push_back({ a,binding,stage });
-			};
-
+      
 			std::vector<attachment>& getAttachments() {
 				return m_attachments;
 			};

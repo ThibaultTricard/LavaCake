@@ -13,10 +13,9 @@ namespace LavaCake {
 			VkSpecializationInfo const* SpecializationInfo;
 		};
 
+    
 		class ShaderModule {
-			
-		public :
-
+		protected :
 			ShaderModule(std::string path, VkShaderStageFlagBits stageBits, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) {
 				m_path = path;
 				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
@@ -56,7 +55,7 @@ namespace LavaCake {
 						specialization
 				};
 			}
-
+      public :
 			ShaderStageParameters&	getStageParameter() {
 				return m_stageParameter;
 			}
@@ -121,6 +120,10 @@ namespace LavaCake {
 			ShaderStageParameters											m_stageParameter;
 		};
 
+    /**
+     Class VertexShaderModule :
+     \brief This class helps manage vertex shader module
+     */
 		class VertexShaderModule : public ShaderModule {
 		public:
 			VertexShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr):
@@ -131,7 +134,11 @@ namespace LavaCake {
 				ShaderModule(spirv, VK_SHADER_STAGE_VERTEX_BIT, entrypoint, specialization) {
 			}
 		};
-
+  
+    /**
+     Class TessellationControlShaderModule :
+     \brief This class helps manage tessellation control shader module
+     */
 		class TessellationControlShaderModule : public ShaderModule {
 		public:
 			TessellationControlShaderModule( std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
@@ -142,6 +149,10 @@ namespace LavaCake {
 			}
 		};
 
+    /**
+     Class TessellationEvaluationShaderModule :
+     \brief This class helps manage tessellation evaluation shader module
+     */
 		class TessellationEvaluationShaderModule : public ShaderModule {
 		public:
 			TessellationEvaluationShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
@@ -152,6 +163,10 @@ namespace LavaCake {
 			}
 		};
 
+    /**
+     Class GeometryShaderModule :
+     \brief This class helps manage geometry shader module
+     */
 		class GeometryShaderModule : public ShaderModule {
 		public:
 			GeometryShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
@@ -162,6 +177,10 @@ namespace LavaCake {
 			}
 		};
 
+    /**
+     Class GeometryShaderModule :
+     \brief This class helps manage fragment shader module
+     */
 		class FragmentShaderModule : public ShaderModule {
 		public:
 			FragmentShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :
@@ -173,6 +192,10 @@ namespace LavaCake {
 
 		};
 
+    /**
+     Class GeometryShaderModule :
+     \brief This class helps manage compute shader module
+     */
 		class ComputeShaderModule : public ShaderModule {
 		public:
 			ComputeShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) :

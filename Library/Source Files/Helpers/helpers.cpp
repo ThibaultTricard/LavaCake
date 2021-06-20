@@ -18,7 +18,7 @@
 //
 // Vulkan Cookbook
 // ISBN: 9781786468154
-// © Packt Publishing Limited
+// ï¿½ Packt Publishing Limited
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
@@ -32,149 +32,8 @@
 #include "stb_image.h"
 
 namespace LavaCake {
+  namespace Helpers {
 	
-	namespace Helpers {
-			mat4 Identity() {
-				mat4 I = mat4({
-					1,0,0,0,
-					0,1,0,0,
-					0,0,1,0,
-					0,0,0,1
-				});
-				return I;
-			}
-
-			mat4 PrepareTranslationMatrix(float x,
-				float y,
-				float z) {
-				mat4 translation_matrix = mat4({
-					1.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 1.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 1.0f, 0.0f,
-						 x,    y,    z, 1.0f
-				});
-				return translation_matrix;
-			}
-
-			mat4 PrepareRotationMatrix(float           angle,
-				vec3f const & axis,
-				float           normalize_axis) {
-				float x;
-				float y;
-				float z;
-
-				if (normalize_axis) {
-					vec3f normalized = Normalize(axis);
-					x = normalized[0];
-					y = normalized[1];
-					z = normalized[2];
-				}
-				else {
-					x = axis[0];
-					y = axis[1];
-					z = axis[2];
-				}
-
-				const float c = cos(Deg2Rad(angle));
-				const float _1_c = 1.0f - c;
-				const float s = sin(Deg2Rad(angle));
-
-				mat4 rotation_matrix = mat4({
-					x * x * _1_c + c,
-					y * x * _1_c - z * s,
-					z * x * _1_c + y * s,
-					0.0f,
-
-					x * y * _1_c + z * s,
-					y * y * _1_c + c,
-					z * y * _1_c - x * s,
-					0.0f,
-
-					x * z * _1_c - y * s,
-					y * z * _1_c + x * s,
-					z * z * _1_c + c,
-					0.0f,
-
-					0.0f,
-					0.0f,
-					0.0f,
-					1.0f
-				});
-				return rotation_matrix;
-			}
-
-			mat4 PrepareScalingMatrix(float x,
-				float y,
-				float z) {
-				mat4 scaling_matrix = mat4({
-						 x, 0.0f, 0.0f, 0.0f,
-					0.0f,    y, 0.0f, 0.0f,
-					0.0f, 0.0f,    z, 0.0f,
-					0.0f, 0.0f, 0.0f, 1.0f
-				});
-				return scaling_matrix;
-			}
-
-			mat4 PreparePerspectiveProjectionMatrix(float aspect_ratio,
-				float field_of_view,
-				float near_plane,
-				float far_plane) {
-				float f = 1.0f / tan(Deg2Rad(0.5f * field_of_view));
-
-				mat4 perspective_projection_matrix = mat4({
-					f / aspect_ratio,
-					0.0f,
-					0.0f,
-					0.0f,
-
-					0.0f,
-					-f,
-					0.0f,
-					0.0f,
-
-					0.0f,
-					0.0f,
-					far_plane / (near_plane - far_plane),
-					-1.0f,
-
-					0.0f,
-					0.0f,
-					(near_plane * far_plane) / (near_plane - far_plane),
-					0.0f
-				});
-				return perspective_projection_matrix;
-			}
-
-			mat4 PrepareOrthographicProjectionMatrix(float left_plane,
-				float right_plane,
-				float bottom_plane,
-				float top_plane,
-				float near_plane,
-				float far_plane) {
-				mat4 orthographic_projection_matrix = mat4({
-					2.0f / (right_plane - left_plane),
-					0.0f,
-					0.0f,
-					0.0f,
-
-					0.0f,
-					2.0f / (bottom_plane - top_plane),
-					0.0f,
-					0.0f,
-
-					0.0f,
-					0.0f,
-					1.0f / (near_plane - far_plane),
-					0.0f,
-
-					-(right_plane + left_plane) / (right_plane - left_plane),
-					-(bottom_plane + top_plane) / (bottom_plane - top_plane),
-					near_plane / (near_plane - far_plane),
-					1.0f
-				});
-				return orthographic_projection_matrix;
-			}
-
 		bool LoadTextureDataFromFile(char const                 * filename,
 			int                          num_requested_components,
 			std::vector<unsigned char> & image_data,
@@ -214,6 +73,5 @@ namespace LavaCake {
 			return true;
 		}
 
-	
-	}
+  }
 } // namespace LavaCake

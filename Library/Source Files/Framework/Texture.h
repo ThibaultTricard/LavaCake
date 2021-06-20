@@ -8,6 +8,7 @@
 #include "SwapChain.h"
 #include "CommandBuffer.h"
 #include "Image.h"
+#include "Math/basics.h"
 
 namespace LavaCake {
 	namespace Framework {
@@ -16,27 +17,23 @@ namespace LavaCake {
 
 
 			/**
-			* construct a texture buffer from a file.
-			*
-			* @param filename : the name of the file where the data is stored.
-			* @param int nbChannel : the number of channel that contain the texture between 1 and 4.
-			* @param VkFormat f : the format of theTexture buffer.
-      *
+			\brief construct a texture buffer from a file
+			\param filename : the name of the file where the data is stored.
+			\param int nbChannel : the number of channel that contain the texture between 1 and 4.
+			\param VkFormat f : the format of theTexture buffer.
 			*/
 			TextureBuffer(std::string filename, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
 
 
 			/**
-			* construct a texture buffer from a array of data.
-			*
-			* @param data : the data that will be used of the texture.
-			* @param int width : the width of the texture.
-			* @param int height : the height of the texture.
-			* @param int nbChannel : the number of channel that contain the texture between 1 and 4.
-			* @param VkFormat f : the format of theTexture buffer.
-			*
+			\brief construct a texture buffer from a array of data.
+			\param data : the data that will be used of the texture.
+			\param width : the width of the texture.
+			\param height : the height of the texture.
+			\param nbChannel : the number of channel that contain the texture between 1 and 4.
+			\param f : the format of theTexture buffer.
 			*/
-			TextureBuffer(std::vector<unsigned char>* data, int width, int height, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
+			TextureBuffer(std::vector<unsigned char>* data, int width, int height, int nbChannel, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM);
 
 
 			/**
@@ -133,19 +130,17 @@ namespace LavaCake {
 		public:
 
 			/**
-			* construct a CubeMap from 6 textures file.
-			*
-			* @param path : path to a folder where the 6 texture file are
-			* @param int nbChannel : the number of channel that contain the texture between 1 and 4.
-			* @param std::vector<std::string> images : a list of six name of texture in the folder
-			* @param VkFormat f : the format of theTexture buffer.
+			\brief construct a CubeMap from 6 textures file.
+			\param path : path to a folder where the 6 texture file are
+			\param int nbChannel : the number of channel that contain the texture between 1 and 4.
+			\param std::vector<std::string> images : a list of six name of texture in the folder
+			\param VkFormat f : the format of theTexture buffer.
 			*
 			*/
 			CubeMap(std::string path, int nbChannel, std::vector<std::string> images = { "posx.jpg","negx.jpg","posy.jpg","negy.jpg","posz.jpg","negz.jpg" }, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
 
 			/**
-			* create and allocate the CubeMap on the device
-			*
+			\brief Allocate the CubeMap on the GPU
 			*/
 			virtual void allocate(Queue* queue, CommandBuffer& cmdBuff, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT) override;
 
@@ -159,13 +154,12 @@ namespace LavaCake {
 		public : 
 			
 			/**
-			* construct a FrameBuffer.
-			*
-			* @param int width						: the width of the FrameBuffer.
-			* @param int height						: the height of the FrameBuffer.
-			* @param int layer						: the number of layer in the FrameBuffer.
-			* @param VkFormat f						: the format of theTexture buffer.
-			*	@param frameBufferType type : the type of the frame buffer will store : COLOR_FRAMEBUFFER, DEPTH_FRAMEBUFFER or STENCIL_FRAMEBUFFER.
+			\brief construct a FrameBuffer.
+			\param int width						: the width of the FrameBuffer.
+			\param int height						: the height of the FrameBuffer.
+			\param int layer						: the number of layer in the FrameBuffer.
+			\param VkFormat f						: the format of theTexture buffer.
+			\param frameBufferType type : the type of the frame buffer will store : COLOR_FRAMEBUFFER, DEPTH_FRAMEBUFFER or STENCIL_FRAMEBUFFER.
 			*
 			*/
 			FrameBuffer(uint32_t width, uint32_t height);
@@ -173,33 +167,28 @@ namespace LavaCake {
 			
 
 			/**
-			* return the layout the texture buffer
-			*
+			\brief return the layout the texture buffer
 			*/
 			VkImageLayout getLayout(int i);
 
 
 			/**
-			* return the sampler of the texture buffer
-			*
+			\brief return the sampler of the texture buffer
 			*/
 			VkSampler	getSampler();
 
 			/**
-			* return an image view of the texture buffer
-			*
+			\brief return an image view of the texture buffer
 			*/
 			VkImageView	 getImageViews(int i);
 
 			/**
-			* return number of image view of the texture buffer
-			*
+			\brief return number of image view of the texture buffer
 			*/
 			size_t getImageViewSize();
 
 			/**
-			* return the FrameBuffer handle
-			*
+			\brief return the FrameBuffer handle
 			*/
 			VkFramebuffer getHandle();
 

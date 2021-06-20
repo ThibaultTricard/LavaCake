@@ -62,7 +62,7 @@ namespace LavaCake {
 
 			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
-			m_image->setLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange, VK_PIPELINE_STAGE_TRANSFER_BIT);
+			m_image->setLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT,subresourceRange);
 
 
 			VkImageSubresourceLayers image_subresource_layer = {
@@ -84,7 +84,7 @@ namespace LavaCake {
 
 			stagingBuffer.copyToImage(commandBuffer, *m_image, { region });
 
-			m_image->setLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
+			m_image->setLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, stageFlagBit,subresourceRange);
 
 			
 			commandBuffer.endRecord();
@@ -153,7 +153,7 @@ namespace LavaCake {
 
 			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
-			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange, VK_PIPELINE_STAGE_TRANSFER_BIT);
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, subresourceRange);
 
 
 			VkImageSubresourceLayers image_subresource_layer = {
@@ -175,7 +175,7 @@ namespace LavaCake {
 			stagingBuffer.copyToImage(cmdBuff, *m_image, { region });
 
 
-			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, stageFlagBit, subresourceRange);
 
 
 			cmdBuff.endRecord();
@@ -294,11 +294,11 @@ namespace LavaCake {
 			};
 
 			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1,static_cast<uint32_t>(0), 6 };
-			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, subresourceRange, VK_PIPELINE_STAGE_TRANSFER_BIT);
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, subresourceRange);
 
 			stagingBuffer.copyToImage(cmdBuff, *m_image, { region });
 
-			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange, stageFlagBit);
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, stageFlagBit, subresourceRange);
 
 			cmdBuff.endRecord();
 
@@ -366,7 +366,7 @@ namespace LavaCake {
 
 
 		VkImage Attachment::getImage() {
-			return m_image->getImage();
+			return m_image->getHandle();
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//																																			Storage Image																																			//
@@ -384,7 +384,7 @@ namespace LavaCake {
 			cmdBuff.beginRecord();
 
 			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_GENERAL, subresourceRange, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
+			m_image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_GENERAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, subresourceRange);
 
 			cmdBuff.endRecord();
 

@@ -18,7 +18,7 @@
 //
 // Vulkan Cookbook
 // ISBN: 9781786468154
-// © Packt Publishing Limited
+// ï¿½ Packt Publishing Limited
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
@@ -27,33 +27,10 @@
 
 #include "Tools.h"
 
+
 namespace LavaCake {
 	namespace Helpers {
-			mat4 Identity();
 
-			mat4 PrepareTranslationMatrix(float x,
-				float y,
-				float z);
-
-			mat4 PrepareRotationMatrix(float           angle,
-				vec3f const & axis,
-				float           normalize_axis = false);
-
-			mat4 PrepareScalingMatrix(float x,
-				float y,
-				float z);
-
-			mat4 PreparePerspectiveProjectionMatrix(float aspect_ratio,
-				float field_of_view,
-				float near_plane,
-				float far_plane);
-
-			mat4 PrepareOrthographicProjectionMatrix(float left_plane,
-				float right_plane,
-				float bottom_plane,
-				float top_plane,
-				float near_plane,
-				float far_plane);
 
 		bool LoadTextureDataFromFile(char const                 * filename,
 			int                          num_requested_components,

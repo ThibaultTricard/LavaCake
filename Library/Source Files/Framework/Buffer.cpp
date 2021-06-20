@@ -164,7 +164,7 @@ namespace LavaCake{
 
 		void Buffer::copyToImage(CommandBuffer& cmdBuff, Image& image, std::vector<VkBufferImageCopy> regions) {
 			if (regions.size() > 0) {
-				vkCmdCopyBufferToImage(cmdBuff.getHandle(), *m_buffer, image.getImage(), image.getLayout(), static_cast<uint32_t>(regions.size()), regions.data());
+				vkCmdCopyBufferToImage(cmdBuff.getHandle(), *m_buffer, image.getHandle(), image.getLayout(), static_cast<uint32_t>(regions.size()), regions.data());
 			}
 		}
 

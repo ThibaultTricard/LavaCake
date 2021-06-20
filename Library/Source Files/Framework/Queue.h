@@ -7,16 +7,23 @@
 
 namespace LavaCake {
 	namespace Framework {
-
+  /**
+   Class Queue :
+   \brief A gerneric class to help manage VkQueue inherited by the classes ComputeQueue, GraphicQueue, and PresentationQueue
+   */
 		class Queue {
 		public:
 
+      
 			Queue() {
 				m_handle = new VkQueue();
 			}
 
 			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) { return false; };
 
+      /**
+       \brief Get the handle of the Queue
+       */
 			VkQueue& getHandle() {
 				return *m_handle;
 			}
@@ -25,11 +32,9 @@ namespace LavaCake {
 				return m_familyIndex;
 			}
 
-			void setHandle(VkQueue*		handle) {
+			void setHandle(VkQueue*	handle) {
 				m_handle = handle;
 			}
-
-			
 
 			~Queue() {
 
@@ -41,6 +46,10 @@ namespace LavaCake {
 		};
 
 
+  /**
+   Class ComputeQueue :
+   \brief A class to help manage compute VkQueue
+   */
 		class ComputeQueue : public Queue {
 		public:
 			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
@@ -48,13 +57,21 @@ namespace LavaCake {
 			}
 		};
 
+  /**
+   Class GraphicQueue :
+   \brief A class to help manage graphique VkQueue
+   */
 		class GraphicQueue : public Queue {
 		public:
 			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
 				return LavaCake::Core::SelectIndexOfQueueFamilyWithDesiredCapabilities(*physicalDevice, VK_QUEUE_COMPUTE_BIT, m_familyIndex);
 			}
 		};
-
+  
+  /**
+   Class PresentationQueue :
+   \brief A class to help manage present VkQueue
+   */
 		class PresentationQueue : public Queue {
 		public:
 			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {

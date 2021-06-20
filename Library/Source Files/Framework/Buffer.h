@@ -218,18 +218,18 @@ namespace LavaCake {
       VkDeviceMemory& getMemory();
       
       /**
-       \brief Copy a region(s) of an image to this buffer
+       \brief Copy a region(s) of the buffer to an image
        \param cmdBuff : the command buffer used for this operation, must be in a  recording state
-       \param image : the source image
-       \param regions : The listt of regions of the image to be copied to the buffer;
+       \param image : the destination image
+       \param regions : The listt of regions of the image to be copied to the buffer
        */
 			void copyToImage(CommandBuffer& cmdBuff, Image& image, std::vector<VkBufferImageCopy> regions);
       
       /**
-       \brief Copy a region(s) of an buffer to this buffer
+       \brief Copy a region(s) of the buffer another buffer
        \param cmdBuff : the command buffer used for this operation, must be in a  recording state
-       \param buffer : the source buffer
-       \param regions : The listt of regions of the image to be copied to the buffer;
+       \param buffer : the destination buffer
+       \param regions : The list of regions of the image to be copied to the buffer
        */
 			void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, std::vector<VkBufferCopy> regions);
       

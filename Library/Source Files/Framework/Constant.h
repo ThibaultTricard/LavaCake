@@ -12,7 +12,8 @@
 namespace LavaCake {
 	namespace Framework {
   /**
-   \brief Push Constant class : help manage pushConstant creation and sending them to shaders.
+   Push Constant class :
+   \brief help manage pushConstant creation and sending them to shaders.
     This class is mainly a dictionary of variable of different type that can be pushed to a shader.
   */
 		class PushConstant {

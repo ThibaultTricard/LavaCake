@@ -13,7 +13,8 @@ namespace LavaCake {
 			m_cubemap = cubemap;
     }
 
-    void Image::allocate(VkImageUsageFlags usage) {
+    void Image::allocate(VkImageUsageFlags usage,
+                         VkMemoryPropertyFlagBits memPropertyFlag) {
       Framework::Device* d = LavaCake::Framework::Device::getDevice();
       VkDevice logical = d->getLogicalDevice();
 
@@ -32,7 +33,7 @@ namespace LavaCake {
         ErrorCheck::setError((char*)"Can't create Image");
       }
 
-      if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, *m_image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_imageMemory)) {
+      if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, *m_image, memPropertyFlag, *m_imageMemory)) {
         ErrorCheck::setError((char*)"Can't allocate Image memory");
       }
 
@@ -57,7 +58,7 @@ namespace LavaCake {
 		}
 
 
-    void Image::setLayout(CommandBuffer& cmdbuff, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange, VkPipelineStageFlags dstStage) {
+    void Image::setLayout(CommandBuffer& cmdbuff, VkImageLayout newLayout, VkPipelineStageFlags dstStage, VkImageSubresourceRange subresourceRange ) {
 
 				// Create an image barrier object
 				VkImageMemoryBarrier imageMemoryBarrier{};
@@ -179,7 +180,7 @@ namespace LavaCake {
 
 		void Image::copyToImage(CommandBuffer& cmdBuff, Image& image, std::vector<VkImageCopy> regions) {
 			if (regions.size() > 0) {
-				vkCmdCopyImage(cmdBuff.getHandle(), *m_image, m_layout, image.getImage(), image.getLayout(), static_cast<uint32_t>(regions.size()), regions.data());
+				vkCmdCopyImage(cmdBuff.getHandle(), *m_image, m_layout, image.getHandle(), image.getLayout(), static_cast<uint32_t>(regions.size()), regions.data());
 			}
 		}
 
@@ -189,7 +190,7 @@ namespace LavaCake {
 			}
 		}
 
-		VkImage& Image::getImage() {
+		VkImage& Image::getHandle() {
 			return *m_image;
 		}
 		VkDeviceMemory& Image::getImageMemory() {
@@ -200,7 +201,7 @@ namespace LavaCake {
 			return *m_imageView;
 		}
 
-		VkImageLayout Image::getLayout() {
+		VkImageLayout& Image::getLayout() {
 			return m_layout;
 		}
 

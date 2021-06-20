@@ -1,37 +1,51 @@
 #pragma once
 #include "helpers.h"
 #include "ABBox.h"
+#include "Math/basics.h"
 
 namespace LavaCake {
   namespace Helpers {
   
   /**
-   *\brief 2D field representation
-   *\tparam T the typename of the type the Field will hold, this type must support the multiplication operator with a float (ie T * float -> T)  
+   *Class Field2D :
+   *\brief : A virtual class that represent any 2D field of value
+   *\tparam T  the type the Field will hold
    */
   template <typename T>
   class Field2D{
   public:
+    /**
+     \brief sample the field at a postion
+     \param pos a vec2f representing the sample position
+     \return the value of the field at the position pos
+     */
     virtual T sample(vec2f pos) = 0;
   };
-  
+
   /**
-   *\tparam T the typename of the type the Field will hold, this type must support the multiplication operator with a float (ie T * float -> T) for interpolation purpose
+   *Class  Field2DGrid :
+   *\brief A class that represent a 2D field sampled on a regular grid
+   *\tparam T  the type the Field will hold
    */
-  template <typename T>
-  class Field3D{
-  public:
-    virtual T sample(vec3f pos) = 0;
-  };
-  
-
-
-
   template <typename T>
   class Field2DGrid : public Field2D<T>{
     public:
     
-    Field2DGrid(std::vector<T>& data, uint32_t width, uint32_t height, ABBox<2> boundingbox, T (*interpolate)(T&, T&, float) = nullptr): Field2D<T>(){
+    /**
+     *\brief Create a 2D field
+     *\param data a std::vector of data
+     *\param width the width of the grid
+     *\param height the height of the grid
+     *\param boundingbox the bounding box of the field in the domain
+     *\param interpolate [optional]  a funtion pointer to an interpolation function for the type T
+     */
+    Field2DGrid(std::vector<T>& data,
+                uint32_t width,
+                uint32_t height,
+                ABBox<2> boundingbox,
+                T (*interpolate)(T&, T&, float) = nullptr
+    ): Field2D<T>(){
+      
       m_fields = data;
       m_width = width;
       m_height = height;
@@ -39,6 +53,11 @@ namespace LavaCake {
       m_interpolate = interpolate;
     }
     
+    /**
+     \brief sample the field at a postion
+     \param pos a vec2f representing the sample position
+     \return the value of the field at the position pos
+     */
     T sample(vec2f pos) override{
       vec2f X = (pos - m_boundingbox.A()) / (m_boundingbox.diag());
       X = X * vec2f({float(m_width-1), float(m_height-1)});
@@ -77,6 +96,11 @@ namespace LavaCake {
     
     std::vector<T> getRawField(){return m_fields;}
     vec2u getDimension(){return{m_width,m_height};}
+    
+    /**
+     \brief get the bounding box of the field
+     \return a bounding box 2D
+     */
     ABBox<2> getABBox(){return m_boundingbox;}
     
     private :
@@ -89,10 +113,41 @@ namespace LavaCake {
   };
 
 
+  /**
+   *Class Field3D :
+   *\brief : A virtual class that represent any 3D field of value
+   *\tparam T  the type the Field will hold
+   */
+  template <typename T>
+  class Field3D{
+  public:
+    /**
+     \brief sample the field at a postion
+     \param pos a vec3f representing the sample position
+     \return the value of the field at the position pos
+     */
+    virtual T sample(vec3f pos) = 0;
+  };
+  
+  
+  /**
+   *Class  Field3DGrid :
+   *\brief A class that represent a 3D field sampled on a regular grid
+   *\tparam T  the type the Field will hold
+   */
   template <typename T>
   class Field3DGrid : public Field3D<T>{
   public:
     
+    /**
+     *\brief Create a 3D field
+     *\param data a std::vector of data
+     *\param width the width of the grid
+     *\param height the height of the grid
+     *\param dpeth  the depth of the grid
+     *\param boundingbox the bounding box of the field in the domain
+     *\param interpolate [optional]  a funtion pointer to an interpolation function for the type T
+     */
     Field3DGrid(std::vector<T>& data, uint32_t width, uint32_t height, uint32_t depth, ABBox<3> boundingbox, T (*interpolate)(T&, T&, float) = nullptr){
       m_fields = data;
       m_width = width;
@@ -102,6 +157,11 @@ namespace LavaCake {
       m_interpolate = interpolate;
     }
     
+    /**
+     \brief sample the field at a postion
+     \param pos a vec3f representing the sample position
+     \return the value of the field at the position pos
+     */
     T sample(vec3f pos) override{
       vec3f X = (pos - m_boundingbox.A()) / (m_boundingbox.B() - m_boundingbox.A());
       X = X * vec3f({float(m_width-1), float(m_height-1), float(m_depth-1)});
@@ -162,6 +222,11 @@ namespace LavaCake {
     
     std::vector<T> getRawField(){return m_fields;};
     vec3u getDimension(){return{m_width,m_height,m_depth};};
+    
+    /**
+     \brief get the bounding box of the field
+     \return a bounding box 3D
+     */
     ABBox<3> getABBox(){return m_boundingbox;};
     
     private :
