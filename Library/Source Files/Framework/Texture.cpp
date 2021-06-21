@@ -100,11 +100,11 @@ namespace LavaCake {
 		}
 
 
-		VkSampler	TextureBuffer::getSampler() {
+		VkSampler& TextureBuffer::getSampler() {
 			return *m_sampler;
 		}
 
-		VkImageView TextureBuffer::getImageView() {
+		VkImageView& TextureBuffer::getImageView() {
 			return m_image->getImageView();
 		}
 
@@ -200,7 +200,7 @@ namespace LavaCake {
 			m_height = height;
 		};
 
-		VkImageView FrameBuffer::getImageViews(int i) {
+		VkImageView& FrameBuffer::getImageViews(uint8_t i) {
 			return m_imageViews[i];
 		}
 
@@ -208,15 +208,15 @@ namespace LavaCake {
 			return m_imageViews.size();
 		}
 
-		VkImageLayout FrameBuffer::getLayout(int i){
+		VkImageLayout& FrameBuffer::getLayout(uint8_t i){
 			return m_layouts[i];
 		}
 
-		VkSampler	FrameBuffer::getSampler() {
+		VkSampler&	FrameBuffer::getSampler() {
 			return *m_sampler;
 		}
 
-		VkFramebuffer FrameBuffer::getHandle() {
+		VkFramebuffer& FrameBuffer::getHandle() {
 			return *m_frameBuffer;
 		}
 

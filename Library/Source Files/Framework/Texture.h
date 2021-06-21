@@ -12,6 +12,10 @@
 
 namespace LavaCake {
 	namespace Framework {
+  /**
+   Class TextureBuffer
+   \brief This class wrap and configure an Image to be used as 2D texture buffer
+   */
 		class TextureBuffer {
 		public:
 
@@ -37,34 +41,43 @@ namespace LavaCake {
 
 
 			/**
-			* create and allocate the Texture buffer on the device
-			*
+			\brief allocate the Texture buffer on the device on the GPU
+      \param queue : a pointer to the queue that will be used to copy data to the Buffer
+      \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+      \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
 			*/
 			virtual void allocate(Queue* queue, CommandBuffer& cmdBuff, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 			/**
-			* return the sampler of the texture buffer
-			*
+      \brief get the sampler of the texture buffer
+			\return a VkSampler
 			*/
-			VkSampler	getSampler();
+			VkSampler&	getSampler();
 
 			/**
-			* return the image view  of the texture buffer
-			*
+      \brief get the image view of the texture buffer
+			\return a VkImageView
 			*/
-			VkImageView getImageView();
+			VkImageView& getImageView();
 
 			/**
-			* return the layout the texture buffer
-			*
+      \brief get the image layout of the texture buffer
+			\return a VkImageLayout
 			*/
 			virtual VkImageLayout getLayout();
 
-
+      /**
+       \brief get the width of the texture
+       \return a uint32_t
+       */
 			uint32_t width() {
 				return m_image->width();
 			}
-
+      
+      /**
+       \brief get the height of the texture
+       \return a uint32_t
+       */
 			uint32_t height() {
 				return m_image->height();
 			}
@@ -97,27 +110,30 @@ namespace LavaCake {
 			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
 		};
 
-
+    /**
+     Class TextureBuffer3D
+     \brief This class wrap and configure an Image to be used as 3D texture buffer
+     */
 		class TextureBuffer3D : public TextureBuffer {
 		public:
 
 			/**
-			* construct a texture buffer from a array of data.
-			*
-			* @param data : the data that will be used of the texture.
-			* @param int width : the width of the texture.
-			* @param int height : the height of the texture.
-			* @param int depth : the depth of the texture.
-			* @param int nbChannel : the number of channel that contain the texture between 1 and 4.
-			* @param VkFormat f : the format of theTexture buffer.
-			*
+			\brief construct a texture buffer from a array of data.
+			\param data : the data that will be used of the texture.
+			\param int width : the width of the texture.
+			\param int height : the height of the texture.
+			\param int depth : the depth of the texture.
+			\param int nbChannel : the number of channel that contain the texture between 1 and 4.
+			\param VkFormat f : the format of theTexture buffer.
 			*/
-			TextureBuffer3D(std::vector<unsigned char>* data, int width, int height, int depth, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
+			TextureBuffer3D(std::vector<unsigned char>* data, int width, int height, int depth, int nbChannel, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM);
 
-			/**
-			* create and allocate the Texture buffer on the device
-			*
-			*/
+      /**
+       \brief allocate the Texture buffer 3D on the device on the GPU
+       \param queue : a pointer to the queue that will be used to copy data to the Buffer
+       \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+       \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
+       */
 			virtual void allocate(Queue* queue, CommandBuffer& cmdBuff, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 		private:
@@ -126,21 +142,27 @@ namespace LavaCake {
 			
 		};
 
+    /**
+    Class TextureBuffer
+    \brief This class wrap and configure an Image to be used as a cubeMap
+    */
 		class CubeMap : public TextureBuffer {
 		public:
 
 			/**
-			\brief construct a CubeMap from 6 textures file.
+			\brief create a CubeMap from 6 textures file.
 			\param path : path to a folder where the 6 texture file are
 			\param int nbChannel : the number of channel that contain the texture between 1 and 4.
 			\param std::vector<std::string> images : a list of six name of texture in the folder
 			\param VkFormat f : the format of theTexture buffer.
-			*
 			*/
 			CubeMap(std::string path, int nbChannel, std::vector<std::string> images = { "posx.jpg","negx.jpg","posy.jpg","negy.jpg","posz.jpg","negz.jpg" }, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
 
 			/**
-			\brief Allocate the CubeMap on the GPU
+       \brief Allocate the CubeMap on the GPU
+       \param queue : a pointer to the queue that will be used to copy data to the Buffer
+       \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+       \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
 			*/
 			virtual void allocate(Queue* queue, CommandBuffer& cmdBuff, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT) override;
 
@@ -149,49 +171,57 @@ namespace LavaCake {
 			std::vector<std::string>						m_images;
 		};
 
-
+    /**
+     Class FrameBuffer
+     \brief a class to help manage frame buffers
+     */
 		class FrameBuffer {
 		public : 
 			
 			/**
-			\brief construct a FrameBuffer.
-			\param int width						: the width of the FrameBuffer.
-			\param int height						: the height of the FrameBuffer.
-			\param int layer						: the number of layer in the FrameBuffer.
-			\param VkFormat f						: the format of theTexture buffer.
-			\param frameBufferType type : the type of the frame buffer will store : COLOR_FRAMEBUFFER, DEPTH_FRAMEBUFFER or STENCIL_FRAMEBUFFER.
-			*
+			\brief create a FrameBuffer.
+			\param width						: the width of the FrameBuffer.
+			\param height						: the height of the FrameBuffer.
 			*/
 			FrameBuffer(uint32_t width, uint32_t height);
 
-			
-
 			/**
-			\brief return the layout the texture buffer
+			\brief get the image layout of one layer of the FrameBuffer
+      \param i the index of the layer
+      \return a VkImageLayout
 			*/
-			VkImageLayout getLayout(int i);
+			VkImageLayout& getLayout(uint8_t i);
 
 
 			/**
-			\brief return the sampler of the texture buffer
+			\brief get the sampler of the frameBuffer
+      \return a VkSampler
 			*/
-			VkSampler	getSampler();
+			VkSampler&	getSampler();
 
 			/**
-			\brief return an image view of the texture buffer
+			\brief get the image view of one layer of the Framebuffer
+      \param i the index of the layer
+      \brief a VkImageView
 			*/
-			VkImageView	 getImageViews(int i);
+			VkImageView&	 getImageViews(uint8_t i);
 
 			/**
-			\brief return number of image view of the texture buffer
+			\brief get the number of image view in the Framebuffer
+      \return a size_t
 			*/
 			size_t getImageViewSize();
 
 			/**
-			\brief return the FrameBuffer handle
+			\brief get the handle of the Framebuffer
+      \return a VkFramebuffer
 			*/
-			VkFramebuffer getHandle();
+			VkFramebuffer& getHandle();
 
+      /**
+      \brief get the resolution of the Framebuffer
+      \return a vec2u
+      */
 			vec2u size() {
 				return vec2u({ m_width , m_height });
 			}
