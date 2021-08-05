@@ -16,6 +16,19 @@ namespace LavaCake {
 				m_bufferSize += s;
 			}
 
+      VkPhysicalDeviceProperties* p = new  VkPhysicalDeviceProperties();
+      vkGetPhysicalDeviceProperties(physical,
+                                    p);
+      
+      VkDeviceSize padding = p->limits.nonCoherentAtomSize - m_bufferSize % p->limits.nonCoherentAtomSize;
+      
+      //adding empty value at the end of the buffer to match the atomic size of a buffer;
+      m_variables.push_back(std::vector<int>(padding/ sizeof(int), 0));
+      m_typeSizeOffset.push_back(std::pair<VkDeviceSize, VkDeviceSize>(padding, m_bufferSize));
+      m_bufferSize+=padding;
+      
+      
+      
 			m_stagingBuffer.allocate(m_bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 			m_buffer.allocate(m_bufferSize, (VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
