@@ -20,11 +20,8 @@ namespace LavaCake {
 				ErrorCheck::setError((char*)"Waiting on a device failed.");
 			}
 
-      VkSwapchainKHR old_swapchain = VK_NULL_HANDLE;
-			if (m_handle != VK_NULL_HANDLE) {
-        old_swapchain = m_handle;
-        m_handle = VK_NULL_HANDLE;
-      }
+      
+	
       
 			/*if (!LavaCake::Core::CreateSwapchainWithR8G8B8A8FormatAndMailboxPresentMode(physical, surface, logical, swapchain_image_usage, m_size, m_format, *old_swapchain, *m_handle, m_images)) {
 				ErrorCheck::setError((char*)"Can't create swapchain");
@@ -70,6 +67,7 @@ namespace LavaCake {
         ErrorCheck::setError((char*)"Could not select swapchain image image usage");
       }
       
+      VkSwapchainKHR old_swapchain = VK_NULL_HANDLE;
       if (!LavaCake::Core::CreateSwapchain(logical, surface, number_of_images, { m_format, image_color_space }, m_size, image_usage, surface_transform, desired_present_mode, old_swapchain, m_handle)) {
         ErrorCheck::setError((char*)"Could not create the swapchain");
       }
