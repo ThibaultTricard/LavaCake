@@ -199,7 +199,7 @@ mat4 inverse(mat4& m) {
   if (det == 0)
     return invM;
   
-  det = 1.0 / det;
+  det = 1.0f / det;
   
   for (i = 0; i < 16; i++)
     invM[i] = inv[i] * det;
@@ -331,7 +331,7 @@ mat4 inverse(const mat4& m) {
   if (det == 0)
     return invM;
   
-  det = 1.0 / det;
+  det = 1.0f / det;
   
   for (i = 0; i < 16; i++)
     invM[i] = inv[i] * det;

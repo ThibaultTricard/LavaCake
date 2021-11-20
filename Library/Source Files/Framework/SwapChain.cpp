@@ -20,14 +20,11 @@ namespace LavaCake {
 				ErrorCheck::setError((char*)"Waiting on a device failed.");
 			}
 
-			m_images.clear();
-
-			if (!m_handle) {
-				InitVkDestroyer(logical, m_handle);
-			}
-			VkDestroyer(VkSwapchainKHR) old_swapchain = std::move(m_handle);
-			InitVkDestroyer(logical, m_handle);
-      
+      VkSwapchainKHR old_swapchain = VK_NULL_HANDLE;
+			if (m_handle != VK_NULL_HANDLE) {
+        old_swapchain = m_handle;
+        m_handle = VK_NULL_HANDLE;
+      }
       
 			/*if (!LavaCake::Core::CreateSwapchainWithR8G8B8A8FormatAndMailboxPresentMode(physical, surface, logical, swapchain_image_usage, m_size, m_format, *old_swapchain, *m_handle, m_images)) {
 				ErrorCheck::setError((char*)"Can't create swapchain");
@@ -73,21 +70,29 @@ namespace LavaCake {
         ErrorCheck::setError((char*)"Could not select swapchain image image usage");
       }
       
-      if (!LavaCake::Core::CreateSwapchain(logical, surface, number_of_images, { m_format, image_color_space }, m_size, image_usage, surface_transform, desired_present_mode, *old_swapchain, *m_handle)) {
+      if (!LavaCake::Core::CreateSwapchain(logical, surface, number_of_images, { m_format, image_color_space }, m_size, image_usage, surface_transform, desired_present_mode, old_swapchain, m_handle)) {
         ErrorCheck::setError((char*)"Could not create the swapchain");
       }
       
       std::vector<VkImage> swapchainImages;
-      if (!LavaCake::Core::GetHandlesOfSwapchainImages(logical, *m_handle, swapchainImages)) {
-        return false;
+      if (!LavaCake::Core::GetHandlesOfSwapchainImages(logical, m_handle, swapchainImages)) {
+        ErrorCheck::setError((char*)"Could not get handle of the swapchain images");
       }
       
-			for (uint32_t i = 0; i < m_images.size(); ++i) {
+			for (uint32_t i = 0; i < swapchainImages.size(); ++i) {
 				m_swapchainImages.push_back(new SwapChainImage(m_size, m_format, swapchainImages[i]));
 			}
 		}
   
     void SwapChain::resize(){
+
+      Device* d = Device::getDevice();
+      VkDevice logical = d->getLogicalDevice();
+      vkDestroySwapchainKHR(logical, m_handle, nullptr);
+      for (uint32_t i = 0; i < m_swapchainImages.size(); i++) {
+        delete m_swapchainImages[i];
+      }
+      m_swapchainImages.clear();
       init(m_swapchainImageUsage);
     }
     

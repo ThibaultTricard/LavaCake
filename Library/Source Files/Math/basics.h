@@ -9,19 +9,19 @@ namespace LavaCake {
   using vec2f = std::array<float, 2>;
   using vec2d = std::array<double, 2>;
   using vec2i = std::array<int, 2>;
-  using vec2u = std::array<uint32_t, 2>;
+  using vec2u = std::array<unsigned int, 2>;
   using vec2b = std::array<bool, 2>;
 
   using vec3f = std::array<float, 3>;
   using vec3d = std::array<double, 3>;
   using vec3i = std::array<int, 3>;
-  using vec3u = std::array<uint32_t, 3>;
+  using vec3u = std::array<unsigned int, 3>;
   using vec3b = std::array<bool, 3>;
 
   using vec4f = std::array<float, 4>;
   using vec4d = std::array<double, 4>;
   using vec4i = std::array<int, 4>;
-  using vec4u = std::array<uint32_t, 4>;
+  using vec4u = std::array<unsigned int, 4>;
   using vec4b = std::array<bool, 4>;
 
   using mat2 = std::array<float, 4>;

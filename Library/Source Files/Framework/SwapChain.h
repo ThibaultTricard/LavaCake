@@ -63,11 +63,10 @@ namespace LavaCake {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 
-
-				if (VK_NULL_HANDLE != m_image) {
+				/*if (VK_NULL_HANDLE != m_image) {
 					vkDestroyImage(logical, m_image, nullptr);
 					m_image = VK_NULL_HANDLE;
-				}
+				}*/
 
 				if (VK_NULL_HANDLE != *m_imageView) {
 					vkDestroyImageView(logical, *m_imageView, nullptr);
@@ -97,18 +96,12 @@ namespace LavaCake {
 			~SwapChain() {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				m_swapchainImages.clear();
 				for (uint32_t i = 0; i < m_swapchainImages.size(); i++) {
 					delete m_swapchainImages[i];
 				}
-				for (size_t i = 0; i < m_images.size(); i++) {
-					if (VK_NULL_HANDLE != m_images[i]) {
-						vkDestroyImage(logical, m_images[i], nullptr);
-						m_images[i] = VK_NULL_HANDLE;
-					}
-				}
-				vkDestroySwapchainKHR(logical, *m_handle, nullptr);
-				*m_handle = VK_NULL_HANDLE;
+				m_swapchainImages.clear();
+				vkDestroySwapchainKHR(logical, m_handle, nullptr);
+				m_handle = VK_NULL_HANDLE;
 
 			};
 
@@ -128,7 +121,7 @@ namespace LavaCake {
 			}
 
 			VkSwapchainKHR& getHandle() {
-				return *m_handle;
+				return m_handle;
 			}
 
 			void init(
@@ -165,7 +158,7 @@ namespace LavaCake {
 					//std::cout << "Could not create a semaphore." << std::endl;
 				}
 
-				result = vkAcquireNextImageKHR(logical, *m_handle, 2000000000, semaphore, VK_NULL_HANDLE, &index);
+				result = vkAcquireNextImageKHR(logical, m_handle, 2000000000, semaphore, VK_NULL_HANDLE, &index);
 				if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
 					//TODO : Raise error using error check
 					//std::cout << "Could not create a semaphore." << std::endl;
@@ -183,7 +176,7 @@ namespace LavaCake {
       
       void presentImage(PresentationQueue* queue, SwapChainImage& image, std::vector<VkSemaphore> semaphores){
         Core::PresentInfo present_info = {
-          *m_handle,                                    // VkSwapchainKHR         Swapchain
+          m_handle,                                    // VkSwapchainKHR         Swapchain
           image.getIndex()                              // uint32_t               ImageIndex
         };
         if (!Core::PresentImage(queue->getHandle(), semaphores, { present_info })) {
@@ -193,7 +186,7 @@ namespace LavaCake {
       
 		private :
 
-			VkDestroyer(VkSwapchainKHR)								m_handle;
+			VkSwapchainKHR														m_handle = VK_NULL_HANDLE;
 			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
 			const VkFormat														m_depthFormat = VK_FORMAT_D16_UNORM;
 			VkExtent2D																m_size = {uint32_t(0), uint32_t(0)};
@@ -202,7 +195,6 @@ namespace LavaCake {
       
 			std::vector<SwapChainImage*>							m_swapchainImages;
 
-			std::vector<VkImage>											m_images;
 		};
 
 
