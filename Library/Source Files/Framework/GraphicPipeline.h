@@ -64,11 +64,20 @@ namespace LavaCake {
        */
 			void reloadShaders();
 
+			/*
+			* \brief set the Vertices info that describe what kind of vertex buffer will be used by the pipeline
+			* \param bindingDescriptions describe the binding of the vertex buffer
+			* \param topology describe what kind of toplogy the vertex buffer will use
+			*/
+			void setVerticesInfo(std::vector<VkVertexInputBindingDescription>& bindingDescriptions,
+													 std::vector<VkVertexInputAttributeDescription>& attributeDescriptions,
+													 VkPrimitiveTopology topology);
+
 			/**
        \brief Set the vertex buffer that will be used by the pipeline
        \param vertexBuffer the vertex buffer
 			*/
-			void setVertices(VertexBuffer* vertexBuffer);
+			void setVertices(std::vector<VertexBuffer*> vertexBuffer);
 
 			/**
        \brief Register a the draw call of the pipeline into a command buffer
@@ -108,6 +117,11 @@ namespace LavaCake {
         m_lineWidth =width;
       }
 			
+
+			void setPolygonMode(VkPolygonMode mode) {
+				m_polygonMode = mode;
+			}
+
 			~GraphicPipeline() {
 
 			}
@@ -141,13 +155,13 @@ namespace LavaCake {
 			VkPipelineViewportStateCreateInfo											m_viewportInfo;
 			LavaCake::Core::ViewportInfo													m_viewportscissor;
 			VkPipelineVertexInputStateCreateInfo									m_vertexInfo;
-			VertexBuffer*																					m_vertexBuffer;
+			std::vector<VertexBuffer*>														m_vertexBuffers;
 			VkPipelineInputAssemblyStateCreateInfo								m_inputInfo;
 
 			uint32_t																							m_subpassNumber;
 
-			VkCullModeFlagBits																		m_CullMode = VK_CULL_MODE_BACK_BIT;
-
+			VkCullModeFlagBits																		m_cullMode = VK_CULL_MODE_BACK_BIT;
+			VkPolygonMode																					m_polygonMode = VK_POLYGON_MODE_FILL;
 
 			VkBool32																							m_alphablending = VK_FALSE;
       float                                                 m_lineWidth = 1.0f;

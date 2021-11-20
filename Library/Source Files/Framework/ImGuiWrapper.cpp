@@ -193,7 +193,7 @@ namespace LavaCake {
       IMGUI_CHECKVERSION();
       ImGui::CreateContext();
       ImGui::StyleColorsDark();
-      prepareImput(win->m_window);
+      prepareInput(win->m_window);
       ImGuiIO& io = ImGui::GetIO();
      
       // Setup display size (every frame to accommodate for window resizing)
@@ -260,7 +260,8 @@ namespace LavaCake {
 
       FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
       m_pipeline->setFragmentModule(sphereFrag);
-      m_pipeline->setVertices(m_vertexBuffer);
+      m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
+      m_pipeline->setVertices({ m_vertexBuffer });
 
       m_pipeline->addPushContant(m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT);
       m_pipeline->addTextureBuffer(fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
@@ -269,7 +270,7 @@ namespace LavaCake {
 
     }
     
-    void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer* cmdBuff) {
+    void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer& cmdBuff) {
 
 
       LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
@@ -307,7 +308,7 @@ namespace LavaCake {
 			
 
       m_vertexBuffer->swapMeshes({ m_mesh });
-      m_vertexBuffer->allocate(queue, *cmdBuff);
+      m_vertexBuffer->allocate(queue, cmdBuff);
 
       vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
       vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });
@@ -317,7 +318,7 @@ namespace LavaCake {
     }
 
 
-    void prepareImput(GLFWwindow* window) {
+    void prepareInput(GLFWwindow* window) {
 
       // Setup back-end capabilities flags
       ImGuiIO& io = ImGui::GetIO();

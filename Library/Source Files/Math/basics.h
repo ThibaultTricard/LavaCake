@@ -145,7 +145,7 @@ namespace LavaCake {
                                 float z) ;
   mat4 PrepareRotationMatrix(float           angle,
                              vec3f const & axis,
-                             float           normalize_axis) ;
+                             float           normalize_axis = 0.0f) ;
 
   mat4 PrepareScalingMatrix(float x,
                             float y,

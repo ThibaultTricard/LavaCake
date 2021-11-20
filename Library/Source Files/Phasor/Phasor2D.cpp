@@ -114,7 +114,7 @@ namespace LavaCake {
 
   
   void Phasor2D::phaseOptimisation(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff,uint32_t nbOptimisation){
-    for (int i = 0; i < nbOptimisation; i++) {
+    for (uint32_t i = 0; i < nbOptimisation; i++) {
       cmdBuff.resetFence();
       cmdBuff.beginRecord();
       m_optimisationBuffer->update(cmdBuff);
@@ -142,14 +142,14 @@ namespace LavaCake {
     std::vector<vec2f> dir(sampleResolution[0] * sampleResolution[1]);
     std::vector<float> div(sampleResolution[0] * sampleResolution[1]);
     
-    for(int i = 0; i< sampleResolution[0]; i++){
-      for(int j = 0; j< sampleResolution[1]; j++){
+    for(uint32_t i = 0; i< sampleResolution[0]; i++){
+      for(uint32_t j = 0; j< sampleResolution[1]; j++){
         vec2f pos =sampleBoundingBox.A() + vec2f({float(i)/float(sampleResolution[0]),float(j)/float(sampleResolution[1])}) * sampleBoundingBox.diag();
         
         f[i + j * sampleResolution[0]] = m_F->sample(pos);
         auto d = m_D->sample(pos);
         dir[i + j * sampleResolution[0]] = d;
-        div[i + j * sampleResolution[0]] = 0;
+        div[i + j * sampleResolution[0]] = 0.0f;
       }
     }
     

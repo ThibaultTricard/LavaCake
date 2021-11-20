@@ -110,8 +110,8 @@ namespace LavaCake {
 				0,                                                          // VkPipelineRasterizationStateCreateFlags    flags
 				false,																											// VkBool32                                   depthClampEnable
 				false,																											// VkBool32                                   rasterizerDiscardEnable
-				m_vertexBuffer->polygonMode(),                              // VkPolygonMode                              polygonMode
-				VkCullModeFlags(m_CullMode),																// VkCullModeFlags                            cullMode
+				m_polygonMode,																							// VkPolygonMode                              polygonMode
+				VkCullModeFlags(m_cullMode),																// VkCullModeFlags                            cullMode
 				VK_FRONT_FACE_COUNTER_CLOCKWISE,                            // VkFrontFace                                frontFace
 				false,																											// VkBool32                                   depthBiasEnable
 				0.0f,																												// float                                      depthBiasConstantFactor
@@ -263,33 +263,36 @@ namespace LavaCake {
 			m_subpassNumber = number;
 		}
 
-		void GraphicPipeline::setVertices(VertexBuffer* buffer) {
-			m_vertexBuffer = buffer;
-
-
+		void GraphicPipeline::setVerticesInfo(std::vector<VkVertexInputBindingDescription>& bindingDescription,
+																					std::vector<VkVertexInputAttributeDescription>& attributeDescriptions, 
+																					VkPrimitiveTopology topology) {
 			m_vertexInfo = {
 				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,								// VkStructureType                           sType
 				nullptr,																																	// const void                              * pNext
 				0,																																				// VkPipelineVertexInputStateCreateFlags     flags
-				static_cast<uint32_t>(buffer->getBindingDescriptions().size()),           // uint32_t                                  vertexBindingDescriptionCount
-				buffer->getBindingDescriptions().data(),                                  // const VkVertexInputBindingDescription   * pVertexBindingDescriptions
-				static_cast<uint32_t>(buffer->getAttributeDescriptions().size()),         // uint32_t                                  vertexAttributeDescriptionCount
-				buffer->getAttributeDescriptions().data()                                 // const VkVertexInputAttributeDescription * pVertexAttributeDescriptions
+				static_cast<uint32_t>(bindingDescription.size()),           // uint32_t                                  vertexBindingDescriptionCount
+				bindingDescription.data(),                                  // const VkVertexInputBindingDescription   * pVertexBindingDescriptions
+				static_cast<uint32_t>(attributeDescriptions.size()),         // uint32_t                                  vertexAttributeDescriptionCount
+				attributeDescriptions.data()                                 // const VkVertexInputAttributeDescription * pVertexAttributeDescriptions
 			};
 
 			m_inputInfo = {
 				VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,  // VkStructureType                           sType
 				nullptr,                                                      // const void                              * pNext
 				0,                                                            // VkPipelineInputAssemblyStateCreateFlags   flags
-				buffer->primitiveTopology(),                                  // VkPrimitiveTopology                       topology
+				topology,																											// VkPrimitiveTopology                       topology
 				false																													// VkBool32                                  primitiveRestartEnable
 			};
 
-			if (m_compiled) { 
+			if (m_compiled) {
 				m_pipelineCreateInfo.pVertexInputState = &m_vertexInfo;
 				m_pipelineCreateInfo.pInputAssemblyState = &m_inputInfo;
-				recompile(); 
+				recompile();
 			}
+		}
+
+		void GraphicPipeline::setVertices(std::vector<VertexBuffer*> buffer) {
+			m_vertexBuffers = buffer;
 		}
 
 
@@ -300,40 +303,43 @@ namespace LavaCake {
 
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
 			vkCmdSetScissor(buffer.getHandle(), 0, 1,  &scissor );
-			if (m_vertexBuffer->getVertexBuffer().getHandle() == VK_NULL_HANDLE)return;
-			VkDeviceSize size(0);
-			vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1),  &m_vertexBuffer->getVertexBuffer().getHandle() ,  &size );
-			if (m_vertexBuffer->isIndexed()) {
-				vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffer->getIndexBuffer().getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
+			for (uint32_t i = 0; i < m_vertexBuffers.size(); i++) {
+				if (m_vertexBuffers[i]->getVertexBuffer().getHandle() == VK_NULL_HANDLE)return;
+				VkDeviceSize size(0);
+				vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1), &m_vertexBuffers[i]->getVertexBuffer().getHandle(), &size);
+				if (m_vertexBuffers[i]->isIndexed()) {
+					vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffers[i]->getIndexBuffer().getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
+				}
+
+				if (m_descriptorCount > 0) {
+					vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0,
+						static_cast<uint32_t>(m_descriptorSets.size()), m_descriptorSets.data(),
+						0, {});
+				}
+
+				vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
+
+				for (uint32_t i = 0; i < m_constants.size(); i++) {
+					m_constants[i].constant->push(buffer.getHandle(), *m_pipelineLayout, m_constants[i].stage);
+				}
+
+				if (m_vertexBuffers[i]->isIndexed()) {
+					uint32_t count = (uint32_t)m_vertexBuffers[i]->getIndicesNumber();
+
+					vkCmdDrawIndexed(buffer.getHandle(), count, 1, 0, 0, 0);
+				}
+				else {
+
+					uint32_t count = (uint32_t)m_vertexBuffers[i]->getVerticiesNumber();
+
+					vkCmdDraw(buffer.getHandle(), count, 1, 0, 0);
+				}
+
 			}
-
-			if (m_descriptorCount > 0) {
-				vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0,
-					static_cast<uint32_t>(m_descriptorSets.size()), m_descriptorSets.data(),
-					0, {});
-			}
-
-			vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
-
-			for (uint32_t i = 0; i < m_constants.size(); i++) {
-				m_constants[i].constant->push(buffer.getHandle(), *m_pipelineLayout, m_constants[i].stage);
-			}
-
-			if (m_vertexBuffer->isIndexed()) {
-				uint32_t count = (uint32_t)m_vertexBuffer->getIndicesNumber();
-				
-				vkCmdDrawIndexed(buffer.getHandle(), count, 1, 0, 0, 0);
-			}else{
-				
-				uint32_t count = (uint32_t)m_vertexBuffer->getVerticiesNumber();
-
-				vkCmdDraw(buffer.getHandle(), count, 1, 0, 0);
-			}
-			
 		}
 
 		void GraphicPipeline::SetCullMode(VkCullModeFlagBits cullMode) {
-			m_CullMode = cullMode;
+			m_cullMode = cullMode;
 		}
 
 		void GraphicPipeline::addPushContant(PushConstant* constant, VkShaderStageFlags flag) {

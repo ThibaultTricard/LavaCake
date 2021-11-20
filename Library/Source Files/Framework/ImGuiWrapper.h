@@ -40,11 +40,8 @@ namespace LavaCake {
      \param queue : a pointer to the queue that will be used to copy data to the Buffer
      \param cmdBuff : the command buffer used for this operation, must not be in a recording state
      */
-    void prepareGui(Queue* queue, CommandBuffer& cmdBuff){
-      prepareGui(queue, &cmdBuff);
-    }
+    void prepareGui(Queue* queue, CommandBuffer& cmdBuff);
 
-    void prepareGui(Queue* queue, CommandBuffer* cmdBuff);
 
     /**
      \brief Return the graphic pipelin for the gui
@@ -76,6 +73,6 @@ namespace LavaCake {
     static GLFWkeyfun           s_PrevUserCallbackKey = NULL;
     static GLFWcharfun          s_PrevUserCallbackChar = NULL;
     static GLFWcursorposfun     s_PrevUserCallbackMouseMotion = NULL;
-    void prepareImput(GLFWwindow* window); 
+    void prepareInput(GLFWwindow* window); 
 	}
 }
