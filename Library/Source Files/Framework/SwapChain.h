@@ -131,17 +131,12 @@ namespace LavaCake {
 				return *m_handle;
 			}
 
-
-			std::vector<VkImage>& getImages() {
-				return m_images;
-			}
-
 			void init(
-				VkImageUsageFlags													swapchain_image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-				bool																			use_depth = true,
-				VkImageUsageFlags													depth_attachment_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+				VkImageUsageFlags													swapchain_image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
 			);
 
+      void resize();
+      
 			VkFormat imageFormat() {
 				return m_format;
 			}
@@ -149,7 +144,6 @@ namespace LavaCake {
 			VkFormat depthFormat() {
 				return m_depthFormat;
 			}
-			
 			
 			VkExtent2D size() {
 				return m_size;
@@ -199,12 +193,13 @@ namespace LavaCake {
       
 		private :
 
-			
 			VkDestroyer(VkSwapchainKHR)								m_handle;
 			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
 			const VkFormat														m_depthFormat = VK_FORMAT_D16_UNORM;
 			VkExtent2D																m_size = {uint32_t(0), uint32_t(0)};
 
+      VkImageUsageFlags                         m_swapchainImageUsage;
+      
 			std::vector<SwapChainImage*>							m_swapchainImages;
 
 			std::vector<VkImage>											m_images;

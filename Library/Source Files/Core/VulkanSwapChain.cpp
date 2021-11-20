@@ -95,7 +95,7 @@ namespace LavaCake {
 			result = vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, presentation_surface, &formats_count, nullptr);
 			if ((VK_SUCCESS != result) ||
 				(0 == formats_count)) {
-				std::cout << "Could not get the number of supported surface formats." << std::endl;
+				//std::cout << "Could not get the number of supported surface formats." << std::endl;
 				return false;
 			}
 
@@ -103,7 +103,7 @@ namespace LavaCake {
 			result = vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, presentation_surface, &formats_count, surface_formats.data());
 			if ((VK_SUCCESS != result) ||
 				(0 == formats_count)) {
-				std::cout << "Could not enumerate supported surface formats." << std::endl;
+				//std::cout << "Could not enumerate supported surface formats." << std::endl;
 				return false;
 			}
 
@@ -128,14 +128,14 @@ namespace LavaCake {
 				if (desired_surface_format.format == surface_format.format) {
 					image_format = desired_surface_format.format;
 					image_color_space = surface_format.colorSpace;
-					std::cout << "Desired combination of format and colorspace is not supported. Selecting other colorspace." << std::endl;
+					//std::cout << "Desired combination of format and colorspace is not supported. Selecting other colorspace." << std::endl;
 					return true;
 				}
 			}
 
 			image_format = surface_formats[0].format;
 			image_color_space = surface_formats[0].colorSpace;
-			std::cout << "Desired format is not supported. Selecting available format - colorspace combination." << std::endl;
+			//std::cout << "Desired format is not supported. Selecting available format - colorspace combination." << std::endl;
 			return true;
 		}
 
@@ -173,7 +173,7 @@ namespace LavaCake {
 			VkResult result = vkCreateSwapchainKHR(logical_device, &swapchain_create_info, nullptr, &swapchain);
 			if ((VK_SUCCESS != result) ||
 				(VK_NULL_HANDLE == swapchain)) {
-				std::cout << "Could not create a swapchain." << std::endl;
+				//std::cout << "Could not create a swapchain." << std::endl;
 				return false;
 			}
 
@@ -194,7 +194,7 @@ namespace LavaCake {
 			result = vkGetSwapchainImagesKHR(logical_device, swapchain, &images_count, nullptr);
 			if ((VK_SUCCESS != result) ||
 				(0 == images_count)) {
-				std::cout << "Could not get the number of swapchain images." << std::endl;
+				//std::cout << "Could not get the number of swapchain images." << std::endl;
 				return false;
 			}
 
@@ -202,68 +202,13 @@ namespace LavaCake {
 			result = vkGetSwapchainImagesKHR(logical_device, swapchain, &images_count, swapchain_images.data());
 			if ((VK_SUCCESS != result) ||
 				(0 == images_count)) {
-				std::cout << "Could not enumerate swapchain images." << std::endl;
+				//std::cout << "Could not enumerate swapchain images." << std::endl;
 				return false;
 			}
 
 			return true;
 		}
 
-		bool CreateSwapchainWithR8G8B8A8FormatAndMailboxPresentMode(VkPhysicalDevice       physical_device,
-			VkSurfaceKHR           presentation_surface,
-			VkDevice               logical_device,
-			VkImageUsageFlags      swapchain_image_usage,
-			VkExtent2D           & image_size,
-			VkFormat             & image_format,
-			VkSwapchainKHR       & old_swapchain,
-			VkSwapchainKHR       & swapchain,
-			std::vector<VkImage> & swapchain_images) {
-			VkPresentModeKHR desired_present_mode;
-			if (!SelectDesiredPresentationMode(physical_device, presentation_surface, VK_PRESENT_MODE_MAILBOX_KHR, desired_present_mode)) {
-				return false;
-			}
-
-			VkSurfaceCapabilitiesKHR surface_capabilities;
-			if (!GetCapabilitiesOfPresentationSurface(physical_device, presentation_surface, surface_capabilities)) {
-				return false;
-			}
-
-			uint32_t number_of_images;
-			if (!SelectNumberOfSwapchainImages(surface_capabilities, number_of_images)) {
-				return false;
-			}
-
-			if (!ChooseSizeOfSwapchainImages(surface_capabilities, image_size)) {
-				return false;
-			}
-			if ((0 == image_size.width) ||
-				(0 == image_size.height)) {
-				return true;
-			}
-
-			VkImageUsageFlags image_usage;
-			if (!SelectDesiredUsageScenariosOfSwapchainImages(surface_capabilities, swapchain_image_usage, image_usage)) {
-				return false;
-			}
-
-			VkSurfaceTransformFlagBitsKHR surface_transform;
-			SelectTransformationOfSwapchainImages(surface_capabilities, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR, surface_transform);
-
-			VkColorSpaceKHR image_color_space;
-			if (!SelectFormatOfSwapchainImages(physical_device, presentation_surface, { VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR }, image_format, image_color_space)) {
-				return false;
-			}
-
-			if (!CreateSwapchain(logical_device, presentation_surface, number_of_images, { image_format, image_color_space }, image_size, image_usage, surface_transform, desired_present_mode, old_swapchain, swapchain)) {
-				return false;
-			}
-
-			if (!GetHandlesOfSwapchainImages(logical_device, swapchain, swapchain_images)) {
-				return false;
-			}
-			return true;
-		}
-
+		
 	}
-
 }

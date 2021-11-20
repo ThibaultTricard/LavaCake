@@ -188,7 +188,7 @@ namespace LavaCake {
 #elif defined __linux
 				dlclose(vulkan_library);
 #elif defined __APPLE__
-                dlclose(vulkan_library);
+        dlclose(vulkan_library);
 #endif
 				vulkan_library = nullptr;
 			}
