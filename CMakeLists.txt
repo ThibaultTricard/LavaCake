@@ -260,25 +260,6 @@ set(LIBRARY_GEOMETRY_SOURCE
 source_group( "Library\\Geometry\\Header" FILES ${LIBRARY_GEOMETRY_HEADER} )
 source_group( "Library\\Geometry\\Source" FILES ${LIBRARY_GEOMETRY_SOURCE} )
 
-set(LIBRARY_PHASOR_DIR "Library/Source Files/Phasor")
-
-set(LIBRARY_PHASOR_HEADER 
-	${LIBRARY_PHASOR_DIR}/Phasor2D.h
-	${LIBRARY_PHASOR_DIR}/Phasor3D.h
-)
-
-
-set(LIBRARY_PHASOR_SOURCE 
-	${LIBRARY_PHASOR_DIR}/Phasor2D.cpp
-	${LIBRARY_PHASOR_DIR}/Phasor3D.cpp
-  ${LIBRARY_PHASOR_DIR}/shaders/samplingModule2D.comp
-  ${LIBRARY_PHASOR_DIR}/shaders/samplingModule3D.comp
-  ${LIBRARY_PHASOR_DIR}/shaders/optimisationModule2D.comp
-  ${LIBRARY_PHASOR_DIR}/shaders/optimisationModule3D.comp
-)
-
-source_group( "Library\\Phasor\\Header" FILES ${LIBRARY_PHASOR_HEADER} )
-source_group( "Library\\Phasor\\Source" FILES ${LIBRARY_PHASOR_SOURCE} )
 
 set(LIBRARY_MATH_DIR "Library/Source Files/Math")
 
@@ -323,30 +304,12 @@ ${LIBRARY_MATH_HEADER} ${LIBRARY_MATH_SOURCE}
 ${LIBRARY_FRAMEWORK_HEADER} ${LIBRARY_FRAMEWORK_SOURCE} 
 ${LIBRARY_RAYTRACING_HEADER} ${LIBRARY_RAYTRACING_SOURCE} 
 ${LIBRARY_GEOMETRY_HEADER} ${LIBRARY_GEOMETRY_SOURCE} 
-${LIBRARY_PHASOR_HEADER} ${LIBRARY_PHASOR_SOURCE} 
 ${IMGUI_SOURCE})
 target_link_libraries( LavaCake ${PLATFORM_LIBRARY} ${Vulkan_LIBRARY} glfw )
 target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS})
 
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/LavacakeShaders")
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/LavacakeShaders/Phasor")
-
-addShader(
-"${CMAKE_CURRENT_LIST_DIR}/Library/Source Files/Phasor/Shaders/optimisationModule2D.comp"
-"${CMAKE_BINARY_DIR}/LavacakeShaders/Phasor/optimisationModule2D.comp.spv"
-)
-addShader(
-"${CMAKE_CURRENT_LIST_DIR}/Library/Source Files/Phasor/Shaders/optimisationModule3D.comp"
-"${CMAKE_BINARY_DIR}/LavacakeShaders/Phasor/optimisationModule3D.comp.spv"
-)
-addShader(
-"${CMAKE_CURRENT_LIST_DIR}/Library/Source Files/Phasor/Shaders/samplingModule3D.comp"
-"${CMAKE_BINARY_DIR}/LavacakeShaders/Phasor/samplingModule3D.comp.spv"
-)
-addShader(
-"${CMAKE_CURRENT_LIST_DIR}/Library/Source Files/Phasor/Shaders/samplingModule2D.comp"
-"${CMAKE_BINARY_DIR}/LavacakeShaders/Phasor/samplingModule2D.comp.spv"
-)
 
 AutoSPIRV(LavaCake)
 
