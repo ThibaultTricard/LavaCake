@@ -308,11 +308,6 @@ ${IMGUI_SOURCE})
 target_link_libraries( LavaCake ${PLATFORM_LIBRARY} ${Vulkan_LIBRARY} glfw )
 target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS})
 
-file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/LavacakeShaders")
-file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/LavacakeShaders/Phasor")
-
-AutoSPIRV(LavaCake)
-
 if(RAYQUERY)
 		message("Ray query is not implemented yet")
 endif()
