@@ -18,14 +18,14 @@ namespace LavaCake {
 
       template<typename T>
       void addVariable(std::string name, T value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+        std::vector<char> v = std::vector<char>(sizeof(value) / sizeof(char));
         std::memcpy(&v[0], &value, sizeof(value));
         addArray(name, v);
       }
 
       template<typename T>
       void setVariable(std::string name, T value) {
-        std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
+        std::vector<char> v = std::vector<char>(sizeof(value) / sizeof(char));
         std::memcpy(&v[0], &value, sizeof(value));
         setArray(name, v);
       }
@@ -46,17 +46,17 @@ namespace LavaCake {
 
 			void copyToStageMemory(bool all = false);
 
-			void addArray(std::string name, std::vector<int>& value);
+			void addArray(std::string name, std::vector<char>& value);
 
-			void setArray(std::string name, std::vector<int>& value);
+			void setArray(std::string name, std::vector<char>& value);
 
 
       Buffer                                                    m_buffer;
       Buffer                                                    m_stagingBuffer;
 
       VkDeviceSize                                              m_bufferSize = 0;
-      std::map<std::string, int>                                m_variableNames;
-      std::vector<std::vector<int>>                             m_variables;
+      std::map<std::string, uint32_t>                           m_variableNames;
+      std::vector<std::vector<char>>                            m_variables;
       std::vector<bool>                                         m_modified;
       std::vector<std::pair<VkDeviceSize, VkDeviceSize>>        m_typeSizeOffset ;
     };

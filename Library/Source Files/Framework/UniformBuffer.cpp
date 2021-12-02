@@ -23,7 +23,7 @@ namespace LavaCake {
       VkDeviceSize padding = p->limits.nonCoherentAtomSize - m_bufferSize % p->limits.nonCoherentAtomSize;
       
       //adding empty value at the end of the buffer to match the atomic size of a buffer;
-      m_variables.push_back(std::vector<int>(padding/ sizeof(int), 0));
+      m_variables.push_back(std::vector<char>(padding/ sizeof(char), 0));
       m_typeSizeOffset.push_back(std::pair<VkDeviceSize, VkDeviceSize>(padding, m_bufferSize));
       m_bufferSize+=padding;
       
@@ -64,7 +64,7 @@ namespace LavaCake {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
-			std::vector<int> variable;
+			std::vector<char> variable;
 			VkDeviceSize size = 0;
 			for (uint32_t i = 0; i < m_variables.size(); i++) {
 				size += m_typeSizeOffset[i].first;
@@ -77,23 +77,23 @@ namespace LavaCake {
 			m_stagingBuffer.write(variable);
 		}
 
-		void UniformBuffer::addArray(std::string name, std::vector<int>& value) {
+		void UniformBuffer::addArray(std::string name, std::vector<char>& value) {
 			if (m_variableNames.find(name) != m_variableNames.end()) {
 				ErrorCheck::setError((char*)"The variable allready exist in this UniformBuffer");
 				return;
 			}
-			int i = int(m_variables.size());
+      uint32_t i = m_variables.size();
 			m_variables.push_back(value);
-			m_variableNames.insert(std::pair<std::string, int>(name, i));
+			m_variableNames.insert(std::pair<std::string, uint32_t>(name, i));
 		}
 
-		void UniformBuffer::setArray(std::string name, std::vector<int>& value) {
+		void UniformBuffer::setArray(std::string name, std::vector<char>& value) {
 			if (m_variableNames.find(name) == m_variableNames.end()) {
 				ErrorCheck::setError((char*)"The variable does not exist in this UniformBuffer");
 				return;
 			}
-			int i = m_variableNames[name];
-			std::vector<int> v = m_variables[i];
+      uint32_t i = m_variableNames[name];
+			std::vector<char> v = m_variables[i];
 			if (v.size() != value.size()) {
 				ErrorCheck::setError((char*)"The new value does not match the type of the one currently stored in this UniformBuffer");
 				return;
