@@ -249,7 +249,7 @@ namespace LavaCake {
       m_pushConstant->addVariable("uScale", scale);
       m_pushConstant->addVariable("uTranslate", translate);
 
-      std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv)/sizeof(unsigned char));
+      std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv) / sizeof(unsigned char));
       memcpy(&vertSpirv[0], __glsl_shader_vert_spv, sizeof(__glsl_shader_vert_spv));
       std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
       memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));

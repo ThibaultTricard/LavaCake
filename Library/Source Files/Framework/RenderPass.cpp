@@ -356,9 +356,27 @@ namespace LavaCake {
 				
 			}
 			if (m_khr_attachement == -1) {
-				if (!LavaCake::Core::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
+				/*if (!LavaCake::Core::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
 					ErrorCheck::setError((char*)"Can't create this FrameBuffer");
-				}
+				}*/
+        
+        VkFramebufferCreateInfo framebuffer_create_info = {
+          VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,                 // VkStructureType              sType
+          nullptr,                                                   // const void                 * pNext
+          0,                                                         // VkFramebufferCreateFlags     flags
+          *m_renderPass,                                             // VkRenderPass                 renderPass
+          static_cast<uint32_t>(frameBuffer.m_imageViews.size()),    // uint32_t                     attachmentCount
+          frameBuffer.m_imageViews.data(),                           // const VkImageView          * pAttachments
+          frameBuffer.m_width,                                       // uint32_t                     width
+          frameBuffer.m_height,                                      // uint32_t                     height
+          1                                                          // uint32_t                     layers
+        };
+        
+        VkResult result = vkCreateFramebuffer(logical, &framebuffer_create_info, nullptr, &(*frameBuffer.m_frameBuffer));
+        if (VK_SUCCESS != result) {
+          ErrorCheck::setError((char*) "Could not create a framebuffer.");
+        }
+        
 			}
 		}
 
@@ -375,9 +393,24 @@ namespace LavaCake {
 				frameBuffer.m_images[m_khr_attachement] = image.getImage();
 				frameBuffer.m_imageViews[m_khr_attachement] = image.getView();
 				frameBuffer.m_swapChainImageIndex = m_khr_attachement;
-				if (!LavaCake::Core::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
-					ErrorCheck::setError((char*)"Can't create this FrameBuffer");
-				}
+				
+        
+        VkFramebufferCreateInfo framebuffer_create_info = {
+          VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,                 // VkStructureType              sType
+          nullptr,                                                   // const void                 * pNext
+          0,                                                         // VkFramebufferCreateFlags     flags
+          *m_renderPass,                                             // VkRenderPass                 renderPass
+          static_cast<uint32_t>(frameBuffer.m_imageViews.size()),    // uint32_t                     attachmentCount
+          frameBuffer.m_imageViews.data(),                           // const VkImageView          * pAttachments
+          frameBuffer.m_width,                                       // uint32_t                     width
+          frameBuffer.m_height,                                      // uint32_t                     height
+          1                                                          // uint32_t                     layers
+        };
+        
+        VkResult result = vkCreateFramebuffer(logical, &framebuffer_create_info, nullptr, &(*frameBuffer.m_frameBuffer));
+        if (VK_SUCCESS != result) {
+          ErrorCheck::setError((char*) "Could not create a framebuffer.");
+        }
 			}
 		}
 	}
