@@ -30,10 +30,10 @@ macro(AutoSPIRV TARGET_NAME)
 
 			set(OUTPUT_FILE ${val2})
 
-			if ( APPLE )
-				set(COMMANDS glslc ${val1} -g -o  ${val2} --target-spv=spv1.3)
-			else()
+			if ( RAYTRACING )
 				set(COMMANDS glslc ${val1} -g -o  ${val2} --target-spv=spv1.4)
+			else()
+				set(COMMANDS glslc ${val1} -g -o  ${val2} --target-spv=spv1.3)
 			endif()
 			
 			add_custom_command(
