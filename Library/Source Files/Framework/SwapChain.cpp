@@ -50,7 +50,7 @@ namespace LavaCake {
         }
       }
       if(!found){
-        ErrorCheck::setError((char*) "Desired present mode is not supported. Selecting default FIFO mode.");
+        ErrorCheck::setError((char*) "Desired present mode is not supported. Selecting default FIFO mode.", 1);
         for (auto & current_present_mode : present_modes) {
           if (current_present_mode == VK_PRESENT_MODE_FIFO_KHR) {
             present_mode = VK_PRESENT_MODE_FIFO_KHR;
@@ -133,7 +133,6 @@ namespace LavaCake {
       if ((VK_SUCCESS != result) ||
           (0 == formats_count)) {
         ErrorCheck::setError((char*)"Could not get the number of supported surface formats.");
-        return false;
       }
         
       std::vector<VkSurfaceFormatKHR> surface_formats(formats_count);
@@ -141,7 +140,6 @@ namespace LavaCake {
       if ((VK_SUCCESS != result) ||
           (0 == formats_count)) {
         ErrorCheck::setError((char*)"Could not enumerate supported surface formats.");
-        return false;
       }
       
       // Select surface format
@@ -168,7 +166,7 @@ namespace LavaCake {
           if (desired_surface_format.format == surface_format.format) {
             m_format = desired_surface_format.format;
             image_color_space = surface_format.colorSpace;
-            ErrorCheck::setError((char*)"Desired combination of format and colorspace is not supported. Selecting other colorspace.");
+            ErrorCheck::setError((char*)"Desired combination of format and colorspace is not supported. Selecting other colorspace.", 1);
             found = true;
           }
         }
@@ -177,7 +175,7 @@ namespace LavaCake {
       if(!found){
         m_format = surface_formats[0].format;
         image_color_space = surface_formats[0].colorSpace;
-        ErrorCheck::setError((char*)"Desired format is not supported. Selecting available format - colorspace combination.");
+        ErrorCheck::setError((char*)"Desired format is not supported. Selecting available format - colorspace combination.",1);
       }
       
       //======================== Creating SwapChain
