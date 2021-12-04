@@ -18,7 +18,7 @@
 //
 // Vulkan Cookbook
 // ISBN: 9781786468154
-// © Packt Publishing Limited
+// ï¿½ Packt Publishing Limited
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
@@ -34,11 +34,7 @@
 
 namespace LavaCake {
 	namespace Core {
-		struct PresentInfo {
-			VkSwapchainKHR  Swapchain;
-			uint32_t        ImageIndex;
-		};
-
+	
 		bool CreatePresentationSurface(VkInstance         instance,
 			WindowParameters   window_parameters,
 			VkSurfaceKHR     & presentation_surface);
@@ -47,23 +43,10 @@ namespace LavaCake {
 			VkSurfaceKHR       presentation_surface,
 			uint32_t         & queue_family_index);
 
-		bool SelectDesiredPresentationMode(VkPhysicalDevice   physical_device,
-			VkSurfaceKHR       presentation_surface,
-			VkPresentModeKHR   desired_present_mode,
-			VkPresentModeKHR & present_mode);
-
-		bool GetCapabilitiesOfPresentationSurface(VkPhysicalDevice           physical_device,
-			VkSurfaceKHR               presentation_surface,
-			VkSurfaceCapabilitiesKHR & surface_capabilities);
-
-		bool PresentImage(VkQueue                  queue,
-			std::vector<VkSemaphore> rendering_semaphores,
-			std::vector<PresentInfo> images_to_present);
-
 		void DestroyPresentationSurface(VkInstance     instance,
 			VkSurfaceKHR & presentation_surface);
 
 	}
 } // namespace LavaCake
 
-#endif // CREATING_A_VULKAN_INSTANCE_WITH_WSI_EXTENSIONS_ENABLED
+#endif 

@@ -153,7 +153,6 @@ ${LIBRARY_CORE_DIR}/VulkanLoader.h
 ${LIBRARY_CORE_DIR}/VulkanPresentation.h
 ${LIBRARY_CORE_DIR}/VulkanQueue.h
 ${LIBRARY_CORE_DIR}/VulkanSemaphore.h
-${LIBRARY_CORE_DIR}/VulkanSwapChain.h
 ${LIBRARY_CORE_DIR}/VulkanViewport.h
 )
 
@@ -167,7 +166,6 @@ ${LIBRARY_CORE_DIR}/VulkanInstance.cpp
 ${LIBRARY_CORE_DIR}/VulkanLoader.cpp
 ${LIBRARY_CORE_DIR}/VulkanPresentation.cpp
 ${LIBRARY_CORE_DIR}/VulkanQueue.cpp
-${LIBRARY_CORE_DIR}/VulkanSwapChain.cpp
 )
 
 
