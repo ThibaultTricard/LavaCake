@@ -228,8 +228,8 @@ namespace LavaCake {
 						{																								// std::vector<VkDescriptorBufferInfo>  BufferInfos
 							{
 								VK_NULL_HANDLE,															// vkSampler                            buffer
-								m_attachments[i].a->getImageView(),					// VkImageView                          offset
-								m_attachments[i].a->getLayout()							// VkImageLayout                         range
+								m_attachments[i].a->getImage()->getImageView(),					// VkImageView                          offset
+								m_attachments[i].a->getImage()->getLayout()							// VkImageLayout                         range
 							}
 						}
 					});

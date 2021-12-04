@@ -201,15 +201,15 @@ namespace LavaCake {
 		};
 
 		VkImageView& FrameBuffer::getImageViews(uint8_t i) {
-			return m_imageViews[i];
+			return m_images[i]->getImageView();
 		}
 
 		size_t FrameBuffer::getImageViewSize(){
-			return m_imageViews.size();
+			return m_images.size();
 		}
 
 		VkImageLayout& FrameBuffer::getLayout(uint8_t i){
-			return m_layouts[i];
+			return m_images[i]->getLayout();
 		}
 
 		VkSampler&	FrameBuffer::getSampler() {
@@ -336,8 +336,6 @@ namespace LavaCake {
 			Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 
-
-
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 
 			VkImageUsageFlagBits usage;
@@ -353,20 +351,10 @@ namespace LavaCake {
 
 			m_image->allocate((VkImageUsageFlagBits)(usage | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT));
 
-
 		}
 
-		VkImageLayout Attachment::getLayout() {
-			return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		}
-
-		VkImageView Attachment::getImageView() {
-			return m_image->getImageView();
-		}
-
-
-		VkImage Attachment::getImage() {
-			return m_image->getHandle();
+		Image* Attachment::getImage() {
+			return m_image;
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//																																			Storage Image																																			//

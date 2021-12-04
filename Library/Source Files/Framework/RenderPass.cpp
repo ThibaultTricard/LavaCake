@@ -299,8 +299,8 @@ namespace LavaCake {
 			VkImageLayout layout;
 			VkFormat format;
 			
-			frameBuffer.m_images = std::vector<VkImage>(m_attachmentype.size());
-			frameBuffer.m_imageViews = std::vector<VkImageView>(m_attachmentype.size());
+			frameBuffer.m_images = std::vector<Image*>(m_attachmentype.size());
+			//frameBuffer.m_imageViews = std::vector<VkImageView>(m_attachmentype.size());
 
 			int attachementIndex = 0;
 
@@ -321,7 +321,7 @@ namespace LavaCake {
 
 
 					frameBuffer.m_images[i] = m_inputAttachements[attachementIndex]->getImage();
-					frameBuffer.m_imageViews[i] = m_inputAttachements[attachementIndex]->getImageView();
+					//frameBuffer.m_imageViews[i] = m_inputAttachements[attachementIndex]->getImageView();
 
 					attachementIndex++;
 					continue;
@@ -340,33 +340,38 @@ namespace LavaCake {
 					aspect = VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM;
 					layout = VK_IMAGE_LAYOUT_UNDEFINED;
 				}
-				frameBuffer.m_layouts.push_back(layout);
+				//frameBuffer.m_layouts.push_back(layout);
 
 				if (i == m_khr_attachement) {
 					continue;
 				}
 
-				frameBuffer.m_images[i] = VkImage();
-				frameBuffer.m_imageViews[i] =  VkImageView();
+        
+				//frameBuffer.m_images[i] = VkImage();
+				//frameBuffer.m_imageViews[i] =  VkImageView();
 
 
-				if (!LavaCake::Core::CreateSampledImage(physical, logical, VK_IMAGE_TYPE_2D, format,{ (uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1 }, 1, 1, usage, false, VK_IMAGE_VIEW_TYPE_2D, aspect, linear_filtering, frameBuffer.m_images[i], *frameBuffer.m_imageMemory, frameBuffer.m_imageViews[i])) {
+				/*if (!LavaCake::Core::CreateSampledImage(physical, logical, VK_IMAGE_TYPE_2D, format,{ (uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1 }, 1, 1, usage, false, VK_IMAGE_VIEW_TYPE_2D, aspect, linear_filtering, frameBuffer.m_images[i], *frameBuffer.m_imageMemory, frameBuffer.m_imageViews[i])) {
 					ErrorCheck::setError((char*)"Can't create an image sampler for this FrameBuffer");
-				}
+				}*/
+        
+        frameBuffer.m_images[i] = new Image((uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1, format, aspect, false);
+        frameBuffer.m_images[i]->allocate(usage);
 				
 			}
 			if (m_khr_attachement == -1) {
-				/*if (!LavaCake::Core::CreateFramebuffer(logical, *m_renderPass, frameBuffer.m_imageViews, frameBuffer.m_width, frameBuffer.m_height, 1, *frameBuffer.m_frameBuffer)) {
-					ErrorCheck::setError((char*)"Can't create this FrameBuffer");
-				}*/
+        std::vector<VkImageView> imageViews{};
+        for(auto i : frameBuffer.m_images){
+          imageViews.push_back(i->getImageView());
+        }
         
         VkFramebufferCreateInfo framebuffer_create_info = {
           VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,                 // VkStructureType              sType
           nullptr,                                                   // const void                 * pNext
           0,                                                         // VkFramebufferCreateFlags     flags
           *m_renderPass,                                             // VkRenderPass                 renderPass
-          static_cast<uint32_t>(frameBuffer.m_imageViews.size()),    // uint32_t                     attachmentCount
-          frameBuffer.m_imageViews.data(),                           // const VkImageView          * pAttachments
+          static_cast<uint32_t>(imageViews.size()),    // uint32_t                     attachmentCount
+          imageViews.data(),                           // const VkImageView          * pAttachments
           frameBuffer.m_width,                                       // uint32_t                     width
           frameBuffer.m_height,                                      // uint32_t                     height
           1                                                          // uint32_t                     layers
@@ -382,7 +387,15 @@ namespace LavaCake {
 
 		void RenderPass::setSwapChainImage(FrameBuffer& frameBuffer, SwapChainImage& image) {
 			if (m_khr_attachement != -1) {
-				
+        std::vector<VkImageView> imageViews{};
+        for(auto i : frameBuffer.m_images){
+          if(i!= nullptr){
+            imageViews.push_back(i->getImageView());
+          }
+          else{
+            imageViews.push_back(VK_NULL_HANDLE);
+          }
+        }
 				
 				Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
@@ -390,18 +403,15 @@ namespace LavaCake {
 					vkDestroyFramebuffer(logical, *frameBuffer.m_frameBuffer, nullptr);
 					*frameBuffer.m_frameBuffer = VK_NULL_HANDLE;
 				}
-				frameBuffer.m_images[m_khr_attachement] = image.getImage();
-				frameBuffer.m_imageViews[m_khr_attachement] = image.getView();
-				frameBuffer.m_swapChainImageIndex = m_khr_attachement;
-				
+        imageViews[m_khr_attachement] = image.getView();
         
         VkFramebufferCreateInfo framebuffer_create_info = {
           VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,                 // VkStructureType              sType
           nullptr,                                                   // const void                 * pNext
           0,                                                         // VkFramebufferCreateFlags     flags
           *m_renderPass,                                             // VkRenderPass                 renderPass
-          static_cast<uint32_t>(frameBuffer.m_imageViews.size()),    // uint32_t                     attachmentCount
-          frameBuffer.m_imageViews.data(),                           // const VkImageView          * pAttachments
+          static_cast<uint32_t>(imageViews.size()),    // uint32_t                     attachmentCount
+          imageViews.data(),                           // const VkImageView          * pAttachments
           frameBuffer.m_width,                                       // uint32_t                     width
           frameBuffer.m_height,                                      // uint32_t                     height
           1                                                          // uint32_t                     layers

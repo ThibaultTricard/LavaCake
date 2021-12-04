@@ -233,14 +233,8 @@ namespace LavaCake {
 
 				for (uint32_t i = 0; i < m_images.size(); i++) {
 					if (i != m_swapChainImageIndex) {
-						if (VK_NULL_HANDLE != m_images[i]) {
-							vkDestroyImage(logical, m_images[i], nullptr);
-							m_images[i] = VK_NULL_HANDLE;
-						}
-
-						if (VK_NULL_HANDLE != m_imageViews[i]) {
-							vkDestroyImageView(logical, m_imageViews[i], nullptr);
-							m_imageViews[i] = VK_NULL_HANDLE;
+						if (m_images[i] != nullptr) {
+              delete m_images[i];
 						}
 					}
 				}
@@ -269,9 +263,12 @@ namespace LavaCake {
 			VkDestroyer(VkFramebuffer)															m_frameBuffer;
 			VkDestroyer(VkSampler)																	m_sampler;
 			VkDestroyer(VkDeviceMemory)															m_imageMemory;
-			std::vector<VkImage>																		m_images;
+			/*std::vector<VkImage>																	m_images;
 			std::vector<VkImageView>																m_imageViews;
 			std::vector<VkImageLayout>															m_layouts;
+      */
+      
+      std::vector<Image*>                                      m_images;
 
 			uint32_t																								m_swapChainImageIndex;
 			friend class RenderPass;
@@ -288,11 +285,7 @@ namespace LavaCake {
 
 			void allocate();
 
-			virtual VkImageLayout getLayout();
-
-			VkImageView getImageView();
-
-			VkImage getImage();
+			Image* getImage();
 
 			~Attachment() {
 				delete(m_image);

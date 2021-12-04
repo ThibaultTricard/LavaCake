@@ -18,7 +18,7 @@
 //
 // Vulkan Cookbook
 // ISBN: 9781786468154
-// © Packt Publishing Limited
+// ï¿½ Packt Publishing Limited
 //
 // Author:   Pawel Lapinski
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
@@ -75,23 +75,6 @@ namespace LavaCake {
 			VkFormat             format,
 			VkImageAspectFlags   aspect,
 			VkImageView        & image_view);
-
-
-		bool CreateSampledImage(VkPhysicalDevice    physical_device,
-			VkDevice            logical_device,
-			VkImageType         type,
-			VkFormat            format,
-			VkExtent3D          size,
-			uint32_t            num_mipmaps,
-			uint32_t            num_layers,
-			VkImageUsageFlags   usage,
-			bool                cubemap,
-			VkImageViewType     view_type,
-			VkImageAspectFlags  aspect,
-			bool                linear_filtering,
-			VkImage           & sampled_image,
-			VkDeviceMemory    & memory_object,
-			VkImageView       & sampled_image_view);
 
 		
 	}

@@ -52,7 +52,6 @@ namespace LavaCake {
 			char const * const          application_name,
 			VkInstance                & instance);
 
-
 	}
 }
 
