@@ -6,7 +6,6 @@
 #include "Tools.h"
 #include "ErrorCheck.h"
 #include "Device.h"
-#include "VulkanDestroyer.h"
 
 
 namespace LavaCake {

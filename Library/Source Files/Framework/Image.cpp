@@ -18,9 +18,6 @@ namespace LavaCake {
       Framework::Device* d = LavaCake::Framework::Device::getDevice();
       VkDevice logical = d->getLogicalDevice();
 
-      InitVkDestroyer(logical, m_image);
-      InitVkDestroyer(logical, m_imageMemory);
-      InitVkDestroyer(logical, m_imageView);
       VkPhysicalDevice physical = d->getPhysicalDevice();
 
       VkImageType type = VK_IMAGE_TYPE_1D;
@@ -29,15 +26,15 @@ namespace LavaCake {
       if (m_depth > 1) { type = VK_IMAGE_TYPE_3D; view = VK_IMAGE_VIEW_TYPE_3D; }
 			if (m_cubemap) { type = VK_IMAGE_TYPE_2D; view = VK_IMAGE_VIEW_TYPE_CUBE; }
 
-      if (!LavaCake::Core::CreateImage(logical, type, m_format, { m_width, m_height, m_depth }, 1, 1, VK_SAMPLE_COUNT_1_BIT, usage, m_cubemap, *m_image)) {
+      if (!LavaCake::Core::CreateImage(logical, type, m_format, { m_width, m_height, m_depth }, 1, 1, VK_SAMPLE_COUNT_1_BIT, usage, m_cubemap, m_image)) {
         ErrorCheck::setError((char*)"Can't create Image");
       }
 
-      if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, *m_image, memPropertyFlag, *m_imageMemory)) {
+      if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, m_image, memPropertyFlag, m_imageMemory)) {
         ErrorCheck::setError((char*)"Can't allocate Image memory");
       }
 
-      if (!LavaCake::Core::CreateImageView(logical, *m_image, view, m_format, m_aspect, *m_imageView)) {
+      if (!LavaCake::Core::CreateImageView(logical, m_image, view, m_format, m_aspect, m_imageView)) {
         ErrorCheck::setError((char*)"Can't create Image View");
       }
 
@@ -48,13 +45,13 @@ namespace LavaCake {
     void Image::map() {
 			Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
-			vkMapMemory(logical, *m_imageMemory, 0, VK_WHOLE_SIZE, 0, &m_mappedMemory);
+			vkMapMemory(logical, m_imageMemory, 0, VK_WHOLE_SIZE, 0, &m_mappedMemory);
     }
 
 		void Image::unmap() {
 			Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
-			vkUnmapMemory(logical, *m_imageMemory);
+			vkUnmapMemory(logical, m_imageMemory);
 		}
 
 
@@ -65,7 +62,7 @@ namespace LavaCake {
 				imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 				imageMemoryBarrier.oldLayout = m_layout;
 				imageMemoryBarrier.newLayout = newLayout;
-				imageMemoryBarrier.image = *m_image;
+				imageMemoryBarrier.image = m_image;
 				imageMemoryBarrier.subresourceRange = subresourceRange;
 
 				// Source layouts (old)
@@ -180,25 +177,25 @@ namespace LavaCake {
 
 		void Image::copyToImage(CommandBuffer& cmdBuff, Image& image, std::vector<VkImageCopy> regions) {
 			if (regions.size() > 0) {
-				vkCmdCopyImage(cmdBuff.getHandle(), *m_image, m_layout, image.getHandle(), image.getLayout(), static_cast<uint32_t>(regions.size()), regions.data());
+				vkCmdCopyImage(cmdBuff.getHandle(), m_image, m_layout, image.getHandle(), image.getLayout(), static_cast<uint32_t>(regions.size()), regions.data());
 			}
 		}
 
 		void Image::copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, std::vector<VkBufferImageCopy> regions) {
 			if (regions.size() > 0) {
-				vkCmdCopyImageToBuffer(cmdBuff.getHandle(), *m_image, m_layout, buffer.getHandle(), static_cast<uint32_t>(regions.size()), regions.data());
+				vkCmdCopyImageToBuffer(cmdBuff.getHandle(), m_image, m_layout, buffer.getHandle(), static_cast<uint32_t>(regions.size()), regions.data());
 			}
 		}
 
 		VkImage& Image::getHandle() {
-			return *m_image;
+			return m_image;
 		}
 		VkDeviceMemory& Image::getImageMemory() {
-			return *m_imageMemory;
+			return m_imageMemory;
 		}
 
 		VkImageView& Image::getImageView() {
-			return *m_imageView;
+			return m_imageView;
 		}
 
 		VkImageLayout& Image::getLayout() {

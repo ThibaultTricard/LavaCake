@@ -1,7 +1,6 @@
 #pragma once
 
 #include "AllHeaders.h"
-#include "VulkanDestroyer.h"
 #include "Queue.h"
 #include "Device.h"
 #include "ErrorCheck.h"
@@ -86,9 +85,9 @@ namespace LavaCake {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 
-				if (VK_NULL_HANDLE != *m_sampler) {
-					vkDestroySampler(logical, *m_sampler, nullptr);
-					*m_sampler = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_sampler) {
+					vkDestroySampler(logical, m_sampler, nullptr);
+					m_sampler = VK_NULL_HANDLE;
 				}
 
 				delete(m_image);
@@ -104,7 +103,7 @@ namespace LavaCake {
 
 
 			
-			VkDestroyer(VkSampler)										m_sampler;
+			VkSampler             										m_sampler;
 
 
 			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
@@ -239,19 +238,19 @@ namespace LavaCake {
 					}
 				}
 
-				if (VK_NULL_HANDLE != *m_sampler) {
-					vkDestroySampler(logical, *m_sampler, nullptr);
-					*m_sampler = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_sampler) {
+					vkDestroySampler(logical, m_sampler, nullptr);
+					m_sampler = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_frameBuffer) {
-					vkDestroyFramebuffer(logical, *m_frameBuffer, nullptr);
-					*m_frameBuffer = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_frameBuffer) {
+					vkDestroyFramebuffer(logical, m_frameBuffer, nullptr);
+					m_frameBuffer = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_imageMemory) {
-					vkFreeMemory(logical, *m_imageMemory, nullptr);
-					*m_imageMemory = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_imageMemory) {
+					vkFreeMemory(logical, m_imageMemory, nullptr);
+					m_imageMemory = VK_NULL_HANDLE;
 				}
 			}
 
@@ -260,13 +259,10 @@ namespace LavaCake {
 			uint32_t																								m_width = 0;
 			uint32_t																								m_height = 0;
 
-			VkDestroyer(VkFramebuffer)															m_frameBuffer;
-			VkDestroyer(VkSampler)																	m_sampler;
-			VkDestroyer(VkDeviceMemory)															m_imageMemory;
-			/*std::vector<VkImage>																	m_images;
-			std::vector<VkImageView>																m_imageViews;
-			std::vector<VkImageLayout>															m_layouts;
-      */
+			VkFramebuffer															              m_frameBuffer = VK_NULL_HANDLE;
+			VkSampler																              	m_sampler = VK_NULL_HANDLE;
+			VkDeviceMemory            															m_imageMemory = VK_NULL_HANDLE;
+
       
       std::vector<Image*>                                      m_images;
 

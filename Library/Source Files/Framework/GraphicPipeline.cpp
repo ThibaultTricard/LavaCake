@@ -86,7 +86,6 @@ namespace LavaCake {
 			Device* d = Device::getDevice();
 			VkDevice& logical = d->getLogicalDevice();
 			generateDescriptorLayout();
-			InitVkDestroyer(logical, m_pipelineLayout);
 
 			std::vector<VkPushConstantRange> push_constant_ranges = {};
 			for (uint32_t i = 0; i < m_constants.size(); i++) {
@@ -99,7 +98,7 @@ namespace LavaCake {
 					});
 			}
 
-			if (!Pipeline::CreatePipelineLayout(logical, { *m_descriptorSetLayout }, push_constant_ranges, *m_pipelineLayout)) {
+			if (!Pipeline::CreatePipelineLayout(logical, { m_descriptorSetLayout }, push_constant_ranges, m_pipelineLayout)) {
 				ErrorCheck::setError((char*)"Can't create pipeline layout");
 			}
 
@@ -214,7 +213,7 @@ namespace LavaCake {
 				& m_depthStencilStateCreateInfo,														// const VkPipelineDepthStencilStateCreateInfo  * pDepthStencilState
 				& m_blendStateCreateInfo,                                   // const VkPipelineColorBlendStateCreateInfo    * pColorBlendState
 				& m_dynamicStateCreateInfo,                                 // const VkPipelineDynamicStateCreateInfo       * pDynamicState
-				* m_pipelineLayout,                                         // VkPipelineLayout                               layout
+        m_pipelineLayout,                                         // VkPipelineLayout                               layout
 				renderpass,																									// VkRenderPass                                   renderPass
 				m_subpassNumber,                                            // uint32_t                                       subpass
 				VK_NULL_HANDLE,																							// VkPipeline                                     basePipelineHandle
@@ -225,8 +224,7 @@ namespace LavaCake {
 			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
 				ErrorCheck::setError((char*)"Can't create Graphics piepeline");
 			}
-			InitVkDestroyer(logical, m_pipeline);
-			*m_pipeline = pipelines[0];
+			m_pipeline = pipelines[0];
 			m_compiled = true;
 		}
 
@@ -238,7 +236,7 @@ namespace LavaCake {
 			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
 				ErrorCheck::setError((char*)"Can't create Graphics piepeline");
 			}
-			*m_pipeline = pipelines[0];
+			m_pipeline = pipelines[0];
 		}
 
 		void GraphicPipeline::reloadShaders() {
@@ -312,15 +310,15 @@ namespace LavaCake {
 				}
 
 				if (m_descriptorCount > 0) {
-					vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipelineLayout, 0,
+					vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
 						static_cast<uint32_t>(m_descriptorSets.size()), m_descriptorSets.data(),
 						0, {});
 				}
 
-				vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, *m_pipeline);
+				vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
 				for (uint32_t i = 0; i < m_constants.size(); i++) {
-					m_constants[i].constant->push(buffer.getHandle(), *m_pipelineLayout, m_constants[i].stage);
+					m_constants[i].constant->push(buffer.getHandle(), m_pipelineLayout, m_constants[i].stage);
 				}
 
 				if (m_vertexBuffers[i]->isIndexed()) {

@@ -189,14 +189,13 @@ namespace LavaCake {
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 			VkDevice logicalDevice = d->getLogicalDevice();
 
-			InitVkDestroyer(logicalDevice, m_renderPass);
-			if (!CreateRenderPass(logicalDevice, m_attachmentDescriptions, m_subpassParameters, m_dependencies, *m_renderPass)) {
+			if (!CreateRenderPass(logicalDevice, m_attachmentDescriptions, m_subpassParameters, m_dependencies, m_renderPass)) {
 				ErrorCheck::setError((char*)"Can't compile RenderPass");
 			}
 
 			for (uint32_t i = 0; i < m_subpass.size(); i++) {
 				for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
-					m_subpass[i][j]->compile(*m_renderPass, (uint16_t)m_subpassParameters[i].ColorAttachments.size());
+					m_subpass[i][j]->compile(m_renderPass, (uint16_t)m_subpassParameters[i].ColorAttachments.size());
 				}
 			}
 
@@ -249,7 +248,7 @@ namespace LavaCake {
 			VkRenderPassBeginInfo renderPassBeginInfo = {
 				VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,																																														 // VkStructureType        sType
 				nullptr,																																																														 // const void           * pNext
-				* m_renderPass,																																																											 // VkRenderPass           renderPass
+        m_renderPass,																																																											 // VkRenderPass           renderPass
 				frameBuffer.getHandle(),																																																						 // VkFramebuffer          framebuffer
 				{ { 0, 0 },{uint32_t(viewportMax[0] - viewportMin[0]),uint32_t(viewportMax[1] - viewportMin[1])} },                                  // VkRect2D               renderArea
 				static_cast<uint32_t>(clear_values.size()),																																													 // uint32_t               clearValueCount
@@ -273,7 +272,7 @@ namespace LavaCake {
 
 
 		VkRenderPass& RenderPass::getHandle() {
-			return *m_renderPass;
+			return m_renderPass;
 		}
 
 		void RenderPass::prepareOutputFrameBuffer(FrameBuffer& frameBuffer) {
@@ -283,12 +282,10 @@ namespace LavaCake {
 			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 			
 
-			InitVkDestroyer(logical, frameBuffer.m_sampler);
-			InitVkDestroyer(logical, frameBuffer.m_imageMemory);
 		
 			if (!LavaCake::Core::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST,
 				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
-				0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, *frameBuffer.m_sampler)) {
+				0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, frameBuffer.m_sampler)) {
 				ErrorCheck::setError((char*)"Can't create an image sampler for this FrameBuffer");
 			}
 
@@ -369,7 +366,7 @@ namespace LavaCake {
           VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,                 // VkStructureType              sType
           nullptr,                                                   // const void                 * pNext
           0,                                                         // VkFramebufferCreateFlags     flags
-          *m_renderPass,                                             // VkRenderPass                 renderPass
+          m_renderPass,                                             // VkRenderPass                 renderPass
           static_cast<uint32_t>(imageViews.size()),    // uint32_t                     attachmentCount
           imageViews.data(),                           // const VkImageView          * pAttachments
           frameBuffer.m_width,                                       // uint32_t                     width
@@ -377,7 +374,7 @@ namespace LavaCake {
           1                                                          // uint32_t                     layers
         };
         
-        VkResult result = vkCreateFramebuffer(logical, &framebuffer_create_info, nullptr, &(*frameBuffer.m_frameBuffer));
+        VkResult result = vkCreateFramebuffer(logical, &framebuffer_create_info, nullptr, &frameBuffer.m_frameBuffer);
         if (VK_SUCCESS != result) {
           ErrorCheck::setError((char*) "Could not create a framebuffer.");
         }
@@ -399,9 +396,9 @@ namespace LavaCake {
 				
 				Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				if (VK_NULL_HANDLE != *frameBuffer.m_frameBuffer) {
-					vkDestroyFramebuffer(logical, *frameBuffer.m_frameBuffer, nullptr);
-					*frameBuffer.m_frameBuffer = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != frameBuffer.m_frameBuffer) {
+					vkDestroyFramebuffer(logical, frameBuffer.m_frameBuffer, nullptr);
+					frameBuffer.m_frameBuffer = VK_NULL_HANDLE;
 				}
         imageViews[m_khr_attachement] = image.getView();
         
@@ -409,7 +406,7 @@ namespace LavaCake {
           VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,                 // VkStructureType              sType
           nullptr,                                                   // const void                 * pNext
           0,                                                         // VkFramebufferCreateFlags     flags
-          *m_renderPass,                                             // VkRenderPass                 renderPass
+          m_renderPass,                                             // VkRenderPass                 renderPass
           static_cast<uint32_t>(imageViews.size()),    // uint32_t                     attachmentCount
           imageViews.data(),                           // const VkImageView          * pAttachments
           frameBuffer.m_width,                                       // uint32_t                     width
@@ -417,7 +414,7 @@ namespace LavaCake {
           1                                                          // uint32_t                     layers
         };
         
-        VkResult result = vkCreateFramebuffer(logical, &framebuffer_create_info, nullptr, &(*frameBuffer.m_frameBuffer));
+        VkResult result = vkCreateFramebuffer(logical, &framebuffer_create_info, nullptr, &frameBuffer.m_frameBuffer);
         if (VK_SUCCESS != result) {
           ErrorCheck::setError((char*) "Could not create a framebuffer.");
         }

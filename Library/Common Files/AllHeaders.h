@@ -31,7 +31,6 @@
 
 #ifndef ALL_HEADERS
 #define ALL_HEADERS
-
 #include "Core/VulkanBuffer.h"
 #include "Core/VulkanCommand.h"
 #include "Core/VulkanDescriptor.h"

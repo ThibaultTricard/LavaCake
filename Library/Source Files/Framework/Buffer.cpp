@@ -9,9 +9,9 @@ namespace LavaCake{
 		}
 
 		Buffer::Buffer(const Buffer& a) {
-			*m_buffer = *(a.m_buffer);
-			*m_bufferMemory = *(a.m_bufferMemory);
-			*m_bufferView = *(a.m_bufferView);
+			m_buffer = (a.m_buffer);
+			m_bufferMemory = (a.m_bufferMemory);
+			m_bufferView = (a.m_bufferView);
 
 			m_dataSize = a.m_dataSize;
 		}
@@ -30,19 +30,19 @@ namespace LavaCake{
 				memProp = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
 			}
 
-			if (VK_NULL_HANDLE != *m_buffer) {
-				vkDestroyBuffer(logical, *m_buffer, nullptr);
-				*m_buffer = VK_NULL_HANDLE;
+			if (VK_NULL_HANDLE != m_buffer) {
+				vkDestroyBuffer(logical, m_buffer, nullptr);
+				m_buffer = VK_NULL_HANDLE;
 			}
 
-			if (VK_NULL_HANDLE != *m_bufferView) {
-				vkDestroyBufferView(logical, *m_bufferView, nullptr);
-				*m_bufferView = VK_NULL_HANDLE;
+			if (VK_NULL_HANDLE != m_bufferView) {
+				vkDestroyBufferView(logical, m_bufferView, nullptr);
+				m_bufferView = VK_NULL_HANDLE;
 			}
 
-			if (VK_NULL_HANDLE != *m_bufferMemory) {
-				vkFreeMemory(logical, *m_bufferMemory, nullptr);
-				*m_bufferMemory = VK_NULL_HANDLE;
+			if (VK_NULL_HANDLE != m_bufferMemory) {
+				vkFreeMemory(logical, m_bufferMemory, nullptr);
+				m_bufferMemory = VK_NULL_HANDLE;
 			}
 
 
@@ -57,7 +57,7 @@ namespace LavaCake{
 			nullptr                                 // const uint32_t       * pQueueFamilyIndices
 			};
 
-			VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &*m_buffer);
+			VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &m_buffer);
 
 			if (result != VK_SUCCESS) {
 				ErrorCheck::setError((char*)"Can't create Buffer");
@@ -68,9 +68,9 @@ namespace LavaCake{
 			vkGetPhysicalDeviceMemoryProperties(physical, &physical_device_memory_properties);
 
 			VkMemoryRequirements memory_requirements;
-			vkGetBufferMemoryRequirements(logical, *m_buffer, &memory_requirements);
+			vkGetBufferMemoryRequirements(logical, m_buffer, &memory_requirements);
 
-			*m_bufferMemory = VK_NULL_HANDLE;
+			m_bufferMemory = VK_NULL_HANDLE;
 			for (uint32_t type = 0; type < physical_device_memory_properties.memoryTypeCount; ++type) {
 				if ((memory_requirements.memoryTypeBits & (1 << type)) &&
 					((physical_device_memory_properties.memoryTypes[type].propertyFlags & memPropertyFlag) == memPropertyFlag)) {
@@ -88,18 +88,18 @@ namespace LavaCake{
 						type                          // uint32_t           memoryTypeIndex
 					};
 
-					result = vkAllocateMemory(logical, &buffer_memory_allocate_info, nullptr, &*m_bufferMemory);
+					result = vkAllocateMemory(logical, &buffer_memory_allocate_info, nullptr, &m_bufferMemory);
 					if (VK_SUCCESS == result) {
 						break;
 					}
 				}
 			}
 
-			if (VK_NULL_HANDLE == *m_bufferMemory) {
+			if (VK_NULL_HANDLE == m_bufferMemory) {
 				ErrorCheck::setError((char*)"Could not allocate memory for a buffer.");
 			}
 
-			result = vkBindBufferMemory(logical, *m_buffer, *m_bufferMemory, 0);
+			result = vkBindBufferMemory(logical, m_buffer, m_bufferMemory, 0);
 			if (VK_SUCCESS != result) {
 				ErrorCheck::setError((char*)"Could not bind memory object to a buffer.");
 			}
@@ -109,13 +109,13 @@ namespace LavaCake{
 				VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO,    // VkStructureType            sType
 				nullptr,                                      // const void               * pNext
 				0,                                            // VkBufferViewCreateFlags    flags
-				*m_buffer,                                    // VkBuffer                   buffer
+				m_buffer,                                    // VkBuffer                   buffer
 				format,                                       // VkFormat                   format
 				0,																						// VkDeviceSize               offset
 				VK_WHOLE_SIZE                                 // VkDeviceSize               range
 				};
 
-				result = vkCreateBufferView(logical, &buffer_view_create_info, nullptr, &*m_bufferView);
+				result = vkCreateBufferView(logical, &buffer_view_create_info, nullptr, &m_bufferView);
 				if (VK_SUCCESS != result) {
 					ErrorCheck::setError((char*)"Could not creat buffer view.");
 				}
@@ -127,7 +127,7 @@ namespace LavaCake{
 
 			VkBufferMemoryBarrier bufferMemoryBarrier{};
 			bufferMemoryBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-			bufferMemoryBarrier.buffer = *m_buffer;
+			bufferMemoryBarrier.buffer = m_buffer;
 			bufferMemoryBarrier.srcAccessMask = m_access;
 			bufferMemoryBarrier.dstAccessMask = dstAccessMode;
 
@@ -155,33 +155,33 @@ namespace LavaCake{
 		}
 
 		VkBuffer& Buffer::getHandle() {
-			return *m_buffer;
+			return m_buffer;
 		}
 
 		VkBufferView& Buffer::getBufferView() {
-			return *m_bufferView;
+			return m_bufferView;
 		}
 
 		void Buffer::copyToImage(CommandBuffer& cmdBuff, Image& image, std::vector<VkBufferImageCopy> regions) {
 			if (regions.size() > 0) {
-				vkCmdCopyBufferToImage(cmdBuff.getHandle(), *m_buffer, image.getHandle(), image.getLayout(), static_cast<uint32_t>(regions.size()), regions.data());
+				vkCmdCopyBufferToImage(cmdBuff.getHandle(), m_buffer, image.getHandle(), image.getLayout(), static_cast<uint32_t>(regions.size()), regions.data());
 			}
 		}
 
 		void Buffer::copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, std::vector<VkBufferCopy> regions) {
 			if (regions.size() > 0) {
-				vkCmdCopyBuffer(cmdBuff.getHandle(), *m_buffer, buffer.getHandle(), static_cast<uint32_t>(regions.size()), regions.data());
+				vkCmdCopyBuffer(cmdBuff.getHandle(), m_buffer, buffer.getHandle(), static_cast<uint32_t>(regions.size()), regions.data());
 			}
 		}
 
 		VkDeviceMemory& Buffer::getMemory() {
-			return *m_bufferMemory;
+			return m_bufferMemory;
 		}
 
 		void* Buffer::map() {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
-			VkResult result = vkMapMemory(logical, *m_bufferMemory, 0, m_dataSize, 0, &m_mapped);
+			VkResult result = vkMapMemory(logical, m_bufferMemory, 0, m_dataSize, 0, &m_mapped);
 
 			if (VK_SUCCESS != result) {
 				//std::cout << "Could not map memory object." << std::endl;
@@ -194,7 +194,7 @@ namespace LavaCake{
 		void Buffer::unmap() {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
-			vkUnmapMemory(logical, *m_bufferMemory);
+			vkUnmapMemory(logical, m_bufferMemory);
 		}
 
 #ifdef RAYTRACING
@@ -203,7 +203,7 @@ namespace LavaCake{
 			Framework::Device* d = Framework::Device::getDevice();
 			VkBufferDeviceAddressInfoKHR bufferDeviceAI{};
 			bufferDeviceAI.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-			bufferDeviceAI.buffer = *m_buffer;
+			bufferDeviceAI.buffer = m_buffer;
 			return vkGetBufferDeviceAddressKHR(d->getLogicalDevice(), &bufferDeviceAI);
 		}
 #endif

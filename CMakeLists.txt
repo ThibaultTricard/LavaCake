@@ -112,7 +112,6 @@ set(LIBRARY_COMMON_HEADER_FILES
 ${LIBRARY_COMMON_DIR}/AllHeaders.h
 ${LIBRARY_COMMON_DIR}/Common.h
 ${LIBRARY_COMMON_DIR}/Tools.h
-${LIBRARY_COMMON_DIR}/VulkanDestroyer.h
 ${LIBRARY_COMMON_DIR}/VulkanFunctions.h
 ${LIBRARY_COMMON_DIR}/ListOfVulkanFunctions.inl
 )

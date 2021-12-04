@@ -55,19 +55,19 @@ namespace LavaCake {
 					memProp = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
 				}
 
-				if (VK_NULL_HANDLE != *m_buffer) {
-					vkDestroyBuffer(logical, *m_buffer, nullptr);
-					*m_buffer = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_buffer) {
+					vkDestroyBuffer(logical, m_buffer, nullptr);
+					m_buffer = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_bufferView) {
-					vkDestroyBufferView(logical, *m_bufferView, nullptr);
-					*m_bufferView = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_bufferView) {
+					vkDestroyBufferView(logical, m_bufferView, nullptr);
+					m_bufferView = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_bufferMemory) {
-					vkFreeMemory(logical, *m_bufferMemory, nullptr);
-					*m_bufferMemory = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_bufferMemory) {
+					vkFreeMemory(logical, m_bufferMemory, nullptr);
+					m_bufferMemory = VK_NULL_HANDLE;
 				}
 
 
@@ -82,7 +82,7 @@ namespace LavaCake {
 				nullptr                                 // const uint32_t       * pQueueFamilyIndices
 				};
 
-				VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &*m_buffer);
+				VkResult result = vkCreateBuffer(logical, &buffer_create_info, nullptr, &m_buffer);
 
 				if (result != VK_SUCCESS) {
 					ErrorCheck::setError((char*)"Can't create Buffer");
@@ -93,9 +93,9 @@ namespace LavaCake {
 				vkGetPhysicalDeviceMemoryProperties(physical, &physical_device_memory_properties);
 
 				VkMemoryRequirements memory_requirements;
-				vkGetBufferMemoryRequirements(logical, *m_buffer, &memory_requirements);
+				vkGetBufferMemoryRequirements(logical, m_buffer, &memory_requirements);
 
-				*m_bufferMemory = VK_NULL_HANDLE;
+				m_bufferMemory = VK_NULL_HANDLE;
 				for (uint32_t type = 0; type < physical_device_memory_properties.memoryTypeCount; ++type) {
 					if ((memory_requirements.memoryTypeBits & (1 << type)) &&
 						((physical_device_memory_properties.memoryTypes[type].propertyFlags & memPropertyFlag) == memPropertyFlag)) {
@@ -113,18 +113,18 @@ namespace LavaCake {
 							type                          // uint32_t           memoryTypeIndex
 						};
 
-						result = vkAllocateMemory(logical, &buffer_memory_allocate_info, nullptr, &*m_bufferMemory);
+						result = vkAllocateMemory(logical, &buffer_memory_allocate_info, nullptr, &m_bufferMemory);
 						if (VK_SUCCESS == result) {
 							break;
 						}
 					}
 				}
 
-				if (VK_NULL_HANDLE == *m_bufferMemory) {
+				if (VK_NULL_HANDLE == m_bufferMemory) {
 					ErrorCheck::setError((char*)"Could not allocate memory for a buffer.");
 				}
 
-				result = vkBindBufferMemory(logical, *m_buffer, *m_bufferMemory, 0);
+				result = vkBindBufferMemory(logical, m_buffer, m_bufferMemory, 0);
 				if (VK_SUCCESS != result) {
 					ErrorCheck::setError((char*)"Could not bind memory object to a buffer.");
 				}
@@ -134,13 +134,13 @@ namespace LavaCake {
 					VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO,    // VkStructureType            sType
 					nullptr,                                      // const void               * pNext
 					0,                                            // VkBufferViewCreateFlags    flags
-					*m_buffer,                                    // VkBuffer                   buffer
+					m_buffer,                                     // VkBuffer                   buffer
 					format,                                       // VkFormat                   format
 					0,																						// VkDeviceSize               offset
 					VK_WHOLE_SIZE                                 // VkDeviceSize               range
 					};
 
-					result = vkCreateBufferView(logical, &buffer_view_create_info, nullptr, &*m_bufferView);
+					result = vkCreateBufferView(logical, &buffer_view_create_info, nullptr, &m_bufferView);
 					if (VK_SUCCESS != result) {
 						ErrorCheck::setError((char*)"Could not creat buffer view.");
 					}
@@ -311,7 +311,7 @@ namespace LavaCake {
 					{
 						VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,  // VkStructureType    sType
 						nullptr,                                // const void       * pNext
-						*m_bufferMemory,                       // VkDeviceMemory     memory
+						m_bufferMemory,                       // VkDeviceMemory     memory
 						0,																			// VkDeviceSize       offset
 						VK_WHOLE_SIZE                           // VkDeviceSize       size
 					}
@@ -328,19 +328,19 @@ namespace LavaCake {
 			~Buffer() {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				if (VK_NULL_HANDLE != *m_buffer) {
-					vkDestroyBuffer(logical, *m_buffer, nullptr);
-					*m_buffer = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_buffer) {
+					vkDestroyBuffer(logical, m_buffer, nullptr);
+					m_buffer = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_bufferView) {
-					vkDestroyBufferView(logical, *m_bufferView, nullptr);
-					*m_bufferView = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_bufferView) {
+					vkDestroyBufferView(logical, m_bufferView, nullptr);
+					m_bufferView = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_bufferMemory) {
-					vkFreeMemory(logical, *m_bufferMemory, nullptr);
-					*m_bufferMemory = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_bufferMemory) {
+					vkFreeMemory(logical, m_bufferMemory, nullptr);
+					m_bufferMemory = VK_NULL_HANDLE;
 				}
 			}
 
@@ -349,9 +349,9 @@ namespace LavaCake {
       
     protected:
 
-      VkDestroyer(VkBuffer)																m_buffer;
-      VkDestroyer(VkDeviceMemory)													m_bufferMemory;
-      VkDestroyer(VkBufferView)														m_bufferView;
+      VkBuffer																            m_buffer = VK_NULL_HANDLE;
+      VkDeviceMemory													            m_bufferMemory = VK_NULL_HANDLE;
+      VkBufferView														            m_bufferView = VK_NULL_HANDLE;
 
 
 			VkPipelineStageFlags																m_stage;

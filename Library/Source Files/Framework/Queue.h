@@ -1,7 +1,6 @@
 #pragma once
 
 #include "AllHeaders.h"
-#include "VulkanDestroyer.h"
 
 #include "Tools.h"
 

@@ -24,14 +24,14 @@ namespace LavaCake {
 					ErrorCheck::setError((char*)"Can't read the Shader file ");
 				}
 				
-				InitVkDestroyer(logicalDevice, m_module);
-				if (!CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
+				
+				if (!CreateShaderModule(logicalDevice, m_spirv, m_module)) {
 					ErrorCheck::setError((char*)"Can't create the Shader module");
 				}
 				
 				m_stageParameter = {
 						stageBits,
-						* m_module,
+						m_module,
 						entrypoint,
 						specialization
 				};
@@ -43,14 +43,13 @@ namespace LavaCake {
 				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
 				VkDevice logicalDevice = d->getLogicalDevice();
 
-				InitVkDestroyer(logicalDevice, m_module);
-				if (!CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
+				if (!CreateShaderModule(logicalDevice, m_spirv, m_module)) {
 					ErrorCheck::setError((char*)"Can't create the Shader module");
 				}
 
 				m_stageParameter = {
 						stageBits,
-						*m_module,
+						m_module,
 						entrypoint,
 						specialization
 				};
@@ -67,12 +66,11 @@ namespace LavaCake {
 					ErrorCheck::setError((char*)"Can't read the Shader file ");
 				}
 
-				InitVkDestroyer(logicalDevice, m_module);
-				if (!CreateShaderModule(logicalDevice, m_spirv, *m_module)) {
+				if (!CreateShaderModule(logicalDevice, m_spirv, m_module)) {
 					ErrorCheck::setError((char*)"Can't create the Shader module");
 				}
 
-				m_stageParameter.ShaderModule = *m_module;
+				m_stageParameter.ShaderModule = m_module;
 			}
 
 			~ShaderModule() {
@@ -81,7 +79,7 @@ namespace LavaCake {
 				m_stageParameter = {};
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				DestroyShaderModule(logical, *m_module);
+				DestroyShaderModule(logical, m_module);
 			};
 
 		private :
@@ -114,7 +112,7 @@ namespace LavaCake {
 			}
 
 
-			VkDestroyer(VkShaderModule)								m_module;
+			VkShaderModule								            m_module;
 			std::string																m_path;
 			std::vector<unsigned char>								m_spirv;
 			ShaderStageParameters											m_stageParameter;

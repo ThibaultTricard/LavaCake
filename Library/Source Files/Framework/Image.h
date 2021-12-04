@@ -101,19 +101,19 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 
 
-				if (VK_NULL_HANDLE != *m_image) {
-					vkDestroyImage(logical, *m_image, nullptr);
-					*m_image = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_image) {
+					vkDestroyImage(logical, m_image, nullptr);
+					m_image = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_imageView) {
-					vkDestroyImageView(logical, *m_imageView, nullptr);
-					*m_imageView = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_imageView) {
+					vkDestroyImageView(logical, m_imageView, nullptr);
+					m_imageView = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_imageMemory) {
-					vkFreeMemory(logical, *m_imageMemory, nullptr);
-					*m_imageMemory = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_imageMemory) {
+					vkFreeMemory(logical, m_imageMemory, nullptr);
+					m_imageMemory = VK_NULL_HANDLE;
 				}
 
 			}
@@ -153,9 +153,9 @@ namespace LavaCake {
 			VkPipelineStageFlags								m_stage;
 			VkImageAspectFlagBits								m_aspect;
 
-      VkDestroyer(VkImage)                m_image;
-      VkDestroyer(VkDeviceMemory)         m_imageMemory;
-      VkDestroyer(VkImageView)            m_imageView;
+      VkImage                             m_image  = VK_NULL_HANDLE;
+      VkDeviceMemory                      m_imageMemory  = VK_NULL_HANDLE;
+      VkImageView                         m_imageView  = VK_NULL_HANDLE;
 
 			bool																m_cubemap;
 

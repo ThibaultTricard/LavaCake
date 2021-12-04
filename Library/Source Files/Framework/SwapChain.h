@@ -2,7 +2,6 @@
 
 #include "AllHeaders.h"
 #include "VulkanFunctions.h"	
-#include "VulkanDestroyer.h"
 #include "Tools.h"
 #include "ErrorCheck.h"
 #include "Device.h"
@@ -24,8 +23,7 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				m_image = image;
-				InitVkDestroyer(logical, m_imageView);
-				if (!LavaCake::Core::CreateImageView(logical, m_image, VK_IMAGE_VIEW_TYPE_2D, imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, *m_imageView)) {
+				if (!LavaCake::Core::CreateImageView(logical, m_image, VK_IMAGE_VIEW_TYPE_2D, imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, m_imageView)) {
 					ErrorCheck::setError((char*)"Can't create image view");
 				}
 
@@ -35,7 +33,7 @@ namespace LavaCake {
 					0                                           // VkSemaphoreCreateFlags     flags
 				};
 
-				VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &*m_aquiredSemaphore);
+				VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &m_aquiredSemaphore);
 				if (VK_SUCCESS != result) {
 					//TODO : Raise error using error check
 					//std::cout << "Could not create a semaphore." << std::endl;
@@ -43,11 +41,11 @@ namespace LavaCake {
 			}
 
 			VkSemaphore getSemaphore() {
-				return *m_aquiredSemaphore;
+				return m_aquiredSemaphore;
 			}
 
 			VkImageView getView() {
-				return *m_imageView;
+				return m_imageView;
 			}
 
 			VkImage getImage() {
@@ -68,21 +66,21 @@ namespace LavaCake {
 					m_image = VK_NULL_HANDLE;
 				}*/
 
-				if (VK_NULL_HANDLE != *m_imageView) {
-					vkDestroyImageView(logical, *m_imageView, nullptr);
-					*m_imageView = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_imageView) {
+					vkDestroyImageView(logical, m_imageView, nullptr);
+					m_imageView = VK_NULL_HANDLE;
 				}
 
 				if (m_aquiredSemaphore != VK_NULL_HANDLE) {
-					vkDestroySemaphore(logical, *m_aquiredSemaphore, nullptr);
+					vkDestroySemaphore(logical, m_aquiredSemaphore, nullptr);
 				}
 			}
 
 		private:
 			uint32_t																	m_index =0;
 			VkImage																		m_image = VK_NULL_HANDLE;
-			VkDestroyer(VkImageView)									m_imageView;
-			VkDestroyer(VkSemaphore)									m_aquiredSemaphore;
+			VkImageView									              m_imageView;
+			VkSemaphore									              m_aquiredSemaphore;
 			friend class SwapChain;
 		};
 
@@ -164,12 +162,12 @@ namespace LavaCake {
 					//std::cout << "Could not create a semaphore." << std::endl;
 				}
 
-				if (*m_swapchainImages[index]->m_aquiredSemaphore != VK_NULL_HANDLE) {
-					vkDestroySemaphore(logical, *m_swapchainImages[index]->m_aquiredSemaphore, nullptr);
+				if (m_swapchainImages[index]->m_aquiredSemaphore != VK_NULL_HANDLE) {
+					vkDestroySemaphore(logical, m_swapchainImages[index]->m_aquiredSemaphore, nullptr);
 				}
 				
 
-				*m_swapchainImages[index]->m_aquiredSemaphore = std::move(semaphore);
+				m_swapchainImages[index]->m_aquiredSemaphore = std::move(semaphore);
 				m_swapchainImages[index]->m_index = index;
 				return *m_swapchainImages[index];
 			}

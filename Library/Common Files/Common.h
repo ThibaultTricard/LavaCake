@@ -49,7 +49,7 @@
 #include <cmath>
 #include <functional>
 #include <memory>
-#include "VulkanDestroyer.h"
+#include "VulkanFunctions.h"
 
 #define GLFW_INCLUDE_NONE
 #ifdef _WIN32

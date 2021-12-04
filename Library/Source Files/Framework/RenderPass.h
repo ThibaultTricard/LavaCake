@@ -101,7 +101,7 @@ namespace LavaCake {
 			~RenderPass() {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				DestroyRenderPass(logical, *m_renderPass);
+				DestroyRenderPass(logical, m_renderPass);
 			}
 
 		private : 
@@ -124,7 +124,7 @@ namespace LavaCake {
 			void DestroyRenderPass(VkDevice       logical_device,
 				VkRenderPass& render_pass);
 
-			VkDestroyer(VkRenderPass)															m_renderPass;
+			VkRenderPass															            m_renderPass;
 			VkFormat																							m_imageFormat;
 			VkFormat																							m_depthFormat;
 			std::vector<SubpassParameters>												m_subpassParameters;

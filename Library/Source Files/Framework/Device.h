@@ -33,7 +33,7 @@ namespace LavaCake {
        \return the VkInstance used by the application
        */
 			VkInstance getInstance() {
-				return *m_instance;
+				return m_instance;
 			};
 
       /**
@@ -102,11 +102,11 @@ namespace LavaCake {
 
 			private :
 				VkPhysicalDevice													m_physical = VK_NULL_HANDLE;
-				VkDestroyer(VkDevice)											m_logical;
+				VkDevice            											m_logical;
 				LIBRARY_TYPE															m_vulkanLibrary;
-				VkDestroyer(VkInstance)										m_instance;
-				VkDestroyer(VkSurfaceKHR)                 m_presentationSurface;
-				VkDestroyer(VkCommandPool)								m_commandPool;
+				VkInstance            										m_instance;
+				VkSurfaceKHR                              m_presentationSurface;
+				VkCommandPool					              			m_commandPool;
 				std::vector<GraphicQueue>									m_graphicQueues;
 				std::vector<ComputeQueue>									m_computeQueues;
 				PresentationQueue*												m_presentQueue = new PresentationQueue();

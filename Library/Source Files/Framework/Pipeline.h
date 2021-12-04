@@ -142,24 +142,24 @@ namespace LavaCake {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 
-				if (VK_NULL_HANDLE != *m_pipeline) {
-					vkDestroyPipeline(logical, *m_pipeline, nullptr);
-					*m_pipeline = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_pipeline) {
+					vkDestroyPipeline(logical, m_pipeline, nullptr);
+					m_pipeline = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_pipelineLayout) {
-					vkDestroyPipelineLayout(logical, *m_pipelineLayout, nullptr);
-					*m_pipelineLayout = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_pipelineLayout) {
+					vkDestroyPipelineLayout(logical, m_pipelineLayout, nullptr);
+					m_pipelineLayout = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_descriptorPool) {
-					vkDestroyDescriptorPool(logical, *m_descriptorPool, nullptr);
-					*m_descriptorPool = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_descriptorPool) {
+					vkDestroyDescriptorPool(logical, m_descriptorPool, nullptr);
+					m_descriptorPool = VK_NULL_HANDLE;
 				}
 
-				if (VK_NULL_HANDLE != *m_descriptorSetLayout) {
-					vkDestroyDescriptorSetLayout(logical, *m_descriptorSetLayout, nullptr);
-					*m_descriptorSetLayout = VK_NULL_HANDLE;
+				if (VK_NULL_HANDLE != m_descriptorSetLayout) {
+					vkDestroyDescriptorSetLayout(logical, m_descriptorSetLayout, nullptr);
+					m_descriptorSetLayout = VK_NULL_HANDLE;
 				}
 			};
 
@@ -183,11 +183,11 @@ namespace LavaCake {
 
 
 
-			VkDestroyer(VkPipeline)																					m_pipeline;
-			VkDestroyer(VkPipelineLayout)																		m_pipelineLayout;
+			VkPipeline																					            m_pipeline;
+			VkPipelineLayout																		            m_pipelineLayout;
 
-			VkDestroyer(VkDescriptorSetLayout)															m_descriptorSetLayout;
-			VkDestroyer(VkDescriptorPool)																		m_descriptorPool;
+			VkDescriptorSetLayout															              m_descriptorSetLayout;
+			VkDescriptorPool																		            m_descriptorPool;
 			std::vector<VkDescriptorSet>																		m_descriptorSets;
 			std::vector<VkDescriptorPoolSize>																m_descriptorPoolSize;
 			std::vector<VkDescriptorSetLayoutBinding>												m_descriptorSetLayoutBinding;

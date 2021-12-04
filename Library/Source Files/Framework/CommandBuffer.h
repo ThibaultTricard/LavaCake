@@ -47,7 +47,7 @@ namespace LavaCake {
         VK_FENCE_CREATE_SIGNALED_BIT,                 // VkFenceCreateFlags     flags
         };
 
-        result = vkCreateFence(logical, &fence_create_info, nullptr, &*m_fence);
+        result = vkCreateFence(logical, &fence_create_info, nullptr, &m_fence);
         if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
           //std::cout << "Could not create a fence." << std::endl;
@@ -60,14 +60,14 @@ namespace LavaCake {
       void addSemaphore() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        m_semaphores.emplace_back(VkDestroyer(VkSemaphore)());
+        m_semaphores.emplace_back(VkSemaphore());
         VkSemaphoreCreateInfo semaphore_create_info = {
           VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,    // VkStructureType            sType
           nullptr,                                    // const void               * pNext
           0                                           // VkSemaphoreCreateFlags     flags
         };
 
-        VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &*m_semaphores.back());
+        VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &m_semaphores.back());
         if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
           //std::cout << "Could not create a semaphore." << std::endl;
@@ -84,7 +84,7 @@ namespace LavaCake {
           Device* d = Device::getDevice();
           VkDevice logical = d->getLogicalDevice();
           
-          VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1),  &*m_fence , true, waitingTime);
+          VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1),  &m_fence , true, waitingTime);
           if (VK_SUCCESS != result) {
             //TODO : Raise error using error check
             //std::cout << "Waiting on fence failed." << std::endl;
@@ -100,7 +100,7 @@ namespace LavaCake {
       void resetFence() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        VkResult result = vkResetFences(logical, static_cast<uint32_t>(1),  &*m_fence );
+        VkResult result = vkResetFences(logical, static_cast<uint32_t>(1),  &m_fence );
         if (VK_SUCCESS != result) {
           //TODO : Raise error using error check
           //std::cout << "Error occurred when tried to reset fences." << std::endl;
@@ -150,7 +150,7 @@ namespace LavaCake {
        \return a handle to a VkSemaphore
        */
       VkSemaphore& getSemaphore(int i) {
-        return *m_semaphores[i];
+        return m_semaphores[i];
       }
 
       /**
@@ -158,7 +158,7 @@ namespace LavaCake {
        \return a handle to a VkFence
        */
       VkFence& getFence() {
-        return *m_fence;
+        return m_fence;
       }
 
       /**
@@ -204,12 +204,12 @@ namespace LavaCake {
         VkDevice logical = d->getLogicalDevice();
 
         for (size_t t = 0; t < m_semaphores.size(); t++) {
-          if (*m_semaphores[t] != VK_NULL_HANDLE) {
-            vkDestroySemaphore(logical, *m_semaphores[t], nullptr);
+          if (m_semaphores[t] != VK_NULL_HANDLE) {
+            vkDestroySemaphore(logical, m_semaphores[t], nullptr);
           }
         }
-        if (*m_fence != VK_NULL_HANDLE) {
-          vkDestroyFence(logical, *m_fence, nullptr);
+        if (m_fence != VK_NULL_HANDLE) {
+          vkDestroyFence(logical, m_fence, nullptr);
         }
         if (m_commandBuffer != VK_NULL_HANDLE) {
           std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
@@ -219,8 +219,8 @@ namespace LavaCake {
 
     private:
       VkCommandBuffer                           m_commandBuffer;
-      std::vector<VkDestroyer(VkSemaphore)>     m_semaphores;
-      VkDestroyer(VkFence)                      m_fence;
+      std::vector<VkSemaphore>                  m_semaphores;
+      VkFence                                   m_fence;
         
       bool                                      m_submitted = false;
     };
