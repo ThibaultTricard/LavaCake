@@ -145,11 +145,8 @@ set(LIBRARY_CORE_HEADER
 ${LIBRARY_CORE_DIR}/VulkanBuffer.h
 ${LIBRARY_CORE_DIR}/VulkanCommand.h
 ${LIBRARY_CORE_DIR}/VulkanDescriptor.h
-${LIBRARY_CORE_DIR}/VulkanDevice.h
 ${LIBRARY_CORE_DIR}/VulkanImage.h
-${LIBRARY_CORE_DIR}/VulkanInstance.h
 ${LIBRARY_CORE_DIR}/VulkanLoader.h
-${LIBRARY_CORE_DIR}/VulkanPresentation.h
 ${LIBRARY_CORE_DIR}/VulkanQueue.h
 ${LIBRARY_CORE_DIR}/VulkanSemaphore.h
 ${LIBRARY_CORE_DIR}/VulkanViewport.h
@@ -159,11 +156,8 @@ set(LIBRARY_CORE_SOURCE
 ${LIBRARY_CORE_DIR}/VulkanBuffer.cpp
 ${LIBRARY_CORE_DIR}/VulkanCommand.cpp
 ${LIBRARY_CORE_DIR}/VulkanDescriptor.cpp
-${LIBRARY_CORE_DIR}/VulkanDevice.cpp
 ${LIBRARY_CORE_DIR}/VulkanImage.cpp
-${LIBRARY_CORE_DIR}/VulkanInstance.cpp
 ${LIBRARY_CORE_DIR}/VulkanLoader.cpp
-${LIBRARY_CORE_DIR}/VulkanPresentation.cpp
 ${LIBRARY_CORE_DIR}/VulkanQueue.cpp
 )
 
@@ -179,6 +173,7 @@ ${LIBRARY_FRAMEWORK_DIR}/CommandBuffer.h
 ${LIBRARY_FRAMEWORK_DIR}/ComputePipeline.h
 ${LIBRARY_FRAMEWORK_DIR}/Constant.h
 ${LIBRARY_FRAMEWORK_DIR}/Device.h
+${LIBRARY_FRAMEWORK_DIR}/DescriptorSet.h
 ${LIBRARY_FRAMEWORK_DIR}/ErrorCheck.h
 ${LIBRARY_FRAMEWORK_DIR}/Framework.h
 ${LIBRARY_FRAMEWORK_DIR}/GraphicPipeline.h
@@ -201,6 +196,7 @@ ${LIBRARY_FRAMEWORK_DIR}/CommandBuffer.cpp
 ${LIBRARY_FRAMEWORK_DIR}/ComputePipeline.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Constant.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Device.cpp
+${LIBRARY_FRAMEWORK_DIR}/DescriptorSet.h
 ${LIBRARY_FRAMEWORK_DIR}/ErrorCheck.cpp
 ${LIBRARY_FRAMEWORK_DIR}/GraphicPipeline.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Image.cpp

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AllHeaders.h"
-
+#include "ErrorCheck.h"
 #include "Tools.h"
 
 namespace LavaCake {
@@ -74,7 +74,32 @@ namespace LavaCake {
 		class PresentationQueue : public Queue {
 		public:
 			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
-				return LavaCake::Core::SelectQueueFamilyThatSupportsPresentationToGivenSurface(*physicalDevice, *surface, m_familyIndex);
+        std::vector<VkQueueFamilyProperties> queue_families;
+        uint32_t queue_families_count = 0;
+          
+        vkGetPhysicalDeviceQueueFamilyProperties(*physicalDevice, &queue_families_count, nullptr);
+        if (queue_families_count == 0) {
+          ErrorCheck::setError((char*)"Could not get the number of queue families.");
+          return false;
+        }
+        
+        queue_families.resize(queue_families_count);
+        vkGetPhysicalDeviceQueueFamilyProperties(*physicalDevice, &queue_families_count, queue_families.data());
+        if (queue_families_count == 0) {
+          ErrorCheck::setError((char*) "Could not acquire properties of queue families.");
+          return false;
+        }
+
+        for (uint32_t index = 0; index < static_cast<uint32_t>(queue_families.size()); ++index) {
+          VkBool32 presentation_supported = VK_FALSE;
+          VkResult result = vkGetPhysicalDeviceSurfaceSupportKHR(*physicalDevice, index, *surface, &presentation_supported);
+          if ((VK_SUCCESS == result) &&
+              (VK_TRUE == presentation_supported)) {
+            m_familyIndex = index;
+            return true;
+          }
+        }
+        return false;
 			}
 		};
 	}

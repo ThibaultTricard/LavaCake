@@ -15,7 +15,12 @@ namespace LavaCake {
 		class Device {
 			static Device* m_device;
 			Device() {};
-
+      ~Device() {
+        vkDestroyInstance(m_instance, nullptr);
+        m_instance = VK_NULL_HANDLE;
+        vkDestroyDevice(m_logical, nullptr);
+        m_logical = VK_NULL_HANDLE;
+      }
 		public:
       /**
        \brief Retourn the  device
@@ -90,8 +95,7 @@ namespace LavaCake {
        */
 			void initDevices( int nbComputeQueue, int nbGraphicQueue, WindowParameters&	windowParams, VkPhysicalDeviceFeatures * desiredDeviceFeatures = nullptr);
       
-      
-			
+
 			void end();
       
       /**
