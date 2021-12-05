@@ -217,6 +217,15 @@ namespace LavaCake {
         }
       };
 
+      bool ready(){
+        auto device = Device::getDevice()->getLogicalDevice();
+        VkResult res = vkGetFenceStatus(device, m_fence);
+        if(res == VK_SUCCESS){
+          return true;
+        }
+        return false;
+      }
+      
     private:
       VkCommandBuffer                           m_commandBuffer;
       std::vector<VkSemaphore>                  m_semaphores;
