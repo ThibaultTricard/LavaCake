@@ -124,7 +124,7 @@ namespace LavaCake {
 			void DestroyRenderPass(VkDevice       logical_device,
 				VkRenderPass& render_pass);
 
-			VkRenderPass															            m_renderPass;
+			VkRenderPass															            m_renderPass = VK_NULL_HANDLE;
 			VkFormat																							m_imageFormat;
 			VkFormat																							m_depthFormat;
 			std::vector<SubpassParameters>												m_subpassParameters;

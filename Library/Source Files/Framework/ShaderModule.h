@@ -112,7 +112,7 @@ namespace LavaCake {
 			}
 
 
-			VkShaderModule								            m_module;
+			VkShaderModule								            m_module = VK_NULL_HANDLE;
 			std::string																m_path;
 			std::vector<unsigned char>								m_spirv;
 			ShaderStageParameters											m_stageParameter;

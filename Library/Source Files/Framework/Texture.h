@@ -103,7 +103,7 @@ namespace LavaCake {
 
 
 			
-			VkSampler             										m_sampler;
+			VkSampler             										m_sampler = VK_NULL_HANDLE;
 
 
 			VkFormat																	m_format = VK_FORMAT_UNDEFINED;

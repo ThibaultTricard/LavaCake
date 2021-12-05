@@ -102,11 +102,11 @@ namespace LavaCake {
 
 			private :
 				VkPhysicalDevice													m_physical = VK_NULL_HANDLE;
-				VkDevice            											m_logical;
+				VkDevice            											m_logical = VK_NULL_HANDLE;
 				LIBRARY_TYPE															m_vulkanLibrary;
-				VkInstance            										m_instance;
-				VkSurfaceKHR                              m_presentationSurface;
-				VkCommandPool					              			m_commandPool;
+				VkInstance            										m_instance = VK_NULL_HANDLE;
+				VkSurfaceKHR                              m_presentationSurface = VK_NULL_HANDLE;
+				VkCommandPool					              			m_commandPool = VK_NULL_HANDLE;
 				std::vector<GraphicQueue>									m_graphicQueues;
 				std::vector<ComputeQueue>									m_computeQueues;
 				PresentationQueue*												m_presentQueue = new PresentationQueue();

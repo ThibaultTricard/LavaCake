@@ -227,9 +227,9 @@ namespace LavaCake {
       }
       
     private:
-      VkCommandBuffer                           m_commandBuffer;
+      VkCommandBuffer                           m_commandBuffer = VK_NULL_HANDLE;
       std::vector<VkSemaphore>                  m_semaphores;
-      VkFence                                   m_fence;
+      VkFence                                   m_fence = VK_NULL_HANDLE;
         
       bool                                      m_submitted = false;
     };
