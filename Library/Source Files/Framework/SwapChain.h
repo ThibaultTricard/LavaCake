@@ -56,15 +56,9 @@ namespace LavaCake {
 				return m_index;
 			}
 
-
 			~SwapChainImage() {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-
-				/*if (VK_NULL_HANDLE != m_image) {
-					vkDestroyImage(logical, m_image, nullptr);
-					m_image = VK_NULL_HANDLE;
-				}*/
 
 				if (VK_NULL_HANDLE != m_imageView) {
 					vkDestroyImageView(logical, m_imageView, nullptr);
