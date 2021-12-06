@@ -51,6 +51,7 @@ namespace LavaCake {
 			/**
       \brief Register an error
       \param msg : the error message
+       \param lvl : the level of the error, the lower the level the more important the error is
 			*/
       static void setError(char* msg, uint8_t lvl = 0) {
         if (m_instance == nullptr) {
