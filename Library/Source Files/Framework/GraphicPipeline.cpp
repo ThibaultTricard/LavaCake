@@ -98,7 +98,7 @@ namespace LavaCake {
 					});
 			}
 
-			if (!Pipeline::CreatePipelineLayout(logical, { m_descriptorSetLayout }, push_constant_ranges, m_pipelineLayout)) {
+			if (!Pipeline::CreatePipelineLayout(logical, { m_descriptorSet->getLayout() }, push_constant_ranges, m_pipelineLayout)) {
 				ErrorCheck::setError((char*)"Can't create pipeline layout");
 			}
 
@@ -308,10 +308,11 @@ namespace LavaCake {
 				if (m_vertexBuffers[i]->isIndexed()) {
 					vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffers[i]->getIndexBuffer().getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
 				}
-
-				if (m_descriptorCount > 0) {
+        
+        std::vector<VkDescriptorSet> descriptorSets = {m_descriptorSet->getHandle()};
+				if (m_descriptorSet->isEmpty() > 0) {
 					vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
-						static_cast<uint32_t>(m_descriptorSets.size()), m_descriptorSets.data(),
+						static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(),
 						0, {});
 				}
 
