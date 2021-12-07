@@ -7,7 +7,7 @@ namespace LavaCake {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			generateDescriptorLayout();
-			if (!CreatePipelineLayout(logical, { m_descriptorSetLayout }, {}, m_pipelineLayout)) {
+			if (!CreatePipelineLayout(logical, { m_descriptorSet->getLayout() }, {}, m_pipelineLayout)) {
 				ErrorCheck::setError((char*)"Can't create compute pipeline layout");
 			}
 
@@ -37,8 +37,9 @@ namespace LavaCake {
 
 		void ComputePipeline::compute(CommandBuffer& buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ) {
 
+      std::vector<VkDescriptorSet> descriptorSets = {m_descriptorSet->getHandle()};
 			vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, m_pipelineLayout, 0,
-				static_cast<uint32_t>(m_descriptorSets.size()), m_descriptorSets.data(),
+				static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(),
 				0, {});
 
 			vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, m_pipeline);
