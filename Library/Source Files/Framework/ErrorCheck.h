@@ -71,8 +71,8 @@ namespace LavaCake {
               default:
                 break;
             }
-          }
             std::cout << m_instance->m_errorMessage << RESET << std::endl;
+          }
         }
       }
 

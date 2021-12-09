@@ -16,10 +16,10 @@ namespace LavaCake {
 			static Device* m_device;
 			Device() {};
       ~Device() {
-        vkDestroyInstance(m_instance, nullptr);
+        /*vkDestroyInstance(m_instance, nullptr);
         m_instance = VK_NULL_HANDLE;
         vkDestroyDevice(m_logical, nullptr);
-        m_logical = VK_NULL_HANDLE;
+        m_logical = VK_NULL_HANDLE;*/
       }
 		public:
       /**
