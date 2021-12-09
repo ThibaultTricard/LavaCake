@@ -39,6 +39,11 @@ namespace LavaCake {
 				m_indexBuffer.allocate(queue, cmdBuff, m_indices, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_INDEX_BUFFER_BIT| otherUsage), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_FORMAT_R32_UINT, VK_ACCESS_INDEX_READ_BIT);
 
 			}
+      
+      m_verticesSize =m_vertices.size();
+      m_vertices.clear();
+      m_indicesSize  =m_indices.size();
+      m_indices.clear();
 		}
 
 		

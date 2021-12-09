@@ -64,11 +64,11 @@ namespace LavaCake {
 			}
 
 			size_t getIndicesNumber() {
-				return m_indices.size();
+				return m_indicesSize;
 			}
 
 			size_t getVerticiesNumber() {
-				return m_vertices.size() / m_stride;
+				return m_verticesSize / m_stride;
 			}
 			
 			uint32_t getStrideSize() {
@@ -93,6 +93,8 @@ namespace LavaCake {
 			std::vector<VkVertexInputBindingDescription>				m_bindingDescriptions;
 			Buffer																							m_vertexBuffer;
 			std::vector<float>																	m_vertices;
+      uint32_t                                            m_verticesSize;
+      uint32_t                                            m_indicesSize;
 			uint32_t																						m_stride;
 			Buffer																							m_indexBuffer;
 			std::vector<uint32_t>																m_indices;
