@@ -107,7 +107,7 @@ namespace LavaCake {
   std::array<T, N> normalize(std::array<T, N> const vector) {
     float length = dot(vector,vector);
     if (length >0)
-      return vector/length;
+      return vector/sqrtf(length);
     return vector;
   }
 
