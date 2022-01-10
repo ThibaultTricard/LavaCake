@@ -8,7 +8,7 @@
 
 namespace LavaCake {
 	namespace Framework {
-    static LavaCake::Geometry::vertexFormat imguiformat = LavaCake::Geometry::vertexFormat({ LavaCake::Geometry::POS2,LavaCake::Geometry::UV,LavaCake::Geometry::COL4 });
+    static Geometry::vertexFormat imguiformat =Geometry::vertexFormat({ Geometry::POS2,Geometry::UV,Geometry::COL4 });
     
   /**
    Class ImGuiWrapper :
@@ -63,8 +63,8 @@ namespace LavaCake {
       
       GraphicPipeline* m_pipeline = nullptr;
       PushConstant* m_pushConstant = nullptr;
-      Framework::VertexBuffer* m_vertexBuffer = nullptr;
-      LavaCake::Geometry::Mesh_t* m_mesh = nullptr;
+      VertexBuffer* m_vertexBuffer = nullptr;
+      Geometry::Mesh_t* m_mesh = nullptr;
       Image* m_fontBuffer = nullptr;
       
     };

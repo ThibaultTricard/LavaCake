@@ -4,7 +4,7 @@
 namespace LavaCake {
 	namespace RayTracing {
 
-			void BottomLevelAS::addVertexBuffer(Framework::VertexBuffer* vertexBuffer, Framework::TransformBuffer* transformBuffer, bool opaque ) {
+			void BottomLevelAccelerationStructure::addVertexBuffer(Framework::VertexBuffer* vertexBuffer, Framework::TransformBuffer* transformBuffer, bool opaque ) {
 
 				VkDeviceOrHostAddressConstKHR vertexBufferDeviceAddress{};
 				VkDeviceOrHostAddressConstKHR indexBufferDeviceAddress{};
@@ -37,17 +37,17 @@ namespace LavaCake {
 				accelerationStructureGeometry.geometry.triangles.transformData = transformBufferDeviceAddress;
 
 				if (vertexBuffer->isIndexed()) {
-					m_primCount += (uint32_t)vertexBuffer->getIndicesNumber();
+					m_primCount += (uint32_t)vertexBuffer->getIndicesNumber() / 3.0;
 				}
 				else {
-					m_primCount += (uint32_t)vertexBuffer->getVerticiesNumber();
+					m_primCount += (uint32_t)vertexBuffer->getVerticiesNumber() / 3.0;
 				}
 
 				m_geometry.push_back(accelerationStructureGeometry);
 			}
 
 
-			void BottomLevelAS::allocate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
+			void BottomLevelAccelerationStructure::allocate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
 
 				Framework::Device* d = Framework::Device::getDevice();
 				VkDevice device = d->getLogicalDevice();
@@ -143,7 +143,6 @@ namespace LavaCake {
 
 					cmdBuff.submit(queue, {}, {});
 
-
 					cmdBuff.wait(UINT32_MAX);
 					cmdBuff.resetFence();
 				}
@@ -156,15 +155,15 @@ namespace LavaCake {
 			}
 
 
-			VkAccelerationStructureKHR& BottomLevelAS::getHandle() {
+			VkAccelerationStructureKHR& BottomLevelAccelerationStructure::getHandle() {
 				return m_accelerationStructure;
 			}
 
-			uint64_t BottomLevelAS::getDeviceAddress() {
+			uint64_t BottomLevelAccelerationStructure::getDeviceAddress() {
 				return m_deviceAddress;
 			}
 
-			uint32_t BottomLevelAS::getPrimitiveNumber() {
+			uint32_t BottomLevelAccelerationStructure::getPrimitiveNumber() {
 				return (uint32_t)m_geometry.size();
 			}
 

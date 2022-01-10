@@ -186,7 +186,7 @@ namespace LavaCake {
 		}
 
 		void RenderPass::compile() {
-			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
+			Device* d = Device::getDevice();
 			VkDevice logicalDevice = d->getLogicalDevice();
 
 			if (!CreateRenderPass(logicalDevice, m_attachmentDescriptions, m_subpassParameters, m_dependencies, m_renderPass)) {
@@ -276,14 +276,14 @@ namespace LavaCake {
 		}
 
 		void RenderPass::prepareOutputFrameBuffer(FrameBuffer& frameBuffer) {
-			Framework::Device* d = LavaCake::Framework::Device::getDevice();
+			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 			
 
 		
-			if (!LavaCake::Core::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST,
+			if (!Core::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST,
 				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
 				0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, frameBuffer.m_sampler)) {
 				ErrorCheck::setError((char*)"Can't create an image sampler for this FrameBuffer");
@@ -394,7 +394,7 @@ namespace LavaCake {
           }
         }
 				
-				Framework::Device* d = LavaCake::Framework::Device::getDevice();
+				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 				if (VK_NULL_HANDLE != frameBuffer.m_frameBuffer) {
 					vkDestroyFramebuffer(logical, frameBuffer.m_frameBuffer, nullptr);

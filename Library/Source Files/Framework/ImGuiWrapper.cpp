@@ -206,7 +206,7 @@ namespace LavaCake {
         io.DisplayFramebufferScale = ImVec2((float)display_w / Wwidth, (float)display_h / Wheight);
 
       Framework::Device* d = Framework::Device::getDevice();
-      LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
+      SwapChain* s = SwapChain::getSwapChain();
       VkExtent2D size = s->size();
       VkDevice logical = d->getLogicalDevice();
 
@@ -220,7 +220,7 @@ namespace LavaCake {
       m_fontBuffer = Framework::createTextureBuffer(queue, *cmdBuff, textureData, width, height,1, 4);
 
 
-      m_mesh = (LavaCake::Geometry::Mesh_t*) (new LavaCake::Geometry::IndexedMesh<LavaCake::Geometry::TRIANGLE>(imguiformat));
+      m_mesh = (Geometry::Mesh_t*) (new Geometry::IndexedMesh<Geometry::TRIANGLE>(imguiformat));
 
 
       m_mesh->appendVertex({
@@ -279,7 +279,7 @@ namespace LavaCake {
     void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer& cmdBuff) {
 
 
-      LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
+      SwapChain* s = SwapChain::getSwapChain();
       VkExtent2D size = s->size();
       ImGui::Render();
       ImDrawData* draw_data = ImGui::GetDrawData();
@@ -373,7 +373,7 @@ namespace LavaCake {
     void ImGuiWrapper::resizeGui(Window* win) {
       
       Framework::Device* d = Framework::Device::getDevice();
-      LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
+      SwapChain* s = SwapChain::getSwapChain();
       VkExtent2D size = s->size();
       VkDevice logical = d->getLogicalDevice();
 

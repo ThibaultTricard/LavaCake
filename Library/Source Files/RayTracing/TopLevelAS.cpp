@@ -5,7 +5,7 @@ namespace LavaCake {
   namespace RayTracing {
 
      
-      void TopLevelAS::addInstance(BottomLevelAS* bottomLevelAS, VkTransformMatrixKHR& transform, uint32_t instanceID, uint32_t hitGroupOffset) {
+      void TopLevelAccelerationStructure::addInstance(BottomLevelAccelerationStructure* bottomLevelAS, VkTransformMatrixKHR& transform, uint32_t instanceID, uint32_t hitGroupOffset) {
         m_instances.push_back({ bottomLevelAS ,transform , instanceID , hitGroupOffset });
 
         VkAccelerationStructureInstanceKHR instance{};
@@ -19,7 +19,7 @@ namespace LavaCake {
 
       }
 
-      void TopLevelAS::alloctate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
+      void TopLevelAccelerationStructure::alloctate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
         Framework::Device* d = Framework::Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
         VkPhysicalDevice phyDevice = d->getPhysicalDevice();
@@ -137,7 +137,7 @@ namespace LavaCake {
 
       }
 
-      void TopLevelAS::createAccelerationStructure(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo)
+      void TopLevelAccelerationStructure::createAccelerationStructure(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo)
       {
         Framework::Device* d = Framework::Device::getDevice();
         VkDevice logical = d->getLogicalDevice();

@@ -8,9 +8,9 @@ namespace LavaCake {
 
 		
 
-		class BottomLevelAS {
+		class BottomLevelAccelerationStructure {
 		public :
-			BottomLevelAS() {};
+			BottomLevelAccelerationStructure() {};
 
 			void addVertexBuffer(Framework::VertexBuffer* vertexBuffer, Framework::TransformBuffer* transformBuffer, bool opaque = true);
 

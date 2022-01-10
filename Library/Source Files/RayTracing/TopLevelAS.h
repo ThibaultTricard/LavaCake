@@ -8,9 +8,9 @@
 namespace LavaCake {
   namespace RayTracing {
     
-    class TopLevelAS {
+    class TopLevelAccelerationStructure {
     public:
-      void addInstance(BottomLevelAS* bottomLevelAS, VkTransformMatrixKHR& transform, uint32_t instanceID, uint32_t hitGroupOffset);
+      void addInstance(BottomLevelAccelerationStructure* bottomLevelAS, VkTransformMatrixKHR& transform, uint32_t instanceID, uint32_t hitGroupOffset);
 
       void alloctate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
 
@@ -23,7 +23,7 @@ namespace LavaCake {
 		private : 
 
       struct instance{
-			  BottomLevelAS* bottomLevelAS;
+        BottomLevelAccelerationStructure* bottomLevelAS;
         VkTransformMatrixKHR transform;
         uint32_t instanceID;
         uint32_t hitGroupIndex;
