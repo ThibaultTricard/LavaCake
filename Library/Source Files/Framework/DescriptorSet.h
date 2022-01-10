@@ -214,6 +214,9 @@ namespace LavaCake {
         m_empty = true;
         return;
       }
+      else {
+        m_empty = false;
+      }
       
       std::vector<VkDescriptorPoolSize>  descriptorPoolSize = {};
       
