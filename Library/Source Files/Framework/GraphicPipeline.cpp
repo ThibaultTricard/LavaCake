@@ -310,7 +310,7 @@ namespace LavaCake {
 				}
         
         std::vector<VkDescriptorSet> descriptorSets = {m_descriptorSet->getHandle()};
-				if (m_descriptorSet->isEmpty() > 0) {
+				if (!m_descriptorSet->isEmpty()) {
 					vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
 						static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(),
 						0, {});
