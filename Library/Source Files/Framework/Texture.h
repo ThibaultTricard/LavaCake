@@ -229,18 +229,12 @@ namespace LavaCake {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 				
-
 				for (uint32_t i = 0; i < m_images.size(); i++) {
 					if (i != m_swapChainImageIndex) {
 						if (m_images[i] != nullptr) {
-              delete m_images[i];
+							delete m_images[i];
 						}
 					}
-				}
-
-				if (VK_NULL_HANDLE != m_sampler) {
-					vkDestroySampler(logical, m_sampler, nullptr);
-					m_sampler = VK_NULL_HANDLE;
 				}
 
 				if (VK_NULL_HANDLE != m_frameBuffer) {
@@ -248,10 +242,16 @@ namespace LavaCake {
 					m_frameBuffer = VK_NULL_HANDLE;
 				}
 
+				if (VK_NULL_HANDLE != m_sampler) {
+					vkDestroySampler(logical, m_sampler, nullptr);
+					m_sampler = VK_NULL_HANDLE;
+				}
+
 				if (VK_NULL_HANDLE != m_imageMemory) {
 					vkFreeMemory(logical, m_imageMemory, nullptr);
 					m_imageMemory = VK_NULL_HANDLE;
 				}
+
 			}
 
 		private :

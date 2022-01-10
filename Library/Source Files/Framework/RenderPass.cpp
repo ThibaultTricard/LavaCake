@@ -340,6 +340,7 @@ namespace LavaCake {
 				//frameBuffer.m_layouts.push_back(layout);
 
 				if (i == m_khr_attachement) {
+					frameBuffer.m_swapChainImageIndex = i;
 					continue;
 				}
 
