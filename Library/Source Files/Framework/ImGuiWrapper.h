@@ -43,6 +43,8 @@ namespace LavaCake {
     void prepareGui(Queue* queue, CommandBuffer& cmdBuff);
 
 
+    void resizeGui(Window* win);
+
     /**
      \brief Return the graphic pipelin for the gui
      \return a pointer to the graphic pipeline
@@ -63,7 +65,7 @@ namespace LavaCake {
       PushConstant* m_pushConstant = nullptr;
       Framework::VertexBuffer* m_vertexBuffer = nullptr;
       LavaCake::Geometry::Mesh_t* m_mesh = nullptr;
-
+      Framework::TextureBuffer* m_fontBuffer = nullptr;
 
       
     };
