@@ -40,6 +40,15 @@ namespace LavaCake {
 
 
 			/**
+			\brief construct an unitialized Texture buffer.
+			\param width : the width of the texture.
+			\param height : the height of the texture.
+			\param nbChannel : the number of channel that contain the texture between 1 and 4.
+			\param f : the format of theTexture buffer.
+			*/
+			TextureBuffer(int width, int height, int nbChannel, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM);
+
+			/**
 			\brief allocate the Texture buffer on the device on the GPU
       \param queue : a pointer to the queue that will be used to copy data to the Buffer
       \param cmdBuff : the command buffer used for this operation, must not be in a recording state
@@ -85,10 +94,7 @@ namespace LavaCake {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 
-				if (VK_NULL_HANDLE != m_sampler) {
-					vkDestroySampler(logical, m_sampler, nullptr);
-					m_sampler = VK_NULL_HANDLE;
-				}
+				
 
 				delete(m_image);
 			}
@@ -101,9 +107,6 @@ namespace LavaCake {
 			uint32_t																	m_nbChannel = 0;
 			std::vector<unsigned char>*								m_data = new std::vector<unsigned char>();
 
-
-			
-			VkSampler             										m_sampler = VK_NULL_HANDLE;
 
 
 			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
@@ -279,8 +282,6 @@ namespace LavaCake {
 
 			Attachment(int width, int height, VkFormat f, attachmentType type);
 
-			void allocate();
-
 			Image* getImage();
 
 			~Attachment() {
@@ -290,12 +291,11 @@ namespace LavaCake {
 		private : 
 
 			Image*															m_image;
-			attachmentType											m_type;
 
 		};
 
 
-		class StorageImage{
+		class StorageImage {
 		public:
 
 			StorageImage(uint32_t width, uint32_t height, uint32_t depth, VkFormat f);
@@ -316,6 +316,18 @@ namespace LavaCake {
 			Image* m_image;
 
 		};
+
+		Image* createAttachment(int width, int height, VkFormat f, attachmentType type);
+
+		Image* createStorageImage(Queue* queue, CommandBuffer& cmdBuff, int width, int height, int depth, VkFormat f);
+
+		Image* createTextureBuffer(int width, int height, int nbChannel, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM);
+
+		Image* createTextureBuffer(Queue* queue, CommandBuffer& cmdBuff, std::string filename, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+
+		Image* createTextureBuffer(Queue* queue, CommandBuffer& cmdBuff, std::vector<unsigned char>* data, int width, int height, int depth, int nbChannel, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+
+		Image* createCubeMap(Queue* queue, CommandBuffer& cmdBuff, std::string path, int nbChannel, std::vector<std::string> images = { "posx.jpg","negx.jpg","posy.jpg","negy.jpg","posz.jpg","negz.jpg" }, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 	}
 }

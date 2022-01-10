@@ -135,7 +135,7 @@ namespace LavaCake {
 
 			std::vector<RenderPassAttachmentType>									m_attachmentype;
 
-			std::vector<Attachment*>															m_inputAttachements;
+			std::vector<Image*>																		m_inputAttachements;
 
 			std::vector<std::vector<uint32_t>>										m_subpassAttachements;
 

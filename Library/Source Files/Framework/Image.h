@@ -26,17 +26,15 @@ namespace LavaCake {
        \param depth the depth of the image
        \param format the format of the Image, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
        \param aspect the aspect of the image, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkImageAspectFlagBits.html">here</a>
-       \param cubemap [otpional] weither or not the image is a cubemap, false by defalt
-       */
-			Image(uint32_t width, uint32_t height, uint32_t depth, VkFormat format, VkImageAspectFlagBits aspect, bool cubemap = false);
-
-      /**
-       \brief allocate the image on the GPU
        \param usage the usage of the image, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkImageUsageFlags.html">here</a>
        \param memPropertyFlag : the memory property of the image, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
+       \param cubemap [otpional] weither or not the image is a cubemap, false by defalt
        */
-			void allocate(VkImageUsageFlags usage,
-                    VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			Image(uint32_t width, uint32_t height, uint32_t depth, VkFormat format, VkImageAspectFlagBits aspect, VkImageUsageFlags usage,
+        VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, bool cubemap = false);
+
+
+      void createSampler();
 
       /**
        \brief Map the memory of the Image
@@ -100,6 +98,10 @@ namespace LavaCake {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 
+        if (VK_NULL_HANDLE != m_sampler) {
+          vkDestroySampler(logical, m_sampler, nullptr);
+          m_sampler = VK_NULL_HANDLE;
+        }
 
 				if (VK_NULL_HANDLE != m_image) {
 					vkDestroyImage(logical, m_image, nullptr);
@@ -123,6 +125,9 @@ namespace LavaCake {
        \return the VkImageLayout of the image
        */
 			VkImageLayout& getLayout();
+
+
+      VkSampler& getSampler();
 
       /**
        \brief Get the witdh of the image
@@ -156,6 +161,7 @@ namespace LavaCake {
       VkImage                             m_image  = VK_NULL_HANDLE;
       VkDeviceMemory                      m_imageMemory  = VK_NULL_HANDLE;
       VkImageView                         m_imageView  = VK_NULL_HANDLE;
+      VkSampler             							m_sampler = VK_NULL_HANDLE;
 
 			bool																m_cubemap;
 

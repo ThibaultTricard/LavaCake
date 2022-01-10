@@ -42,7 +42,7 @@ namespace LavaCake {
        \param stage the shader stage where the texture buffer is going to be used
        \param binding the binding point of the texture buffer, 0 by default
 			*/
-			virtual void addTextureBuffer(TextureBuffer* texture, VkShaderStageFlags stage, int binding = 0) {
+			virtual void addTextureBuffer(Image* texture, VkShaderStageFlags stage, int binding = 0) {
         if(m_descriptorSet ==nullptr){
           m_descriptorSet = new DescriptorSet();
           m_isDescriptorPipelineGenerated = true;
@@ -78,7 +78,7 @@ namespace LavaCake {
        \param stage the shader stage where the storage image is going to be used
        \param binding the binding point of the storage image, 0 by default
 			*/
-			virtual void addStorageImage(StorageImage* storage, VkShaderStageFlags stage, int binding = 0) {
+			virtual void addStorageImage(Image* storage, VkShaderStageFlags stage, int binding = 0) {
         if(m_descriptorSet ==nullptr){
           m_descriptorSet = new DescriptorSet();
           m_isDescriptorPipelineGenerated = true;
@@ -97,7 +97,7 @@ namespace LavaCake {
        \param stage the shader stage where the storage image is going to be used
        \param binding the binding point of the storage image, 0 by default
 			*/
-			virtual void addAttachment(Attachment* attachement, VkShaderStageFlags stage, int binding = 0) {
+			virtual void addAttachment(Image* attachement, VkShaderStageFlags stage, int binding = 0) {
         if(m_descriptorSet ==nullptr){
           m_descriptorSet = new DescriptorSet();
           m_isDescriptorPipelineGenerated = true;

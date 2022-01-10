@@ -4,43 +4,51 @@ namespace LavaCake {
   namespace Framework {
 
 
-		Image::Image(uint32_t width, uint32_t height, uint32_t depth, VkFormat f, VkImageAspectFlagBits aspect, bool cubemap) {
+		Image::Image(uint32_t width, uint32_t height, uint32_t depth, VkFormat f, VkImageAspectFlagBits aspect, VkImageUsageFlags usage,
+			VkMemoryPropertyFlagBits memPropertyFlag, bool cubemap) {
       m_width = width;
       m_height = height;
       m_depth = depth;
       m_format = f;
 			m_aspect = aspect;
 			m_cubemap = cubemap;
-    }
 
-    void Image::allocate(VkImageUsageFlags usage,
-                         VkMemoryPropertyFlagBits memPropertyFlag) {
-      Framework::Device* d = LavaCake::Framework::Device::getDevice();
-      VkDevice logical = d->getLogicalDevice();
+			Framework::Device* d = LavaCake::Framework::Device::getDevice();
+			VkDevice logical = d->getLogicalDevice();
 
-      VkPhysicalDevice physical = d->getPhysicalDevice();
+			VkPhysicalDevice physical = d->getPhysicalDevice();
 
-      VkImageType type = VK_IMAGE_TYPE_1D;
-      VkImageViewType view = VK_IMAGE_VIEW_TYPE_1D;
-      if (m_height > 1) { type = VK_IMAGE_TYPE_2D; view = VK_IMAGE_VIEW_TYPE_2D; }
-      if (m_depth > 1) { type = VK_IMAGE_TYPE_3D; view = VK_IMAGE_VIEW_TYPE_3D; }
+			VkImageType type = VK_IMAGE_TYPE_1D;
+			VkImageViewType view = VK_IMAGE_VIEW_TYPE_1D;
+			if (m_height > 1) { type = VK_IMAGE_TYPE_2D; view = VK_IMAGE_VIEW_TYPE_2D; }
+			if (m_depth > 1) { type = VK_IMAGE_TYPE_3D; view = VK_IMAGE_VIEW_TYPE_3D; }
 			if (m_cubemap) { type = VK_IMAGE_TYPE_2D; view = VK_IMAGE_VIEW_TYPE_CUBE; }
 
-      if (!LavaCake::Core::CreateImage(logical, type, m_format, { m_width, m_height, m_depth }, 1, 1, VK_SAMPLE_COUNT_1_BIT, usage, m_cubemap, m_image)) {
-        ErrorCheck::setError((char*)"Can't create Image");
-      }
+			if (!LavaCake::Core::CreateImage(logical, type, m_format, { m_width, m_height, m_depth }, 1, 1, VK_SAMPLE_COUNT_1_BIT, usage, m_cubemap, m_image)) {
+				ErrorCheck::setError((char*)"Can't create Image");
+			}
 
-      if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, m_image, memPropertyFlag, m_imageMemory)) {
-        ErrorCheck::setError((char*)"Can't allocate Image memory");
-      }
+			if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, m_image, memPropertyFlag, m_imageMemory)) {
+				ErrorCheck::setError((char*)"Can't allocate Image memory");
+			}
 
-      if (!LavaCake::Core::CreateImageView(logical, m_image, view, m_format, m_aspect, m_imageView)) {
-        ErrorCheck::setError((char*)"Can't create Image View");
-      }
+			if (!LavaCake::Core::CreateImageView(logical, m_image, view, m_format, m_aspect, m_imageView)) {
+				ErrorCheck::setError((char*)"Can't create Image View");
+			}
 
 			m_layout = VK_IMAGE_LAYOUT_UNDEFINED;
 			m_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
     }
+
+
+		void Image::createSampler() {
+			auto device = Device::getDevice();
+			auto logical = device->getLogicalDevice();
+			if (!LavaCake::Core::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, m_sampler)) {
+				ErrorCheck::setError((char*)"Can't create a sampler for this image");
+			}
+		}
 
     void Image::map() {
 			Framework::Device* d = LavaCake::Framework::Device::getDevice();
@@ -200,6 +208,10 @@ namespace LavaCake {
 
 		VkImageLayout& Image::getLayout() {
 			return m_layout;
+		}
+
+		VkSampler& Image::getSampler() {
+			return m_sampler;
 		}
 
 		uint32_t Image::width() {

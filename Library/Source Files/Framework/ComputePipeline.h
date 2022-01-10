@@ -30,7 +30,7 @@ namespace LavaCake {
 			*/
 			void compile();
 			
-			virtual void addAttachment(Attachment* a, VkShaderStageFlags stage, int binding = 0) override {};
+			virtual void addAttachment(Image* a, VkShaderStageFlags stage, int binding = 0) override {};
 
 			/**
        \brief register the execution of the pipeline in  a command buffer

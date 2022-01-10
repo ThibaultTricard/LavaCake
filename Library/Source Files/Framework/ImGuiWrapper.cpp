@@ -215,8 +215,8 @@ namespace LavaCake {
       io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
       std::vector<unsigned char>* textureData = new std::vector<unsigned char>(pixels, pixels + width * height * 4);
 
-      TextureBuffer* fontBuffer = new TextureBuffer(textureData, width, height, 4);
-      fontBuffer->allocate(queue, *cmdBuff);
+
+      Image* fontBuffer = Framework::createTextureBuffer(queue, *cmdBuff, textureData, width, height,1, 4);
 
       m_mesh = (LavaCake::Geometry::Mesh_t*) (new LavaCake::Geometry::IndexedMesh<LavaCake::Geometry::TRIANGLE>(imguiformat));
 

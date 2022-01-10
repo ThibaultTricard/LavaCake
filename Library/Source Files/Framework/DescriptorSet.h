@@ -7,12 +7,12 @@ namespace LavaCake {
   namespace Framework{
   struct uniform {
     UniformBuffer*          buffer;
-    int                      binding;
+    int                     binding;
     VkShaderStageFlags      stage;
   };
   
   struct texture {
-    TextureBuffer*          t;
+    Image*                  i;
     int                     binding;
     VkShaderStageFlags      stage;
   };
@@ -25,13 +25,13 @@ namespace LavaCake {
   };
   
   struct attachment {
-    Attachment*             a;
+    Image*                  i;
     int                     binding;
     VkShaderStageFlags      stage;
   };
   
   struct storageImage {
-    StorageImage*           s;
+    Image*                  i;
     int                     binding;
     VkShaderStageFlags      stage;
   };
@@ -83,7 +83,7 @@ namespace LavaCake {
      \param stage the shader stage where the texture buffer is going to be used
      \param binding the binding point of the texture buffer, 0 by default
      */
-    virtual void addTextureBuffer(TextureBuffer* texture, VkShaderStageFlags stage, int binding = 0) {
+    virtual void addTextureBuffer(Image* texture, VkShaderStageFlags stage, int binding = 0) {
       m_textures.push_back({ texture,binding,stage});
     };
     
@@ -103,7 +103,7 @@ namespace LavaCake {
      \param stage the shader stage where the storage image is going to be used
      \param binding the binding point of the storage image, 0 by default
      */
-    virtual void addStorageImage(StorageImage* storage, VkShaderStageFlags stage, int binding = 0) {
+    virtual void addStorageImage(Image* storage, VkShaderStageFlags stage, int binding = 0) {
       m_storageImages.push_back({ storage,binding,stage });
     };
     
@@ -114,7 +114,7 @@ namespace LavaCake {
      \param stage the shader stage where the storage image is going to be used
      \param binding the binding point of the storage image, 0 by default
      */
-    virtual void addAttachment(Attachment* attachement, VkShaderStageFlags stage, int binding = 0) {
+    virtual void addAttachment(Image* attachement, VkShaderStageFlags stage, int binding = 0) {
       m_attachments.push_back({ attachement,binding,stage });
     };
     
@@ -286,9 +286,9 @@ namespace LavaCake {
           VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,      // VkDescriptorType                     TargetDescriptorType
           {                                                // std::vector<VkDescriptorBufferInfo>  BufferInfos
             {
-            m_textures[i].t->getSampler(),              // vkSampler                            buffer
-            m_textures[i].t->getImageView(),            // VkImageView                          offset
-            m_textures[i].t->getLayout()                // VkImageLayout                         range
+            m_textures[i].i->getSampler(),              // vkSampler                            buffer
+            m_textures[i].i->getImageView(),            // VkImageView                          offset
+            m_textures[i].i->getLayout()                // VkImageLayout                         range
             }
           }
         });
@@ -319,8 +319,8 @@ namespace LavaCake {
           {                                                // std::vector<VkDescriptorBufferInfo>  BufferInfos
             {
             VK_NULL_HANDLE,                              // vkSampler                            buffer
-            m_attachments[i].a->getImage()->getImageView(),          // VkImageView                          offset
-            m_attachments[i].a->getImage()->getLayout()              // VkImageLayout                         range
+            m_attachments[i].i->getImageView(),          // VkImageView                          offset
+            m_attachments[i].i->getLayout()              // VkImageLayout                         range
             }
           }
         });
@@ -335,8 +335,8 @@ namespace LavaCake {
           {                                                // std::vector<VkDescriptorBufferInfo>  BufferInfos
             {
             VK_NULL_HANDLE,                              // vkSampler                            buffer
-            m_storageImages[i].s->getImageView(),        // VkImageView                          offset
-            m_storageImages[i].s->getLayout()            // VkImageLayout                         range
+            m_storageImages[i].i->getImageView(),        // VkImageView                          offset
+            m_storageImages[i].i->getLayout()            // VkImageLayout                         range
             }
           }
         });
