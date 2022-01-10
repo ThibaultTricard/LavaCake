@@ -216,7 +216,9 @@ namespace LavaCake {
       std::vector<unsigned char>* textureData = new std::vector<unsigned char>(pixels, pixels + width * height * 4);
 
 
-      Image* fontBuffer = Framework::createTextureBuffer(queue, *cmdBuff, textureData, width, height,1, 4);
+
+      m_fontBuffer = Framework::createTextureBuffer(queue, *cmdBuff, textureData, width, height,1, 4);
+
 
       m_mesh = (LavaCake::Geometry::Mesh_t*) (new LavaCake::Geometry::IndexedMesh<LavaCake::Geometry::TRIANGLE>(imguiformat));
 
@@ -264,11 +266,15 @@ namespace LavaCake {
       m_pipeline->setVertices({ m_vertexBuffer });
 
       m_pipeline->addPushContant(m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT);
-      m_pipeline->addTextureBuffer(fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
+      m_pipeline->addTextureBuffer(m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
       m_pipeline->SetCullMode(VK_CULL_MODE_NONE);
       m_pipeline->setAlphaBlending(true);
 
     }
+
+
+    
+
     
     void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer& cmdBuff) {
 
@@ -362,5 +368,44 @@ namespace LavaCake {
       s_PrevUserCallbackMouseMotion = glfwSetCursorPosCallback(window, ImGui_ImplGlfw_Mouse_Position);
          
     }
+
+
+    void ImGuiWrapper::resizeGui(Window* win) {
+      
+      Framework::Device* d = Framework::Device::getDevice();
+      LavaCake::Framework::SwapChain* s = LavaCake::Framework::SwapChain::getSwapChain();
+      VkExtent2D size = s->size();
+      VkDevice logical = d->getLogicalDevice();
+
+      ImGuiIO& io = ImGui::GetIO();
+      int Wwidth, Wheight;
+      int display_w, display_h;
+      glfwGetWindowSize(win->m_window, &Wwidth, &Wheight);
+      glfwGetFramebufferSize(win->m_window, &display_w, &display_h);
+      io.DisplaySize = ImVec2((float)Wwidth, (float)Wheight);
+      if (Wwidth > 0 && Wheight > 0)
+        io.DisplayFramebufferScale = ImVec2((float)display_w / Wwidth, (float)display_h / Wheight);
+
+
+      std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv) / sizeof(unsigned char));
+      memcpy(&vertSpirv[0], __glsl_shader_vert_spv, sizeof(__glsl_shader_vert_spv));
+      std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
+      memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
+
+      m_pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
+      VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
+      m_pipeline->setVertexModule(sphereVertex);
+
+      FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
+      m_pipeline->setFragmentModule(sphereFrag);
+      m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
+      m_pipeline->setVertices({ m_vertexBuffer });
+
+      m_pipeline->addPushContant(m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT);
+      m_pipeline->addTextureBuffer(m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+      m_pipeline->SetCullMode(VK_CULL_MODE_NONE);
+      m_pipeline->setAlphaBlending(true);
+    }
+
   }
 }
