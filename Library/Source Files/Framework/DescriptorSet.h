@@ -439,7 +439,7 @@ namespace LavaCake {
           VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
           nullptr,                                                                // const void                     * pNext
           descriptorSets[descriptorCount],                                        // VkDescriptorSet                  dstSet
-          uint32_t(m_attachments[i].binding),                                     // uint32_t                         dstBinding
+          uint32_t(m_storageImages[i].binding),                                   // uint32_t                         dstBinding
           0,                                                                      // uint32_t                         dstArrayElement
           static_cast<uint32_t>(storageDescriptor[i].size()),                     // uint32_t                         descriptorCount
           VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,                                       // VkDescriptorType                 descriptorType
