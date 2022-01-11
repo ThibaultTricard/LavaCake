@@ -85,7 +85,6 @@ int main() {
 
 	Window w("LavaCake HelloWorld", 512, 512);
 
-	
 	Device* d = Device::getDevice();
 	d->initDevices(0, 1, window.m_windowParams);
 	SwapChain* s = SwapChain::getSwapChain();
