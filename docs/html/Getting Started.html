@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Getting Started &#8212; LavaCake 1.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Hello World" href="HelloWorld.html" />
+    <link rel="prev" title="Welcome to LavaCake!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<section id="setting-up-your-project">
+<h2>Setting up your project<a class="headerlink" href="#setting-up-your-project" title="Permalink to this headline">¶</a></h2>
+<p>The first step to use Lavacake is to dowload by cloning it<br />in your project folder and initialising it’s submodules.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">git</span><span class="w"> </span><span class="n">clone</span><span class="w"> </span><span class="n">https</span><span class="o">:</span><span class="c1">//github.com/ThibaultTricard/LavaCake.git</span>
+<span class="n">cd</span><span class="w"> </span><span class="n">LavaCake</span><span class="w"></span>
+<span class="n">git</span><span class="w"> </span><span class="n">checkout</span><span class="w"> </span><span class="n">dev</span><span class="mf">-1.2</span><span class="w"></span>
+<span class="n">git</span><span class="w"> </span><span class="n">pull</span><span class="w"></span>
+<span class="n">git</span><span class="w"> </span><span class="n">submodule</span><span class="w"> </span><span class="n">update</span><span class="w"> </span><span class="o">--</span><span class="n">init</span><span class="w"> </span><span class="o">--</span><span class="n">recursive</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="cmake">
+<h2>CMake<a class="headerlink" href="#cmake" title="Permalink to this headline">¶</a></h2>
+<p>The next step is to include LavaCake in your CMakeLists.txt<br />A typical CMakeLists.txt for a LavaCake project look like this.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cmake_minimum_required</span><span class="w"> </span><span class="p">(</span><span class="n">VERSION</span><span class="w"> </span><span class="mf">3.0</span><span class="p">)</span><span class="w"></span>
+<span class="n">project</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;MyLavaCakeProject&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"></span>
+
+
+<span class="n">set</span><span class="p">(</span><span class="n">CMAKE_CXX_STANDARD</span><span class="w"> </span><span class="mi">17</span><span class="p">)</span><span class="w"></span>
+<span class="n">set</span><span class="p">(</span><span class="n">CMAKE_CXX_STANDARD_REQUIRED</span><span class="w"> </span><span class="n">ON</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">add_subdirectory</span><span class="p">(</span><span class="n">Relative</span><span class="o">/</span><span class="n">Path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">LavaCake</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">add_executable</span><span class="p">(</span><span class="n">MyLavaCakeProject</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span><span class="w"></span>
+<span class="n">target_link_libraries</span><span class="p">(</span><span class="n">MyLavaCakeProject</span><span class="w"> </span><span class="n">LavaCake</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>If you are using LavaCake you are probably using some shader,<br />If you are coding them in glsl you might want to keep their<br />spirv version up to date.<br />To do so you can use the addShader and AutoSPIRV macro that come
+with the framework.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cmake_minimum_required</span><span class="w"> </span><span class="p">(</span><span class="n">VERSION</span><span class="w"> </span><span class="mf">3.0</span><span class="p">)</span><span class="w"></span>
+<span class="n">project</span><span class="p">(</span><span class="w"> </span><span class="s">&quot;MyLavaCakeProject&quot;</span><span class="w"> </span><span class="p">)</span><span class="w"></span>
+
+
+<span class="n">set</span><span class="p">(</span><span class="n">CMAKE_CXX_STANDARD</span><span class="w"> </span><span class="mi">17</span><span class="p">)</span><span class="w"></span>
+<span class="n">set</span><span class="p">(</span><span class="n">CMAKE_CXX_STANDARD_REQUIRED</span><span class="w"> </span><span class="n">ON</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">add_subdirectory</span><span class="p">(</span><span class="n">Relative</span><span class="o">/</span><span class="n">Path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">LavaCake</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">addShader</span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">vertshader</span><span class="p">.</span><span class="n">vert</span><span class="w"> </span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">vertshader</span><span class="p">.</span><span class="n">vert</span><span class="p">.</span><span class="n">spv</span><span class="p">)</span><span class="w"></span>
+<span class="n">addShader</span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fragshader</span><span class="p">.</span><span class="n">frag</span><span class="w"> </span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fragshader</span><span class="p">.</span><span class="n">frag</span><span class="p">.</span><span class="n">spv</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">add_executable</span><span class="p">(</span><span class="n">MyLavaCakeProject</span><span class="w"> </span><span class="n">main</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span><span class="w"></span>
+<span class="n">AutoSPIRV</span><span class="p">(</span><span class="n">MyLavaCakeProject</span><span class="p">)</span><span class="w"></span>
+<span class="n">target_link_libraries</span><span class="p">(</span><span class="n">MyLavaCakeProject</span><span class="w"> </span><span class="n">LavaCake</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>For more detail on these macro <a class="reference external" href="https://github.com/ThibaultTricard/LavaCake/wiki/AutoSPIRV">here</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LavaCake</a></h1>
+
+
+
+<p class="blurb">Just a Vulkan framework</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=ThibaultTricard&repo=LavaCake&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-your-project">Setting up your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cmake">CMake</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Framework.html">Framework</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to LavaCake!</a></li>
+      <li>Next: <a href="HelloWorld.html" title="next chapter">Hello World</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Thibault Tricard.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Getting Started.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

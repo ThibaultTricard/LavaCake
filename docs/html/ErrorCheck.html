@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Error Check &#8212; LavaCake 1.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Graphic Pipeline" href="GraphicPipeline.html" />
+    <link rel="prev" title="Device" href="Device.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="error-check">
+<h1>Error Check<a class="headerlink" href="#error-check" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework10ErrorCheckE">
+<span id="_CPPv3N8LavaCake9Framework10ErrorCheckE"></span><span id="_CPPv2N8LavaCake9Framework10ErrorCheckE"></span><span id="LavaCake::Framework::ErrorCheck"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_error_check"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ErrorCheck</span></span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework10ErrorCheckE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>a singleton that hold the description of the last error encountered by the program </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_error_check"><span class="std std-ref">ErrorCheck</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework10ErrorCheck8getErrorEv">
+<span id="_CPPv3N8LavaCake9Framework10ErrorCheck8getErrorEv"></span><span id="_CPPv2N8LavaCake9Framework10ErrorCheck8getErrorEv"></span><span id="LavaCake::Framework::ErrorCheck::getError"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_error_check_1acce43d28c327c74dd17cb14595a718c5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getError</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework10ErrorCheck8getErrorEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the last error the program has encountered. </p>
+<p>a char* containing the description of the last error encontered by the program </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework10ErrorCheck8setErrorEPc7uint8_t">
+<span id="_CPPv3N8LavaCake9Framework10ErrorCheck8setErrorEPc7uint8_t"></span><span id="_CPPv2N8LavaCake9Framework10ErrorCheck8setErrorEPc7uint8_t"></span><span id="LavaCake::Framework::ErrorCheck::setError__cP.uint8_t"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_error_check_1ad99a1329d03fe6377a47bca96fbf210b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setError</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">msg</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lvl</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework10ErrorCheck8setErrorEPc7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Register an error. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – : the error message </p></li>
+<li><p><strong>lvl</strong> – : the level of the error, the lower the level the more important the error is </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework10ErrorCheck10PrintErrorEb7uint8_t">
+<span id="_CPPv3N8LavaCake9Framework10ErrorCheck10PrintErrorEb7uint8_t"></span><span id="_CPPv2N8LavaCake9Framework10ErrorCheck10PrintErrorEb7uint8_t"></span><span id="LavaCake::Framework::ErrorCheck::PrintError__b.uint8_t"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_error_check_1ad6ec2c25b2c13c517904eab1ca1a8b89"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintError</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">print</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lvl</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework10ErrorCheck10PrintErrorEb7uint8_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Define if the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_error_check"><span class="std std-ref">ErrorCheck</span></a> singleton can print error on console. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>print</strong> – a boolean that define if <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_error_check"><span class="std std-ref">ErrorCheck</span></a> can print error on console </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div></blockquote>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LavaCake</a></h1>
+
+
+
+<p class="blurb">Just a Vulkan framework</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=ThibaultTricard&repo=LavaCake&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Error Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Constant.html">Push Constant</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Framework.html">Framework</a><ul>
+      <li>Previous: <a href="Device.html" title="previous chapter">Device</a></li>
+      <li>Next: <a href="GraphicPipeline.html" title="next chapter">Graphic Pipeline</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Thibault Tricard.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/ErrorCheck.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

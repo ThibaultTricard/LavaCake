@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Buffer &#8212; LavaCake 1.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CommandBuffer" href="CommandBuffer.html" />
+    <link rel="prev" title="Framework" href="Framework.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="buffer">
+<h1>Buffer<a class="headerlink" href="#buffer" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6BufferE">
+<span id="_CPPv3N8LavaCake9Framework6BufferE"></span><span id="_CPPv2N8LavaCake9Framework6BufferE"></span><span id="LavaCake::Framework::Buffer"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6BufferE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This class helps manage Vulkan Buffers their memory and view. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_buffer"><span class="std std-ref">Buffer</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer6BufferEv">
+<span id="_CPPv3N8LavaCake9Framework6Buffer6BufferEv"></span><span id="_CPPv2N8LavaCake9Framework6Buffer6BufferEv"></span><span id="LavaCake::Framework::Buffer::Buffer"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1a0a35d3cca805c5f7dbdde3c596bf1cde"></span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer6BufferEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer6BufferERK6Buffer">
+<span id="_CPPv3N8LavaCake9Framework6Buffer6BufferERK6Buffer"></span><span id="_CPPv2N8LavaCake9Framework6Buffer6BufferERK6Buffer"></span><span id="LavaCake::Framework::Buffer::Buffer__BufferCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1a629258fbf738e9b4c2075b8c5a6682ab"></span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8LavaCake9Framework6Buffer6BufferERK6Buffer" title="LavaCake::Framework::Buffer::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">buffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer6BufferERK6Buffer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Copy constructor. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>buffer</strong> – : the buffer to be copied </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN8LavaCake9Framework6Buffer8allocateEvP5QueueR13CommandBufferRNSt6vectorI1tEE18VkBufferUsageFlags24VkMemoryPropertyFlagBits23VkPipelineStageFlagBits8VkFormat16VkAccessFlagBits">
+<span id="_CPPv3I0EN8LavaCake9Framework6Buffer8allocateEP5QueueR13CommandBufferRNSt6vectorI1tEE18VkBufferUsageFlags24VkMemoryPropertyFlagBits23VkPipelineStageFlagBits8VkFormat16VkAccessFlagBits"></span><span id="_CPPv2I0EN8LavaCake9Framework6Buffer8allocateEP5QueueR13CommandBufferRNSt6vectorI1tEE18VkBufferUsageFlags24VkMemoryPropertyFlagBits23VkPipelineStageFlagBits8VkFormat16VkAccessFlagBits"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">t</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1ab596a77c61f3781dd2b3b25243690269"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Queue</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">queue</span></span>, <a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN8LavaCake9Framework6Buffer8allocateEvP5QueueR13CommandBufferRNSt6vectorI1tEE18VkBufferUsageFlags24VkMemoryPropertyFlagBits23VkPipelineStageFlagBits8VkFormat16VkAccessFlagBits" title="LavaCake::Framework::Buffer::allocate::t"><span class="n"><span class="pre">t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rawdata</span></span>, <span class="n"><span class="pre">VkBufferUsageFlags</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">usage</span></span>, <span class="n"><span class="pre">VkMemoryPropertyFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">memPropertyFlag</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span></span>, <span class="n"><span class="pre">VkPipelineStageFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stageFlagBit</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">VK_PIPELINE_STAGE_TRANSFER_BIT</span></span>, <span class="n"><span class="pre">VkFormat</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">VK_FORMAT_R32_SFLOAT</span></span>, <span class="n"><span class="pre">VkAccessFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">accessmod</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">VK_ACCESS_TRANSFER_WRITE_BIT</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8LavaCake9Framework6Buffer8allocateEvP5QueueR13CommandBufferRNSt6vectorI1tEE18VkBufferUsageFlags24VkMemoryPropertyFlagBits23VkPipelineStageFlagBits8VkFormat16VkAccessFlagBits" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Allocate and initialise the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_buffer"><span class="std std-ref">Buffer</span></a> with a list of data. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>queue</strong> – : a pointer to the queue that will be used to copy data to the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_buffer"><span class="std std-ref">Buffer</span></a> </p></li>
+<li><p><strong>cmdBuff</strong> – : the command buffer used for this operation, must not be in a recording state </p></li>
+<li><p><strong>rawdata</strong> – : a vector of data to be pushed to the buffer </p></li>
+<li><p><strong>usage</strong> – : the usage of the buffer see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a> </p></li>
+<li><p><strong>memPropertyFlag</strong> – : the memory property of the buffer, see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a> </p></li>
+<li><p><strong>stageFlagBit</strong> – : the stage where the buffer will be used, see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a> </p></li>
+<li><p><strong>format</strong> – : the format of the buffer see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a> </p></li>
+<li><p><strong>accessmod</strong> – : the access mode of the buffer <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer8allocateE8uint64_t18VkBufferUsageFlags24VkMemoryPropertyFlagBits23VkPipelineStageFlagBits8VkFormat">
+<span id="_CPPv3N8LavaCake9Framework6Buffer8allocateE8uint64_t18VkBufferUsageFlags24VkMemoryPropertyFlagBits23VkPipelineStageFlagBits8VkFormat"></span><span id="_CPPv2N8LavaCake9Framework6Buffer8allocateE8uint64_t18VkBufferUsageFlags24VkMemoryPropertyFlagBits23VkPipelineStageFlagBits8VkFormat"></span><span id="LavaCake::Framework::Buffer::allocate__uint64_t.VkBufferUsageFlags.VkMemoryPropertyFlagBits.VkPipelineStageFlagBits.VkFormat"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1a1d4c444d46108ed1c1f2d84b21b99307"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">byteSize</span></span>, <span class="n"><span class="pre">VkBufferUsageFlags</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">usage</span></span>, <span class="n"><span class="pre">VkMemoryPropertyFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">memPropertyFlag</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span></span>, <span class="n"><span class="pre">VkPipelineStageFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stageFlagBit</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">VK_PIPELINE_STAGE_TRANSFER_BIT</span></span>, <span class="n"><span class="pre">VkFormat</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">VK_FORMAT_R32_SFLOAT</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer8allocateE8uint64_t18VkBufferUsageFlags24VkMemoryPropertyFlagBits23VkPipelineStageFlagBits8VkFormat" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Allocate a <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_buffer"><span class="std std-ref">Buffer</span></a> of a given size. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>byteSize</strong> – : the size in byte of the buffer </p></li>
+<li><p><strong>usage</strong> – : the usage of the buffer see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a> </p></li>
+<li><p><strong>memPropertyFlag</strong> – : the memory property of the buffer, see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a> </p></li>
+<li><p><strong>stageFlagBit</strong> – : the stage where the buffer will be used, see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a> </p></li>
+<li><p><strong>format</strong> – : the format of the buffer see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a> </p></li>
+<li><p><strong>accessmod</strong> – : the access mode of the buffer <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a> </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer9setAccessER13CommandBuffer20VkPipelineStageFlags16VkAccessFlagBits8uint32_t">
+<span id="_CPPv3N8LavaCake9Framework6Buffer9setAccessER13CommandBuffer20VkPipelineStageFlags16VkAccessFlagBits8uint32_t"></span><span id="_CPPv2N8LavaCake9Framework6Buffer9setAccessER13CommandBuffer20VkPipelineStageFlags16VkAccessFlagBits8uint32_t"></span><span id="LavaCake::Framework::Buffer::setAccess__CommandBufferR.VkPipelineStageFlags.VkAccessFlagBits.uint32_t"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1a5c2b6bd064393b4127c44c94a6ef897d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setAccess</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span>, <span class="n"><span class="pre">VkPipelineStageFlags</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dstStage</span></span>, <span class="n"><span class="pre">VkAccessFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dstAccessMode</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dstQueueFamily</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">VK_QUEUE_FAMILY_IGNORED</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer9setAccessER13CommandBuffer20VkPipelineStageFlags16VkAccessFlagBits8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Change the acces mode of the buffer. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdBuff</strong> – : the command buffer used for this opperation, must be in a recording state </p></li>
+<li><p><strong>dstStage</strong> – : the new stage of the buffer, see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a> </p></li>
+<li><p><strong>dstAccessMode</strong> – : the new access mode of the buffer <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a> </p></li>
+<li><p><strong>dstQueueFamily</strong> – : (optional) the new family queue of the buffer, if ignored the buffer will remain on the same family queue </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer9getHandleEv">
+<span id="_CPPv3N8LavaCake9Framework6Buffer9getHandleEv"></span><span id="_CPPv2N8LavaCake9Framework6Buffer9getHandleEv"></span><span id="LavaCake::Framework::Buffer::getHandle"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1ad9e85aaff70555aa85d960629e42488b"></span><span class="n"><span class="pre">VkBuffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getHandle</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer9getHandleEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the handle of the buffer. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a VkBuffer : the vulkan representation of the buffer </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer13getBufferViewEv">
+<span id="_CPPv3N8LavaCake9Framework6Buffer13getBufferViewEv"></span><span id="_CPPv2N8LavaCake9Framework6Buffer13getBufferViewEv"></span><span id="LavaCake::Framework::Buffer::getBufferView"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1a96f916e93488afefc9fb667363c2ce0a"></span><span class="n"><span class="pre">VkBufferView</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getBufferView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer13getBufferViewEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the buffer view. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a VkBuffer : the vulkan representation of the buffer </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer9getMemoryEv">
+<span id="_CPPv3N8LavaCake9Framework6Buffer9getMemoryEv"></span><span id="_CPPv2N8LavaCake9Framework6Buffer9getMemoryEv"></span><span id="LavaCake::Framework::Buffer::getMemory"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1ab91383abc6d8e0972914bdf45a86def5"></span><span class="n"><span class="pre">VkDeviceMemory</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getMemory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer9getMemoryEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the buffer memory. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a VkDeviceMemory : the memory of the buffer on the GPU </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer11copyToImageER13CommandBufferR5ImageNSt6vectorI17VkBufferImageCopyEE">
+<span id="_CPPv3N8LavaCake9Framework6Buffer11copyToImageER13CommandBufferR5ImageNSt6vectorI17VkBufferImageCopyEE"></span><span id="_CPPv2N8LavaCake9Framework6Buffer11copyToImageER13CommandBufferR5ImageNSt6vectorI17VkBufferImageCopyEE"></span><span id="LavaCake::Framework::Buffer::copyToImage__CommandBufferR.ImageR.std::vector:VkBufferImageCopy:"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1aae99f1a16c3bf983f97bb0940b58a114"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyToImage</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span>, <span class="n"><span class="pre">Image</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">image</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">VkBufferImageCopy</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">regions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer11copyToImageER13CommandBufferR5ImageNSt6vectorI17VkBufferImageCopyEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Copy a region(s) of the buffer to an image. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdBuff</strong> – : the command buffer used for this operation, must be in a recording state </p></li>
+<li><p><strong>image</strong> – : the destination image </p></li>
+<li><p><strong>regions</strong> – : The listt of regions of the image to be copied to the buffer </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer12copyToBufferER13CommandBufferR6BufferNSt6vectorI12VkBufferCopyEE">
+<span id="_CPPv3N8LavaCake9Framework6Buffer12copyToBufferER13CommandBufferR6BufferNSt6vectorI12VkBufferCopyEE"></span><span id="_CPPv2N8LavaCake9Framework6Buffer12copyToBufferER13CommandBufferR6BufferNSt6vectorI12VkBufferCopyEE"></span><span id="LavaCake::Framework::Buffer::copyToBuffer__CommandBufferR.BufferR.std::vector:VkBufferCopy:"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1a261b26866eedbfb62561234239a0a1c2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyToBuffer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span>, <a class="reference internal" href="#_CPPv4N8LavaCake9Framework6BufferE" title="LavaCake::Framework::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">VkBufferCopy</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">regions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer12copyToBufferER13CommandBufferR6BufferNSt6vectorI12VkBufferCopyEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Copy a region(s) of the buffer another buffer. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdBuff</strong> – : the command buffer used for this operation, must be in a recording state </p></li>
+<li><p><strong>buffer</strong> – : the destination buffer </p></li>
+<li><p><strong>regions</strong> – : The list of regions of the image to be copied to the buffer </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer3mapEv">
+<span id="_CPPv3N8LavaCake9Framework6Buffer3mapEv"></span><span id="_CPPv2N8LavaCake9Framework6Buffer3mapEv"></span><span id="LavaCake::Framework::Buffer::map"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1a587c7fd1ba945b9addf0ff7fc1c24b01"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">map</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer3mapEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Map the buffer memory to a pointer. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a void* pointer to mapped memory </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer5unmapEv">
+<span id="_CPPv3N8LavaCake9Framework6Buffer5unmapEv"></span><span id="_CPPv2N8LavaCake9Framework6Buffer5unmapEv"></span><span id="LavaCake::Framework::Buffer::unmap"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1adf5bd24eded25b5e2b40b4003b46b512"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unmap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer5unmapEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Unmap the buffer memory </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN8LavaCake9Framework6Buffer8readBackEvP5QueueR13CommandBufferRNSt6vectorI1tEE">
+<span id="_CPPv3I0EN8LavaCake9Framework6Buffer8readBackEP5QueueR13CommandBufferRNSt6vectorI1tEE"></span><span id="_CPPv2I0EN8LavaCake9Framework6Buffer8readBackEP5QueueR13CommandBufferRNSt6vectorI1tEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">t</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1a261ffca4f274d4c0cfb4ff63aa5914ae"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readBack</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Queue</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">queue</span></span>, <a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN8LavaCake9Framework6Buffer8readBackEvP5QueueR13CommandBufferRNSt6vectorI1tEE" title="LavaCake::Framework::Buffer::readBack::t"><span class="n"><span class="pre">t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8LavaCake9Framework6Buffer8readBackEvP5QueueR13CommandBufferRNSt6vectorI1tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Read back the data contained in a buffer and return it in a vector. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>queue</strong> – : a pointer to the queue that will be used to copy data to the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_buffer"><span class="std std-ref">Buffer</span></a> </p></li>
+<li><p><strong>cmdBuff</strong> – : the command buffer used for this operation, must not be in a recording state </p></li>
+<li><p><strong>data</strong> – the vector on witch the content of the data will be written </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Buffer22getBufferDeviceAddressEv">
+<span id="_CPPv3N8LavaCake9Framework6Buffer22getBufferDeviceAddressEv"></span><span id="_CPPv2N8LavaCake9Framework6Buffer22getBufferDeviceAddressEv"></span><span id="LavaCake::Framework::Buffer::getBufferDeviceAddress"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1ad7004d622c04b8deed7949fbb8696b56"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getBufferDeviceAddress</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Buffer22getBufferDeviceAddressEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_buffer"><span class="std std-ref">Buffer</span></a> device address,. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the address of the buffer on the device </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN8LavaCake9Framework6Buffer5writeEvRNSt6vectorI1tEE">
+<span id="_CPPv3I0EN8LavaCake9Framework6Buffer5writeERNSt6vectorI1tEE"></span><span id="_CPPv2I0EN8LavaCake9Framework6Buffer5writeERNSt6vectorI1tEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">t</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_buffer_1a384b600d9077f60fbfe4412653ef0660"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">write</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN8LavaCake9Framework6Buffer5writeEvRNSt6vectorI1tEE" title="LavaCake::Framework::Buffer::write::t"><span class="n"><span class="pre">t</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8LavaCake9Framework6Buffer5writeEvRNSt6vectorI1tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Write a set of data to the buffer, The buffer must be host visible for this operation to succeed. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div></blockquote>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LavaCake</a></h1>
+
+
+
+<p class="blurb">Just a Vulkan framework</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=ThibaultTricard&repo=LavaCake&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Constant.html">Push Constant</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Framework.html">Framework</a><ul>
+      <li>Previous: <a href="Framework.html" title="previous chapter">Framework</a></li>
+      <li>Next: <a href="CommandBuffer.html" title="next chapter">CommandBuffer</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Thibault Tricard.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Buffer.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

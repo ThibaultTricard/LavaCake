@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Device &#8212; LavaCake 1.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Error Check" href="ErrorCheck.html" />
+    <link rel="prev" title="Compute Pipeline" href="ComputePipeline.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="device">
+<h1>Device<a class="headerlink" href="#device" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6DeviceE">
+<span id="_CPPv3N8LavaCake9Framework6DeviceE"></span><span id="_CPPv2N8LavaCake9Framework6DeviceE"></span><span id="LavaCake::Framework::Device"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Device</span></span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6DeviceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>helps manage Vulkan device related task This class is a singleton </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_device"><span class="std std-ref">Device</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device11getInstanceEv">
+<span id="_CPPv3N8LavaCake9Framework6Device11getInstanceEv"></span><span id="_CPPv2N8LavaCake9Framework6Device11getInstanceEv"></span><span id="LavaCake::Framework::Device::getInstance"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1a168c0ef4c925bf4a865a33454cfc1a5a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">VkInstance</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getInstance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device11getInstanceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retourn the Vulkan instance. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the VkInstance used by the application </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device17getPhysicalDeviceEv">
+<span id="_CPPv3N8LavaCake9Framework6Device17getPhysicalDeviceEv"></span><span id="_CPPv2N8LavaCake9Framework6Device17getPhysicalDeviceEv"></span><span id="LavaCake::Framework::Device::getPhysicalDevice"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1a94ba88fb052cad86f58f9ea512598d8a"></span><span class="n"><span class="pre">VkPhysicalDevice</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getPhysicalDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device17getPhysicalDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retourn the Physical <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_device"><span class="std std-ref">Device</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the VkPhysicalDevice used by the application </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device16getLogicalDeviceEv">
+<span id="_CPPv3N8LavaCake9Framework6Device16getLogicalDeviceEv"></span><span id="_CPPv2N8LavaCake9Framework6Device16getLogicalDeviceEv"></span><span id="LavaCake::Framework::Device::getLogicalDevice"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1a2666ed1883962e8460e88b43a64f1ae1"></span><span class="n"><span class="pre">VkDevice</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getLogicalDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device16getLogicalDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retourn the Logical <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_device"><span class="std std-ref">Device</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the VkDevice used by the application </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device14getCommandPoolEv">
+<span id="_CPPv3N8LavaCake9Framework6Device14getCommandPoolEv"></span><span id="_CPPv2N8LavaCake9Framework6Device14getCommandPoolEv"></span><span id="LavaCake::Framework::Device::getCommandPool"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1aa59493158d4cf3d1ce208b5601733a07"></span><span class="n"><span class="pre">VkCommandPool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getCommandPool</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device14getCommandPoolEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retourn the Command pool. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the VkCommandPool used by the application </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device10getSurfaceEv">
+<span id="_CPPv3N8LavaCake9Framework6Device10getSurfaceEv"></span><span id="_CPPv2N8LavaCake9Framework6Device10getSurfaceEv"></span><span id="LavaCake::Framework::Device::getSurface"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1ad7c4e295c5a9e34d03c4d0c5d4984371"></span><span class="n"><span class="pre">VkSurfaceKHR</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getSurface</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device10getSurfaceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retourn the Vulkan surface. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the VkSurfaceKHR used by the application </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device15getPresentQueueEv">
+<span id="_CPPv3N8LavaCake9Framework6Device15getPresentQueueEv"></span><span id="_CPPv2N8LavaCake9Framework6Device15getPresentQueueEv"></span><span id="LavaCake::Framework::Device::getPresentQueue"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1a4de0f933891a1ce74be435521981ab91"></span><span class="n"><span class="pre">PresentationQueue</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getPresentQueue</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device15getPresentQueueEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retourn the Presentation Queue used to draw on the screen. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a reference to PresentationQueue used by the application </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device15getGraphicQueueEi">
+<span id="_CPPv3N8LavaCake9Framework6Device15getGraphicQueueEi"></span><span id="_CPPv2N8LavaCake9Framework6Device15getGraphicQueueEi"></span><span id="LavaCake::Framework::Device::getGraphicQueue__i"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1ac5c3a22781857b8492746b9d6042e8b5"></span><span class="n"><span class="pre">GraphicQueue</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getGraphicQueue</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device15getGraphicQueueEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retourn a specific Graphic Queue. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>i</strong> – the index of the wanted queue </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a reference to a GraphicQueue </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device15getComputeQueueEi">
+<span id="_CPPv3N8LavaCake9Framework6Device15getComputeQueueEi"></span><span id="_CPPv2N8LavaCake9Framework6Device15getComputeQueueEi"></span><span id="LavaCake::Framework::Device::getComputeQueue__i"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1a5108311b3dc1fa0a06640923b10ca293"></span><span class="n"><span class="pre">ComputeQueue</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getComputeQueue</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device15getComputeQueueEi" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retourn a specific Compute Queue. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>i</strong> – the index of the wanted queue </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a reference to a ComputeQueue </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device11initDevicesEiiR16WindowParametersP24VkPhysicalDeviceFeatures">
+<span id="_CPPv3N8LavaCake9Framework6Device11initDevicesEiiR16WindowParametersP24VkPhysicalDeviceFeatures"></span><span id="_CPPv2N8LavaCake9Framework6Device11initDevicesEiiR16WindowParametersP24VkPhysicalDeviceFeatures"></span><span id="LavaCake::Framework::Device::initDevices__i.i.WindowParametersR.VkPhysicalDeviceFeaturesP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1a10d689e45c8900a153ccf4197cfedea1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initDevices</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nbComputeQueue</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nbGraphicQueue</span></span>, <span class="n"><span class="pre">WindowParameters</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">windowParams</span></span>, <span class="n"><span class="pre">VkPhysicalDeviceFeatures</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">desiredDeviceFeatures</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device11initDevicesEiiR16WindowParametersP24VkPhysicalDeviceFeatures" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialise the device. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nbComputeQueue</strong> – the number of compute queue requiered by the application </p></li>
+<li><p><strong>nbGraphicQueue</strong> – the number of graphic queue requiered by the application </p></li>
+<li><p><strong>windowParams</strong> – the windows parameter of the application </p></li>
+<li><p><strong>desiredDeviceFeatures</strong> – the device feature requiered by the application </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a reference to a ComputeQueue </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device18waitForAllCommandsEv">
+<span id="_CPPv3N8LavaCake9Framework6Device18waitForAllCommandsEv"></span><span id="_CPPv2N8LavaCake9Framework6Device18waitForAllCommandsEv"></span><span id="LavaCake::Framework::Device::waitForAllCommands"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1ad86fab5cfdafd0a41361bdea77fe72dd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">waitForAllCommands</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device18waitForAllCommandsEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Make sure every command send to the device are finished. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework6Device9getDeviceEv">
+<span id="_CPPv3N8LavaCake9Framework6Device9getDeviceEv"></span><span id="_CPPv2N8LavaCake9Framework6Device9getDeviceEv"></span><span id="LavaCake::Framework::Device::getDevice"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_device_1a9faa6db95435d981f08cb2a78c7b3abd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8LavaCake9Framework6DeviceE" title="LavaCake::Framework::Device"><span class="n"><span class="pre">Device</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework6Device9getDeviceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Retourn the device. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a static reference to the devince </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div></blockquote>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LavaCake</a></h1>
+
+
+
+<p class="blurb">Just a Vulkan framework</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=ThibaultTricard&repo=LavaCake&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Constant.html">Push Constant</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Framework.html">Framework</a><ul>
+      <li>Previous: <a href="ComputePipeline.html" title="previous chapter">Compute Pipeline</a></li>
+      <li>Next: <a href="ErrorCheck.html" title="next chapter">Error Check</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Thibault Tricard.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Device.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
