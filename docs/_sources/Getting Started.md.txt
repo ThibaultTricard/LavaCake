@@ -7,7 +7,7 @@ in your project folder and initialising it's submodules.
 ```
 git clone https://github.com/ThibaultTricard/LavaCake.git
 cd LavaCake
-git checkout dev-1.2
+git checkout dev-1.3
 git pull
 git submodule update --init --recursive
 ```
