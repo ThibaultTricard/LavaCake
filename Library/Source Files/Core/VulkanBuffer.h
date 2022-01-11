@@ -33,23 +33,6 @@ namespace LavaCake {
 	
 	namespace Core {
 
-
-		struct BufferDescriptorInfo {
-			VkDescriptorSet                     TargetDescriptorSet;
-			uint32_t                            TargetDescriptorBinding;
-			uint32_t                            TargetArrayElement;
-			VkDescriptorType                    TargetDescriptorType;
-			std::vector<VkDescriptorBufferInfo> BufferInfos;
-		};
-
-		struct TexelBufferDescriptorInfo {
-			VkDescriptorSet                     TargetDescriptorSet;
-			uint32_t                            TargetDescriptorBinding;
-			uint32_t                            TargetArrayElement;
-			VkDescriptorType                    TargetDescriptorType;
-			std::vector<VkBufferView>           TexelBufferViews;
-		};
-
 		struct BufferTransition {
 			VkBuffer        Buffer;
 			VkAccessFlags   CurrentAccess;

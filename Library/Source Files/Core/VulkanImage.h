@@ -43,14 +43,6 @@ namespace LavaCake {
 			VkImageAspectFlags  Aspect;
 		};
 
-		struct ImageDescriptorInfo {
-			VkDescriptorSet                     TargetDescriptorSet;
-			uint32_t                            TargetDescriptorBinding;
-			uint32_t                            TargetArrayElement;
-			VkDescriptorType                    TargetDescriptorType;
-			std::vector<VkDescriptorImageInfo>  ImageInfos;
-		};
-
 		bool CreateImage(VkDevice                logical_device,
 			VkImageType             type,
 			VkFormat                format,

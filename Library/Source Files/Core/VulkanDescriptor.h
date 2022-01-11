@@ -58,12 +58,6 @@ namespace LavaCake {
 			std::vector<VkDescriptorSetLayout> const & descriptor_set_layouts,
 			std::vector<VkDescriptorSet>             & descriptor_sets);
 
-		void UpdateDescriptorSets(VkDevice                                       logical_device,
-			std::vector<ImageDescriptorInfo> const       & image_descriptor_infos,
-			std::vector<BufferDescriptorInfo> const      & buffer_descriptor_infos,
-			std::vector<TexelBufferDescriptorInfo> const & texel_buffer_descriptor_infos,
-			std::vector<CopyDescriptorInfo> const        & copy_descriptor_infos);
-
 		void BindDescriptorSets(VkCommandBuffer                      command_buffer,
 			VkPipelineBindPoint                  pipeline_type,
 			VkPipelineLayout                     pipeline_layout,

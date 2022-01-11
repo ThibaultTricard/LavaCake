@@ -11,10 +11,19 @@
 
 namespace LavaCake {
   namespace Framework{
+
+    /**
+      \brief help manage the uniform buffer creation and updating their GPU memory.
+      This class is mainly a dictionary of variable of different type that can be send to the the GPU.
+    */
     class UniformBuffer {
     public :
 
-
+      /**
+       \brief Add a variable into the dictionary.
+       \param name: the name of constant.
+       \param value: the variable.
+      */
       template<typename T>
       void addVariable(std::string name, T value) {
         std::vector<char> v = std::vector<char>(sizeof(value) / sizeof(char));
@@ -22,6 +31,11 @@ namespace LavaCake {
         addArray(name, v);
       }
 
+      /**
+        \brief set a variable into the dictionary
+        \param name : the name of constant
+        \param value : the variable
+      */
       template<typename T>
       void setVariable(std::string name, T value) {
         std::vector<char> v = std::vector<char>(sizeof(value) / sizeof(char));
@@ -29,16 +43,22 @@ namespace LavaCake {
         setArray(name, v);
       }
 
+      /**
+        \brief notify the buffer that no new variable will be added
+      */
 			void end();
 
+      /**
+        \brief update the gpu memory of the uniform buffer
+        \param cmdBuff: the command buffer used for this operation, must be in a recording state
+      */
 			void update(CommandBuffer& commandBuffer, bool all = true);
+
+
 
 			VkBuffer& getHandle();
 
       ~UniformBuffer() {
-        Device* d = Device::getDevice();
-        VkDevice logical = d->getLogicalDevice();
-
       }
 
     private :

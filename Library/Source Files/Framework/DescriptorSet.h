@@ -317,176 +317,181 @@ namespace LavaCake {
       if (!Core::AllocateDescriptorSets(logical, m_descriptorPool, { m_descriptorSetLayout }, descriptorSets)) {
         ErrorCheck::setError((char*)"Can't allocate descriptor set");
       }
-      std::vector<Core::BufferDescriptorInfo> bufferDescriptorUpdate = { };
-      int descriptorCount = 0;
-      for (uint32_t i = 0; i < m_uniforms.size(); i++) {
-        bufferDescriptorUpdate.push_back({
-          descriptorSets[descriptorCount],              // VkDescriptorSet                      TargetDescriptorSet
-          uint32_t(m_uniforms[i].binding),                // uint32_t                             TargetDescriptorBinding
-          0,                                              // uint32_t                             TargetArrayElement
-          VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,              // VkDescriptorType                     TargetDescriptorType
-          {                                                // std::vector<VkDescriptorBufferInfo>  BufferInfos
-            {
-            m_uniforms[i].buffer->getHandle(),          // VkBuffer                             buffer
-            0,                                          // VkDeviceSize                         offset
-            VK_WHOLE_SIZE                                // VkDeviceSize                         range
-            }
-          }
-        });
-      }
-      
-      std::vector<Core::ImageDescriptorInfo> imageDescriptorUpdate = { };
-      for (uint32_t i = 0; i < m_textures.size(); i++) {
-        imageDescriptorUpdate.push_back({
-          descriptorSets[descriptorCount],              // VkDescriptorSet                      TargetDescriptorSet
-          uint32_t(m_textures[i].binding),                // uint32_t                             TargetDescriptorBinding
-          0,                                              // uint32_t                             TargetArrayElement
-          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,      // VkDescriptorType                     TargetDescriptorType
-          {                                                // std::vector<VkDescriptorBufferInfo>  BufferInfos
-            {
-            m_textures[i].i->getSampler(),              // vkSampler                            buffer
-            m_textures[i].i->getImageView(),            // VkImageView                          offset
-            m_textures[i].i->getLayout()                // VkImageLayout                         range
-            }
-          }
-        });
-      }
-      for (uint32_t i = 0; i < m_frameBuffers.size(); i++) {
-        std::vector<VkDescriptorImageInfo> descriptorInfo;
-        descriptorInfo.push_back(
-                                 {
-                                 m_frameBuffers[i].f->getSampler(),
-                                 m_frameBuffers[i].f->getImageViews(m_frameBuffers[i].viewIndex),
-                                 m_frameBuffers[i].f->getLayout(m_frameBuffers[i].viewIndex),
-                                 });
-        
-        imageDescriptorUpdate.push_back({
-          descriptorSets[descriptorCount],              // VkDescriptorSet                      TargetDescriptorSet
-          uint32_t(m_frameBuffers[i].binding),            // uint32_t                             TargetDescriptorBinding
-          0,                                              // uint32_t                             TargetArrayElement
-          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,      // VkDescriptorType                     TargetDescriptorType
-          descriptorInfo                                  // std::vector<VkDescriptorBufferInfo>  BufferInfos
-        });
-      }
-      for (uint32_t i = 0; i < m_attachments.size(); i++) {
-        imageDescriptorUpdate.push_back({
-          descriptorSets[descriptorCount],              // VkDescriptorSet                      TargetDescriptorSet
-          uint32_t(m_attachments[i].binding),                // uint32_t                             TargetDescriptorBinding
-          0,                                              // uint32_t                             TargetArrayElement
-          VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,            // VkDescriptorType                     TargetDescriptorType
-          {                                                // std::vector<VkDescriptorBufferInfo>  BufferInfos
-            {
-            VK_NULL_HANDLE,                              // vkSampler                            buffer
-            m_attachments[i].i->getImageView(),          // VkImageView                          offset
-            m_attachments[i].i->getLayout()              // VkImageLayout                         range
-            }
-          }
-        });
-      }
-      
-      for (uint32_t i = 0; i < m_storageImages.size(); i++) {
-        imageDescriptorUpdate.push_back({
-          descriptorSets[descriptorCount],              // VkDescriptorSet                      TargetDescriptorSet
-          uint32_t(m_storageImages[i].binding),            // uint32_t                             TargetDescriptorBinding
-          0,                                              // uint32_t                             TargetArrayElement
-          VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,                // VkDescriptorType                     TargetDescriptorType
-          {                                                // std::vector<VkDescriptorBufferInfo>  BufferInfos
-            {
-            VK_NULL_HANDLE,                              // vkSampler                            buffer
-            m_storageImages[i].i->getImageView(),        // VkImageView                          offset
-            m_storageImages[i].i->getLayout()            // VkImageLayout                         range
-            }
-          }
-        });
-      }
-      
-      std::vector<Core::TexelBufferDescriptorInfo> texelBufferDescriptorUpdate = {};
-      for (uint32_t i = 0; i < m_texelBuffers.size(); i++) {
-        
-        Core::TexelBufferDescriptorInfo info = {
-          descriptorSets[descriptorCount],
-          uint32_t(m_texelBuffers[i].binding),
-          0,
-          VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
-          {
-          m_texelBuffers[i].t->getBufferView()
-          }
-        };
-        
-        texelBufferDescriptorUpdate.push_back(info);
-      }
 
-      for (uint32_t i = 0; i < m_buffers.size(); i++) {
-
-        LavaCake::Core::BufferDescriptorInfo info = {
-          descriptorSets[descriptorCount],
-          uint32_t(m_buffers[i].binding),
-          0,
-          VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-          {
-            {
-              m_buffers[i].t->getHandle(),
-              0,
-              VK_WHOLE_SIZE
-            }
-          }
-        };
-
-        bufferDescriptorUpdate.push_back(info);
-      }
-
-      /////////////////////////////////////////////////////////////////////////////////////////////
       std::vector<VkWriteDescriptorSet> write_descriptors;
       std::vector<VkCopyDescriptorSet> copy_descriptors;
 
-      // image descriptors
-      for (auto& image_descriptor : imageDescriptorUpdate) {
+      int descriptorCount = 0;
+      std::vector< std::vector<VkDescriptorBufferInfo>> uniformDescriptor;
+      for (uint32_t i = 0; i < m_uniforms.size(); i++) {
+
+        uniformDescriptor.push_back(
+        {                        // std::vector<VkDescriptorBufferInfo>  BufferInfos
+          {
+            m_uniforms[i].buffer->getHandle(),                                    // VkBuffer                             buffer
+            0,                                                                    // VkDeviceSize                         offset
+            VK_WHOLE_SIZE                                                         // VkDeviceSize                         range
+          }
+        });
         write_descriptors.push_back({
           VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
           nullptr,                                                                // const void                     * pNext
-          image_descriptor.TargetDescriptorSet,                                   // VkDescriptorSet                  dstSet
-          image_descriptor.TargetDescriptorBinding,                               // uint32_t                         dstBinding
-          image_descriptor.TargetArrayElement,                                    // uint32_t                         dstArrayElement
-          static_cast<uint32_t>(image_descriptor.ImageInfos.size()),              // uint32_t                         descriptorCount
-          image_descriptor.TargetDescriptorType,                                  // VkDescriptorType                 descriptorType
-          image_descriptor.ImageInfos.data(),                                     // const VkDescriptorImageInfo    * pImageInfo
+          descriptorSets[descriptorCount],                                        // VkDescriptorSet                  dstSet
+          uint32_t(m_uniforms[i].binding),                                        // uint32_t                         dstBinding
+          0,                                                                      // uint32_t                         dstArrayElement
+          static_cast<uint32_t>(uniformDescriptor[i].size()),                               // uint32_t                         descriptorCount
+          VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,                                      // VkDescriptorType                 descriptorType
+          nullptr,                                                                // const VkDescriptorImageInfo    * pImageInfo
+          uniformDescriptor[i].data(),                                                      // const VkDescriptorBufferInfo   * pBufferInfo
+          nullptr                                                                 // const VkBufferView             * pTexelBufferView
+          });
+      }
+      
+      std::vector<std::vector<VkDescriptorImageInfo>>  textureDescriptor;
+      for (uint32_t i = 0; i < m_textures.size(); i++) {
+
+        textureDescriptor.push_back({
+          {
+            m_textures[i].i->getSampler(),                                        // vkSampler                            buffer
+            m_textures[i].i->getImageView(),                                      // VkImageView                          offset
+            m_textures[i].i->getLayout()                                          // VkImageLayout                         range
+           } 
+        });
+        write_descriptors.push_back({
+          VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
+          nullptr,                                                                // const void                     * pNext
+          descriptorSets[descriptorCount],                                        // VkDescriptorSet                  dstSet
+          uint32_t(m_textures[i].binding),                                        // uint32_t                         dstBinding
+          0,                                                                      // uint32_t                         dstArrayElement
+          static_cast<uint32_t>(textureDescriptor[i].size()),                     // uint32_t                         descriptorCount
+          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,                              // VkDescriptorType                 descriptorType
+          textureDescriptor[i].data(),                                            // const VkDescriptorImageInfo    * pImageInfo
+          nullptr,                                                                // const VkDescriptorBufferInfo   * pBufferInfo
+          nullptr                                                                 // const VkBufferView             * pTexelBufferView
+          });
+
+      }
+
+      std::vector<std::vector<VkDescriptorImageInfo>>  FBDescriptor;
+      for (uint32_t i = 0; i < m_frameBuffers.size(); i++) {
+        FBDescriptor.push_back(
+        {
+          {
+            m_frameBuffers[i].f->getSampler(),
+            m_frameBuffers[i].f->getImageViews(m_frameBuffers[i].viewIndex),
+            m_frameBuffers[i].f->getLayout(m_frameBuffers[i].viewIndex),
+          }
+        });
+
+        write_descriptors.push_back({
+          VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
+          nullptr,                                                                // const void                     * pNext
+          descriptorSets[descriptorCount],                                        // VkDescriptorSet                  dstSet
+          uint32_t(m_frameBuffers[i].binding),                                    // uint32_t                         dstBinding
+          0,                                                                      // uint32_t                         dstArrayElement
+          static_cast<uint32_t>(FBDescriptor[i].size()),                          // uint32_t                         descriptorCount
+          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,                              // VkDescriptorType                 descriptorType
+          FBDescriptor[i].data(),                                                 // const VkDescriptorImageInfo    * pImageInfo
           nullptr,                                                                // const VkDescriptorBufferInfo   * pBufferInfo
           nullptr                                                                 // const VkBufferView             * pTexelBufferView
           });
       }
 
-      // buffer descriptors
-      for (auto& buffer_descriptor : bufferDescriptorUpdate) {
+      std::vector<std::vector<VkDescriptorImageInfo>>  attachmentDescriptor;
+      for (uint32_t i = 0; i < m_attachments.size(); i++) {
+        attachmentDescriptor.push_back(
+        {
+          {
+            VK_NULL_HANDLE,
+            m_attachments[i].i->getImageView(),
+            m_attachments[i].i->getLayout(),
+          }
+        });
+
         write_descriptors.push_back({
           VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
           nullptr,                                                                // const void                     * pNext
-          buffer_descriptor.TargetDescriptorSet,                                  // VkDescriptorSet                  dstSet
-          buffer_descriptor.TargetDescriptorBinding,                              // uint32_t                         dstBinding
-          buffer_descriptor.TargetArrayElement,                                   // uint32_t                         dstArrayElement
-          static_cast<uint32_t>(buffer_descriptor.BufferInfos.size()),            // uint32_t                         descriptorCount
-          buffer_descriptor.TargetDescriptorType,                                 // VkDescriptorType                 descriptorType
-          nullptr,                                                                // const VkDescriptorImageInfo    * pImageInfo
-          buffer_descriptor.BufferInfos.data(),                                   // const VkDescriptorBufferInfo   * pBufferInfo
+          descriptorSets[descriptorCount],                                        // VkDescriptorSet                  dstSet
+          uint32_t(m_attachments[i].binding),                                     // uint32_t                         dstBinding
+          0,                                                                      // uint32_t                         dstArrayElement
+          static_cast<uint32_t>(attachmentDescriptor[i].size()),                  // uint32_t                         descriptorCount
+          VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,                                    // VkDescriptorType                 descriptorType
+          attachmentDescriptor[i].data(),                                         // const VkDescriptorImageInfo    * pImageInfo
+          nullptr,                                                                // const VkDescriptorBufferInfo   * pBufferInfo
+          nullptr                                                                 // const VkBufferView             * pTexelBufferView
+          });
+
+      }
+      
+
+      std::vector<std::vector<VkDescriptorImageInfo>>  storageDescriptor;
+      for (uint32_t i = 0; i < m_storageImages.size(); i++) {
+        storageDescriptor.push_back(
+        {
+          {
+            VK_NULL_HANDLE,
+            m_storageImages[i].i->getImageView(),
+            m_storageImages[i].i->getLayout(),
+          }
+        });
+
+        write_descriptors.push_back({
+          VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
+          nullptr,                                                                // const void                     * pNext
+          descriptorSets[descriptorCount],                                        // VkDescriptorSet                  dstSet
+          uint32_t(m_attachments[i].binding),                                     // uint32_t                         dstBinding
+          0,                                                                      // uint32_t                         dstArrayElement
+          static_cast<uint32_t>(storageDescriptor[i].size()),                     // uint32_t                         descriptorCount
+          VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,                                       // VkDescriptorType                 descriptorType
+          storageDescriptor[i].data(),                                            // const VkDescriptorImageInfo    * pImageInfo
+          nullptr,                                                                // const VkDescriptorBufferInfo   * pBufferInfo
           nullptr                                                                 // const VkBufferView             * pTexelBufferView
           });
       }
+      std::vector<std::vector<VkBufferView>> texelViews;
+      for (uint32_t i = 0; i < m_texelBuffers.size(); i++) {
+        
+        texelViews.push_back({ m_texelBuffers[i].t->getBufferView() });
 
-      // texel buffer descriptors
-      for (auto& texel_buffer_descriptor : texelBufferDescriptorUpdate) {
         write_descriptors.push_back({
           VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
           nullptr,                                                                // const void                     * pNext
-          texel_buffer_descriptor.TargetDescriptorSet,                            // VkDescriptorSet                  dstSet
-          texel_buffer_descriptor.TargetDescriptorBinding,                        // uint32_t                         dstBinding
-          texel_buffer_descriptor.TargetArrayElement,                             // uint32_t                         dstArrayElement
-          static_cast<uint32_t>(texel_buffer_descriptor.TexelBufferViews.size()), // uint32_t                         descriptorCount
-          texel_buffer_descriptor.TargetDescriptorType,                           // VkDescriptorType                 descriptorType
+          descriptorSets[descriptorCount],                                        // VkDescriptorSet                  dstSet
+          uint32_t(m_texelBuffers[i].binding),                                    // uint32_t                         dstBinding
+          0,                                                                      // uint32_t                         dstArrayElement
+          static_cast<uint32_t>(texelViews[i].size()),                            // uint32_t                         descriptorCount
+          VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,                                // VkDescriptorType                 descriptorType
           nullptr,                                                                // const VkDescriptorImageInfo    * pImageInfo
           nullptr,                                                                // const VkDescriptorBufferInfo   * pBufferInfo
-          texel_buffer_descriptor.TexelBufferViews.data()                         // const VkBufferView             * pTexelBufferView
+          texelViews[i].data()                                                    // const VkBufferView             * pTexelBufferView
           });
-      }
 
+      }
+      std::vector< std::vector<VkDescriptorBufferInfo>> bufferDescriptor;
+      for (uint32_t i = 0; i < m_buffers.size(); i++) {
+
+        bufferDescriptor.push_back({                        // std::vector<VkDescriptorBufferInfo>  BufferInfos
+            {
+            m_buffers[i].t->getHandle(),                                          // VkBuffer                             buffer
+            0,                                                                    // VkDeviceSize                         offset
+            VK_WHOLE_SIZE                                                         // VkDeviceSize                         range
+            }
+        });
+
+        write_descriptors.push_back({
+          VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
+          nullptr,                                                                // const void                     * pNext
+          descriptorSets[descriptorCount],                                        // VkDescriptorSet                  dstSet
+          uint32_t(m_buffers[i].binding),                                         // uint32_t                         dstBinding
+          0,                                                                      // uint32_t                         dstArrayElement
+          static_cast<uint32_t>(bufferDescriptor[i].size()),                      // uint32_t                         descriptorCount
+          VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,                                      // VkDescriptorType                 descriptorType
+          nullptr,                                                                // const VkDescriptorImageInfo    * pImageInfo
+          bufferDescriptor[i].data(),                                             // const VkDescriptorBufferInfo   * pBufferInfo
+          nullptr                                                                 // const VkBufferView             * pTexelBufferView
+          });
+
+      }
 
       std::vector<VkWriteDescriptorSetAccelerationStructureKHR> descriptorAccelerationStructureInfos{};
 #ifdef RAYTRACING
