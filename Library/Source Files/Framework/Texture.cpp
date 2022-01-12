@@ -184,7 +184,7 @@ namespace LavaCake {
 						0,																																								// uint32_t                   bufferImageHeight
 						image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
 						{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
-						{ image->width(), image->height(), image->depth() },												// VkExtent3D                 imageExtent
+						{ image->width(), image->height(), image->depth() },															// VkExtent3D                 imageExtent
 			};
 
 			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1,static_cast<uint32_t>(0), 6 };

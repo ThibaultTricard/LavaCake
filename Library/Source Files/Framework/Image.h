@@ -30,8 +30,15 @@ namespace LavaCake {
        \param memPropertyFlag : the memory property of the image, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
        \param cubemap [otpional] weither or not the image is a cubemap, false by defalt
        */
-			Image(uint32_t width, uint32_t height, uint32_t depth, VkFormat format, VkImageAspectFlagBits aspect, VkImageUsageFlags usage,
-        VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, bool cubemap = false);
+			Image(
+        uint32_t width, 
+        uint32_t height, 
+        uint32_t depth, 
+        VkFormat format, 
+        VkImageAspectFlagBits aspect, 
+        VkImageUsageFlags usage,
+        VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        bool cubemap = false);
 
 
       void createSampler();

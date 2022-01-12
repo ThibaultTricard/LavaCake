@@ -275,7 +275,7 @@ namespace LavaCake {
 			return m_renderPass;
 		}
 
-		void RenderPass::prepareOutputFrameBuffer(FrameBuffer& frameBuffer) {
+		void RenderPass::prepareOutputFrameBuffer(Queue* queue, CommandBuffer& commandBuffer, FrameBuffer& frameBuffer) {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
@@ -297,10 +297,11 @@ namespace LavaCake {
 			VkFormat format;
 			
 			frameBuffer.m_images = std::vector<Image*>(m_attachmentype.size());
-			//frameBuffer.m_imageViews = std::vector<VkImageView>(m_attachmentype.size());
 
 			int attachementIndex = 0;
 
+
+			commandBuffer.beginRecord();
 			for (int i = 0; i < m_attachmentype.size(); i ++) {
 				
 
@@ -345,17 +346,19 @@ namespace LavaCake {
 				}
 
         
-				//frameBuffer.m_images[i] = VkImage();
-				//frameBuffer.m_imageViews[i] =  VkImageView();
-
-
-				/*if (!LavaCake::Core::CreateSampledImage(physical, logical, VK_IMAGE_TYPE_2D, format,{ (uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1 }, 1, 1, usage, false, VK_IMAGE_VIEW_TYPE_2D, aspect, linear_filtering, frameBuffer.m_images[i], *frameBuffer.m_imageMemory, frameBuffer.m_imageViews[i])) {
-					ErrorCheck::setError((char*)"Can't create an image sampler for this FrameBuffer");
-				}*/
-        
         frameBuffer.m_images[i] = new Image((uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1, format, aspect, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,false);
 				
+				VkImageSubresourceRange subresourceRange{ aspect, 0, 1, 0, 1 };
+
+				frameBuffer.m_images[i]->setLayout(commandBuffer, layout, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, subresourceRange);
+
 			}
+
+			commandBuffer.endRecord();
+			commandBuffer.submit(queue, {}, {});
+			commandBuffer.wait(UINT32_MAX);
+			commandBuffer.resetFence();
+
 			if (m_khr_attachement == -1) {
         std::vector<VkImageView> imageViews{};
         for(auto i : frameBuffer.m_images){
