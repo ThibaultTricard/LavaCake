@@ -25,7 +25,7 @@ namespace LavaCake {
        \param value: the variable.
       */
       template<typename T>
-      void addVariable(std::string name, T value) {
+      void addVariable(const std::string& name, T value) {
         std::vector<char> v = std::vector<char>(sizeof(value) / sizeof(char));
         std::memcpy(&v[0], &value, sizeof(value));
         addArray(name, v);
@@ -37,7 +37,7 @@ namespace LavaCake {
         \param value : the variable
       */
       template<typename T>
-      void setVariable(std::string name, T value) {
+      void setVariable(const std::string& name, T value) {
         std::vector<char> v = std::vector<char>(sizeof(value) / sizeof(char));
         std::memcpy(&v[0], &value, sizeof(value));
         setArray(name, v);
@@ -65,9 +65,9 @@ namespace LavaCake {
 
 			void copyToStageMemory(bool all = false);
 
-			void addArray(std::string name, std::vector<char>& value);
+			void addArray(const std::string& name, std::vector<char>& value);
 
-			void setArray(std::string name, std::vector<char>& value);
+			void setArray(const std::string& name, std::vector<char>& value);
 
 
       Buffer                                                    m_buffer;

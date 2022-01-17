@@ -23,7 +23,7 @@ namespace LavaCake {
 				\param value: the variable.
 			*/
 			template<typename T>
-			void addVariable(std::string name, T& value) {
+			void addVariable(const std::string& name, T& value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
 				std::memcpy(&v[0], &value, sizeof(T));
 				addArray(name, v);
@@ -35,7 +35,7 @@ namespace LavaCake {
 				\param value : the variable
       */
 			template<typename T>
-			void setVariable(std::string name, T& value) {
+			void setVariable(const std::string& name, T& value) {
 				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
 				std::memcpy(&v[0], &value, sizeof(value));
 				setArray(name, v);
@@ -48,8 +48,8 @@ namespace LavaCake {
 		private:
 
 
-			void addArray(std::string name, std::vector<int>& value);
-			void setArray(std::string name, std::vector<int>& value);
+			void addArray(const std::string& name, std::vector<int>& value);
+			void setArray(const std::string& name, std::vector<int>& value);
 
 
 			VkDeviceSize                                              m_bufferSize = 0;

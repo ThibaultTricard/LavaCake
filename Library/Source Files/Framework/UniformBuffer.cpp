@@ -77,7 +77,7 @@ namespace LavaCake {
 			m_stagingBuffer.write(variable);
 		}
 
-		void UniformBuffer::addArray(std::string name, std::vector<char>& value) {
+		void UniformBuffer::addArray(const std::string& name, std::vector<char>& value) {
 			if (m_variableNames.find(name) != m_variableNames.end()) {
 				ErrorCheck::setError((char*)"The variable allready exist in this UniformBuffer",1);
 				return;
@@ -87,7 +87,7 @@ namespace LavaCake {
 			m_variableNames.insert(std::pair<std::string, uint32_t>(name, i));
 		}
 
-		void UniformBuffer::setArray(std::string name, std::vector<char>& value) {
+		void UniformBuffer::setArray(const std::string& name, std::vector<char>& value) {
 			if (m_variableNames.find(name) == m_variableNames.end()) {
 				ErrorCheck::setError((char*)"The variable does not exist in this UniformBuffer",1);
 				return;
