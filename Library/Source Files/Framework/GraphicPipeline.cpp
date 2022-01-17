@@ -62,8 +62,23 @@ namespace LavaCake {
 			m_fragmentModule = module;
 		}
 
+		void GraphicPipeline::setMeshModule(MeshShaderModule* module) {
+			m_meshModule = module;
+		}
+
+		void GraphicPipeline::setTaskModule(TaskShaderModule* module) {
+			m_taskModule = module;
+		}
+
+
 		std::vector<ShaderStageParameters> GraphicPipeline::getStageParameter() {
 			std::vector<ShaderStageParameters> stage = std::vector<ShaderStageParameters>();
+			if (m_taskModule != nullptr) {
+				stage.push_back(m_taskModule->getStageParameter());
+			}
+			if (m_meshModule != nullptr) {
+				stage.push_back(m_meshModule->getStageParameter());
+			}
 			if (m_vertexModule != nullptr) {
 				stage.push_back(m_vertexModule->getStageParameter());
 			}

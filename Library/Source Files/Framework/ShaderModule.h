@@ -205,6 +205,36 @@ namespace LavaCake {
 			}
 		};
 
+		/**
+		 Class MeshShaderModule :
+		 \brief This class helps manage mesh shader module
+		 */
+		class MeshShaderModule : public ShaderModule {
+		public:
+			MeshShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(path, VK_SHADER_STAGE_MESH_BIT_NV, entrypoint, specialization) {
+			}
+
+			MeshShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_MESH_BIT_NV, entrypoint, specialization) {
+			}
+		};
+
+
+		/**
+		 Class TaskShaderModule :
+		 \brief This class helps manage mesh shader module
+		 */
+		class TaskShaderModule : public ShaderModule {
+		public:
+			TaskShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(path, VK_SHADER_STAGE_TASK_BIT_NV, entrypoint, specialization) {
+			}
+
+			TaskShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
+				ShaderModule(spirv, VK_SHADER_STAGE_TASK_BIT_NV, entrypoint, specialization) {
+			}
+		};
 		
 	}
 }

@@ -54,6 +54,18 @@ namespace LavaCake {
       */
 			void setFragmentModule(FragmentShaderModule*	module);
 
+			/**
+			 \brief Set the mesh shader module for the pipeline
+			 \param module a pointer to a mesh shader module
+			*/
+			void setMeshModule(MeshShaderModule* module);
+
+			/**
+			 \brief Set the mesh task module for the pipeline
+			 \param module a pointer to a mesh shader module
+			*/
+			void setTaskModule(TaskShaderModule* module);
+
 			std::vector<ShaderStageParameters> getStageParameter();
 
 			
@@ -135,7 +147,8 @@ namespace LavaCake {
 			TessellationEvaluationShaderModule*										m_tesselationEvaluationModule = nullptr;
 			GeometryShaderModule*																	m_geometryModule = nullptr;
 			FragmentShaderModule*																	m_fragmentModule = nullptr;
-
+			MeshShaderModule*																			m_meshModule = nullptr;
+			TaskShaderModule*																			m_taskModule = nullptr;
 
 
 			
