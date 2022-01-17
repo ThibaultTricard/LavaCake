@@ -2,9 +2,8 @@
 #include "UniformBuffer.h"
 #include "Texture.h"
 #include "Constant.h"
-#ifdef RAYTRACING
 #include "RayTracing/TopLevelAS.h"
-#endif
+
 namespace LavaCake {
   namespace Framework{
   struct uniform {
@@ -49,15 +48,12 @@ namespace LavaCake {
     VkShaderStageFlags      stage;
   };
 
-#ifdef RAYTRACING
-#include "RayTracing/TopLevelAS.h"
 
   struct accelerationStructure {
     LavaCake::RayTracing::TopLevelAccelerationStructure* AS;
     uint32_t								binding;
     VkShaderStageFlags			stage;
   };
-#endif
   
   class DescriptorSet{
    
@@ -123,8 +119,8 @@ namespace LavaCake {
     /**
      \brief Add an attachment to the pipeline and scpecify it's binding and shader stage
      \param attachement a pointer to the attachement
-     \param stage the shader stage where the storage image is going to be used
-     \param binding the binding point of the storage image, 0 by default
+     \param stage the shader stage where the attachment is going to be used
+     \param binding the binding point of the attachment, 0 by default
      */
     virtual void addAttachment(Image* attachement, VkShaderStageFlags stage, int binding = 0) {
       m_attachments.push_back({ attachement,binding,stage });
@@ -143,18 +139,23 @@ namespace LavaCake {
     /**
      \brief Add a buffer to the pipeline and scpecify it's binding and shader stage
      \param buffer a pointer to the texel buffer
-     \param stage the shader stage where the texel buffer is going to be used
-     \param binding the binding point of the texel buffer, 0 by default
+     \param stage the shader stage where the buffer is going to be used
+     \param binding the binding point of the buffer, 0 by default
      */
     virtual void addBuffer(Buffer* buffer, VkShaderStageFlags stage, int binding = 0) {
       m_buffers.push_back({ buffer,binding,stage });
     };
     
-#ifdef RAYTRACING
+
+    /**
+     \brief Add an acceleration structure to the pipeline and scpecify it's binding and shader stage
+     \param AS a pointer to the top level acceleration structure
+     \param stage the shader stage where the acceleration structureis going to be used
+     \param binding the binding point of the acceleration structure, 0 by default
+     */
     void addAccelerationStructure(LavaCake::RayTracing::TopLevelAccelerationStructure* AS, VkShaderStageFlags stage, uint32_t	binding) {
       m_AS.push_back({ AS, binding, stage });
     }
-#endif
 
     std::vector<attachment>& getAttachments() {
       return m_attachments;
@@ -230,7 +231,7 @@ namespace LavaCake {
           nullptr
           });
       }
-#ifdef RAYTRACING
+
       for (uint32_t i = 0; i < m_AS.size(); i++) {
         descriptorSetLayoutBinding.push_back({
           uint32_t(m_AS[i].binding),
@@ -240,17 +241,15 @@ namespace LavaCake {
           nullptr
           });
       }
-#endif
       
       if (!Core::CreateDescriptorSetLayout(logical, descriptorSetLayoutBinding, m_descriptorSetLayout)) {
         ErrorCheck::setError((char*)"Can't create descriptor set layout");
       }
       
-      uint32_t descriptorsNumber = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size() + m_buffers.size());
+      uint32_t descriptorsNumber = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size() + m_buffers.size() + m_AS.size());
       
-#ifdef RAYTRACING
-      descriptorsNumber += m_AS.size();
-#endif
+
+
       if (descriptorsNumber == 0) {
         m_empty = true;
         return;
@@ -298,16 +297,13 @@ namespace LavaCake {
           });
       }
 
-#ifdef RAYTRACING
       if (m_AS.size() > 0) {
         descriptorPoolSize.push_back({
           VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,
             uint32_t(m_AS.size())
           });
       }
-#endif // RAYTRACING
 
-      
       
       if (!Core::CreateDescriptorPool(logical, false, descriptorsNumber, descriptorPoolSize, m_descriptorPool)) {
         ErrorCheck::setError((char*)"Can't create descriptor pool");
@@ -494,7 +490,7 @@ namespace LavaCake {
       }
 
       std::vector<VkWriteDescriptorSetAccelerationStructureKHR> descriptorAccelerationStructureInfos{};
-#ifdef RAYTRACING
+
       for (auto& AS_descriptor : m_AS) {
         descriptorAccelerationStructureInfos.push_back({
           VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR,
@@ -520,7 +516,7 @@ namespace LavaCake {
           {	}
           });
       }
-#endif
+
 
       vkUpdateDescriptorSets(logical, static_cast<uint32_t>(write_descriptors.size()), write_descriptors.data(), static_cast<uint32_t>(copy_descriptors.size()), copy_descriptors.data());
       
@@ -554,9 +550,9 @@ namespace LavaCake {
     std::vector<texelBuffer>                                        m_texelBuffers;
     std::vector<buffer>                                             m_buffers;
 
-#ifdef RAYTRACING
+
     std::vector<accelerationStructure>                              m_AS;
-#endif
+
     bool                                                            m_empty = true;
   };
   }

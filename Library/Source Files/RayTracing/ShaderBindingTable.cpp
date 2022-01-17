@@ -1,4 +1,3 @@
-#ifdef RAYTRACING
 #include "ShaderBindingTable.h"
 
 namespace LavaCake {
@@ -58,4 +57,3 @@ namespace LavaCake {
     }
   }
 }
-#endif

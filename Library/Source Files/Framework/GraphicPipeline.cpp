@@ -302,11 +302,11 @@ namespace LavaCake {
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
 			vkCmdSetScissor(buffer.getHandle(), 0, 1,  &scissor );
 			for (uint32_t i = 0; i < m_vertexBuffers.size(); i++) {
-				if (m_vertexBuffers[i]->getVertexBuffer().getHandle() == VK_NULL_HANDLE)return;
+				if (m_vertexBuffers[i]->getVertexBuffer()->getHandle() == VK_NULL_HANDLE)return;
 				VkDeviceSize size(0);
-				vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1), &m_vertexBuffers[i]->getVertexBuffer().getHandle(), &size);
+				vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1), &m_vertexBuffers[i]->getVertexBuffer()->getHandle(), &size);
 				if (m_vertexBuffers[i]->isIndexed()) {
-					vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffers[i]->getIndexBuffer().getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
+					vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffers[i]->getIndexBuffer()->getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
 				}
         
         std::vector<VkDescriptorSet> descriptorSets = {m_descriptorSet->getHandle()};

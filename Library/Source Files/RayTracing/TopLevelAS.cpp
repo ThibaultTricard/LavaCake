@@ -1,4 +1,3 @@
-#ifdef RAYTRACING
 #include "TopLevelAS.h"
 
 namespace LavaCake {
@@ -35,7 +34,6 @@ namespace LavaCake {
             instance,
             VkBufferUsageFlagBits(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR),
             VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
-          m_instancesBuffers[i];
 
           VkDeviceOrHostAddressConstKHR instanceDataDeviceAddress{};
           instanceDataDeviceAddress.deviceAddress = m_instancesBuffers[i].getBufferDeviceAddress();
@@ -162,4 +160,3 @@ namespace LavaCake {
       } 
   }
 }
-#endif

@@ -1,4 +1,3 @@
-#ifdef RAYTRACING
 #pragma once
 #include "AllHeaders.h"
 #include "RayTracing/RayTracingShaderModule.h"
@@ -91,4 +90,3 @@ namespace LavaCake {
 
   }
 }
-#endif //  RAYTRACING

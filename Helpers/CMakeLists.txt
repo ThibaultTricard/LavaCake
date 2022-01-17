@@ -9,9 +9,19 @@ macro(clearShader)
 endmacro()
 
 macro(addShader input output)
+	set (variadic_args ${ARGN})
+	list(LENGTH variadic_args variadic_count)
 	set(INPUT_SHADER ${INPUT_SHADER} ${input})
 	set(OUTPUT_SHADER ${OUTPUT_SHADER} ${output})
-	message(STATUS "Added new rule to convert ${input} to ${output}")
+	
+	if (${variadic_count} GREATER 0)
+		list(GET variadic_args 0 version)
+	else()
+		set(version spv1.3)
+	endif()
+
+	set(SPV_VERSION ${SPV_VERSION} ${version})
+	message(STATUS "Added new rule to convert ${input} to ${output} using ${version}")
 endmacro()
 
 set(CMAKE_VERBOSE_MAKEFILE on)
@@ -25,16 +35,14 @@ macro(AutoSPIRV TARGET_NAME)
 		foreach(val RANGE ${length})
 			list(GET INPUT_SHADER ${val} val1)
 			list(GET OUTPUT_SHADER ${val} val2)
-
+			list(GET SPV_VERSION ${val} val3)
 			get_property(path GLOBAL PROPERTY HELPERS_PATH)
 
 			set(OUTPUT_FILE ${val2})
 
-			if ( RAYTRACING )
-				set(COMMANDS glslc ${val1} -g -o  ${val2} --target-spv=spv1.4)
-			else()
-				set(COMMANDS glslc ${val1} -g -o  ${val2} --target-spv=spv1.3)
-			endif()
+			
+			set(COMMANDS glslc ${val1} -g -o  ${val2} --target-spv=${val3})
+			
 			
 			add_custom_command(
 				OUTPUT ${OUTPUT_FILE}

@@ -372,7 +372,7 @@ namespace LavaCake {
         
         frameBuffer.m_images[i] = new Image((uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1, format, aspect, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,false);
 				
-				VkImageSubresourceRange subresourceRange{ aspect, 0, 1, 0, 1 };
+				VkImageSubresourceRange subresourceRange{ (VkImageAspectFlags)aspect, 0, 1, 0, 1 };
 
 				frameBuffer.m_images[i]->setLayout(commandBuffer, layout, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, subresourceRange);
 

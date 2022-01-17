@@ -103,6 +103,9 @@ namespace LavaCake {
        */
 			void waitForAllCommands();
 			
+      void enableRaytracing();
+
+      void enableMeshShader();
 
 			private :
 				VkPhysicalDevice													m_physical = VK_NULL_HANDLE;
@@ -114,6 +117,10 @@ namespace LavaCake {
 				std::vector<GraphicQueue>									m_graphicQueues;
 				std::vector<ComputeQueue>									m_computeQueues;
 				PresentationQueue*												m_presentQueue = new PresentationQueue();
+
+
+        bool                                      m_raytracingEnabled = false;
+        bool                                      m_meshShaderEnabled = false;
 		};
 	}
 }

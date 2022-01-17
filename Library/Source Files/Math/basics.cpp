@@ -80,7 +80,7 @@ mat4 inverse(mat4& m) {
   float inv[16], det;
   int i;
   
-  mat4 invM;
+  mat4 invM = mat4();
   
   inv[0] = m[5] * m[10] * m[15] -
   m[5] * m[11] * m[14] -
@@ -212,7 +212,7 @@ mat4 inverse(const mat4& m) {
   float inv[16], det;
   int i;
   
-  mat4 invM;
+  mat4 invM = mat4();
   
   inv[0] = m[5] * m[10] * m[15] -
   m[5] * m[11] * m[14] -

@@ -142,7 +142,6 @@ namespace LavaCake {
 		Image* createCubeMap(Queue* queue, CommandBuffer& cmdBuff, std::string path, int nbChannel, std::vector<std::string> images, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
 
 			std::vector<unsigned char> cubemap_image_data;
-			int image_data_size;
 
 			int width, height;
 			std::vector<unsigned char> data;

@@ -83,7 +83,7 @@ namespace LavaCake {
           if (m->getFormat().description()[s] == NORM3) {
             norm = offset;
           }
-          offset += toSize(m->getFormat().description()[s]);
+          offset += (int)toSize(m->getFormat().description()[s]);
 
         };
 
@@ -107,7 +107,7 @@ namespace LavaCake {
             v->n = vec3f({0.0f,0.0f,0.0f});
           }
 
-          v->indice = vertices.size();
+          v->indice = (uint32_t)vertices.size();
 
           vertices.emplace_back(v);
         }
@@ -150,7 +150,7 @@ namespace LavaCake {
           if (!found) {
             vertices[m->indices()[s]]->edges.emplace_back(e1);
             vertices[m->indices()[s+1]]->edges.emplace_back(e1);
-            e1->indice = edges.size();
+            e1->indice = (uint32_t)edges.size();
             edges.emplace_back(e1);
             
           }
@@ -168,7 +168,7 @@ namespace LavaCake {
           if (!found) {
             vertices[m->indices()[s + 1]]->edges.emplace_back(e2);
             vertices[m->indices()[s + 2]]->edges.emplace_back(e2);
-            e2->indice = edges.size();
+            e2->indice = (uint32_t)edges.size();
             edges.emplace_back(e2);
             
           }
@@ -186,7 +186,7 @@ namespace LavaCake {
           if (!found) {
             vertices[m->indices()[s + 2]]->edges.emplace_back(e3);
             vertices[m->indices()[s    ]]->edges.emplace_back(e3);
-            e3->indice = edges.size();
+            e3->indice = (uint32_t)edges.size();
             edges.emplace_back(e3);   
           }
           found = false;
@@ -194,7 +194,7 @@ namespace LavaCake {
           p->edges.emplace_back(e1);
           p->edges.emplace_back(e2);
           p->edges.emplace_back(e3);
-          p->indice = faces.size();
+          p->indice = (uint32_t)faces.size();
           faces.emplace_back(p);
         }
         onlyTriangle = true;

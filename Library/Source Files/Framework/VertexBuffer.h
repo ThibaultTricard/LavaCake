@@ -16,9 +16,9 @@ namespace LavaCake {
 
 			void allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0) );
 			
-			Buffer& getVertexBuffer();
+			Buffer* getVertexBuffer();
 			
-			Buffer& getIndexBuffer();
+			Buffer* getIndexBuffer();
 
 			void swapMeshes(std::vector<LavaCake::Geometry::Mesh_t*>				m);
 
@@ -91,12 +91,12 @@ namespace LavaCake {
 
 			std::vector<VkVertexInputAttributeDescription>			m_attributeDescriptions;
 			std::vector<VkVertexInputBindingDescription>				m_bindingDescriptions;
-			Buffer																							m_vertexBuffer;
+			Buffer*																							m_vertexBuffer;
+			Buffer*																							m_indexBuffer;
 			std::vector<float>																	m_vertices;
       uint32_t                                            m_verticesSize;
       uint32_t                                            m_indicesSize;
 			uint32_t																						m_stride;
-			Buffer																							m_indexBuffer;
 			std::vector<uint32_t>																m_indices;
 			bool																								m_indexed;
 			LavaCake::Geometry::topology												m_topology;

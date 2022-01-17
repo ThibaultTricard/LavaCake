@@ -198,6 +198,13 @@ namespace LavaCake {
 			return m_presentationSurface;
 		};
 
+    void Device::enableRaytracing() {
+      m_raytracingEnabled = true;
+    }
+
+    void Device::enableMeshShader() {
+      m_meshShaderEnabled = true;
+    }
 
 		void Device::initDevices(int nbComputeQueue, int nbGraphicQueue, WindowParameters&	WindowParams, VkPhysicalDeviceFeatures* desired_device_features) {
 
@@ -356,34 +363,39 @@ namespace LavaCake {
 			endConcPresent:;
 
 
-#ifdef RAYTRACING
-				device_extensions.push_back(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
-				device_extensions.push_back(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
-				device_extensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
-				device_extensions.push_back(VK_KHR_MAINTENANCE3_EXTENSION_NAME);
-				device_extensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
-				device_extensions.push_back(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
-				device_extensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
-				device_extensions.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
+        if (m_raytracingEnabled) {
+          device_extensions.push_back(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
+          device_extensions.push_back(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
+          device_extensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+          device_extensions.push_back(VK_KHR_MAINTENANCE3_EXTENSION_NAME);
+          device_extensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+          device_extensions.push_back(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+          device_extensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
+          device_extensions.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
 
 
-				
-				enabledBufferDeviceAddresFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
-				enabledBufferDeviceAddresFeatures.bufferDeviceAddress = VK_TRUE;
 
-				enabledRayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
-				enabledRayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
-				enabledRayTracingPipelineFeatures.pNext = &enabledBufferDeviceAddresFeatures;
+          enabledBufferDeviceAddresFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
+          enabledBufferDeviceAddresFeatures.bufferDeviceAddress = VK_TRUE;
+
+          enabledRayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+          enabledRayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
+          enabledRayTracingPipelineFeatures.pNext = &enabledBufferDeviceAddresFeatures;
 
 
-				enabledAccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
-				enabledAccelerationStructureFeatures.accelerationStructure = VK_TRUE;
-				enabledAccelerationStructureFeatures.pNext = &enabledRayTracingPipelineFeatures;
-#endif // USE_NV_RAYTRACING
+          enabledAccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+          enabledAccelerationStructureFeatures.accelerationStructure = VK_TRUE;
+          enabledAccelerationStructureFeatures.pNext = &enabledRayTracingPipelineFeatures;
+        }
 
-#ifdef RAYQUERY
-				//device_extensions.push_back(VK_KHR_RAY_QUERY_EXTENSION_NAME);
-#endif // RAYQUERY
+        if (0) { // ray query
+          //device_extensions.push_back(VK_KHR_RAY_QUERY_EXTENSION_NAME);
+        }
+
+        if (m_meshShaderEnabled) {
+
+        }
+
 
 				device_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 

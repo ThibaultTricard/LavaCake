@@ -9,7 +9,8 @@ namespace LavaCake {
 			m_topology = m[0]->getTopology();
 			m_stride = (uint32_t)m[0]->vertexSize();
 			m_attributeDescriptions = m[0]->VkDescription();
-
+			m_vertexBuffer = new Buffer();
+			m_indexBuffer = new Buffer();
 			for (size_t t = 0; t < m_attributeDescriptions.size(); t++) {
 				m_attributeDescriptions[t].binding = binding;
 			}
@@ -31,27 +32,27 @@ namespace LavaCake {
 
 			if (m_vertices.size() == 0)return;
 
-			m_vertexBuffer.allocate(queue, cmdBuff, m_vertices, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT| otherUsage), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_FORMAT_R32_SFLOAT, VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT);
+			m_vertexBuffer->allocate(queue, cmdBuff, m_vertices, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT| otherUsage), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_FORMAT_R32_SFLOAT, VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT);
 
 			if (m_indexed) {
 
-				m_indexBuffer.allocate(queue, cmdBuff, m_indices, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_INDEX_BUFFER_BIT| otherUsage), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_FORMAT_R32_UINT, VK_ACCESS_INDEX_READ_BIT);
+				m_indexBuffer->allocate(queue, cmdBuff, m_indices, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_INDEX_BUFFER_BIT| otherUsage), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_FORMAT_R32_UINT, VK_ACCESS_INDEX_READ_BIT);
 
 			}
       
-      m_verticesSize =m_vertices.size();
+      m_verticesSize =(uint32_t)m_vertices.size();
       m_vertices.clear();
-      m_indicesSize  =m_indices.size();
+      m_indicesSize  = (uint32_t)m_indices.size();
       m_indices.clear();
 		}
 
 		
 		
-		Buffer& VertexBuffer::getVertexBuffer() {
+		Buffer* VertexBuffer::getVertexBuffer() {
 			return m_vertexBuffer;
 		}
 
-		Buffer& VertexBuffer::getIndexBuffer() {
+		Buffer* VertexBuffer::getIndexBuffer() {
 			return m_indexBuffer;
 		}
 
@@ -84,7 +85,6 @@ namespace LavaCake {
 				}
 			}
 
-			
 		};
 	}
 }

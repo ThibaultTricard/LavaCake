@@ -267,24 +267,6 @@ set(LIBRARY_MATH_SOURCE
 source_group( "Library\\Math\\Header" FILES ${LIBRARY_MATH_HEADER} )
 source_group( "Library\\Math\\Source" FILES ${LIBRARY_MATH_SOURCE} )
 
-if ( APPLE )
-
-else()
-	option(RAYTRACING "Allow raytracing (gtx 1060 or higher)" ON)
-	option(RAYQUERY "Allow ray query (rtx only)" OFF)
-endif()
-
-if(RAYTRACING)
-		add_definitions(-DRAYTRACING)
-endif()
-
-
-
-if(RAYQUERY)
-		add_definitions(-DRAYQUERY)
-endif()
-
-
 
 
 # Recipes Library generation
@@ -301,9 +283,6 @@ ${IMGUI_SOURCE})
 target_link_libraries( LavaCake ${PLATFORM_LIBRARY} ${Vulkan_LIBRARY} glfw )
 target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS})
 
-if(RAYQUERY)
-		message("Ray query is not implemented yet")
-endif()
 
 
 

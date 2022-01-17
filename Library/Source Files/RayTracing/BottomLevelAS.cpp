@@ -1,4 +1,3 @@
-#ifdef RAYTRACING
 #include "BottomLevelAS.h"
 
 namespace LavaCake {
@@ -10,9 +9,9 @@ namespace LavaCake {
 				VkDeviceOrHostAddressConstKHR indexBufferDeviceAddress{};
 				VkDeviceOrHostAddressConstKHR transformBufferDeviceAddress{};
 
-				vertexBufferDeviceAddress.deviceAddress = vertexBuffer->getVertexBuffer().getBufferDeviceAddress();
+				vertexBufferDeviceAddress.deviceAddress = vertexBuffer->getVertexBuffer()->getBufferDeviceAddress();
 				if (vertexBuffer->isIndexed()) {
-					indexBufferDeviceAddress.deviceAddress = vertexBuffer->getIndexBuffer().getBufferDeviceAddress();
+					indexBufferDeviceAddress.deviceAddress = vertexBuffer->getIndexBuffer()->getBufferDeviceAddress();
 				}
 				transformBufferDeviceAddress.deviceAddress = transformBuffer->getBuffer().getBufferDeviceAddress();
 
@@ -37,10 +36,10 @@ namespace LavaCake {
 				accelerationStructureGeometry.geometry.triangles.transformData = transformBufferDeviceAddress;
 
 				if (vertexBuffer->isIndexed()) {
-					m_primCount += (uint32_t)vertexBuffer->getIndicesNumber() / 3.0;
+					m_primCount += (uint32_t)vertexBuffer->getIndicesNumber() / 3;
 				}
 				else {
-					m_primCount += (uint32_t)vertexBuffer->getVerticiesNumber() / 3.0;
+					m_primCount += (uint32_t)vertexBuffer->getVerticiesNumber() / 3;
 				}
 
 				m_geometry.push_back(accelerationStructureGeometry);
@@ -169,4 +168,3 @@ namespace LavaCake {
 
 	}
 }
-#endif

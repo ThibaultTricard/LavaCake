@@ -82,7 +82,7 @@ namespace LavaCake {
 				ErrorCheck::setError((char*)"The variable allready exist in this UniformBuffer",1);
 				return;
 			}
-      uint32_t i = m_variables.size();
+      uint32_t i = (uint32_t)m_variables.size();
 			m_variables.push_back(value);
 			m_variableNames.insert(std::pair<std::string, uint32_t>(name, i));
 		}

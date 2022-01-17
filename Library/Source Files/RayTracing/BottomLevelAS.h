@@ -1,5 +1,4 @@
 #pragma once
-#ifdef RAYTRACING
 #include "Framework/VertexBuffer.h"
 #include "Framework/ErrorCheck.h"
 
@@ -38,4 +37,3 @@ namespace LavaCake {
 
 	}
 }
-#endif 

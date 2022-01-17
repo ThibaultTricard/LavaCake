@@ -1,4 +1,3 @@
-#ifdef RAYTRACING
 #include "RayTracingPipeline.h"
 
 namespace LavaCake {
@@ -240,4 +239,3 @@ namespace LavaCake {
 
 	}
 }
-#endif

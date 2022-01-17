@@ -94,8 +94,8 @@ namespace LavaCake {
         }
       }
 
-      for (int i = 0; i < vertices.size(); i += m->vertexSize()) {
-        for (int j = 0; j < m->vertexSize(); j++) {
+      for (size_t i = 0; i < vertices.size(); i += m->vertexSize()) {
+        for (size_t j = 0; j < m->vertexSize(); j++) {
           ofs << std::to_string(vertices[i + j]) + " ";
         }
         ofs << "\n";
