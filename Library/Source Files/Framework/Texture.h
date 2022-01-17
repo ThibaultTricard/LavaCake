@@ -118,7 +118,7 @@ namespace LavaCake {
 			\brief describe the type of attachement
 		*/
 		enum attachmentType {
-			COLOR_ATTACHMENT ,DEPTH_ATTACHMENT, STENCIL_ATTACHMENT
+			COLOR_ATTACHMENT = 1 ,DEPTH_ATTACHMENT = 2, STENCIL_ATTACHMENT = 4
 		};
 
 

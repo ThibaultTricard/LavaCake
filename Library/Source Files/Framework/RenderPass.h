@@ -36,10 +36,22 @@ namespace LavaCake {
 
 
 		enum RenderPassAttachmentType {
-			RENDERPASS_COLOR_ATTACHMENT, RENDERPASS_DEPTH_ATTACHMENT, RENDERPASS_STENCIL_ATTACHMENT, RENDERPASS_INPUT_ATTACHMENT
+			RENDERPASS_UNDEFINED_ATTACHMENT = 0,
+			RENDERPASS_COLOR_ATTACHMENT = 1, 
+			RENDERPASS_DEPTH_ATTACHMENT = 2, 
+			RENDERPASS_STENCIL_ATTACHMENT= 4, 
+			RENDERPASS_INPUT_ATTACHMENT = 8,
+			
 		};
 
+		inline RenderPassAttachmentType operator|(RenderPassAttachmentType a, RenderPassAttachmentType b)
+		{
+			return static_cast<RenderPassAttachmentType>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+		}
 		
+
+		RenderPassAttachmentType toAttachmentType(VkFormat format);
+
 		class RenderPass {
 
 			struct SubpassParameters {
