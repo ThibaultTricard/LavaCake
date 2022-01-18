@@ -61,7 +61,7 @@ namespace LavaCake {
 			void setMeshModule(MeshShaderModule* module);
 
 			/**
-			 \brief Set the mesh task module for the pipeline
+			 \brief Set the task shader module for the pipeline
 			 \param module a pointer to a mesh shader module
 			*/
 			void setTaskModule(TaskShaderModule* module);
@@ -129,9 +129,21 @@ namespace LavaCake {
         m_lineWidth =width;
       }
 			
-
+			/**
+			 \brief set the polygon mode used for the pipeline if not set the polgon mode will be VK_POLYGON_MODE_FILL
+			 \param mode the polygon mode 
+			 */
 			void setPolygonMode(VkPolygonMode mode) {
 				m_polygonMode = mode;
+			}
+
+			/**
+			 \brief set the number of task launch by this pipeline if not set the number of task be 0. 
+			 this function can be ignored if the pipeline does not use task shader
+			 \param count the number of task
+			*/
+			void setTaskCount(uint32_t count) {
+				m_taskCount = count;
 			}
 
 			~GraphicPipeline() {
@@ -139,6 +151,11 @@ namespace LavaCake {
 			}
 
 		private:
+
+			enum pipelineType{
+				Undefined,Graphic,MeshTask
+			};
+
 
 			void recompile();
 
@@ -149,10 +166,6 @@ namespace LavaCake {
 			FragmentShaderModule*																	m_fragmentModule = nullptr;
 			MeshShaderModule*																			m_meshModule = nullptr;
 			TaskShaderModule*																			m_taskModule = nullptr;
-
-
-			
-
 
 			VkPipelineRasterizationStateCreateInfo								m_rasterizationStateCreateInfo;
 			VkPipelineMultisampleStateCreateInfo									m_multisampleStateCreateInfo;
@@ -179,7 +192,13 @@ namespace LavaCake {
 			VkBool32																							m_alphablending = VK_FALSE;
       float                                                 m_lineWidth = 1.0f;
 
+			uint32_t																							m_taskCount = 0;
+
 			bool																									m_compiled = false;
+			pipelineType																					m_type = Undefined;
+
+
+
 		};
 	}
 }

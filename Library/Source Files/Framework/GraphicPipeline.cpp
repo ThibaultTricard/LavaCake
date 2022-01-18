@@ -43,19 +43,44 @@ namespace LavaCake {
 		};
 
 		void GraphicPipeline::setVertexModule(VertexShaderModule*	module) {
-			m_vertexModule = module;
+			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
+				m_vertexModule = module;
+				m_type = pipelineType::Graphic;
+			}
+			else if(m_type == pipelineType::MeshTask) {
+				ErrorCheck::setError("This pipeline is allready setup to use Mesh and Task shader module, it cannot use a vertex shader module",1);
+			}
 		}
 
 		void GraphicPipeline::setTesselationControlModule(TessellationControlShaderModule*	module) {
-			m_tesselationControlModule = module;
+			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
+				m_tesselationControlModule = module;
+				m_type = pipelineType::Graphic;
+			}
+			else if (m_type == pipelineType::MeshTask) {
+				ErrorCheck::setError("This pipeline is allready setup to use Mesh and Task shader module, it cannot use a tesselation control module", 1);
+			}
 		}
 
 		void GraphicPipeline::setTesselationEvaluationModule(TessellationEvaluationShaderModule*	module) {
-			m_tesselationEvaluationModule = module;
+			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
+				m_tesselationEvaluationModule = module;
+				m_type = pipelineType::Graphic;
+			}
+			else if (m_type == pipelineType::MeshTask) {
+				ErrorCheck::setError("This pipeline is allready setup to use Mesh and Task shader module, it cannot use a tesselation evaluation shader module", 1);
+			}
 		}
 
 		void GraphicPipeline::setGeometryModule(GeometryShaderModule*	module) {
-			m_geometryModule = module;
+			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
+				m_geometryModule = module;
+				m_type = pipelineType::Graphic;
+			}
+			else if (m_type == pipelineType::MeshTask) {
+				ErrorCheck::setError("This pipeline is allready setup to use Mesh and Task shader module. It cannot use a geometry shader module", 1);
+			}
+
 		}
 
 		void GraphicPipeline::setFragmentModule(FragmentShaderModule*	module) {
@@ -63,11 +88,23 @@ namespace LavaCake {
 		}
 
 		void GraphicPipeline::setMeshModule(MeshShaderModule* module) {
-			m_meshModule = module;
+			if (m_type == pipelineType::Undefined || m_type == pipelineType::MeshTask) {
+				m_meshModule = module;
+				m_type = pipelineType::MeshTask;
+			}
+			else if (m_type == pipelineType::Graphic) {
+				ErrorCheck::setError("This pipeline is allready setup to use vertex , tesselation control, tesselation evaluation, or geometry shader module.  It cannot use a mesh shader module", 1);
+			}
 		}
 
 		void GraphicPipeline::setTaskModule(TaskShaderModule* module) {
-			m_taskModule = module;
+			if (m_type == pipelineType::Undefined || m_type == pipelineType::MeshTask) {
+				m_taskModule = module;
+				m_type = pipelineType::MeshTask;
+			}
+			else if (m_type == pipelineType::Graphic) {
+				ErrorCheck::setError("This pipeline is allready setup to use vertex , tesselation control, tesselation evaluation, or geometry shader module.  It cannot use a task shader module", 1);
+			}
 		}
 
 
@@ -270,6 +307,12 @@ namespace LavaCake {
 			if (m_fragmentModule != nullptr) {
 				m_fragmentModule->refresh();
 			}
+			if (m_meshModule != nullptr) {
+				m_meshModule->refresh();
+			}
+			if (m_taskModule != nullptr) {
+				m_taskModule->refresh();
+			}
 		}
 
 		void GraphicPipeline::setSubpassNumber(uint32_t number) {
@@ -337,16 +380,24 @@ namespace LavaCake {
 					m_constants[i].constant->push(buffer.getHandle(), m_pipelineLayout, m_constants[i].stage);
 				}
 
-				if (m_vertexBuffers[i]->isIndexed()) {
-					uint32_t count = (uint32_t)m_vertexBuffers[i]->getIndicesNumber();
+				if (m_type == pipelineType::Graphic) {
+					if (m_vertexBuffers[i]->isIndexed()) {
+						uint32_t count = (uint32_t)m_vertexBuffers[i]->getIndicesNumber();
 
-					vkCmdDrawIndexed(buffer.getHandle(), count, 1, 0, 0, 0);
+						vkCmdDrawIndexed(buffer.getHandle(), count, 1, 0, 0, 0);
+					}
+					else {
+
+						uint32_t count = (uint32_t)m_vertexBuffers[i]->getVerticiesNumber();
+
+						vkCmdDraw(buffer.getHandle(), count, 1, 0, 0);
+					}
 				}
-				else {
-
-					uint32_t count = (uint32_t)m_vertexBuffers[i]->getVerticiesNumber();
-
-					vkCmdDraw(buffer.getHandle(), count, 1, 0, 0);
+				else if (m_type == pipelineType::MeshTask) {
+					vkCmdDrawMeshTasksNV(
+						buffer.getHandle(),
+						m_taskCount,
+						0);
 				}
 
 			}
