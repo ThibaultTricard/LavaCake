@@ -128,6 +128,9 @@ namespace LavaCake {
   vec3f operator* (vec3f const& left,
                    mat4 const& right) ;
 
+  vec4f operator* (mat4 const& left,
+                   vec4f const& right);
+
   bool operator== (vec3f const& left,
                    vec3f const& right) ;
 

@@ -38,6 +38,16 @@ vec3f operator* (vec3f const& left,
   });
 }
 
+
+vec4f operator* (mat4 const& left, vec4f const& right) {
+  return vec4f({ 
+    left[0] * right[0] + left[4] * right[1] + left[8]  * right[2] + left[12] * right[3],
+    left[1] * right[0] + left[5] * right[1] + left[9]  * right[2] + left[13] * right[3],
+    left[2] * right[0] + left[6] * right[1] + left[10] * right[2] + left[14] * right[3],
+    left[3] * right[0] + left[7] * right[1] + left[11] * right[2] + left[15] * right[3] 
+  });
+}
+
 bool operator== (vec3f const& left,
                  vec3f const& right) {
   if ((std::abs(left[0] - right[0]) > 0.00001f) ||
