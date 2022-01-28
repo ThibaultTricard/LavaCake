@@ -11,7 +11,7 @@
 
 namespace LavaCake {
 	namespace Framework {
-  
+
     /**
 			Class FrameBuffer
 			\brief a class to help manage frame buffers
