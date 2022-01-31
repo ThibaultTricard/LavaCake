@@ -164,21 +164,6 @@ namespace LavaCake {
       has_VK_KHR_acceleration_structure = success;
       return success;
     }
-
-
-		void ReleaseVulkanLoaderLibrary(LIBRARY_TYPE & vulkan_library) {
-			if (nullptr != vulkan_library) {
-#if defined _WIN32
-				FreeLibrary(vulkan_library);
-#elif defined __linux
-				dlclose(vulkan_library);
-#elif defined __APPLE__
-        dlclose(vulkan_library);
-#endif
-				vulkan_library = nullptr;
-			}
-		}
-
 	}
   
 	

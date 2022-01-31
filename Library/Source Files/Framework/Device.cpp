@@ -1,6 +1,12 @@
 #include "Device.h"
 #include <algorithm>
-
+#ifdef _WIN32
+#include <Windows.h>
+#elif defined __linux
+#include <dlfcn.h>
+#elif defined __APPLE__
+#include <dlfcn.h>
+#endif
 
 namespace LavaCake {
   namespace Framework {
@@ -490,6 +496,23 @@ namespace LavaCake {
         else {
           //select physical device
           m_physical = device.device;
+
+          m_raytracingAvailable = m_raytracingEnabled;
+          for (auto e : m_missingOptionalExtension) {
+            if (m_raytracingEnabled && m_raytracingOptional && m_raytracingAvailable) {
+              for (auto rte : raytracingExtension) {
+                if (e == rte) {
+                  m_raytracingAvailable = false;
+                  ErrorCheck::setError((char*)"Raytracing extensions not found on this device", 1);
+                  break;
+                }
+              }
+            }
+          }
+
+
+
+
           LavaCake::Core::LoadDeviceLevelFunctions(m_logical, device_extensions);
 
           
@@ -510,18 +533,7 @@ namespace LavaCake {
               m_missingOptionalExtension.push_back(device_extensions_optional[s]);
             }
           }
-          m_raytracingAvailable = m_raytracingEnabled;
-          for (auto e : m_missingOptionalExtension) {
-            if (m_raytracingEnabled && m_raytracingOptional && m_raytracingAvailable) {
-              for (auto rte: raytracingExtension) {
-                if (e == rte) {
-                  m_raytracingAvailable = false;
-                  ErrorCheck::setError((char*)"Raytracing extensions not found on this device",1);
-                  break;
-                }
-              }
-            }
-          }
+          
 
           break;
         }

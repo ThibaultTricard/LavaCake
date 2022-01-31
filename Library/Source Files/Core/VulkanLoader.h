@@ -71,7 +71,6 @@ namespace LavaCake {
 			std::vector<char const *> const & enabled_extensions);
 
 		bool LoadAccelerationStructureFunctions(VkDevice                          logical_device);
-		void ReleaseVulkanLoaderLibrary(LIBRARY_TYPE & vulkan_library);
 	}
  
 	

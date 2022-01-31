@@ -105,11 +105,20 @@ namespace LavaCake {
        */
 			void waitForAllCommands();
 			
+
+      /**
+       \brief Ask the device to enable all feature related to raytracing
+       \param optional: a boolean indicating if the device creation can success even if raytracing feature are not found
+       */
       void enableRaytracing(bool optional = false);
 
       void enableMeshShader(bool optional = false);
 
-      bool RaytracingAvailable() {
+      /*
+        \brief check if raytracing feature have been successfuly loaded
+        \return true if raytracing is available
+      */
+      bool raytracingAvailable() {
         return m_raytracingAvailable;
       }
 
