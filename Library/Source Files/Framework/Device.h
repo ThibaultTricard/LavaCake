@@ -95,7 +95,9 @@ namespace LavaCake {
        */
 			void initDevices( int nbComputeQueue, int nbGraphicQueue, WindowParameters&	windowParams, VkPhysicalDeviceFeatures * desiredDeviceFeatures = nullptr);
       
-
+      /**
+       \brief free all the vulkan handle hold by the device and destroy the singleton 
+      */
 			void end();
       
       /**
@@ -103,11 +105,17 @@ namespace LavaCake {
        */
 			void waitForAllCommands();
 			
-      void enableRaytracing();
+      void enableRaytracing(bool optional = false);
 
-      void enableMeshShader();
+      void enableMeshShader(bool optional = false);
+
+      bool RaytracingAvailable() {
+        return m_raytracingAvailable;
+      }
 
 			private :
+
+        
 				VkPhysicalDevice													m_physical = VK_NULL_HANDLE;
 				VkDevice            											m_logical = VK_NULL_HANDLE;
 				LIBRARY_TYPE															m_vulkanLibrary;
@@ -118,9 +126,16 @@ namespace LavaCake {
 				std::vector<ComputeQueue>									m_computeQueues;
 				PresentationQueue*												m_presentQueue = new PresentationQueue();
 
-
+        
         bool                                      m_raytracingEnabled = false;
+        bool                                      m_raytracingOptional = true;
         bool                                      m_meshShaderEnabled = false;
+        bool                                      m_meshShaderOptional = true;
+
+        std::vector<const char*>                  m_missingOptionalExtension;
+
+        bool                                      m_raytracingAvailable = false;
+        bool                                      m_meshShaderAvailable = false;
 		};
 	}
 }

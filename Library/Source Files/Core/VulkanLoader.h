@@ -63,7 +63,6 @@ namespace LavaCake {
 		static PFN_vkCompileDeferredNV pfn_vkCompileDeferredNV = 0;
 
 
-		bool ConnectWithVulkanLoaderLibrary(LIBRARY_TYPE & vulkan_library);
 		bool LoadFunctionExportedFromVulkanLoaderLibrary(LIBRARY_TYPE const & vulkan_library);
 		bool LoadGlobalLevelFunctions();
 		bool LoadInstanceLevelFunctions(VkInstance                        instance,
