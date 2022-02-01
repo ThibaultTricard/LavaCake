@@ -46,11 +46,12 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 				m_dataSize = uint64_t(rawdata.size() * sizeof(t));
 				
-				VkPhysicalDeviceProperties* p = new  VkPhysicalDeviceProperties();
-				vkGetPhysicalDeviceProperties(physical,
-					p);
+				VkPhysicalDeviceProperties p;
+				vkGetPhysicalDeviceProperties(physical,&p);
 
-				m_padding = p->limits.nonCoherentAtomSize - m_dataSize % p->limits.nonCoherentAtomSize;
+				m_padding = p.limits.nonCoherentAtomSize - m_dataSize % p.limits.nonCoherentAtomSize;
+
+
 
 				m_stage = stageFlagBit;
 				m_access = accessmod;
