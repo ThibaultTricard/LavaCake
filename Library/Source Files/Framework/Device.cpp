@@ -108,14 +108,18 @@ namespace LavaCake {
                            uint32_t&                          nb_missing_extension) {
     std::vector<VkExtensionProperties> available_extensions;
     
-   
+    VkPhysicalDeviceProperties deviceProperties{};
+    LavaCake::vkGetPhysicalDeviceProperties(physical_device, &deviceProperties);
+    std::string deviceName = std::string(deviceProperties.deviceName);
+
     uint32_t extensions_count = 0;
     VkResult result = VK_SUCCESS;
     
     result = vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extensions_count, nullptr);
     if ((result != VK_SUCCESS) ||
         (extensions_count == 0)) {
-      ErrorCheck::setError((char*)"Could not get the number of device extensions.",3);
+      std::string err = "Could not get the number of device extensions for device " + deviceName;
+      ErrorCheck::setError(err.data(),5);
       return DeviceValidity::DEVICE_INVALID;
     }
     
@@ -123,22 +127,23 @@ namespace LavaCake {
     result = vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extensions_count, available_extensions.data());
     if ((result != VK_SUCCESS) ||
         (extensions_count == 0)) {
-      ErrorCheck::setError((char*)"Could not enumerate device extensions.",3);
+      std::string err = "Could not enumerate device extensions for device" + deviceName;
+      ErrorCheck::setError(err.data(),5);
       return DeviceValidity::DEVICE_INVALID;
     }
     
     for (auto & extension : desired_extensions) {
       if (!IsExtensionSupported(available_extensions, extension)) {
-        std::string err = "Extension named '" + std::string(extension) + "' is not supported by a physical device.";
-        ErrorCheck::setError((char*)err.data(),3);
+        std::string err = "Extension named '" + std::string(extension) + "' is not supported by the device " + deviceName;
+        ErrorCheck::setError((char*)err.data(),5);
         return DeviceValidity::DEVICE_INVALID;
       }
     }
     
     for (auto& extension : optional_extensions) {
       if (!IsExtensionSupported(available_extensions, extension)) {
-        std::string err = "Extension named '" + std::string(extension) + "' is not supported by a physical device.";
-        ErrorCheck::setError((char*)err.data(),4);
+        std::string err = "Extension named '" + std::string(extension) + "' is not supported by the device " + deviceName;
+        ErrorCheck::setError((char*)err.data(),5);
         missing_extension.push_back(true);
       }
       else {
@@ -288,7 +293,7 @@ namespace LavaCake {
         std::vector<bool> missing;
       };
 
-
+      
       std::vector<tmp_physicalDevice> tmp_physicaldevices;
 
       for (auto& physical_device : physical_devices) {
@@ -298,7 +303,8 @@ namespace LavaCake {
           {}
           });
       }
-
+      std::string err = std::to_string(physical_devices.size()) + " physical device(s) found on this computer.";
+      ErrorCheck::setError(err.data(),5);
 
       std::vector<char const*> device_extensions;
       device_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -509,6 +515,12 @@ namespace LavaCake {
                 }
               }
             }
+
+
+            VkPhysicalDeviceProperties deviceProperties{};
+            LavaCake::vkGetPhysicalDeviceProperties(m_physical, &deviceProperties);
+            err = "Chosen device is " + std::string(deviceProperties.deviceName);
+            ErrorCheck::setError(err.data(),5);
 
             LavaCake::Core::LoadDeviceLevelFunctions(m_logical, extensionToLoad);
 

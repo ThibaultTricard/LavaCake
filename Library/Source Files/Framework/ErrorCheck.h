@@ -68,6 +68,18 @@ namespace LavaCake {
               case 1:
                 std::cout << YELLOW << "Warning 1 : ";
                 break;
+              case 2:
+                std::cout << YELLOW << "Warning 2 : ";
+                break;
+              case 3:
+                std::cout << YELLOW << "Warning 3 : ";
+                break;
+              case 4:
+                std::cout << YELLOW << "Warning 4 : ";
+                break;
+              case 5:
+                std::cout << GREEN << "Notes : ";
+                break;
               default:
                 break;
             }
