@@ -24,17 +24,97 @@ namespace LavaCake {
 			if (m_depth > 1) { type = VK_IMAGE_TYPE_3D; view = VK_IMAGE_VIEW_TYPE_3D; }
 			if (m_cubemap) { type = VK_IMAGE_TYPE_2D; view = VK_IMAGE_VIEW_TYPE_CUBE; }
 
-			if (!LavaCake::Core::CreateImage(logical, type, m_format, { m_width, m_height, m_depth }, 1, 1, VK_SAMPLE_COUNT_1_BIT, usage, m_cubemap, m_image)) {
-				ErrorCheck::setError((char*)"Can't create Image");
+			// image creation
+			VkImageCreateInfo image_create_info = {
+				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,                // VkStructureType          sType
+				nullptr,                                            // const void             * pNext
+				cubemap ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : 0u, // VkImageCreateFlags       flags
+				type,                                               // VkImageType              imageType
+				m_format,                                           // VkFormat                 format
+				{ m_width, m_height, m_depth },                     // VkExtent3D               extent
+				1,																									// uint32_t                 mipLevels
+				cubemap ? (uint32_t)6 : (uint32_t)1,								// uint32_t                 arrayLayers
+				VK_SAMPLE_COUNT_1_BIT,                              // VkSampleCountFlagBits    samples
+				VK_IMAGE_TILING_OPTIMAL,                            // VkImageTiling            tiling
+				usage,																							// VkImageUsageFlags        usage
+				VK_SHARING_MODE_EXCLUSIVE,                          // VkSharingMode            sharingMode
+				0,                                                  // uint32_t                 queueFamilyIndexCount
+				nullptr,                                            // const uint32_t         * pQueueFamilyIndices
+				VK_IMAGE_LAYOUT_UNDEFINED                           // VkImageLayout            initialLayout
+			};
+
+			VkResult result = vkCreateImage(logical, &image_create_info, nullptr, &m_image);
+			if (VK_SUCCESS != result) {
+				ErrorCheck::setError((char*)"Could not create an image." );
 			}
 
-			if (!LavaCake::Core::AllocateAndBindMemoryObjectToImage(physical, logical, m_image, memPropertyFlag, m_imageMemory)) {
-				ErrorCheck::setError((char*)"Can't allocate Image memory");
+
+			// memory allocation
+			VkPhysicalDeviceMemoryProperties physical_device_memory_properties;
+			vkGetPhysicalDeviceMemoryProperties(physical, &physical_device_memory_properties);
+
+			VkMemoryRequirements memory_requirements;
+			vkGetImageMemoryRequirements(logical, m_image, &memory_requirements);
+
+			m_imageMemory = VK_NULL_HANDLE;
+			for (uint32_t type = 0; type < physical_device_memory_properties.memoryTypeCount; ++type) {
+				if ((memory_requirements.memoryTypeBits & (1 << type)) &&
+					((physical_device_memory_properties.memoryTypes[type].propertyFlags & memPropertyFlag) == memPropertyFlag)) {
+
+					VkMemoryAllocateInfo image_memory_allocate_info = {
+						VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,   // VkStructureType    sType
+						nullptr,                                  // const void       * pNext
+						memory_requirements.size,                 // VkDeviceSize       allocationSize
+						type                                      // uint32_t           memoryTypeIndex
+					};
+
+					VkResult result = vkAllocateMemory(logical, &image_memory_allocate_info, nullptr, &m_imageMemory);
+					if (VK_SUCCESS == result) {
+						break;
+					}
+				}
 			}
 
-			if (!LavaCake::Core::CreateImageView(logical, m_image, view, m_format, m_aspect, m_imageView)) {
+			if (m_imageMemory == VK_NULL_HANDLE) {
+				ErrorCheck::setError((char*)"Could not allocate memory for an image.");	
+			}
+
+
+			//memory binding
+			result = vkBindImageMemory(logical, m_image, m_imageMemory, 0);
+			if (VK_SUCCESS != result) {
+				ErrorCheck::setError((char*)"Could not bind memory object to an image.");
+			}
+
+
+			// image view creation
+			VkImageViewCreateInfo image_view_create_info = {
+			VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,			// VkStructureType            sType
+			nullptr,																			// const void               * pNext
+			0,																						// VkImageViewCreateFlags     flags
+			m_image,                                      // VkImage                    image
+			view,																					// VkImageViewType            viewType
+			m_format,                                     // VkFormat                   format
+			{																							// VkComponentMapping         components
+				VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         r
+				VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         g
+				VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         b
+				VK_COMPONENT_SWIZZLE_IDENTITY               // VkComponentSwizzle         a
+			},
+			{																							// VkImageSubresourceRange    subresourceRange
+				(VkImageAspectFlags)m_aspect,								// VkImageAspectFlags         aspectMask
+				0,                                          // uint32_t                   baseMipLevel
+				VK_REMAINING_MIP_LEVELS,                    // uint32_t                   levelCount
+				0,                                          // uint32_t                   baseArrayLayer
+				VK_REMAINING_ARRAY_LAYERS                   // uint32_t                   layerCount
+			}
+			};
+
+			result = vkCreateImageView(logical, &image_view_create_info, nullptr, &m_imageView);
+			if (VK_SUCCESS != result) {
 				ErrorCheck::setError((char*)"Can't create Image View");
 			}
+
 
 			m_layout = VK_IMAGE_LAYOUT_UNDEFINED;
 			m_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
@@ -45,8 +125,32 @@ namespace LavaCake {
 		void Image::createSampler() {
 			auto device = Device::getDevice();
 			auto logical = device->getLogicalDevice();
-			if (!LavaCake::Core::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, m_sampler)) {
-				ErrorCheck::setError((char*)"Can't create a sampler for this image");
+
+
+			VkSamplerCreateInfo sampler_create_info = {
+				VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,    // VkStructureType          sType
+				nullptr,                                  // const void             * pNext
+				0,                                        // VkSamplerCreateFlags     flags
+				VK_FILTER_LINEAR,                         // VkFilter                 magFilter
+				VK_FILTER_LINEAR,                         // VkFilter                 minFilter
+				VK_SAMPLER_MIPMAP_MODE_NEAREST,           // VkSamplerMipmapMode      mipmapMode
+				VK_SAMPLER_ADDRESS_MODE_REPEAT,           // VkSamplerAddressMode     addressModeU
+				VK_SAMPLER_ADDRESS_MODE_REPEAT,           // VkSamplerAddressMode     addressModeV
+				VK_SAMPLER_ADDRESS_MODE_REPEAT,           // VkSamplerAddressMode     addressModeW
+				0.0f,																			// float                    mipLodBias
+				false,																		// VkBool32                 anisotropyEnable
+				1.0f,																			// float                    maxAnisotropy
+				false,																		// VkBool32                 compareEnable
+				VK_COMPARE_OP_ALWAYS,                     // VkCompareOp              compareOp
+				0.0f,																			// float                    minLod
+				1.0f,																			// float                    maxLod
+				VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,       // VkBorderColor            borderColor
+				false																			// VkBool32                 unnormalizedCoordinates
+			};
+
+			VkResult result = vkCreateSampler(logical, &sampler_create_info, nullptr, &m_sampler);
+			if (VK_SUCCESS != result) {
+				ErrorCheck::setError((char*)"Could not create sampler.");;
 			}
 		}
 

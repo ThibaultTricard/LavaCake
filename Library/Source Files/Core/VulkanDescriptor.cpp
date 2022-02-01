@@ -24,7 +24,6 @@
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
 
 #include "VulkanDescriptor.h"
-#include "VulkanBuffer.h"
 
 namespace LavaCake {
 

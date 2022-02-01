@@ -295,12 +295,30 @@ namespace LavaCake {
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 			
+			VkSamplerCreateInfo sampler_create_info = {
+				VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,    // VkStructureType          sType
+				nullptr,                                  // const void             * pNext
+				0,                                        // VkSamplerCreateFlags     flags
+				VK_FILTER_LINEAR,                         // VkFilter                 magFilter
+				VK_FILTER_LINEAR,                         // VkFilter                 minFilter
+				VK_SAMPLER_MIPMAP_MODE_NEAREST,           // VkSamplerMipmapMode      mipmapMode
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,    // VkSamplerAddressMode     addressModeU
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,    // VkSamplerAddressMode     addressModeV
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,    // VkSamplerAddressMode     addressModeW
+				0.0f,																			// float                    mipLodBias
+				false,																		// VkBool32                 anisotropyEnable
+				1.0f,																			// float                    maxAnisotropy
+				false,																		// VkBool32                 compareEnable
+				VK_COMPARE_OP_ALWAYS,                     // VkCompareOp              compareOp
+				0.0f,																			// float                    minLod
+				1.0f,																			// float                    maxLod
+				VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,       // VkBorderColor            borderColor
+				false																			// VkBool32                 unnormalizedCoordinates
+			};
 
-		
-			if (!Core::CreateSampler(logical, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST,
-				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
-				0.0f, false, 1.0f, false, VK_COMPARE_OP_ALWAYS, 0.0f, 1.0f, VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK, false, frameBuffer.m_sampler)) {
-				ErrorCheck::setError((char*)"Can't create an image sampler for this FrameBuffer");
+			VkResult result = vkCreateSampler(logical, &sampler_create_info, nullptr, &frameBuffer.m_sampler);
+			if (VK_SUCCESS != result) {
+				ErrorCheck::setError((char*)"Could not create sampler for this FrameBuffer.");
 			}
 
 			bool linear_filtering = true;

@@ -23,8 +23,32 @@ namespace LavaCake {
 				VkDevice logical = d->getLogicalDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				m_image = image;
-				if (!LavaCake::Core::CreateImageView(logical, m_image, VK_IMAGE_VIEW_TYPE_2D, imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, m_imageView)) {
-					ErrorCheck::setError((char*)"Can't create image view");
+
+				VkImageViewCreateInfo image_view_create_info = {
+				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,   // VkStructureType            sType
+				nullptr,                                    // const void               * pNext
+				0,                                          // VkImageViewCreateFlags     flags
+				m_image,                                    // VkImage                    image
+				VK_IMAGE_VIEW_TYPE_2D,                      // VkImageViewType            viewType
+				imageFormat,                                // VkFormat                   format
+				{                                           // VkComponentMapping         components
+					VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         r
+					VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         g
+					VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         b
+					VK_COMPONENT_SWIZZLE_IDENTITY               // VkComponentSwizzle         a
+				},
+				{                                           // VkImageSubresourceRange    subresourceRange
+					VK_IMAGE_ASPECT_COLOR_BIT,                  // VkImageAspectFlags         aspectMask
+					0,                                          // uint32_t                   baseMipLevel
+					VK_REMAINING_MIP_LEVELS,                    // uint32_t                   levelCount
+					0,                                          // uint32_t                   baseArrayLayer
+					VK_REMAINING_ARRAY_LAYERS                   // uint32_t                   layerCount
+				}
+				};
+
+				VkResult result = vkCreateImageView(logical, &image_view_create_info, nullptr, &m_imageView);
+				if (VK_SUCCESS != result) {
+					ErrorCheck::setError((char*)"Could not create an image view");
 				}
 
 				VkSemaphoreCreateInfo semaphore_create_info = {
@@ -33,10 +57,9 @@ namespace LavaCake {
 					0                                           // VkSemaphoreCreateFlags     flags
 				};
 
-				VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &m_aquiredSemaphore);
+				result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &m_aquiredSemaphore);
 				if (VK_SUCCESS != result) {
-					//TODO : Raise error using error check
-					//std::cout << "Could not create a semaphore." << std::endl;
+					ErrorCheck::setError((char*)"Could not create a semaphore.");
 				}
 			}
 
