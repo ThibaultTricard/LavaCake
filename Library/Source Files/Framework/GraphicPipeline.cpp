@@ -240,6 +240,10 @@ namespace LavaCake {
 				VK_DYNAMIC_STATE_SCISSOR
 			};
 
+			if (m_lineWidth != 1.0f) {
+				m_dynamicStates.push_back(VK_DYNAMIC_STATE_LINE_WIDTH);
+			}
+
 			m_dynamicStateCreateInfo = {
 				VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,     // VkStructureType                      sType
 				nullptr,                                                  // const void                         * pNext
@@ -359,6 +363,11 @@ namespace LavaCake {
 
 			VkRect2D& scissor = m_viewportscissor.Scissors[0];
 			vkCmdSetScissor(buffer.getHandle(), 0, 1,  &scissor );
+
+			if (m_lineWidth != 1.0) {
+				vkCmdSetLineWidth(buffer.getHandle(), m_lineWidth);
+			}
+
 			for (uint32_t i = 0; i < m_vertexBuffers.size(); i++) {
 				if (m_vertexBuffers[i]->getVertexBuffer()->getHandle() == VK_NULL_HANDLE)return;
 				VkDeviceSize size(0);
