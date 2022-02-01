@@ -67,6 +67,15 @@ namespace LavaCake {
       }
     }
     
+    /*uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+    for (const VkLayerProperties& layerProperties : availableLayers)
+    {
+      std::cout << layerProperties.layerName << std::endl;
+    }*/
+
     VkApplicationInfo application_info = {
       VK_STRUCTURE_TYPE_APPLICATION_INFO,                 // VkStructureType           sType
       nullptr,                                            // const void              * pNext
@@ -253,7 +262,7 @@ namespace LavaCake {
                                       );
       
 			if (!CreateVulkanInstance(instance_extensions, "LavaCake", m_instance)) {
-				ErrorCheck::setError((char*)"Could not load Vulkan while initializing the device");
+				ErrorCheck::setError((char*)"Could not create the vulkan instance");
 			}
 
 			if (!LavaCake::Core::LoadInstanceLevelFunctions(m_instance, instance_extensions)) {

@@ -12,6 +12,8 @@ set( CMAKE_SUPPRESS_REGENERATION true )
 # Environment setup                                           #
 ###############################################################
 
+find_package(Vulkan REQUIRED)
+
 if( CMAKE_BUILD_TYPE STREQUAL "" )
 	set( CMAKE_BUILD_TYPE "debug" )
 endif()
@@ -87,17 +89,35 @@ find_package(Vulkan)
 set(EXTERNAL_HEADER_FILES
 ./External/stb_image.h
 ./External/tiny_obj_loader.h
-./External/vk_platform.h
-./External/vulkan.h
-./External/vulkan_core.h
-./External/vulkan_win32.h
-./External/vulkan_metal.h
 ./External/lib/glfw/include/GLFW/glfw3.h
 ./External/lib/glfw/include/GLFW/glfw3native.h 
-./External/mvk_datatypes.h
-./External/mvk_vulkan.h
-./External/vk_mvk_moltenvk.h
 )
+
+
+
+set(VULKAN_HEADER_FILES
+${Vulkan_INCLUDE_DIRS}/vulkan/vk_platform.h
+${Vulkan_INCLUDE_DIRS}/vulkan/vulkan.h
+${Vulkan_INCLUDE_DIRS}/vulkan/vulkan_core.h
+)
+
+if(WIN32)
+	set(VULKAN_HEADER_FILES
+		${VULKAN_HEADER_FILES}
+		${Vulkan_INCLUDE_DIRS}/vulkan/vulkan_win32.h
+	)
+endif()
+
+if(APPLE)
+	set(VULKAN_HEADER_FILES
+		${VULKAN_HEADER_FILES}
+		${Vulkan_INCLUDE_DIRS}/vulkan/vulkan_metal.h
+		${Vulkan_INCLUDE_DIRS}/vulkan/mvk_datatypes.h
+		${Vulkan_INCLUDE_DIRS}/vulkan/mvk_vulkan.h
+		${Vulkan_INCLUDE_DIRS}/vulkan/vk_mvk_moltenvk.h
+	)
+endif()
+
 
 
 set(LAVACAKE_INCLUDE_DIR
@@ -281,8 +301,7 @@ ${LIBRARY_RAYTRACING_HEADER} ${LIBRARY_RAYTRACING_SOURCE}
 ${LIBRARY_GEOMETRY_HEADER} ${LIBRARY_GEOMETRY_SOURCE} 
 ${IMGUI_SOURCE})
 target_link_libraries( LavaCake ${PLATFORM_LIBRARY} ${Vulkan_LIBRARY} glfw )
-target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS})
-
+target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS}/vulkan)
 
 
 

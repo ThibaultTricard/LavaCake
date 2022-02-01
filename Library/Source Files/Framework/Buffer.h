@@ -45,6 +45,12 @@ namespace LavaCake {
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				VkDevice logical = d->getLogicalDevice();
 				m_dataSize = uint64_t(rawdata.size() * sizeof(t));
+				
+				VkPhysicalDeviceProperties* p = new  VkPhysicalDeviceProperties();
+				vkGetPhysicalDeviceProperties(physical,
+					p);
+
+				m_padding = p->limits.nonCoherentAtomSize - m_dataSize % p->limits.nonCoherentAtomSize;
 
 				m_stage = stageFlagBit;
 				m_access = accessmod;
@@ -75,7 +81,7 @@ namespace LavaCake {
 				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,   // VkStructureType        sType
 				nullptr,                                // const void           * pNext
 				0,                                      // VkBufferCreateFlags    flags
-				m_dataSize,                             // VkDeviceSize           size
+				m_dataSize + m_padding,                 // VkDeviceSize           size
 				VK_BUFFER_USAGE_TRANSFER_DST_BIT| usage,// VkBufferUsageFlags     usage
 				VK_SHARING_MODE_EXCLUSIVE,              // VkSharingMode          sharingMode
 				0,                                      // uint32_t               queueFamilyIndexCount
@@ -148,7 +154,7 @@ namespace LavaCake {
 
 				Buffer stagingBuffer;
 
-				stagingBuffer.allocate(m_dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+				stagingBuffer.allocate(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 				stagingBuffer.write(rawdata);
 
@@ -160,7 +166,7 @@ namespace LavaCake {
 
 				setAccess(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED);
 
-				stagingBuffer.copyToBuffer(cmdBuff, *this, { { 0, 0, m_dataSize } });
+				stagingBuffer.copyToBuffer(cmdBuff, *this, { { 0, 0, m_dataSize + m_padding  } });
 
 				setAccess(cmdBuff, m_stage, m_access, VK_QUEUE_FAMILY_IGNORED);
 
@@ -260,7 +266,7 @@ namespace LavaCake {
 
         Buffer stagingBuffer;
 
-        stagingBuffer.allocate(m_dataSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+        stagingBuffer.allocate(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
         data = std::vector<t>(m_dataSize/sizeof(t));
 
@@ -271,7 +277,7 @@ namespace LavaCake {
 
         setAccess(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED);
 
-        copyToBuffer(cmdBuff, stagingBuffer, { { 0, 0,  m_dataSize } });
+        copyToBuffer(cmdBuff, stagingBuffer, { { 0, 0,  m_dataSize + m_padding } });
 
         setAccess(cmdBuff, m_stage, m_access, VK_QUEUE_FAMILY_IGNORED);
 
@@ -311,7 +317,7 @@ namespace LavaCake {
 					{
 						VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,  // VkStructureType    sType
 						nullptr,                                // const void       * pNext
-						m_bufferMemory,                       // VkDeviceMemory     memory
+						m_bufferMemory,													// VkDeviceMemory     memory
 						0,																			// VkDeviceSize       offset
 						VK_WHOLE_SIZE                           // VkDeviceSize       size
 					}
@@ -358,6 +364,7 @@ namespace LavaCake {
 			VkAccessFlagBits																		m_access;
 			uint32_t																						m_queueFamily;
 			uint64_t																						m_dataSize = 0;
+			uint64_t																						m_padding = 0;
 
 			void*																								m_mapped;
 

@@ -14,6 +14,7 @@ namespace LavaCake{
 			m_bufferView = (a.m_bufferView);
 
 			m_dataSize = a.m_dataSize;
+			m_padding = a.m_padding;
 		}
 
 		void Buffer::allocate(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag , VkPipelineStageFlagBits stageFlagBit , VkFormat format ) {
@@ -21,6 +22,12 @@ namespace LavaCake{
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkDevice logical = d->getLogicalDevice();
 			m_dataSize = byteSize;
+
+			VkPhysicalDeviceProperties* p = new  VkPhysicalDeviceProperties();
+			vkGetPhysicalDeviceProperties(physical,
+				p);
+
+			m_padding = p->limits.nonCoherentAtomSize - m_dataSize % p->limits.nonCoherentAtomSize;
 
 			m_stage = stageFlagBit;
 			m_access = VkAccessFlagBits(0);
@@ -50,7 +57,7 @@ namespace LavaCake{
 			VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,   // VkStructureType        sType
 			nullptr,                                // const void           * pNext
 			0,                                      // VkBufferCreateFlags    flags
-			m_dataSize,                             // VkDeviceSize           size
+			m_dataSize + m_padding,                 // VkDeviceSize           size
 			usage|VK_BUFFER_USAGE_TRANSFER_DST_BIT, // VkBufferUsageFlags     usage
 			VK_SHARING_MODE_EXCLUSIVE,              // VkSharingMode          sharingMode
 			0,                                      // uint32_t               queueFamilyIndexCount
@@ -181,7 +188,7 @@ namespace LavaCake{
 		void* Buffer::map() {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
-			VkResult result = vkMapMemory(logical, m_bufferMemory, 0, m_dataSize, 0, &m_mapped);
+			VkResult result = vkMapMemory(logical, m_bufferMemory, 0, m_dataSize + m_padding, 0, &m_mapped);
 
 			if (VK_SUCCESS != result) {
 				//std::cout << "Could not map memory object." << std::endl;
