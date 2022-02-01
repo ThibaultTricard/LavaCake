@@ -465,77 +465,75 @@ namespace LavaCake {
             extensionToLoad.push_back(device_extensions_optional[s]);
           }
         }
+        {
+          VkDeviceCreateInfo device_create_info = {
+            VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,               // VkStructureType                  sType
+            nullptr,                                            // const void                     * pNext
+            0,                                                  // VkDeviceCreateFlags              flags
+            static_cast<uint32_t>(queue_create_infos.size()),   // uint32_t                         queueCreateInfoCount
+            queue_create_infos.data(),                          // const VkDeviceQueueCreateInfo  * pQueueCreateInfos
+            0,                                                  // uint32_t                         enabledLayerCount
+            nullptr,                                            // const char * const             * ppEnabledLayerNames
+            static_cast<uint32_t>(extensionToLoad.size()),      // uint32_t                         enabledExtensionCount
+            extensionToLoad.data(),                             // const char * const             * ppEnabledExtensionNames
+            desired_device_features                             // const VkPhysicalDeviceFeatures * pEnabledFeatures
+          };
 
-        VkDeviceCreateInfo device_create_info = {
-          VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,               // VkStructureType                  sType
-          nullptr,                                            // const void                     * pNext
-          0,                                                  // VkDeviceCreateFlags              flags
-          static_cast<uint32_t>(queue_create_infos.size()),   // uint32_t                         queueCreateInfoCount
-          queue_create_infos.data(),                          // const VkDeviceQueueCreateInfo  * pQueueCreateInfos
-          0,                                                  // uint32_t                         enabledLayerCount
-          nullptr,                                            // const char * const             * ppEnabledLayerNames
-          static_cast<uint32_t>(extensionToLoad.size()),      // uint32_t                         enabledExtensionCount
-          extensionToLoad.data(),                             // const char * const             * ppEnabledExtensionNames
-          desired_device_features                             // const VkPhysicalDeviceFeatures * pEnabledFeatures
-        };
+          VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
+          if (pNextChain) {
+            physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+            physicalDeviceFeatures2.features = *desired_device_features;
+            physicalDeviceFeatures2.pNext = pNextChain;
+            device_create_info.pEnabledFeatures = nullptr;
+            device_create_info.pNext = &physicalDeviceFeatures2;
+          }
 
-        VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
-        if (pNextChain) {
-          physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-          physicalDeviceFeatures2.features = *desired_device_features;
-          physicalDeviceFeatures2.pNext = pNextChain;
-          device_create_info.pEnabledFeatures = nullptr;
-          device_create_info.pNext = &physicalDeviceFeatures2;
-        }
+          result = vkCreateDevice(device.device, &device_create_info, nullptr, &m_logical);
+          if ((result != VK_SUCCESS) ||
+            (m_logical == VK_NULL_HANDLE)) {
+            continue;
+          }
+          else {
+            //select physical device
+            m_physical = device.device;
 
-        result = vkCreateDevice(device.device, &device_create_info, nullptr, &m_logical);
-        if ((result != VK_SUCCESS) ||
-          (m_logical == VK_NULL_HANDLE)) {
-          continue;
-        }
-        else {
-          //select physical device
-          m_physical = device.device;
-
-          m_raytracingAvailable = m_raytracingEnabled;
-          for (auto e : m_missingOptionalExtension) {
-            if (m_raytracingEnabled && m_raytracingOptional && m_raytracingAvailable) {
-              for (auto rte : raytracingExtension) {
-                if (e == rte) {
-                  m_raytracingAvailable = false;
-                  ErrorCheck::setError((char*)"Raytracing extensions not found on this device", 1);
-                  break;
+            m_raytracingAvailable = m_raytracingEnabled;
+            for (auto e : m_missingOptionalExtension) {
+              if (m_raytracingEnabled && m_raytracingOptional && m_raytracingAvailable) {
+                for (auto rte : raytracingExtension) {
+                  if (e == rte) {
+                    m_raytracingAvailable = false;
+                    ErrorCheck::setError((char*)"Raytracing extensions not found on this device", 1);
+                    break;
+                  }
                 }
               }
             }
-          }
+
+            LavaCake::Core::LoadDeviceLevelFunctions(m_logical, extensionToLoad);
 
 
-
-
-          LavaCake::Core::LoadDeviceLevelFunctions(m_logical, device_extensions);
-
-          
-          for (int i = 0; i < nbGraphicQueue; i++) {
-            LavaCake::vkGetDeviceQueue(m_logical, m_graphicQueues[i].getIndex(), 0, &m_graphicQueues[i].getHandle());
-          }
-
-          for (int i = 0; i < nbComputeQueue; i++) {
-            LavaCake::vkGetDeviceQueue(m_logical, m_computeQueues[i].getIndex(), 0, &m_computeQueues[i].getHandle());
-          }
-
-          LavaCake::vkGetDeviceQueue(m_logical, m_presentQueue->getIndex(), 0, &m_presentQueue->getHandle());
-
-          //Todo Check if getHandle()  works
-
-          for (size_t s = 0; s < device_extensions_optional.size(); s++) {
-            if (device.missing[s]) {
-              m_missingOptionalExtension.push_back(device_extensions_optional[s]);
+            for (int i = 0; i < nbGraphicQueue; i++) {
+              LavaCake::vkGetDeviceQueue(m_logical, m_graphicQueues[i].getIndex(), 0, &m_graphicQueues[i].getHandle());
             }
-          }
-          
 
-          break;
+            for (int i = 0; i < nbComputeQueue; i++) {
+              LavaCake::vkGetDeviceQueue(m_logical, m_computeQueues[i].getIndex(), 0, &m_computeQueues[i].getHandle());
+            }
+
+            LavaCake::vkGetDeviceQueue(m_logical, m_presentQueue->getIndex(), 0, &m_presentQueue->getHandle());
+
+            //Todo Check if getHandle()  works
+
+            for (size_t s = 0; s < device_extensions_optional.size(); s++) {
+              if (device.missing[s]) {
+                m_missingOptionalExtension.push_back(device_extensions_optional[s]);
+              }
+            }
+
+
+            break;
+          }
         }
         endloop:;
       }

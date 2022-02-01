@@ -70,7 +70,6 @@ namespace LavaCake {
 		bool LoadDeviceLevelFunctions(VkDevice                          logical_device,
 			std::vector<char const *> const & enabled_extensions);
 
-		bool LoadAccelerationStructureFunctions(VkDevice                          logical_device);
 	}
  
 	

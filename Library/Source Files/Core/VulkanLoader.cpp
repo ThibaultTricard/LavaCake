@@ -42,8 +42,6 @@ namespace LavaCake {
 #define EXPORTED_VULKAN_FUNCTION( name )                              \
     name = (PFN_##name)LoadFunction( vulkan_library, #name );         \
     if( name == nullptr ) {                                           \
-      std::cout << "Could not load exported Vulkan function named: "  \
-        #name << std::endl;                                           \
       return false;                                                   \
     }
 
@@ -56,8 +54,6 @@ namespace LavaCake {
 #define GLOBAL_LEVEL_VULKAN_FUNCTION( name )                              \
     name = (PFN_##name)vkGetInstanceProcAddr( nullptr, #name );           \
     if( name == nullptr ) {                                               \
-      std::cout << "Could not load global level Vulkan function named: "  \
-        #name << std::endl;                                               \
       return false;                                                       \
     }
 
@@ -72,8 +68,6 @@ namespace LavaCake {
 #define INSTANCE_LEVEL_VULKAN_FUNCTION( name )                                  \
     name = (PFN_##name)vkGetInstanceProcAddr( instance, #name );                \
     if( name == nullptr ) {                                                     \
-      std::cout << "Could not load instance-level Vulkan function named: "      \
-        #name << std::endl;                                                     \
       return false;                                                             \
     }
 
@@ -83,8 +77,6 @@ namespace LavaCake {
       if( std::string( enabled_extension ) == std::string( extension ) ) {      \
         name = (PFN_##name)vkGetInstanceProcAddr( instance, #name );            \
         if( name == nullptr ) {                                                 \
-          std::cout << "Could not load instance-level Vulkan function named: "  \
-            #name << std::endl;                                                 \
           return false;                                                         \
         }                                                                       \
       }                                                                         \
@@ -101,8 +93,6 @@ namespace LavaCake {
 #define DEVICE_LEVEL_VULKAN_FUNCTION( name )                                    \
     name = (PFN_##name)vkGetDeviceProcAddr( logical_device, #name );            \
     if( name == nullptr ) {                                                     \
-      std::cout << "Could not load device-level Vulkan function named: "        \
-        #name << std::endl;                                                     \
       return false;                                                             \
     }
 
@@ -112,9 +102,6 @@ namespace LavaCake {
       if( std::string( enabled_extension ) == std::string( extension ) ) {      \
         name = (PFN_##name)vkGetDeviceProcAddr( logical_device, #name );        \
         if( name == nullptr ) {                                                 \
-          std::cout << "Could not load device-level Vulkan function named: "    \
-            #name << std::endl;                                                 \
-          return false;                                                         \
         }                                                                       \
       }                                                                         \
     }
@@ -123,47 +110,6 @@ namespace LavaCake {
 
 			return true;
 		}
-
-    bool LoadAccelerationStructureFunctions(VkDevice                          device) {
-      int has_VK_KHR_acceleration_structure = 0;
-      pfn_vkCreateAccelerationStructureKHR = (PFN_vkCreateAccelerationStructureKHR)vkGetDeviceProcAddr(device, "vkCreateAccelerationStructureKHR");
-      pfn_vkDestroyAccelerationStructureKHR = (PFN_vkDestroyAccelerationStructureKHR)vkGetDeviceProcAddr(device, "vkDestroyAccelerationStructureKHR");
-      pfn_vkCmdBuildAccelerationStructuresKHR = (PFN_vkCmdBuildAccelerationStructuresKHR)vkGetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresKHR");
-      pfn_vkCmdBuildAccelerationStructuresIndirectKHR = (PFN_vkCmdBuildAccelerationStructuresIndirectKHR)vkGetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresIndirectKHR");
-      pfn_vkBuildAccelerationStructuresKHR = (PFN_vkBuildAccelerationStructuresKHR)vkGetDeviceProcAddr(device, "vkBuildAccelerationStructuresKHR");
-      pfn_vkCopyAccelerationStructureKHR = (PFN_vkCopyAccelerationStructureKHR)vkGetDeviceProcAddr(device, "vkCopyAccelerationStructureKHR");
-      pfn_vkCopyAccelerationStructureToMemoryKHR = (PFN_vkCopyAccelerationStructureToMemoryKHR)vkGetDeviceProcAddr(device, "vkCopyAccelerationStructureToMemoryKHR");
-      pfn_vkCopyMemoryToAccelerationStructureKHR = (PFN_vkCopyMemoryToAccelerationStructureKHR)vkGetDeviceProcAddr(device, "vkCopyMemoryToAccelerationStructureKHR");
-      pfn_vkWriteAccelerationStructuresPropertiesKHR = (PFN_vkWriteAccelerationStructuresPropertiesKHR)vkGetDeviceProcAddr(device, "vkWriteAccelerationStructuresPropertiesKHR");
-      pfn_vkCmdCopyAccelerationStructureKHR = (PFN_vkCmdCopyAccelerationStructureKHR)vkGetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureKHR");
-      pfn_vkCmdCopyAccelerationStructureToMemoryKHR = (PFN_vkCmdCopyAccelerationStructureToMemoryKHR)vkGetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureToMemoryKHR");
-      pfn_vkCmdCopyMemoryToAccelerationStructureKHR = (PFN_vkCmdCopyMemoryToAccelerationStructureKHR)vkGetDeviceProcAddr(device, "vkCmdCopyMemoryToAccelerationStructureKHR");
-      pfn_vkGetAccelerationStructureDeviceAddressKHR = (PFN_vkGetAccelerationStructureDeviceAddressKHR)vkGetDeviceProcAddr(device, "vkGetAccelerationStructureDeviceAddressKHR");
-      pfn_vkCmdWriteAccelerationStructuresPropertiesKHR = (PFN_vkCmdWriteAccelerationStructuresPropertiesKHR)vkGetDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesKHR");
-      pfn_vkGetDeviceAccelerationStructureCompatibilityKHR = (PFN_vkGetDeviceAccelerationStructureCompatibilityKHR)vkGetDeviceProcAddr(device, "vkGetDeviceAccelerationStructureCompatibilityKHR");
-      pfn_vkGetAccelerationStructureBuildSizesKHR = (PFN_vkGetAccelerationStructureBuildSizesKHR)vkGetDeviceProcAddr(device, "vkGetAccelerationStructureBuildSizesKHR");
-  
-
-      int success = 1;
-      success = success && (pfn_vkCreateAccelerationStructureKHR != 0);
-      success = success && (pfn_vkDestroyAccelerationStructureKHR != 0);
-      success = success && (pfn_vkCmdBuildAccelerationStructuresKHR != 0);
-      success = success && (pfn_vkCmdBuildAccelerationStructuresIndirectKHR != 0);
-      success = success && (pfn_vkBuildAccelerationStructuresKHR != 0);
-      success = success && (pfn_vkCopyAccelerationStructureKHR != 0);
-      success = success && (pfn_vkCopyAccelerationStructureToMemoryKHR != 0);
-      success = success && (pfn_vkCopyMemoryToAccelerationStructureKHR != 0);
-      success = success && (pfn_vkWriteAccelerationStructuresPropertiesKHR != 0);
-      success = success && (pfn_vkCmdCopyAccelerationStructureKHR != 0);
-      success = success && (pfn_vkCmdCopyAccelerationStructureToMemoryKHR != 0);
-      success = success && (pfn_vkCmdCopyMemoryToAccelerationStructureKHR != 0);
-      success = success && (pfn_vkGetAccelerationStructureDeviceAddressKHR != 0);
-      success = success && (pfn_vkCmdWriteAccelerationStructuresPropertiesKHR != 0);
-      success = success && (pfn_vkGetDeviceAccelerationStructureCompatibilityKHR != 0);
-      success = success && (pfn_vkGetAccelerationStructureBuildSizesKHR != 0);
-      has_VK_KHR_acceleration_structure = success;
-      return success;
-    }
 	}
   
 	
