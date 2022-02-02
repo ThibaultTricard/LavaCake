@@ -7,11 +7,16 @@
 
 namespace LavaCake {
   namespace Framework {
-  
-  /**
-   Class CommandBuffer :
-   \brief Helps manage VkCommandBuffer and their synchornisation
-   */
+
+    struct WaitSemaphoreInfo {
+      VkSemaphore           semaphore;
+      VkPipelineStageFlags  waitingStage;
+    };
+
+    /**
+    Class CommandBuffer :
+    \brief Helps manage VkCommandBuffer and their synchornisation
+    */
     class CommandBuffer {
     public:
       
@@ -162,12 +167,12 @@ namespace LavaCake {
        \param waitSemaphoreInfo : description of the semaphores to to wait on before executing it
        \param signalSemaphores : the list of that will be raised by the execution of this command buffer
        */
-      void submit(Queue* queue, std::vector<Core::WaitSemaphoreInfo> waitSemaphoreInfo, std::vector<VkSemaphore>  signalSemaphores) {
+      void submit(Queue* queue, std::vector<WaitSemaphoreInfo> waitSemaphoreInfo, std::vector<VkSemaphore>  signalSemaphores) {
         std::vector<VkSemaphore>          wait_semaphore_handles;
         std::vector<VkPipelineStageFlags> wait_semaphore_stages;
         for (auto& wait_semaphore_info : waitSemaphoreInfo) {
-          wait_semaphore_handles.emplace_back(wait_semaphore_info.Semaphore);
-          wait_semaphore_stages.emplace_back(wait_semaphore_info.WaitingStage);
+          wait_semaphore_handles.emplace_back(wait_semaphore_info.semaphore);
+          wait_semaphore_stages.emplace_back(wait_semaphore_info.waitingStage);
         }
 
         std::vector<VkCommandBuffer> command_buffers = { getHandle() };

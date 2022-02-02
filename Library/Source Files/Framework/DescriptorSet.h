@@ -242,8 +242,19 @@ namespace LavaCake {
           });
       }
       
-      if (!Core::CreateDescriptorSetLayout(logical, descriptorSetLayoutBinding, m_descriptorSetLayout)) {
-        ErrorCheck::setError((char*)"Can't create descriptor set layout");
+
+      //create descriptor
+      VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info = {
+        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,                    // VkStructureType                      sType
+        nullptr,                                                                // const void                         * pNext
+        0,                                                                      // VkDescriptorSetLayoutCreateFlags     flags
+        static_cast<uint32_t>(descriptorSetLayoutBinding.size()),               // uint32_t                             bindingCount
+        descriptorSetLayoutBinding.data()                                       // const VkDescriptorSetLayoutBinding * pBindings
+      };
+
+      VkResult result = vkCreateDescriptorSetLayout(logical, &descriptor_set_layout_create_info, nullptr, &m_descriptorSetLayout);
+      if (VK_SUCCESS != result) {
+        ErrorCheck::setError((char*)"Could not create a layout for descriptor sets." );
       }
       
       uint32_t descriptorsNumber = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size() + m_buffers.size() + m_AS.size());
@@ -305,14 +316,40 @@ namespace LavaCake {
       }
 
       
-      if (!Core::CreateDescriptorPool(logical, false, descriptorsNumber, descriptorPoolSize, m_descriptorPool)) {
-        ErrorCheck::setError((char*)"Can't create descriptor pool");
+      VkDescriptorPoolCreateInfo descriptor_pool_create_info = {
+        VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,                    // VkStructureType                sType
+        nullptr,                                                          // const void                   * pNext
+        false ?                                                           // VkDescriptorPoolCreateFlags    flags
+          VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT : 0u,
+        descriptorsNumber,                                                // uint32_t                       maxSets
+        static_cast<uint32_t>(descriptorPoolSize.size()),                 // uint32_t                       poolSizeCount
+        descriptorPoolSize.data()                                         // const VkDescriptorPoolSize   * pPoolSizes
+      };
+
+      result = vkCreateDescriptorPool(logical, &descriptor_pool_create_info, nullptr, &m_descriptorPool);
+      if (VK_SUCCESS != result) {
+        ErrorCheck::setError((char*)"Could not create a descriptor pool." );
       }
       
-      std::vector<VkDescriptorSet> descriptorSets;
-      if (!Core::AllocateDescriptorSets(logical, m_descriptorPool, { m_descriptorSetLayout }, descriptorSets)) {
-        ErrorCheck::setError((char*)"Can't allocate descriptor set");
+
+      
+      std::vector<VkDescriptorSetLayout> descriptorSetLayouts = { m_descriptorSetLayout };
+
+      VkDescriptorSetAllocateInfo descriptor_set_allocate_info = {
+        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,         // VkStructureType                  sType
+        nullptr,                                                // const void                     * pNext
+        m_descriptorPool,                                       // VkDescriptorPool                 descriptorPool
+        static_cast<uint32_t>(descriptorSetLayouts.size()),     // uint32_t                         descriptorSetCount
+        descriptorSetLayouts.data()                             // const VkDescriptorSetLayout    * pSetLayouts
+      };
+
+      std::vector<VkDescriptorSet> descriptorSets(descriptorSetLayouts.size());
+
+      result = vkAllocateDescriptorSets(logical, &descriptor_set_allocate_info, descriptorSets.data());
+      if (VK_SUCCESS != result) {
+        ErrorCheck::setError((char*)"Could not allocate descriptor sets.");
       }
+
 
       std::vector<VkWriteDescriptorSet> write_descriptors;
       std::vector<VkCopyDescriptorSet> copy_descriptors;

@@ -180,7 +180,10 @@ namespace LavaCake {
 
 			VkPipelineViewportStateCreateInfo											m_viewportInfo;
 			
-			Core::ViewportInfo																		m_viewportscissor;
+
+
+			std::vector<VkViewport>																m_viewports;
+			std::vector<VkRect2D>																	m_scissors;
 			VkPipelineVertexInputStateCreateInfo									m_vertexInfo;
 			std::vector<VertexBuffer*>														m_vertexBuffers;
 			VkPipelineInputAssemblyStateCreateInfo								m_inputInfo;

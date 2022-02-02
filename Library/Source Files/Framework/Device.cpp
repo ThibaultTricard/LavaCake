@@ -395,25 +395,30 @@ namespace LavaCake {
 
       //brows all compatible device
 
+      struct QueueInfo {
+        uint32_t           FamilyIndex;
+        std::vector<float> Priorities;
+      };
+
       for (auto& device : tmp_physicaldevices) {
         std::vector<const char*> extensionToLoad(device_extensions);
         // create 
         std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
 
-        std::vector <LavaCake::Core::QueueInfo> requested_queues;
+        std::vector<QueueInfo> requested_queues;
         for (int i = 0; i < nbGraphicQueue; i++) {
-          if (!m_graphicQueues[i].initIndex(&device.device)) {
+          if (!m_graphicQueues[i].initIndex(device.device)) {
             goto endloop;
           }
         }
 
         for (int i = 0; i < nbComputeQueue; i++) {
-          if (!m_computeQueues[i].initIndex(&device.device)) {
+          if (!m_computeQueues[i].initIndex(device.device)) {
             goto endloop;
           }
         }
 
-        if (!m_presentQueue->initIndex(&device.device, &m_presentationSurface)) {
+        if (!m_presentQueue->initIndex(device.device, &m_presentationSurface)) {
           continue;
         }
 
@@ -591,6 +596,11 @@ namespace LavaCake {
 
 		void Device::end() {
 			waitForAllCommands();
+
+      if (VK_NULL_HANDLE != m_commandPool) {
+        vkDestroyCommandPool(m_logical, m_commandPool, nullptr);
+        m_commandPool = VK_NULL_HANDLE;
+      }
 
       //release logical device
       vkDestroyDevice(m_logical, nullptr);

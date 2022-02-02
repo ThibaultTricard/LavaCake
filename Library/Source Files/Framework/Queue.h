@@ -18,7 +18,7 @@ namespace LavaCake {
 				m_handle = new VkQueue();
 			}
 
-			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) { return false; };
+			virtual bool initIndex(VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surface = nullptr) { return false; };
 
       /**
        \brief Get the handle of the Queue
@@ -40,6 +40,50 @@ namespace LavaCake {
 			}
 
 		protected:
+
+      bool setIndex(VkPhysicalDevice& physicalDevice, VkQueueFlags  queueFlags, VkSurfaceKHR* surface = nullptr) {
+				std::vector<VkQueueFamilyProperties> queue_families;
+
+				uint32_t queueFamiliesCount = 0;
+
+				vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamiliesCount, nullptr);
+				if (queueFamiliesCount == 0) {
+					ErrorCheck::setError((char*)"Could not get the number of queue families.");
+					return false;
+				}
+
+				queue_families.resize(queueFamiliesCount);
+				vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamiliesCount, queue_families.data());
+				if (queueFamiliesCount == 0) {
+					ErrorCheck::setError((char*)"Could not acquire properties of queue families.");
+					return false;
+				}
+
+				for (uint32_t index = 0; index < static_cast<uint32_t>(queue_families.size()); ++index) {
+					if (queueFlags == 0) { // Present Queue
+						VkBool32 presentation_supported = VK_FALSE;
+						if (surface == nullptr) {
+							ErrorCheck::setError((char*)"Invalid surface pointer");
+							return false;
+						}
+						VkResult result = vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, index, *surface, &presentation_supported);
+						if ((VK_SUCCESS == result) &&
+							(VK_TRUE == presentation_supported)) {
+							m_familyIndex = index;
+							return true;
+						}
+					}
+					else { // Compute and Graphic Queue
+						if ((queue_families[index].queueCount > 0) &&
+							((queue_families[index].queueFlags & queueFlags) == queueFlags)) {
+							m_familyIndex = index;
+							return true;
+						}
+					}
+				}
+				return false;
+      }
+
 			VkQueue*		m_handle ;
 			uint32_t		m_familyIndex =0;
 		};
@@ -51,8 +95,8 @@ namespace LavaCake {
    */
 		class ComputeQueue : public Queue {
 		public:
-			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
-				return LavaCake::Core::SelectIndexOfQueueFamilyWithDesiredCapabilities(*physicalDevice, VK_QUEUE_GRAPHICS_BIT, m_familyIndex);
+			virtual bool initIndex(VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surface = nullptr) override {
+				return setIndex(physicalDevice, VK_QUEUE_COMPUTE_BIT);
 			}
 		};
 
@@ -62,8 +106,8 @@ namespace LavaCake {
    */
 		class GraphicQueue : public Queue {
 		public:
-			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
-				return LavaCake::Core::SelectIndexOfQueueFamilyWithDesiredCapabilities(*physicalDevice, VK_QUEUE_COMPUTE_BIT, m_familyIndex);
+			virtual bool initIndex(VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surface = nullptr) override {
+				return setIndex(physicalDevice, VK_QUEUE_GRAPHICS_BIT);
 			}
 		};
   
@@ -73,33 +117,8 @@ namespace LavaCake {
    */
 		class PresentationQueue : public Queue {
 		public:
-			virtual bool initIndex(VkPhysicalDevice* physicalDevice, VkSurfaceKHR* surface = nullptr) override {
-        std::vector<VkQueueFamilyProperties> queue_families;
-        uint32_t queue_families_count = 0;
-          
-        vkGetPhysicalDeviceQueueFamilyProperties(*physicalDevice, &queue_families_count, nullptr);
-        if (queue_families_count == 0) {
-          ErrorCheck::setError((char*)"Could not get the number of queue families.");
-          return false;
-        }
-        
-        queue_families.resize(queue_families_count);
-        vkGetPhysicalDeviceQueueFamilyProperties(*physicalDevice, &queue_families_count, queue_families.data());
-        if (queue_families_count == 0) {
-          ErrorCheck::setError((char*) "Could not acquire properties of queue families.");
-          return false;
-        }
-
-        for (uint32_t index = 0; index < static_cast<uint32_t>(queue_families.size()); ++index) {
-          VkBool32 presentation_supported = VK_FALSE;
-          VkResult result = vkGetPhysicalDeviceSurfaceSupportKHR(*physicalDevice, index, *surface, &presentation_supported);
-          if ((VK_SUCCESS == result) &&
-              (VK_TRUE == presentation_supported)) {
-            m_familyIndex = index;
-            return true;
-          }
-        }
-        return false;
+			virtual bool initIndex(VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surface = nullptr) override {
+        return setIndex(physicalDevice, 0, surface);
 			}
 		};
 	}

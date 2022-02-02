@@ -162,19 +162,11 @@ source_group( "Library\\Helpers\\Source" FILES ${LIBRARY_HELPER_SOURCE} )
 
 set(LIBRARY_CORE_DIR "Library/Source Files/Core")
 set(LIBRARY_CORE_HEADER 
-${LIBRARY_CORE_DIR}/VulkanCommand.h
-${LIBRARY_CORE_DIR}/VulkanDescriptor.h
 ${LIBRARY_CORE_DIR}/VulkanLoader.h
-${LIBRARY_CORE_DIR}/VulkanQueue.h
-${LIBRARY_CORE_DIR}/VulkanSemaphore.h
-${LIBRARY_CORE_DIR}/VulkanViewport.h
 )
 
 set(LIBRARY_CORE_SOURCE 
-${LIBRARY_CORE_DIR}/VulkanCommand.cpp
-${LIBRARY_CORE_DIR}/VulkanDescriptor.cpp
 ${LIBRARY_CORE_DIR}/VulkanLoader.cpp
-${LIBRARY_CORE_DIR}/VulkanQueue.cpp
 )
 
 

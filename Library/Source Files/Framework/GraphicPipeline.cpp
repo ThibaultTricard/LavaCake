@@ -5,7 +5,7 @@ namespace LavaCake {
 
 		GraphicPipeline::GraphicPipeline(vec3f viewportMin, vec3f viewportMax, vec2f scisorMin, vec2f scisorMax) {
 			//viewport
-			m_viewportscissor = {
+			m_viewports = {
 					{                     // std::vector<VkViewport>   Viewports
 						{
 							viewportMin[0],																// float          x
@@ -16,6 +16,9 @@ namespace LavaCake {
 							viewportMax[2]																// float          maxDepth
 						}
 					},
+			};
+
+			m_scissors = {
 					{                     // std::vector<VkRect2D>     Scissors
 						{
 							{                   // VkOffset2D     offset
@@ -34,10 +37,10 @@ namespace LavaCake {
 				VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,    // VkStructureType                      sType
 				nullptr,                                                  // const void                         * pNext
 				0,                                                        // VkPipelineViewportStateCreateFlags   flags
-				1,                                           // uint32_t                             viewportCount
-				m_viewportscissor.Viewports.data(),                          // const VkViewport                   * pViewports
-				1,                                            // uint32_t                             scissorCount
-				m_viewportscissor.Scissors.data()                            // const VkRect2D                     * pScissors
+				1,																												// uint32_t                             viewportCount
+				m_viewports.data(),																				// const VkViewport                   * pViewports
+				1,																												// uint32_t                             scissorCount
+				m_scissors.data()																					// const VkRect2D                     * pScissors
 			};
 
 		};
@@ -358,11 +361,9 @@ namespace LavaCake {
 
 
 		void GraphicPipeline::draw(CommandBuffer& buffer) {
-			VkViewport& viewport = m_viewportscissor.Viewports[0];
-			vkCmdSetViewport(buffer.getHandle(), 0, 1,  &m_viewportscissor.Viewports[0] );
+			vkCmdSetViewport(buffer.getHandle(), 0, 1,  &m_viewports[0] );
 
-			VkRect2D& scissor = m_viewportscissor.Scissors[0];
-			vkCmdSetScissor(buffer.getHandle(), 0, 1,  &scissor );
+			vkCmdSetScissor(buffer.getHandle(), 0, 1,  &m_scissors[0]);
 
 			if (m_lineWidth != 1.0) {
 				vkCmdSetLineWidth(buffer.getHandle(), m_lineWidth);
