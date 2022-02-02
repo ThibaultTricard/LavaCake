@@ -115,11 +115,19 @@ namespace LavaCake {
       void enableMeshShader(bool optional = false);
 
       /*
-        \brief check if raytracing feature have been successfuly loaded
+        \brief check if raytracing features have been successfuly loaded
         \return true if raytracing is available
       */
       bool raytracingAvailable() {
         return m_raytracingAvailable;
+      }
+
+      /*
+        \brief check if mesh shader features have been successfuly loaded
+        \return true if mesh shader is available
+      */
+      bool meshShaderAvailable() {
+        return m_meshShaderAvailable;
       }
 
 			private :

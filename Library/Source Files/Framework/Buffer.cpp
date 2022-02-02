@@ -203,7 +203,6 @@ namespace LavaCake{
 			vkUnmapMemory(logical, m_bufferMemory);
 		}
 
-#ifdef RAYTRACING
 		uint64_t Buffer::getBufferDeviceAddress()
 		{
 			Framework::Device* d = Framework::Device::getDevice();
@@ -212,6 +211,5 @@ namespace LavaCake{
 			bufferDeviceAI.buffer = m_buffer;
 			return vkGetBufferDeviceAddressKHR(d->getLogicalDevice(), &bufferDeviceAI);
 		}
-#endif
 	}
 }

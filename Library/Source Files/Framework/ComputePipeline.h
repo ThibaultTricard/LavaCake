@@ -32,7 +32,7 @@ namespace LavaCake {
 			
 
 			/**
-       \brief register the execution of the pipeline in  a command buffer
+       \brief Register the execution of the pipeline in  a command buffer
        \param cmdBuff the command buffer in witch the compute pipieline will be registered
        \param dimX : the number of work group for X dimention
        \param dimY : the number of work group for Y dimention

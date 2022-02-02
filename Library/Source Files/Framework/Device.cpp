@@ -29,6 +29,11 @@ namespace LavaCake {
     VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
     VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
   };
+
+  const std::vector<const char*> meshShaderExtension = {
+    VK_NV_MESH_SHADER_EXTENSION_NAME
+  };
+
   
   bool CheckAvailableInstanceExtensions(std::vector<VkExtensionProperties> & available_extensions) {
     uint32_t extensions_count = 0;
@@ -318,37 +323,25 @@ namespace LavaCake {
       std::vector<char const*> device_extensions;
       device_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
       std::vector<char const*> device_extensions_optional;
-      VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddresFeatures{};
-      VkPhysicalDeviceRayTracingPipelineFeaturesKHR enabledRayTracingPipelineFeatures{};
-      VkPhysicalDeviceAccelerationStructureFeaturesKHR enabledAccelerationStructureFeatures{};
-      void* pNextChain = nullptr;
+      
 
       if (m_raytracingEnabled) {
         std::vector<char const*>& extension = m_raytracingOptional ? device_extensions_optional : device_extensions;
 
         extension.insert(extension.end(), raytracingExtension.begin(), raytracingExtension.end());
 
-
-        enabledBufferDeviceAddresFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
-        enabledBufferDeviceAddresFeatures.bufferDeviceAddress = VK_TRUE;
-
-        enabledRayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
-        enabledRayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
-        enabledRayTracingPipelineFeatures.pNext = &enabledBufferDeviceAddresFeatures;
-
-
-        enabledAccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
-        enabledAccelerationStructureFeatures.accelerationStructure = VK_TRUE;
-        enabledAccelerationStructureFeatures.pNext = &enabledRayTracingPipelineFeatures;
-
-        pNextChain = &enabledAccelerationStructureFeatures;
       }
 
       if (0) { // ray query
+
         //device_extensions.push_back(VK_KHR_RAY_QUERY_EXTENSION_NAME);
       }
 
       if (m_meshShaderEnabled) {
+        std::vector<char const*>& extension = m_meshShaderOptional ? device_extensions_optional : device_extensions;
+
+        extension.insert(extension.end(), meshShaderExtension.begin(), meshShaderExtension.end());
+        
 
       }
 
@@ -499,6 +492,72 @@ namespace LavaCake {
             desired_device_features                             // const VkPhysicalDeviceFeatures * pEnabledFeatures
           };
 
+          
+
+
+          std::vector<const char*> missingOptionalExtension;
+          for (size_t s = 0; s < device_extensions_optional.size(); s++) {
+            if (device.missing[s]) {
+              missingOptionalExtension.push_back(device_extensions_optional[s]);
+            }
+          }
+
+          bool raytracingAvailable = m_raytracingEnabled;
+          bool meshShaderAvailable = m_meshShaderEnabled;
+
+          for (auto e : missingOptionalExtension) {
+            if (m_raytracingEnabled && m_raytracingOptional && raytracingAvailable) {
+              for (auto rte : raytracingExtension) {
+                if (e == rte) {
+                  raytracingAvailable = false;
+                  break;
+                }
+              }
+            }
+            if (m_meshShaderEnabled && m_meshShaderOptional && meshShaderAvailable) {
+              for (auto rte : meshShaderExtension) {
+                if (e == rte) {
+                  meshShaderAvailable = false;
+                  //ErrorCheck::setError((char*)"Raytracing extensions not found on this device", 1);
+                  break;
+                }
+              }
+            }
+          }
+
+          VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddresFeatures{};
+          VkPhysicalDeviceRayTracingPipelineFeaturesKHR enabledRayTracingPipelineFeatures{};
+          VkPhysicalDeviceAccelerationStructureFeaturesKHR enabledAccelerationStructureFeatures{};
+          VkPhysicalDeviceMeshShaderFeaturesNV enabledMeshShaderFeatures{};
+
+          void* pNextChain = nullptr;
+
+          if (raytracingAvailable) {
+
+            enabledBufferDeviceAddresFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
+            enabledBufferDeviceAddresFeatures.bufferDeviceAddress = VK_TRUE;
+
+            enabledRayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+            enabledRayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
+            enabledRayTracingPipelineFeatures.pNext = &enabledBufferDeviceAddresFeatures;
+
+            enabledAccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+            enabledAccelerationStructureFeatures.accelerationStructure = VK_TRUE;
+            enabledAccelerationStructureFeatures.pNext = &enabledRayTracingPipelineFeatures;
+
+            pNextChain = &enabledAccelerationStructureFeatures;
+            
+          }
+
+          if (meshShaderAvailable) {
+            enabledMeshShaderFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
+            enabledMeshShaderFeatures.pNext = pNextChain;
+            enabledMeshShaderFeatures.taskShader = VK_TRUE;
+            enabledMeshShaderFeatures.meshShader = VK_TRUE;
+
+            pNextChain = &enabledMeshShaderFeatures;
+          }
+
           VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
           if (pNextChain) {
             physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
@@ -508,33 +567,32 @@ namespace LavaCake {
             device_create_info.pNext = &physicalDeviceFeatures2;
           }
 
+
           result = vkCreateDevice(device.device, &device_create_info, nullptr, &m_logical);
           if ((result != VK_SUCCESS) ||
             (m_logical == VK_NULL_HANDLE)) {
             continue;
           }
           else {
-            //select physical device
             m_physical = device.device;
 
-            m_raytracingAvailable = m_raytracingEnabled;
-            for (auto e : m_missingOptionalExtension) {
-              if (m_raytracingEnabled && m_raytracingOptional && m_raytracingAvailable) {
-                for (auto rte : raytracingExtension) {
-                  if (e == rte) {
-                    m_raytracingAvailable = false;
-                    ErrorCheck::setError((char*)"Raytracing extensions not found on this device", 1);
-                    break;
-                  }
-                }
-              }
-            }
+            m_raytracingAvailable = raytracingAvailable;
+            m_meshShaderAvailable = meshShaderAvailable;
+            
 
+            
 
             VkPhysicalDeviceProperties deviceProperties{};
             LavaCake::vkGetPhysicalDeviceProperties(m_physical, &deviceProperties);
             err = "Chosen device is " + std::string(deviceProperties.deviceName);
             ErrorCheck::setError(err.data(),5);
+
+            if (!m_raytracingAvailable) {
+              ErrorCheck::setError((char*)"Raytracing extensions not found on this device", 1);
+            }
+            if (!m_meshShaderAvailable) {
+              ErrorCheck::setError((char*)"Mesh shader extensions not found on this device", 1);
+            }
 
             LavaCake::Core::LoadDeviceLevelFunctions(m_logical, extensionToLoad);
 
@@ -551,11 +609,7 @@ namespace LavaCake {
 
             //Todo Check if getHandle()  works
 
-            for (size_t s = 0; s < device_extensions_optional.size(); s++) {
-              if (device.missing[s]) {
-                m_missingOptionalExtension.push_back(device_extensions_optional[s]);
-              }
-            }
+            
 
 
             break;
