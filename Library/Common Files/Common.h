@@ -69,10 +69,8 @@ namespace LavaCake {
 
  
   struct WindowParameters {
-
     GLFWwindow*     Window;
-    
-      
+    bool headless = false;
   };
 
   // Extension availability check
