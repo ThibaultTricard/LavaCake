@@ -18,15 +18,12 @@ namespace LavaCake {
 		protected :
 			ShaderModule(std::string path, VkShaderStageFlagBits stageBits, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) {
 				m_path = path;
-				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-				VkDevice logicalDevice = d->getLogicalDevice();
 				if (!GetBinaryFileContents(path, m_spirv)) {
-					ErrorCheck::setError((char*)"Can't read the Shader file ");
+					ErrorCheck::setError((char*)"Can't read the Shader file.");
 				}
 				
-				
-				if (!CreateShaderModule(logicalDevice, m_spirv, m_module)) {
-					ErrorCheck::setError((char*)"Can't create the Shader module");
+				if (!createShaderModule( m_spirv)) {
+					ErrorCheck::setError((char*)"Can't create the Shader module.");
 				}
 				
 				m_stageParameter = {
@@ -40,11 +37,9 @@ namespace LavaCake {
 			ShaderModule(std::vector<unsigned char>	spirv, VkShaderStageFlagBits stageBits, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) {
 				m_path = "";
 				m_spirv = spirv;
-				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-				VkDevice logicalDevice = d->getLogicalDevice();
-
-				if (!CreateShaderModule(logicalDevice, m_spirv, m_module)) {
-					ErrorCheck::setError((char*)"Can't create the Shader module");
+				
+				if (!createShaderModule(m_spirv)) {
+					ErrorCheck::setError((char*)"Can't create the Shader module.");
 				}
 
 				m_stageParameter = {
@@ -60,14 +55,12 @@ namespace LavaCake {
 			}
 
 			void refresh() {
-				LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-				VkDevice logicalDevice = d->getLogicalDevice();
 				if (!GetBinaryFileContents(m_path, m_spirv)) {
-					ErrorCheck::setError((char*)"Can't read the Shader file ");
+					ErrorCheck::setError((char*)"Can't read the Shader file.");
 				}
 
-				if (!CreateShaderModule(logicalDevice, m_spirv, m_module)) {
-					ErrorCheck::setError((char*)"Can't create the Shader module");
+				if (!createShaderModule(m_spirv)) {
+					ErrorCheck::setError((char*)"Can't create the Shader module.");
 				}
 
 				m_stageParameter.ShaderModule = m_module;
@@ -79,38 +72,34 @@ namespace LavaCake {
 				m_stageParameter = {};
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				DestroyShaderModule(logical, m_module);
+				if (VK_NULL_HANDLE != m_module) {
+					vkDestroyShaderModule(logical, m_module, nullptr);
+					m_module = VK_NULL_HANDLE;
+				}
 			};
 
 		private :
 
-			bool CreateShaderModule(VkDevice                           logical_device,
-				std::vector<unsigned char> const& source_code,
-				VkShaderModule& shader_module) {
-				VkShaderModuleCreateInfo shader_module_create_info = {
+			bool createShaderModule(std::vector<unsigned char> const& src) {
+				VkShaderModuleCreateInfo createInfo = {
 					VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,              // VkStructureType              sType
 					nullptr,                                                  // const void                 * pNext
 					0,                                                        // VkShaderModuleCreateFlags    flags
-					source_code.size(),                                       // size_t                       codeSize
-					reinterpret_cast<uint32_t const*>(source_code.data())    // const uint32_t             * pCode
+					src.size(),																								// size_t                       codeSize
+					reinterpret_cast<uint32_t const*>(src.data())							// const uint32_t             * pCode
 				};
-
-				VkResult result = vkCreateShaderModule(logical_device, &shader_module_create_info, nullptr, &shader_module);
+				VkDevice logical = Device::getDevice()->getLogicalDevice();
+				VkResult result = vkCreateShaderModule(logical, &createInfo, nullptr, &m_module);
 				if (VK_SUCCESS != result) {
-					std::cout << "Could not create a shader module." << std::endl;
+					ErrorCheck::setError((char*)"Could not create a shader module.");
 					return false;
 				}
 				return true;
 			}
 
-			void DestroyShaderModule(VkDevice         logical_device,
+			void destroyShaderModule(VkDevice         logical_device,
 				VkShaderModule& shader_module) {
-				if (VK_NULL_HANDLE != shader_module) {
-					vkDestroyShaderModule(logical_device, shader_module, nullptr);
-					shader_module = VK_NULL_HANDLE;
-				}
 			}
-
 
 			VkShaderModule								            m_module = VK_NULL_HANDLE;
 			std::string																m_path;

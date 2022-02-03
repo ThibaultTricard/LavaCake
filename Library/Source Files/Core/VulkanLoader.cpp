@@ -30,6 +30,16 @@
 namespace LavaCake {
 	namespace Core {
 
+    bool IsExtensionSupported(std::vector<VkExtensionProperties> const& available_extensions,
+      char const* const                         extension) {
+      for (auto& available_extension : available_extensions) {
+        if (strstr(available_extension.extensionName, extension)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
 		bool LoadFunctionExportedFromVulkanLoaderLibrary(LIBRARY_TYPE const & vulkan_library) {
 #if defined _WIN32
 #define LoadFunction GetProcAddress
@@ -112,7 +122,4 @@ namespace LavaCake {
 		}
 	}
   
-	
-
-	
 } // namespace LavaCake

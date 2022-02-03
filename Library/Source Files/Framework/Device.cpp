@@ -42,7 +42,7 @@ namespace LavaCake {
     result = vkEnumerateInstanceExtensionProperties(nullptr, &extensions_count, nullptr);
     if ((result != VK_SUCCESS) ||
         (extensions_count == 0)) {
-      std::cout << "Could not get the number of instance extensions." << std::endl;
+      ErrorCheck::setError((char*)"Could not get the number of instance extensions.");
       return false;
     }
     
@@ -50,7 +50,7 @@ namespace LavaCake {
     result = vkEnumerateInstanceExtensionProperties(nullptr, &extensions_count, available_extensions.data());
     if ((result != VK_SUCCESS) ||
         (extensions_count == 0)) {
-      std::cout << "Could not enumerate instance extensions." << std::endl;
+      ErrorCheck::setError((char *)"Could not enumerate instance extensions.");
       return false;
     }
     
@@ -66,8 +66,9 @@ namespace LavaCake {
     }
     
     for (auto & extension : desired_extensions) {
-      if (!IsExtensionSupported(available_extensions, extension)) {
-        std::cout << "Extension named '" << extension << "' is not supported by an Instance object." << std::endl;
+      if (!LavaCake::Core::IsExtensionSupported(available_extensions, extension)) {
+        std::string err = "Extension named '" + std::string(extension) + "' is not supported by an Instance object.";
+        ErrorCheck::setError(err.data());
         return false;
       }
     }
@@ -105,7 +106,7 @@ namespace LavaCake {
     VkResult result = vkCreateInstance(&instance_create_info, nullptr, &instance);
     if ((result != VK_SUCCESS) ||
         (instance == VK_NULL_HANDLE)) {
-      std::cout << "Could not create Vulkan instance." << std::endl;
+      ErrorCheck::setError((char *)"Could not create Vulkan instance.");
       return false;
     }
     
@@ -147,7 +148,7 @@ namespace LavaCake {
     }
     
     for (auto & extension : desired_extensions) {
-      if (!IsExtensionSupported(available_extensions, extension)) {
+      if (!LavaCake::Core::IsExtensionSupported(available_extensions, extension)) {
         std::string err = "Extension named '" + std::string(extension) + "' is not supported by the device " + deviceName;
         ErrorCheck::setError((char*)err.data(),5);
         return DeviceValidity::DEVICE_INVALID;
@@ -155,7 +156,7 @@ namespace LavaCake {
     }
     
     for (auto& extension : optional_extensions) {
-      if (!IsExtensionSupported(available_extensions, extension)) {
+      if (!LavaCake::Core::IsExtensionSupported(available_extensions, extension)) {
         std::string err = "Extension named '" + std::string(extension) + "' is not supported by the device " + deviceName;
         ErrorCheck::setError((char*)err.data(),5);
         missing_extension.push_back(true);

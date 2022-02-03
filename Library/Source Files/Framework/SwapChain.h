@@ -169,14 +169,12 @@ namespace LavaCake {
 				VkSemaphore semaphore;
 				VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &semaphore);
 				if (VK_SUCCESS != result) {
-					//TODO : Raise error using error check
-					//std::cout << "Could not create a semaphore." << std::endl;
+					ErrorCheck::setError((char*)"Could not create a semaphore.");
 				}
 
 				result = vkAcquireNextImageKHR(logical, m_handle, 2000000000, semaphore, VK_NULL_HANDLE, &index);
 				if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-					//TODO : Raise error using error check
-					//std::cout << "Could not create a semaphore." << std::endl;
+					ErrorCheck::setError((char*)"Could not create a semaphore.");
 				}
 
 				if (m_swapchainImages[index]->m_aquiredSemaphore != VK_NULL_HANDLE) {

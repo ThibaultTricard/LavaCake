@@ -73,9 +73,6 @@ namespace LavaCake {
     bool headless = false;
   };
 
-  // Extension availability check
-  bool IsExtensionSupported( std::vector<VkExtensionProperties> const & available_extensions,
-                             char const * const                         extension );
 
 } // namespace LavaCake
 
