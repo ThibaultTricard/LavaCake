@@ -28,6 +28,14 @@
 
 #include "Common.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#elif defined __linux
+#include <dlfcn.h>
+#elif defined __APPLE__
+#include <dlfcn.h>
+#endif
+
 namespace LavaCake {
 	namespace Core {
 
