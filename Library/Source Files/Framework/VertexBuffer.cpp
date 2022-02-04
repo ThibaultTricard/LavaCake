@@ -26,10 +26,6 @@ namespace LavaCake {
 		};
 
 		void VertexBuffer::allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage) {
-			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-			VkDevice logicalDevice = d->getLogicalDevice();
-			VkPhysicalDevice physicalDevice = d->getPhysicalDevice();
-
 			if (m_vertices.size() == 0)return;
 
 			m_vertexBuffer->allocate(queue, cmdBuff, m_vertices, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT| otherUsage), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_FORMAT_R32_SFLOAT, VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT);

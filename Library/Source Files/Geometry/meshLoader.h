@@ -186,6 +186,7 @@ namespace LavaCake {
 			}
 
 			if (unify) {
+        using std::abs;
 				float offset_x = 0.5f * (min_x + max_x);
 				float offset_y = 0.5f * (min_y + max_y);
 				float offset_z = 0.5f * (min_z + max_z);
@@ -307,6 +308,7 @@ namespace LavaCake {
 
 
 			if (unify) {
+        using std::abs;
 				float offset_x = 0.5f * (min_x + max_x);
 				float offset_y = 0.5f * (min_y + max_y);
 				float offset_z = 0.5f * (min_z + max_z);

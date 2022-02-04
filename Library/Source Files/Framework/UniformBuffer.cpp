@@ -7,7 +7,6 @@ namespace LavaCake {
 		void UniformBuffer::end() {
 			m_modified = std::vector<bool>(m_variables.size());
 			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 
 			for (uint32_t i = 0; i < m_variables.size(); i++) {
@@ -59,10 +58,7 @@ namespace LavaCake {
 			return m_buffer.getHandle();
 		};
 
-		void UniformBuffer::copyToStageMemory(bool all) {
-			LavaCake::Framework::Device* d = LavaCake::Framework::Device::getDevice();
-			VkDevice logical = d->getLogicalDevice();
-			VkPhysicalDevice physical = d->getPhysicalDevice();
+    void UniformBuffer::copyToStageMemory(bool /*all*/) {
 			std::vector<char> variable;
 			VkDeviceSize size = 0;
 			for (uint32_t i = 0; i < m_variables.size(); i++) {

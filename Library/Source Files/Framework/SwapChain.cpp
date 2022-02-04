@@ -11,7 +11,6 @@ namespace LavaCake {
 			VkDevice logical = d->getLogicalDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkSurfaceKHR surface = d->getSurface();
-			VkCommandPool pool = d->getCommandPool();
 
       m_swapchainImageUsage = swapchain_image_usage;
       
@@ -26,8 +25,7 @@ namespace LavaCake {
       
       // Enumerate supported present modes
       uint32_t present_modes_count = 0;
-      result = VK_SUCCESS;
-      
+
       result = vkGetPhysicalDeviceSurfacePresentModesKHR(physical, surface, &present_modes_count, nullptr);
       if ((result != VK_SUCCESS) ||
           (present_modes_count == 0 )) {
@@ -127,7 +125,6 @@ namespace LavaCake {
       VkSurfaceFormatKHR desired_surface_format = {VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
       
       uint32_t formats_count = 0;
-      result = VK_SUCCESS;
         
       result = vkGetPhysicalDeviceSurfaceFormatsKHR(physical, surface, &formats_count, nullptr);
       if ((VK_SUCCESS != result) ||
