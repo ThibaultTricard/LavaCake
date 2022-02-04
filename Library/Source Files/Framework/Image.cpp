@@ -45,7 +45,7 @@ namespace LavaCake {
 
 			VkResult result = vkCreateImage(logical, &image_create_info, nullptr, &m_image);
 			if (VK_SUCCESS != result) {
-				ErrorCheck::setError((char*)"Could not create an image." );
+				ErrorCheck::setError("Could not create an image." );
 			}
 
 
@@ -76,14 +76,14 @@ namespace LavaCake {
 			}
 
 			if (m_imageMemory == VK_NULL_HANDLE) {
-				ErrorCheck::setError((char*)"Could not allocate memory for an image.");	
+				ErrorCheck::setError("Could not allocate memory for an image.");	
 			}
 
 
 			//memory binding
 			result = vkBindImageMemory(logical, m_image, m_imageMemory, 0);
 			if (VK_SUCCESS != result) {
-				ErrorCheck::setError((char*)"Could not bind memory object to an image.");
+				ErrorCheck::setError("Could not bind memory object to an image.");
 			}
 
 
@@ -112,7 +112,7 @@ namespace LavaCake {
 
 			result = vkCreateImageView(logical, &image_view_create_info, nullptr, &m_imageView);
 			if (VK_SUCCESS != result) {
-				ErrorCheck::setError((char*)"Can't create Image View");
+				ErrorCheck::setError("Can't create Image View");
 			}
 
 
@@ -150,7 +150,7 @@ namespace LavaCake {
 
 			VkResult result = vkCreateSampler(logical, &sampler_create_info, nullptr, &m_sampler);
 			if (VK_SUCCESS != result) {
-				ErrorCheck::setError((char*)"Could not create sampler.");;
+				ErrorCheck::setError("Could not create sampler.");;
 			}
 		}
 

@@ -48,7 +48,7 @@ namespace LavaCake {
 
 				VkResult result = vkCreateImageView(logical, &image_view_create_info, nullptr, &m_imageView);
 				if (VK_SUCCESS != result) {
-					ErrorCheck::setError((char*)"Could not create an image view");
+					ErrorCheck::setError("Could not create an image view");
 				}
 
 				VkSemaphoreCreateInfo semaphore_create_info = {
@@ -59,7 +59,7 @@ namespace LavaCake {
 
 				result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &m_aquiredSemaphore);
 				if (VK_SUCCESS != result) {
-					ErrorCheck::setError((char*)"Could not create a semaphore.");
+					ErrorCheck::setError("Could not create a semaphore.");
 				}
 			}
 
@@ -169,12 +169,12 @@ namespace LavaCake {
 				VkSemaphore semaphore;
 				VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &semaphore);
 				if (VK_SUCCESS != result) {
-					ErrorCheck::setError((char*)"Could not create a semaphore.");
+					ErrorCheck::setError("Could not create a semaphore.");
 				}
 
 				result = vkAcquireNextImageKHR(logical, m_handle, 2000000000, semaphore, VK_NULL_HANDLE, &index);
 				if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-					ErrorCheck::setError((char*)"Could not create a semaphore.");
+					ErrorCheck::setError("Could not create a semaphore.");
 				}
 
 				if (m_swapchainImages[index]->m_aquiredSemaphore != VK_NULL_HANDLE) {
@@ -218,7 +218,7 @@ namespace LavaCake {
         result = vkQueuePresentKHR(queue->getHandle(), &present_info);
         
         if(result != VK_SUCCESS){
-          ErrorCheck::setError((char*)"Failed to present the image");
+          ErrorCheck::setError("Failed to present the image");
         }
       }
       

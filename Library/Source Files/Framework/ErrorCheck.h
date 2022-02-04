@@ -31,7 +31,7 @@ namespace LavaCake {
 
       static ErrorCheck*       m_instance ;
       bool                     m_printError = false;
-      char*                    m_errorMessage = (char*)"";
+      const char*              m_errorMessage = (char*)"";
       uint8_t                  m_errorLvl;
       uint8_t                  m_minErrorLevel = 0;
 
@@ -41,7 +41,7 @@ namespace LavaCake {
       \brief Return the last error the program has encountered
       \brief a char* containing the description of the last error encontered by the program
 			*/
-      static char* getError() {
+      static const char* getError() {
         if (m_instance == nullptr) {
           m_instance = new ErrorCheck();
         }
@@ -53,7 +53,7 @@ namespace LavaCake {
       \param msg : the error message
        \param lvl : the level of the error, the lower the level the more important the error is
 			*/
-      static void setError(char* msg, uint8_t lvl = 0) {
+      static void setError(const char* msg, uint8_t lvl = 0) {
         if (m_instance == nullptr) {
           m_instance = new ErrorCheck();
         }

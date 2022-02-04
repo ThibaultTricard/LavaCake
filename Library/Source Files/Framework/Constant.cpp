@@ -18,7 +18,7 @@ namespace LavaCake {
 
 		void PushConstant::addArray(const std::string& name, std::vector<int>& value) {
 			if (m_variableNames.find(name) != m_variableNames.end()) {
-				ErrorCheck::setError((char*)"Variable name allready taken in this PushConstant",1);
+				ErrorCheck::setError("Variable name allready taken in this PushConstant",1);
 				return;
 			}
 			int i = int(m_variables.size());
@@ -29,13 +29,13 @@ namespace LavaCake {
 
 		void PushConstant::setArray(const std::string& name, std::vector<int>& value) {
 			if (m_variableNames.find(name) == m_variableNames.end()) {
-				ErrorCheck::setError((char*)"Variable name does not exist in this PushConstant",1);
+				ErrorCheck::setError("Variable name does not exist in this PushConstant",1);
 				return;
 			}
 			int i = m_variableNames[name];
 			std::vector<int> v = m_variables[i];
 			if (v.size() != value.size()) {
-				ErrorCheck::setError((char*)"The new value does not match the type of the one currently stored in this PushConstant",1);
+				ErrorCheck::setError("The new value does not match the type of the one currently stored in this PushConstant",1);
 				return;
 			}
 

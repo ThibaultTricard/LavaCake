@@ -154,7 +154,7 @@ namespace LavaCake {
 			}
 
 			if (!Pipeline::CreatePipelineLayout(logical, { m_descriptorSet->getLayout() }, push_constant_ranges, m_pipelineLayout)) {
-				ErrorCheck::setError((char*)"Can't create pipeline layout");
+				ErrorCheck::setError("Can't create pipeline layout");
 			}
 
 			
@@ -281,7 +281,7 @@ namespace LavaCake {
 
 			std::vector<VkPipeline> pipelines;
 			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
-				ErrorCheck::setError((char*)"Can't create Graphics piepeline");
+				ErrorCheck::setError("Can't create Graphics piepeline");
 			}
 			m_pipeline = pipelines[0];
 			m_compiled = true;
@@ -293,7 +293,7 @@ namespace LavaCake {
 
 			std::vector<VkPipeline> pipelines;
 			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
-				ErrorCheck::setError((char*)"Can't create Graphics piepeline");
+				ErrorCheck::setError("Can't create Graphics piepeline");
 			}
 			m_pipeline = pipelines[0];
 		}

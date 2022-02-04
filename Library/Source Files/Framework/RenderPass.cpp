@@ -73,14 +73,14 @@ namespace LavaCake {
 				m_imageFormat = ImageFormat;
 			}
 			else {
-				ErrorCheck::setError((char*)"Image format not recognized", 1);
+				ErrorCheck::setError("Image format not recognized", 1);
 			}
 			RenderPassAttachmentType dt = toAttachmentType(DepthFormat);
 			if (dt & RenderPassAttachmentType::RENDERPASS_DEPTH_ATTACHMENT || dt & RenderPassAttachmentType::RENDERPASS_STENCIL_ATTACHMENT) {
 				m_depthFormat = DepthFormat;
 			}
 			else {
-				ErrorCheck::setError((char*)"Depth format not recognized", 1);
+				ErrorCheck::setError("Depth format not recognized", 1);
 			}
 		}
 
@@ -204,7 +204,7 @@ namespace LavaCake {
 			VkDevice logicalDevice = d->getLogicalDevice();
 
 			if (!CreateRenderPass(logicalDevice, m_attachmentDescriptions, m_subpassParameters, m_dependencies, m_renderPass)) {
-				ErrorCheck::setError((char*)"Can't compile RenderPass");
+				ErrorCheck::setError("Can't compile RenderPass");
 			}
 
 			for (uint32_t i = 0; i < m_subpass.size(); i++) {
@@ -318,7 +318,7 @@ namespace LavaCake {
 
 			VkResult result = vkCreateSampler(logical, &sampler_create_info, nullptr, &frameBuffer.m_sampler);
 			if (VK_SUCCESS != result) {
-				ErrorCheck::setError((char*)"Could not create sampler for this FrameBuffer.");
+				ErrorCheck::setError("Could not create sampler for this FrameBuffer.");
 			}
 
 			bool linear_filtering = true;
@@ -421,7 +421,7 @@ namespace LavaCake {
         
         VkResult result = vkCreateFramebuffer(logical, &framebuffer_create_info, nullptr, &frameBuffer.m_frameBuffer);
         if (VK_SUCCESS != result) {
-          ErrorCheck::setError((char*) "Could not create a framebuffer.");
+          ErrorCheck::setError( "Could not create a framebuffer.");
         }
         
 			}
@@ -461,7 +461,7 @@ namespace LavaCake {
         
         VkResult result = vkCreateFramebuffer(logical, &framebuffer_create_info, nullptr, &frameBuffer.m_frameBuffer);
         if (VK_SUCCESS != result) {
-          ErrorCheck::setError((char*) "Could not create a framebuffer.");
+          ErrorCheck::setError( "Could not create a framebuffer.");
         }
 			}
 		}

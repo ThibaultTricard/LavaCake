@@ -48,14 +48,14 @@ namespace LavaCake {
 
 				vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamiliesCount, nullptr);
 				if (queueFamiliesCount == 0) {
-					ErrorCheck::setError((char*)"Could not get the number of queue families.");
+					ErrorCheck::setError("Could not get the number of queue families.");
 					return false;
 				}
 
 				queue_families.resize(queueFamiliesCount);
 				vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamiliesCount, queue_families.data());
 				if (queueFamiliesCount == 0) {
-					ErrorCheck::setError((char*)"Could not acquire properties of queue families.");
+					ErrorCheck::setError("Could not acquire properties of queue families.");
 					return false;
 				}
 
@@ -63,7 +63,7 @@ namespace LavaCake {
 					if (queueFlags == 0) { // Present Queue
 						VkBool32 presentation_supported = VK_FALSE;
 						if (surface == nullptr) {
-							ErrorCheck::setError((char*)"Invalid surface pointer");
+							ErrorCheck::setError("Invalid surface pointer");
 							return false;
 						}
 						VkResult result = vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, index, *surface, &presentation_supported);

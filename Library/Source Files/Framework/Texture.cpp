@@ -74,7 +74,7 @@ namespace LavaCake {
 			int width, height;
 			std::vector<unsigned char>* data = new std::vector<unsigned char>();
 			if (!Helpers::LoadTextureDataFromFile(filename.data(), nbChannel, *data, &width, &height)) {
-				ErrorCheck::setError((char*)"Could not load texture file");
+				ErrorCheck::setError("Could not load texture file");
 			}
 
 			return  createTextureBuffer(queue, cmdBuff, data, width, height, 1, nbChannel, f, stageFlagBit);
@@ -149,7 +149,7 @@ namespace LavaCake {
 				std::vector<unsigned char> cubemap_image_data;
 				int image_data_size;
 				if (!Helpers::LoadTextureDataFromFile((path + images[i]).c_str(), nbChannel, cubemap_image_data, &width, &height, nullptr, &image_data_size)) {
-					ErrorCheck::setError((char*)"Could not load all texture file");
+					ErrorCheck::setError("Could not load all texture file");
 				}
 				data.insert(data.end(), cubemap_image_data.begin(), cubemap_image_data.end());
 			}

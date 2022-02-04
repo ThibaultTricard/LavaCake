@@ -59,7 +59,7 @@ namespace LavaCake {
 		void Pipeline::generateDescriptorLayout() {
       if(m_descriptorSet == nullptr){
         m_descriptorSet = new DescriptorSet();
-        ErrorCheck::setError((char*)"No Descripor was provided for this pipeline, a default one will be used instead", 1);
+        ErrorCheck::setError("No Descripor was provided for this pipeline, a default one will be used instead", 1);
       }
       m_descriptorSet->generateDescriptorLayout();
     }

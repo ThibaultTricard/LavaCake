@@ -36,7 +36,7 @@ namespace LavaCake {
     result = vkEnumerateInstanceExtensionProperties(nullptr, &extensions_count, nullptr);
     if ((result != VK_SUCCESS) ||
         (extensions_count == 0)) {
-      ErrorCheck::setError((char*)"Could not get the number of instance extensions.");
+      ErrorCheck::setError("Could not get the number of instance extensions.");
       return false;
     }
     
@@ -44,7 +44,7 @@ namespace LavaCake {
     result = vkEnumerateInstanceExtensionProperties(nullptr, &extensions_count, available_extensions.data());
     if ((result != VK_SUCCESS) ||
         (extensions_count == 0)) {
-      ErrorCheck::setError((char *)"Could not enumerate instance extensions.");
+      ErrorCheck::setError("Could not enumerate instance extensions.");
       return false;
     }
     
@@ -100,7 +100,7 @@ namespace LavaCake {
     VkResult result = vkCreateInstance(&instance_create_info, nullptr, &instance);
     if ((result != VK_SUCCESS) ||
         (instance == VK_NULL_HANDLE)) {
-      ErrorCheck::setError((char *)"Could not create Vulkan instance.");
+      ErrorCheck::setError("Could not create Vulkan instance.");
       return false;
     }
     
@@ -144,7 +144,7 @@ namespace LavaCake {
     for (auto & extension : desired_extensions) {
       if (!LavaCake::Core::IsExtensionSupported(available_extensions, extension)) {
         std::string err = "Extension named '" + std::string(extension) + "' is not supported by the device " + deviceName;
-        ErrorCheck::setError((char*)err.data(),5);
+        ErrorCheck::setError(err.data(),5);
         return DeviceValidity::DEVICE_INVALID;
       }
     }
@@ -152,7 +152,7 @@ namespace LavaCake {
     for (auto& extension : optional_extensions) {
       if (!LavaCake::Core::IsExtensionSupported(available_extensions, extension)) {
         std::string err = "Extension named '" + std::string(extension) + "' is not supported by the device " + deviceName;
-        ErrorCheck::setError((char*)err.data(),5);
+        ErrorCheck::setError(err.data(),5);
         missing_extension.push_back(true);
       }
       else {
@@ -223,16 +223,16 @@ namespace LavaCake {
 #endif
       
       if (m_vulkanLibrary == nullptr) {
-        ErrorCheck::setError((char*)"Could not connect with a Vulkan Runtime library.");
+        ErrorCheck::setError("Could not connect with a Vulkan Runtime library.");
         return;
       }
 
 			if (!LavaCake::Core::LoadFunctionExportedFromVulkanLoaderLibrary(m_vulkanLibrary)) {
-				ErrorCheck::setError((char*)"Could not load Vulkan library while initializing the device");
+				ErrorCheck::setError("Could not load Vulkan library while initializing the device");
 			}
 
 			if (!LavaCake::Core::LoadGlobalLevelFunctions()) {
-				ErrorCheck::setError((char*)"Could not load global level Vulkan functions while initializing the device");
+				ErrorCheck::setError("Could not load global level Vulkan functions while initializing the device");
 			}
 
 
@@ -263,18 +263,18 @@ namespace LavaCake {
         );
       }
 			if (!CreateVulkanInstance(instance_extensions, "LavaCake", m_instance)) {
-				ErrorCheck::setError((char*)"Could not create the vulkan instance");
+				ErrorCheck::setError("Could not create the vulkan instance");
 			}
 
 			if (!LavaCake::Core::LoadInstanceLevelFunctions(m_instance, instance_extensions)) {
-				ErrorCheck::setError((char*)"Could not load instance level Vulkan functions while initializing the device");
+				ErrorCheck::setError("Could not load instance level Vulkan functions while initializing the device");
 			}
 
       VkResult result;
       if (!WindowParams.headless) {
         result = glfwCreateWindowSurface(m_instance, WindowParams.Window, nullptr, &m_presentationSurface);
         if (result != VK_SUCCESS || m_presentationSurface == VK_NULL_HANDLE) {
-          ErrorCheck::setError((char*)"Failed to create presentation surface");
+          ErrorCheck::setError("Failed to create presentation surface");
         }
       }
 
@@ -287,7 +287,7 @@ namespace LavaCake {
       result = vkEnumeratePhysicalDevices(m_instance, &devices_count, nullptr);
       if ((result != VK_SUCCESS) ||
           (devices_count == 0)) {
-        ErrorCheck::setError((char*)"Could not get the number of available physical devices.");
+        ErrorCheck::setError("Could not get the number of available physical devices.");
         return;
       }
       
@@ -295,7 +295,7 @@ namespace LavaCake {
       result = vkEnumeratePhysicalDevices(m_instance, &devices_count, physical_devices.data());
       if ((result != VK_SUCCESS) ||
           (devices_count == 0)) {
-        ErrorCheck::setError((char*)"Could not enumerate physical devices.");
+        ErrorCheck::setError("Could not enumerate physical devices.");
         return;
       }
       
@@ -523,7 +523,7 @@ namespace LavaCake {
               for (auto rte : meshShaderExtension) {
                 if (e == rte) {
                   meshShaderAvailable = false;
-                  //ErrorCheck::setError((char*)"Raytracing extensions not found on this device", 1);
+                  //ErrorCheck::setError("Raytracing extensions not found on this device", 1);
                   break;
                 }
               }
@@ -593,10 +593,10 @@ namespace LavaCake {
             ErrorCheck::setError(err.data(),5);
 
             if (!m_raytracingAvailable) {
-              ErrorCheck::setError((char*)"Raytracing extensions not found on this device", 1);
+              ErrorCheck::setError("Raytracing extensions not found on this device", 1);
             }
             if (!m_meshShaderAvailable) {
-              ErrorCheck::setError((char*)"Mesh shader extensions not found on this device", 1);
+              ErrorCheck::setError("Mesh shader extensions not found on this device", 1);
             }
 
             LavaCake::Core::LoadDeviceLevelFunctions(m_logical, extensionToLoad);
@@ -625,7 +625,7 @@ namespace LavaCake {
       }
       
 			if (!m_logical) {
-				ErrorCheck::setError((char*)"The logical device could not be created");
+				ErrorCheck::setError("The logical device could not be created");
         return;
 			}
 
@@ -638,7 +638,7 @@ namespace LavaCake {
       
       result = vkCreateCommandPool(m_logical, &command_pool_create_info, nullptr, &m_commandPool);
       if (result != VK_SUCCESS) {
-        ErrorCheck::setError((char*)"Could not create command pool.");
+        ErrorCheck::setError("Could not create command pool.");
         return;
       }
       
@@ -648,7 +648,7 @@ namespace LavaCake {
 			if (m_logical) {
 				VkResult result = vkDeviceWaitIdle(m_logical);
 				if (result != VK_SUCCESS) {
-					ErrorCheck::setError((char*)"Waiting on a device failed.");
+					ErrorCheck::setError("Waiting on a device failed.");
 				}
 			}
 		}

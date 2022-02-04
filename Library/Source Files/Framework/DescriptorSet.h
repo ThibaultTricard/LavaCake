@@ -254,7 +254,7 @@ namespace LavaCake {
 
       VkResult result = vkCreateDescriptorSetLayout(logical, &descriptor_set_layout_create_info, nullptr, &m_descriptorSetLayout);
       if (VK_SUCCESS != result) {
-        ErrorCheck::setError((char*)"Could not create a layout for descriptor sets." );
+        ErrorCheck::setError("Could not create a layout for descriptor sets." );
       }
       
       uint32_t descriptorsNumber = static_cast<uint32_t>(m_uniforms.size() + m_textures.size() + m_storageImages.size() + m_attachments.size() + m_frameBuffers.size() + m_texelBuffers.size() + m_buffers.size() + m_AS.size());
@@ -328,7 +328,7 @@ namespace LavaCake {
 
       result = vkCreateDescriptorPool(logical, &descriptor_pool_create_info, nullptr, &m_descriptorPool);
       if (VK_SUCCESS != result) {
-        ErrorCheck::setError((char*)"Could not create a descriptor pool." );
+        ErrorCheck::setError("Could not create a descriptor pool." );
       }
       
 
@@ -347,7 +347,7 @@ namespace LavaCake {
 
       result = vkAllocateDescriptorSets(logical, &descriptor_set_allocate_info, descriptorSets.data());
       if (VK_SUCCESS != result) {
-        ErrorCheck::setError((char*)"Could not allocate descriptor sets.");
+        ErrorCheck::setError("Could not allocate descriptor sets.");
       }
 
 

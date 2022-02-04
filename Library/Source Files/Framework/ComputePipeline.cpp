@@ -8,7 +8,7 @@ namespace LavaCake {
 			VkDevice logical = d->getLogicalDevice();
 			generateDescriptorLayout();
 			if (!CreatePipelineLayout(logical, { m_descriptorSet->getLayout() }, {}, m_pipelineLayout)) {
-				ErrorCheck::setError((char*)"Can't create compute pipeline layout");
+				ErrorCheck::setError("Can't create compute pipeline layout");
 			}
 
 			std::vector<VkPipelineShaderStageCreateInfo> shader_stage_create_infos;
@@ -27,7 +27,7 @@ namespace LavaCake {
 
 			VkResult result = vkCreateComputePipelines(logical, VK_NULL_HANDLE, 1, &compute_pipeline_create_info, nullptr, &m_pipeline);
 			if (VK_SUCCESS != result) {
-				ErrorCheck::setError((char*)"Can't create compute pipeline");
+				ErrorCheck::setError("Can't create compute pipeline");
 			}
 		}
 

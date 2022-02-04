@@ -41,7 +41,7 @@ namespace LavaCake {
 
         VkResult result = vkAllocateCommandBuffers(logical, &command_buffer_allocate_info, buffers.data());
         if (VK_SUCCESS != result) {
-          ErrorCheck::setError((char*)"Failed to allocate commande buffer");
+          ErrorCheck::setError("Failed to allocate commande buffer.");
         }
 
         m_commandBuffer = buffers[0];
@@ -74,7 +74,7 @@ namespace LavaCake {
 
         VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &m_semaphores.back());
         if (VK_SUCCESS != result) {
-          ErrorCheck::setError((char*)"Failed to create a semaphore for the commande buffer");
+          ErrorCheck::setError("Failed to create a semaphore for the commande buffer");
         }
       }
 
@@ -90,7 +90,7 @@ namespace LavaCake {
           
           VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1),  &m_fence , true, waitingTime);
           if (VK_SUCCESS != result) {
-            ErrorCheck::setError((char*)"Waiting on fence failed");
+            ErrorCheck::setError("Waiting on fence failed");
           }
         }
         m_submitted = false;
@@ -105,7 +105,7 @@ namespace LavaCake {
         VkDevice logical = d->getLogicalDevice();
         VkResult result = vkResetFences(logical, static_cast<uint32_t>(1),  &m_fence );
         if (VK_SUCCESS != result) {
-          ErrorCheck::setError((char*)"Error occurred when tried to reset fences");
+          ErrorCheck::setError("Error occurred when tried to reset fences");
         }
       }
       
@@ -122,7 +122,7 @@ namespace LavaCake {
 
         VkResult result = vkBeginCommandBuffer(m_commandBuffer, &command_buffer_begin_info);
         if (VK_SUCCESS != result) {
-          ErrorCheck::setError((char*)"Could not begin command buffer recording operation.");
+          ErrorCheck::setError("Could not begin command buffer recording operation.");
         }
       }
       
@@ -132,7 +132,7 @@ namespace LavaCake {
       void endRecord() {
         VkResult result = vkEndCommandBuffer(m_commandBuffer);
         if (VK_SUCCESS != result) {
-          ErrorCheck::setError((char*)"Error occurred during command buffer recording.");
+          ErrorCheck::setError("Error occurred during command buffer recording.");
         }
       }
 
@@ -191,7 +191,7 @@ namespace LavaCake {
 
         VkResult result = vkQueueSubmit(queue->getHandle(), 1, &submit_info, getFence());
         if (VK_SUCCESS != result) {
-          ErrorCheck::setError((char*)"Error occurred during command buffer submission.");
+          ErrorCheck::setError("Error occurred during command buffer submission.");
           return;
         }
         m_submitted =true;

@@ -17,7 +17,7 @@ namespace LavaCake {
       
 			VkResult result = vkDeviceWaitIdle(logical);
 			if (result != VK_SUCCESS) {
-				ErrorCheck::setError((char*)"Waiting on a device failed.");
+				ErrorCheck::setError("Waiting on a device failed.");
 			}
 
       VkPresentModeKHR desired_present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
@@ -31,14 +31,14 @@ namespace LavaCake {
       result = vkGetPhysicalDeviceSurfacePresentModesKHR(physical, surface, &present_modes_count, nullptr);
       if ((result != VK_SUCCESS) ||
           (present_modes_count == 0 )) {
-        ErrorCheck::setError((char*)"Could not get the number of supported present modes.");
+        ErrorCheck::setError("Could not get the number of supported present modes.");
       }
       
       std::vector<VkPresentModeKHR> present_modes(present_modes_count);
       result = vkGetPhysicalDeviceSurfacePresentModesKHR(physical, surface, &present_modes_count, present_modes.data());
       if ((result != VK_SUCCESS) ||
           (present_modes_count == 0)) {
-        ErrorCheck::setError((char*)"Could not enumerate present modes.");
+        ErrorCheck::setError("Could not enumerate present modes.");
       }
       
       // Select present mode
@@ -50,7 +50,7 @@ namespace LavaCake {
         }
       }
       if(!found){
-        ErrorCheck::setError((char*) "Desired present mode is not supported. Selecting default FIFO mode.", 1);
+        ErrorCheck::setError( "Desired present mode is not supported. Selecting default FIFO mode.", 1);
         for (auto & current_present_mode : present_modes) {
           if (current_present_mode == VK_PRESENT_MODE_FIFO_KHR) {
             present_mode = VK_PRESENT_MODE_FIFO_KHR;
@@ -59,7 +59,7 @@ namespace LavaCake {
         }
       }
       if(!found){
-        ErrorCheck::setError((char*) "VK_PRESENT_MODE_FIFO_KHR is not supported though it's mandatory for all drivers!" );
+        ErrorCheck::setError( "VK_PRESENT_MODE_FIFO_KHR is not supported though it's mandatory for all drivers!" );
         return;
       }
       
@@ -68,7 +68,7 @@ namespace LavaCake {
       VkSurfaceCapabilitiesKHR surface_capabilities;
       result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physical, surface, &surface_capabilities);
       
-      if (VK_SUCCESS != result)ErrorCheck::setError((char*)"Could not get surface capabilities");
+      if (VK_SUCCESS != result)ErrorCheck::setError("Could not get surface capabilities");
       
       uint32_t number_of_images;
       number_of_images = surface_capabilities.minImageCount + 1;
@@ -102,7 +102,7 @@ namespace LavaCake {
       
       if ((0 == m_size.width) ||
           (0 == m_size.height)) {
-        ErrorCheck::setError((char*)"Wrong swapchain image size");
+        ErrorCheck::setError("Wrong swapchain image size");
       }
       
       //========================Image usage
@@ -110,7 +110,7 @@ namespace LavaCake {
       image_usage = swapchain_image_usage & surface_capabilities.supportedUsageFlags;
       
       if(swapchain_image_usage != image_usage){
-        ErrorCheck::setError((char*)"Could not select swapchain image image usage");
+        ErrorCheck::setError("Could not select swapchain image image usage");
       }
       
       //========================Surface Transform
@@ -132,14 +132,14 @@ namespace LavaCake {
       result = vkGetPhysicalDeviceSurfaceFormatsKHR(physical, surface, &formats_count, nullptr);
       if ((VK_SUCCESS != result) ||
           (0 == formats_count)) {
-        ErrorCheck::setError((char*)"Could not get the number of supported surface formats.");
+        ErrorCheck::setError("Could not get the number of supported surface formats.");
       }
         
       std::vector<VkSurfaceFormatKHR> surface_formats(formats_count);
       result = vkGetPhysicalDeviceSurfaceFormatsKHR(physical,surface, &formats_count, surface_formats.data());
       if ((VK_SUCCESS != result) ||
           (0 == formats_count)) {
-        ErrorCheck::setError((char*)"Could not enumerate supported surface formats.");
+        ErrorCheck::setError("Could not enumerate supported surface formats.");
       }
       
       // Select surface format
@@ -166,7 +166,7 @@ namespace LavaCake {
           if (desired_surface_format.format == surface_format.format) {
             m_format = desired_surface_format.format;
             image_color_space = surface_format.colorSpace;
-            ErrorCheck::setError((char*)"Desired combination of format and colorspace is not supported. Selecting other colorspace.", 1);
+            ErrorCheck::setError("Desired combination of format and colorspace is not supported. Selecting other colorspace.", 1);
             found = true;
           }
         }
@@ -175,7 +175,7 @@ namespace LavaCake {
       if(!found){
         m_format = surface_formats[0].format;
         image_color_space = surface_formats[0].colorSpace;
-        ErrorCheck::setError((char*)"Desired format is not supported. Selecting available format - colorspace combination.",1);
+        ErrorCheck::setError("Desired format is not supported. Selecting available format - colorspace combination.",1);
       }
       
       //======================== Creating SwapChain
@@ -204,7 +204,7 @@ namespace LavaCake {
       result = vkCreateSwapchainKHR(logical, &swapchain_create_info, nullptr, &m_handle);
       if (( result != VK_SUCCESS) ||
           ( m_handle == VK_NULL_HANDLE)) {
-        ErrorCheck::setError((char*) "Could not create a swapchain." );
+        ErrorCheck::setError( "Could not create a swapchain." );
         return;
       }
       
@@ -212,12 +212,12 @@ namespace LavaCake {
       uint32_t images_count = 0;
       std::vector<VkImage> swapchainImages;
       /*if (!LavaCake::Core::GetHandlesOfSwapchainImages(logical, m_handle, swapchainImages)) {
-        ErrorCheck::setError((char*)"Could not get handle of the swapchain images");
+        ErrorCheck::setError("Could not get handle of the swapchain images");
       }*/
       result = vkGetSwapchainImagesKHR(logical, m_handle, &images_count, nullptr);
       if ((VK_SUCCESS != result) ||
           (0 == images_count)) {
-        ErrorCheck::setError((char*)"Could not get the number of swapchain images.");
+        ErrorCheck::setError("Could not get the number of swapchain images.");
         return;
       }
       
@@ -225,7 +225,7 @@ namespace LavaCake {
       result = vkGetSwapchainImagesKHR(logical, m_handle, &images_count, swapchainImages.data());
       if ((result != VK_SUCCESS ) ||
           (images_count == 0)) {
-        ErrorCheck::setError((char*) "Could not enumerate swapchain images.");
+        ErrorCheck::setError( "Could not enumerate swapchain images.");
         return ;
       }
       

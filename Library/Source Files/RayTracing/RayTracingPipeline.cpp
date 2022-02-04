@@ -8,7 +8,7 @@ namespace LavaCake {
 			void RayTracingPipeline::addRayGenModule(RayGenShaderModule* module) {
 				if (m_isHitGroupOpen)
 				{
-					Framework::ErrorCheck::setError((char*)"Cannot add raygen stage in when hit group open");
+					Framework::ErrorCheck::setError("Cannot add raygen stage in when hit group open");
 					return;
 				}
 
@@ -43,7 +43,7 @@ namespace LavaCake {
 			void RayTracingPipeline::addMissModule(MissShaderModule* module) {
 				if (m_isHitGroupOpen)
 				{
-					Framework::ErrorCheck::setError((char*)"Cannot add miss stage in when hit group open");
+					Framework::ErrorCheck::setError("Cannot add miss stage in when hit group open");
 					return;
 				}
 
@@ -76,7 +76,7 @@ namespace LavaCake {
 			void RayTracingPipeline::startHitGroup() {
 				if (m_isHitGroupOpen)
 				{
-					Framework::ErrorCheck::setError((char*)"Hit group already open");
+					Framework::ErrorCheck::setError("Hit group already open");
 					return;
 				}
 
@@ -96,7 +96,7 @@ namespace LavaCake {
 
 			void RayTracingPipeline::setClosestHitModule(ClosestHitShaderModule* module) {
 				if (!m_isHitGroupOpen) {
-					Framework::ErrorCheck::setError((char*)"No open hitgroup");
+					Framework::ErrorCheck::setError("No open hitgroup");
 					return;
 				}
 				VkPipelineShaderStageCreateInfo stageCreate;
@@ -116,7 +116,7 @@ namespace LavaCake {
 
 			void RayTracingPipeline::setAnyHitModule(AnyHitShaderModule* module) {
 				if (!m_isHitGroupOpen) {
-					Framework::ErrorCheck::setError((char*)"No open hitgroup");
+					Framework::ErrorCheck::setError("No open hitgroup");
 					return;
 				}
 				VkPipelineShaderStageCreateInfo stageCreate;
@@ -136,7 +136,7 @@ namespace LavaCake {
 
 			void RayTracingPipeline::setIntersectionModule(IntersectionShaderModule* module) {
 				if (m_isHitGroupOpen) {
-					Framework::ErrorCheck::setError((char*)"No open hitgroup");
+					Framework::ErrorCheck::setError("No open hitgroup");
 					return;
 				}
 				VkPipelineShaderStageCreateInfo stageCreate;
@@ -157,7 +157,7 @@ namespace LavaCake {
 			void RayTracingPipeline::endHitGroup() {
 				if (!m_isHitGroupOpen)
 				{
-					Framework::ErrorCheck::setError((char*)"No hit group open");
+					Framework::ErrorCheck::setError("No hit group open");
 					return;
 				}
 				m_isHitGroupOpen = false;
@@ -175,7 +175,7 @@ namespace LavaCake {
 				std::vector<VkDescriptorSetLayout> layouts= { m_descriptorSet->getLayout() };
 				if (!m_descriptorSet->isEmpty()) {
 					if (!CreatePipelineLayout(logical, layouts, {}, m_pipelineLayout)) {
-						Framework::ErrorCheck::setError((char*)"Can't create compute pipeline layout");
+						Framework::ErrorCheck::setError("Can't create compute pipeline layout");
 					}
 				}
 
