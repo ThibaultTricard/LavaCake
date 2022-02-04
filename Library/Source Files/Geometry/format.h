@@ -130,7 +130,7 @@ namespace LavaCake {
       /**
        \brief Return the vulkan input attribute description of the mesh format
        */
-      std::vector<VkVertexInputAttributeDescription> VkDescription() {
+      std::vector<VkVertexInputAttributeDescription> VkDescription() const {
         return m_vulkanDescription;
       }
 

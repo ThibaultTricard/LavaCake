@@ -71,8 +71,6 @@ namespace LavaCake {
 
 			GLFWwindow*																m_window;
 			WindowParameters													m_windowParams;
-
-			Mouse* m_mouse;
 		};
 
 	}

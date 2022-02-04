@@ -7,12 +7,15 @@ namespace LavaCake {
    *\brief Class Mesh_t : a Virtual class that represent a mesh
    */
     class Mesh_t {
-    public :
-      
+    protected:
       /**
        *\brief Class Mesh : a Virtual class that represent a mesh
        */
       Mesh_t() {};
+
+    public :
+      
+      virtual ~Mesh_t() = default;
       
       /**
        *\brief Add a vertex in the mesh
@@ -29,37 +32,47 @@ namespace LavaCake {
       /**
        *\brief Return the number of float in a vertex
        */
-      virtual size_t vertexSize() = 0;
+      virtual size_t vertexSize() const = 0;
       
       /**
        *\brief Return the vulkan input attribute description of the mesh format
        */
-      virtual std::vector<VkVertexInputAttributeDescription> VkDescription() = 0;
+      virtual std::vector<VkVertexInputAttributeDescription> VkDescription() const = 0;
 
       /**
        *\brief Return whether or not the mesh is indexed
        */
-      virtual bool isIndexed() = 0;
+      virtual bool isIndexed() const = 0;
 
       /**
        *\brief Return all the vertices of the mesh in an array of float
        */
       virtual std::vector<float>& vertices() = 0;
+
+      /**
+       *\brief Return all the vertices of the mesh in an array of float
+       */
+      virtual const std::vector<float>& vertices() const = 0;
       
       /**
        *\brief Return all the indices of the mesh in an array of unsigned int 32 bits
        */
       virtual std::vector<uint32_t>& indices() = 0;
-      
+
+      /**
+       *\brief Return all the indices of the mesh in an array of unsigned int 32 bits
+       */
+      virtual const std::vector<uint32_t>& indices() const = 0;
+
       /**
        *\brief Return the topology of the mesh
        */
-      virtual topology getTopology() = 0;
+      virtual topology getTopology() const = 0;
       
       /**
        *\brief Return the vertex format of the mesh
        */
-      virtual vertexFormat getFormat() = 0;
+      virtual vertexFormat getFormat() const = 0;
 
 
     };
@@ -78,6 +91,7 @@ namespace LavaCake {
       bool                    m_indexed = false;
 
     public:
+      virtual ~Mesh() = default;
 
       Mesh(vertexFormat format) {
         m_vertexSize = format.size();
@@ -98,15 +112,15 @@ namespace LavaCake {
       virtual void appendIndex(uint32_t index) override {
       }
 
-      virtual size_t vertexSize() override {
+      virtual size_t vertexSize() const override {
         return m_vertexSize;
       }
 
-      virtual std::vector<VkVertexInputAttributeDescription> VkDescription() override {
+      virtual std::vector<VkVertexInputAttributeDescription> VkDescription() const override {
         return m_format.VkDescription();
       }
 
-      virtual bool isIndexed() override {
+      virtual bool isIndexed() const override {
         return m_indexed;
       }
 
@@ -114,15 +128,23 @@ namespace LavaCake {
         return m_vertices;
       }
 
+      virtual const std::vector<float>& vertices() const override {
+        return m_vertices;
+      }
+
       virtual std::vector<uint32_t>& indices() override {
         return m_indices;
       }
 
-      virtual topology getTopology() override {
+      virtual const std::vector<uint32_t>& indices() const override {
+        return m_indices;
+      }
+
+      virtual topology getTopology() const override {
         return T;
       }
       
-      virtual vertexFormat getFormat() override {
+      virtual vertexFormat getFormat() const override {
         return m_format;
       };
 

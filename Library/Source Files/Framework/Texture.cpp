@@ -86,22 +86,6 @@ namespace LavaCake {
 
 			image->createSampler();
 
-			Framework::Device* d = LavaCake::Framework::Device::getDevice();
-			VkDevice logical = d->getLogicalDevice();
-			VkPhysicalDevice physical = d->getPhysicalDevice();
-
-			VkBufferCreateInfo buffer_create_info = {
-			VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,						// VkStructureType        sType
-			nullptr,																				// const void           * pNext
-			0,																							// VkBufferCreateFlags    flags
-			static_cast<VkDeviceSize>(data->size()),      // VkDeviceSize           size
-			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,								// VkBufferUsageFlags     usage
-			VK_SHARING_MODE_EXCLUSIVE,											// VkSharingMode          sharingMode
-			0,																							// uint32_t               queueFamilyIndexCount
-			nullptr																					// const uint32_t       * pQueueFamilyIndices
-			};
-
-
 			Buffer stagingBuffer;
 
 			stagingBuffer.allocate(queue, cmdBuff, *data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
@@ -156,13 +140,7 @@ namespace LavaCake {
 
 			Image* image = new Image(width, height, 1, f, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true);
 
-
 			image->createSampler();
-			Framework::Device* d = LavaCake::Framework::Device::getDevice();
-			VkDevice logical = d->getLogicalDevice();
-			VkPhysicalDevice physical = d->getPhysicalDevice();
-
-
 
 			Buffer stagingBuffer;
 

@@ -115,6 +115,7 @@ namespace LavaCake {
                            std::vector<char const*> const&    optional_extensions,
                            std::vector<bool>&                 missing_extension,
                            uint32_t&                          nb_missing_extension) {
+    nb_missing_extension = 0;
     std::vector<VkExtensionProperties> available_extensions;
     
     VkPhysicalDeviceProperties deviceProperties{};
@@ -154,6 +155,7 @@ namespace LavaCake {
         std::string err = "Extension named '" + std::string(extension) + "' is not supported by the device " + deviceName;
         ErrorCheck::setError(err.data(),5);
         missing_extension.push_back(true);
+        ++nb_missing_extension;
       }
       else {
         missing_extension.push_back(false);
@@ -282,7 +284,6 @@ namespace LavaCake {
 			std::vector<VkPhysicalDevice> physical_devices;
 
       uint32_t devices_count = 0;
-      result = VK_SUCCESS;
       
       result = vkEnumeratePhysicalDevices(m_instance, &devices_count, nullptr);
       if ((result != VK_SUCCESS) ||
@@ -363,7 +364,7 @@ namespace LavaCake {
 			for (auto& physicalDevice : tmp_physicaldevices) {
 				
         std::vector<bool> missingExtension;
-        uint32_t nbMissingExtension;
+        uint32_t nbMissingExtension = 0;
         DeviceValidity dv = rateLogicalDevice(
           physicalDevice.device,
           device_extensions,

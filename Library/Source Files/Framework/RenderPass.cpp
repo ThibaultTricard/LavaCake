@@ -86,8 +86,7 @@ namespace LavaCake {
 
 
 		void RenderPass::addAttatchments(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
-			VkAttachmentReference* depth = new VkAttachmentReference();
-			uint32_t imageAttachementindex;
+      uint32_t imageAttachementindex;
 			bool drawOnScreen = false;
 			if (AttachementDescription.showOnScreen)
 				drawOnScreen = true;
@@ -292,8 +291,6 @@ namespace LavaCake {
 		void RenderPass::prepareOutputFrameBuffer(Queue* queue, CommandBuffer& commandBuffer, FrameBuffer& frameBuffer) {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
-			VkPhysicalDevice physical = d->getPhysicalDevice();
-			VkQueue& graphics_queue = d->getGraphicQueue(0)->getHandle();
 			
 			VkSamplerCreateInfo sampler_create_info = {
 				VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,    // VkStructureType          sType
@@ -344,6 +341,7 @@ namespace LavaCake {
 					layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 				}
 				else if (m_attachmentype[i] == RENDERPASS_INPUT_ATTACHMENT) {
+          // comment : because of  continue, the following 4 values are never read (else case next turn overwrite them before use)
 					format = m_imageFormat;
 					usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT) | static_cast<uint32_t>(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT));
 					aspect = VK_IMAGE_ASPECT_COLOR_BIT;
