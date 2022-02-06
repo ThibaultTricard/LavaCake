@@ -118,9 +118,6 @@ if(APPLE)
 	)
 endif()
 
-
-message(${Vulkan_INCLUDE_DIRS})
-
 set(LAVACAKE_INCLUDE_DIR
 "${CMAKE_CURRENT_LIST_DIR}/External" "${CMAKE_CURRENT_LIST_DIR}/Library/Common Files" "${CMAKE_CURRENT_LIST_DIR}/Library/Source Files" "${CMAKE_CURRENT_LIST_DIR}/External/lib/glfw/include/GLFW"
 )

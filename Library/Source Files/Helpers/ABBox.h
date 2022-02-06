@@ -34,7 +34,18 @@ namespace LavaCake {
       ABBox(std::array<T,N>& min,std::array<T,N>& max){
         m_min = min;
         m_max = max;
-        m_diag = true;
+        m_diagDirty = true;
+      }
+      
+      /**
+       \brief Create a bounding box with it's min and max point
+       \param min the min point of the bounding box
+       \param max the max point of the bounding box
+       */
+      ABBox(const std::array<T,N>& min,const std::array<T,N>& max){
+        m_min = min;
+        m_max = max;
+        m_diagDirty = true;
       }
       
       /**
@@ -85,7 +96,7 @@ namespace LavaCake {
        \brief enlarge the bounding box so the point passed is contained
        \param  point : a N-dimensional point
        */
-      void addPoint(std::array<T, N>& point) {
+      void addPoint(const std::array<T, N>& point) {
         std::array<T, N> newMin({});
         std::array<T, N> newMax({});
         for (uint8_t u = 0; u < N; u++) {
@@ -116,7 +127,7 @@ namespace LavaCake {
       std::array<T,N> m_max;
 
       std::array<T, N> m_diag;
-      bool             m_diagDirty;
+      bool             m_diagDirty =true;
       
     };
   }

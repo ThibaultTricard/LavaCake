@@ -593,10 +593,10 @@ namespace LavaCake {
             err = "Chosen device is " + std::string(deviceProperties.deviceName);
             ErrorCheck::setError(err.data(),5);
 
-            if (!m_raytracingAvailable) {
+            if (!m_raytracingAvailable && m_raytracingEnabled) {
               ErrorCheck::setError("Raytracing extensions not found on this device", 1);
             }
-            if (!m_meshShaderAvailable) {
+            if (!m_meshShaderAvailable && m_meshShaderEnabled) {
               ErrorCheck::setError("Mesh shader extensions not found on this device", 1);
             }
 
