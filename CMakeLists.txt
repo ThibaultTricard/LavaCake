@@ -119,6 +119,7 @@ if(APPLE)
 endif()
 
 
+message(${Vulkan_INCLUDE_DIRS})
 
 set(LAVACAKE_INCLUDE_DIR
 "${CMAKE_CURRENT_LIST_DIR}/External" "${CMAKE_CURRENT_LIST_DIR}/Library/Common Files" "${CMAKE_CURRENT_LIST_DIR}/Library/Source Files" "${CMAKE_CURRENT_LIST_DIR}/External/lib/glfw/include/GLFW"
@@ -289,7 +290,7 @@ ${LIBRARY_RAYTRACING_HEADER} ${LIBRARY_RAYTRACING_SOURCE}
 ${LIBRARY_GEOMETRY_HEADER} ${LIBRARY_GEOMETRY_SOURCE} 
 ${IMGUI_SOURCE})
 target_link_libraries( LavaCake ${PLATFORM_LIBRARY} ${Vulkan_LIBRARY} glfw )
-target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS}/vulkan)
+target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS})
 
 
 
