@@ -14,10 +14,12 @@ namespace LavaCake {
       m_data.resize(m_data.size()+padding/sizeof(std::byte),  std::byte{0});
 
       VkDeviceSize bufferSize = m_data.size();
+
+      //allocate both the buffer and the staging buffer 
       m_stagingBuffer.allocate(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
       m_buffer.allocate(bufferSize, (VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-			copyToStageMemory(true);
+			//copyToStageMemory(true); // useless operation
 		}
 
 		void UniformBuffer::update(CommandBuffer& commandBuffer, bool all) {
