@@ -25,10 +25,15 @@ namespace LavaCake {
        \param value: the variable.
       */
       template<typename T>
-      void addVariable(const std::string& name, T value) {
-        std::vector<char> v = std::vector<char>(sizeof(value) / sizeof(char));
-        std::memcpy(&v[0], &value, sizeof(value));
-        addArray(name, v);
+      void addVariable(const std::string& name, const T& value) {
+        std::vector<std::byte> v = std::vector<std::byte>(sizeof(value) / sizeof(std::byte)); //TODO should not be required for some types
+        std::memcpy(&v[0], &value, sizeof(value)); //TODO could be avoided
+        addArray(name, v.data(), v.size());
+      }
+
+      template<typename TSpan>
+      void addVariableSpan(const std::string& name, const TSpan& value_span) {
+        addArray(name, value_span.data(), value_span.size());
       }
 
       /**
@@ -37,10 +42,15 @@ namespace LavaCake {
         \param value : the variable
       */
       template<typename T>
-      void setVariable(const std::string& name, T value) {
-        std::vector<char> v = std::vector<char>(sizeof(value) / sizeof(char));
-        std::memcpy(&v[0], &value, sizeof(value));
-        setArray(name, v);
+      void setVariable(const std::string& name, const T& value) {
+        std::vector<std::byte> v = std::vector<std::byte>(sizeof(value) / sizeof(std::byte)); //TODO should not be required for some types
+        std::memcpy(&v[0], &value, sizeof(value)); //TODO could be avoided
+        setArray(name, v.data(), v.size());
+      }
+
+      template<typename TSpan>
+      void setVariableSpan(const std::string& name, const TSpan& value_span) {
+        setArray(name, value_span.data(), value_span.size());
       }
 
       /**
@@ -54,8 +64,6 @@ namespace LavaCake {
       */
 			void update(CommandBuffer& commandBuffer, bool all = true);
 
-
-
 			VkBuffer& getHandle();
 
       ~UniformBuffer() {
@@ -65,19 +73,15 @@ namespace LavaCake {
 
 			void copyToStageMemory(bool all = false);
 
-			void addArray(const std::string& name, std::vector<char>& value);
-
-			void setArray(const std::string& name, std::vector<char>& value);
-
+      void addArray(const std::string& name, std::byte* data, unsigned int size); // Idea : directly accept a span as input, even of non byte type
+      void setArray(const std::string& name, std::byte* data, unsigned int size);
 
       Buffer                                                    m_buffer;
       Buffer                                                    m_stagingBuffer;
 
-      VkDeviceSize                                              m_bufferSize = 0;
-      std::map<std::string, uint32_t>                           m_variableNames;
-      std::vector<std::vector<char>>                            m_variables;
-      std::vector<bool>                                         m_modified;
-      std::vector<std::pair<VkDeviceSize, VkDeviceSize>>        m_typeSizeOffset ;
+      std::map<std::string, std::pair<uint32_t,uint32_t>>       m_variableNames; // maybe use a struct to name attribute ?
+      std::vector<std::byte>                                    m_data;
+      //std::vector<bool>                                         m_modified;
     };
   }
 }
