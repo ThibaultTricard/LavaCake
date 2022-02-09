@@ -6,6 +6,18 @@
 namespace LavaCake {
 	namespace Framework {
 
+	struct vertexBufferConstant{
+		VertexBuffer* buffer = nullptr;
+		PushConstant* constant = nullptr;
+		VkShaderStageFlags constantstage = 0;
+	};
+
+
+	struct constantDescription {
+		uint32_t constantSize;
+		VkShaderStageFlags constantShader;
+	};
+
   /**
    Class GraphicPipeline :
    \brief Helps manage a compute pipeline and it's binding
@@ -89,7 +101,14 @@ namespace LavaCake {
        \brief Set the vertex buffer that will be used by the pipeline
        \param vertexBuffer the vertex buffer
 			*/
-			void setVertices(std::vector<VertexBuffer*> vertexBuffer);
+			void setVertices(const std::vector<VertexBuffer*>& vertexBuffer);
+
+
+			/**
+			 \brief Set the vertex buffer that will be used by the pipeline
+			 \param vertexBuffer the vertex buffer
+			*/
+			void setVertices(const std::vector<vertexBufferConstant>& vertexBuffer);
 
 			/**
        \brief Register a the draw call of the pipeline into a command buffer
@@ -108,9 +127,11 @@ namespace LavaCake {
        \param constat a pointer to the push constant
        \param shadeStage a flag representing the shader in witch the constant will be pushed
 			*/
-			void addPushContant(PushConstant* constant, VkShaderStageFlags shadeStage);
+			//void addPushContant(PushConstant* constant, VkShaderStageFlags shadeStage);
 
-	
+			void setPushContantInfo(const std::vector<constantDescription>& constantDescriptions);
+
+
 			void setSubpassNumber(uint32_t number);
 
       /**
@@ -185,7 +206,9 @@ namespace LavaCake {
 			std::vector<VkViewport>																m_viewports;
 			std::vector<VkRect2D>																	m_scissors;
 			VkPipelineVertexInputStateCreateInfo									m_vertexInfo;
-			std::vector<VertexBuffer*>														m_vertexBuffers;
+
+			std::vector<vertexBufferConstant>											m_vertexBuffers;
+			std::vector<constantDescription>											m_constantInfos;
 			VkPipelineInputAssemblyStateCreateInfo								m_inputInfo;
 
 			uint32_t																							m_subpassNumber;

@@ -143,13 +143,12 @@ namespace LavaCake {
 			generateDescriptorLayout();
 
 			std::vector<VkPushConstantRange> push_constant_ranges = {};
-			for (uint32_t i = 0; i < m_constants.size(); i++) {
-                const uint32_t size =(const uint32_t) m_constants[i].constant->size() * sizeof(float);
+			for (uint32_t i = 0; i < m_constantInfos.size(); i++) {
 				push_constant_ranges.push_back(
 					{
-						m_constants[i].stage,																				// VkShaderStageFlags     stageFlags
-						0,																													// uint32_t               offset
-                        size// uint32_t               size
+						m_constantInfos[i].constantShader,									// VkShaderStageFlags     stageFlags
+						0,																									// uint32_t               offset
+						m_constantInfos[i].constantSize											// uint32_t               size
 					});
 			}
 
@@ -354,8 +353,20 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::setVertices(std::vector<VertexBuffer*> buffer) {
-			m_vertexBuffers = buffer;
+		void GraphicPipeline::setPushContantInfo(const std::vector<constantDescription>& constantDescriptions) {
+			m_constantInfos = constantDescriptions;
+		}
+
+		void GraphicPipeline::setVertices(const std::vector<VertexBuffer*>& buffer) {
+			m_vertexBuffers.resize(buffer.size());
+			for (size_t i = 0; i < buffer.size(); i++) {
+				m_vertexBuffers[i].buffer = buffer[i];
+			}
+		}
+
+
+		void GraphicPipeline::setVertices(const std::vector<vertexBufferConstant>& vertexBufferConstants) {
+			m_vertexBuffers = vertexBufferConstants;
 		}
 
 
@@ -370,11 +381,11 @@ namespace LavaCake {
 			}
 
 			for (uint32_t i = 0; i < m_vertexBuffers.size(); i++) {
-				if (m_vertexBuffers[i]->getVertexBuffer()->getHandle() == VK_NULL_HANDLE)return;
+				if (m_vertexBuffers[i].buffer->getVertexBuffer()->getHandle() == VK_NULL_HANDLE)return;
 				VkDeviceSize size(0);
-				vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1), &m_vertexBuffers[i]->getVertexBuffer()->getHandle(), &size);
-				if (m_vertexBuffers[i]->isIndexed()) {
-					vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffers[i]->getIndexBuffer()->getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
+				vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1), &m_vertexBuffers[i].buffer->getVertexBuffer()->getHandle(), &size);
+				if (m_vertexBuffers[i].buffer->isIndexed()) {
+					vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffers[i].buffer->getIndexBuffer()->getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
 				}
         
         std::vector<VkDescriptorSet> descriptorSets = {m_descriptorSet->getHandle()};
@@ -386,19 +397,21 @@ namespace LavaCake {
 
 				vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
-				for (uint32_t i = 0; i < m_constants.size(); i++) {
-					m_constants[i].constant->push(buffer.getHandle(), m_pipelineLayout, m_constants[i].stage);
+				//for (uint32_t i = 0; i < m_constants.size(); i++) {
+				if (m_vertexBuffers[i].constant != nullptr) {
+					m_vertexBuffers[i].constant->push(buffer.getHandle(), m_pipelineLayout, m_vertexBuffers[i].constantstage);
 				}
+				//}
 
 				if (m_type == pipelineType::Graphic) {
-					if (m_vertexBuffers[i]->isIndexed()) {
-						uint32_t count = (uint32_t)m_vertexBuffers[i]->getIndicesNumber();
+					if (m_vertexBuffers[i].buffer->isIndexed()) {
+						uint32_t count = (uint32_t)m_vertexBuffers[i].buffer->getIndicesNumber();
 
 						vkCmdDrawIndexed(buffer.getHandle(), count, 1, 0, 0, 0);
 					}
 					else {
 
-						uint32_t count = (uint32_t)m_vertexBuffers[i]->getVerticiesNumber();
+						uint32_t count = (uint32_t)m_vertexBuffers[i].buffer->getVerticiesNumber();
 
 						vkCmdDraw(buffer.getHandle(), count, 1, 0, 0);
 					}
@@ -416,11 +429,6 @@ namespace LavaCake {
 		void GraphicPipeline::SetCullMode(VkCullModeFlagBits cullMode) {
 			m_cullMode = cullMode;
 		}
-
-		void GraphicPipeline::addPushContant(PushConstant* constant, VkShaderStageFlags flag) {
-			m_constants.push_back({ constant, flag });
-		}
-
 		
 	}
 }

@@ -213,8 +213,8 @@ namespace LavaCake {
 			std::vector<attachment>																					m_attachments;
 			std::vector<storageImage>																				m_storageImages;
 			std::vector<texelBuffer>																				m_texelBuffers;
-			std::vector<buffer>																							m_buffers;*/
-			std::vector<constant>																						m_constants;
+			std::vector<buffer>																							m_buffers;
+			std::vector<constant>																						m_constants;*/
       
       DescriptorSet*                                                  m_descriptorSet = nullptr;
       bool                                                            m_isDescriptorPipelineGenerated =false;

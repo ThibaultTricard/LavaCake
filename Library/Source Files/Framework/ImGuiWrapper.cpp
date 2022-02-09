@@ -263,9 +263,15 @@ namespace LavaCake {
       FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
       m_pipeline->setFragmentModule(sphereFrag);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
+      
+      constantDescription constantInfo;
+      constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
+      constantInfo.constantSize = m_pushConstant->size();
+      m_pipeline->setPushContantInfo({ constantInfo });
+
+      m_pipeline->setVertices({ {m_vertexBuffer, m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT} });
       m_pipeline->setVertices({ m_vertexBuffer });
 
-      m_pipeline->addPushContant(m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT);
       m_pipeline->addTextureBuffer(m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
       m_pipeline->SetCullMode(VK_CULL_MODE_NONE);
       m_pipeline->setAlphaBlending(true);
@@ -399,12 +405,19 @@ namespace LavaCake {
       FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
       m_pipeline->setFragmentModule(sphereFrag);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
-      m_pipeline->setVertices({ m_vertexBuffer });
-
-      m_pipeline->addPushContant(m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT);
+      
       m_pipeline->addTextureBuffer(m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
       m_pipeline->SetCullMode(VK_CULL_MODE_NONE);
       m_pipeline->setAlphaBlending(true);
+
+
+      constantDescription constantInfo;
+      constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
+      constantInfo.constantSize = m_pushConstant->size();
+      m_pipeline->setPushContantInfo({ constantInfo });
+
+      m_pipeline->setVertices({ {m_vertexBuffer, m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT} });
+      m_pipeline->setVertices({ m_vertexBuffer });
     }
 
   }

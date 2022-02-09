@@ -13,7 +13,7 @@ namespace LavaCake {
 		}
 
 		uint32_t PushConstant::size() {
-			return m_size;
+			return m_size * sizeof(int);
 		}
 
 		void PushConstant::addArray(const std::string& name, std::vector<int>& value) {
