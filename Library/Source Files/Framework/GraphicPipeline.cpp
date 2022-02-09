@@ -397,11 +397,11 @@ namespace LavaCake {
 
 				vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
-				//for (uint32_t i = 0; i < m_constants.size(); i++) {
-				if (m_vertexBuffers[i].constant != nullptr) {
-					m_vertexBuffers[i].constant->push(buffer.getHandle(), m_pipelineLayout, m_vertexBuffers[i].constantstage);
+				for (uint32_t j = 0; j < m_vertexBuffers[i].constant.size(); j++) {
+					if (m_vertexBuffers[i].constant[j].constant != nullptr) {
+						m_vertexBuffers[i].constant[j].constant->push(buffer.getHandle(), m_pipelineLayout, m_vertexBuffers[i].constant[j].stage);
+					}
 				}
-				//}
 
 				if (m_type == pipelineType::Graphic) {
 					if (m_vertexBuffers[i].buffer->isIndexed()) {

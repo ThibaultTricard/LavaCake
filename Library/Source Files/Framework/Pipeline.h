@@ -170,6 +170,10 @@ namespace LavaCake {
 				}
 
 				
+        if (m_descriptorSet != nullptr) {
+          delete m_descriptorSet;
+        }
+
 			};
 
 		protected :

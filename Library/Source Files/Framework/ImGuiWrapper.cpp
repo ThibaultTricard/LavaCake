@@ -269,7 +269,7 @@ namespace LavaCake {
       constantInfo.constantSize = m_pushConstant->size();
       m_pipeline->setPushContantInfo({ constantInfo });
 
-      m_pipeline->setVertices({ {m_vertexBuffer, m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT} });
+      m_pipeline->setVertices({ {m_vertexBuffer, {{m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}} });
       m_pipeline->setVertices({ m_vertexBuffer });
 
       m_pipeline->addTextureBuffer(m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
@@ -416,8 +416,7 @@ namespace LavaCake {
       constantInfo.constantSize = m_pushConstant->size();
       m_pipeline->setPushContantInfo({ constantInfo });
 
-      m_pipeline->setVertices({ {m_vertexBuffer, m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT} });
-      m_pipeline->setVertices({ m_vertexBuffer });
+      m_pipeline->setVertices({ {m_vertexBuffer, { {m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT} } } });
     }
 
   }

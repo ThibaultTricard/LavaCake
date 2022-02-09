@@ -82,8 +82,8 @@ namespace LavaCake {
 			bool isIndexed();
 
 			~VertexBuffer() {
-				Device* d = Device::getDevice();
-				VkDevice logical = d->getLogicalDevice();
+				delete m_vertexBuffer;
+				delete m_indexBuffer;
 			}
 
 		private :

@@ -6,17 +6,21 @@
 namespace LavaCake {
 	namespace Framework {
 
-	struct vertexBufferConstant{
-		VertexBuffer* buffer = nullptr;
-		PushConstant* constant = nullptr;
-		VkShaderStageFlags constantstage = 0;
-	};
+		struct constantStage {
+			PushConstant* constant = nullptr;
+			VkShaderStageFlags stage = 0;
+		};
+
+		struct vertexBufferConstant{
+			VertexBuffer* buffer = nullptr;	
+			std::vector<constantStage> constant;
+		};
 
 
-	struct constantDescription {
-		uint32_t constantSize;
-		VkShaderStageFlags constantShader;
-	};
+		struct constantDescription {
+			uint32_t constantSize;
+			VkShaderStageFlags constantShader;
+		};
 
   /**
    Class GraphicPipeline :
