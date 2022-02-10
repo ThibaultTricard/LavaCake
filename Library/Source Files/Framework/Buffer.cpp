@@ -85,7 +85,7 @@ namespace LavaCake{
 					VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO,
 					nullptr,
 					memProp,
-          0
+					0
 					};
 
 					VkMemoryAllocateInfo buffer_memory_allocate_info = {

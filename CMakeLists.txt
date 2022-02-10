@@ -5,7 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set( CMAKE_SUPPRESS_REGENERATION true )
-
+if (MSVC)
+    set(CMAKE_CXX20_EXTENSION_COMPILE_OPTION "-std:c++latest")
+endif()
 
 
 ###############################################################
