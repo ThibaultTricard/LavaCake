@@ -83,7 +83,6 @@ namespace LavaCake {
       template<typename T, std::size_t TExtent = std::dynamic_extent>
       void setVariableRange(const std::string& name, const std::span<T,TExtent> data);
 
-
       Buffer                                                    m_buffer;
       Buffer                                                    m_stagingBuffer;
 
