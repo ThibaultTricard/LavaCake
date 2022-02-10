@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.0)
 project("LavaCake")
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set( CMAKE_SUPPRESS_REGENERATION true )
@@ -64,7 +64,14 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(./External/lib/glfw/)
+option(USE_SYSTEM_GLFW "\
+    If not activated, use submodule for glfw, otherwise, use version provided by system.
+    " OFF)
+
+if(NOT USE_SYSTEM_GLFW)
+  add_subdirectory(./External/lib/glfw/)
+endif()
+
 set(IMGUI_SOURCE 
 ./External/lib/imgui/imgui.h
 ./External/lib/imgui/imgui.cpp

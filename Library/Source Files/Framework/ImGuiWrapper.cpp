@@ -205,10 +205,8 @@ namespace LavaCake {
       if (Wwidth > 0 && Wheight > 0)
         io.DisplayFramebufferScale = ImVec2((float)display_w / Wwidth, (float)display_h / Wheight);
 
-      Framework::Device* d = Framework::Device::getDevice();
       SwapChain* s = SwapChain::getSwapChain();
       VkExtent2D size = s->size();
-      VkDevice logical = d->getLogicalDevice();
 
       unsigned char* pixels;
       int width, height;
@@ -284,14 +282,8 @@ namespace LavaCake {
     
     void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer& cmdBuff) {
 
-
-      SwapChain* s = SwapChain::getSwapChain();
-      VkExtent2D size = s->size();
       ImGui::Render();
       ImDrawData* draw_data = ImGui::GetDrawData();
-
-      size_t vertex_size = draw_data->TotalVtxCount * sizeof(ImDrawVert)/sizeof(float);
-      size_t index_size = draw_data->TotalIdxCount ;
 
 			m_mesh->vertices().clear();
 			m_mesh->indices().clear();
@@ -365,7 +357,7 @@ namespace LavaCake {
 #if defined(_WIN32)
       io.ImeWindowHandle = (void*)glfwGetWin32Window(window);
 #endif
-      GLFWerrorfun prev_error_callback = glfwSetErrorCallback(NULL);
+      glfwSetErrorCallback(nullptr);
 
       s_PrevUserCallbackMousebutton = glfwSetMouseButtonCallback(window, ImGui_ImplGlfw_MouseButtonCallback);
       s_PrevUserCallbackScroll = glfwSetScrollCallback(window, ImGui_ImplGlfw_ScrollCallback);
@@ -378,10 +370,8 @@ namespace LavaCake {
 
     void ImGuiWrapper::resizeGui(Window* win) {
       
-      Framework::Device* d = Framework::Device::getDevice();
       SwapChain* s = SwapChain::getSwapChain();
       VkExtent2D size = s->size();
-      VkDevice logical = d->getLogicalDevice();
 
       ImGuiIO& io = ImGui::GetIO();
       int Wwidth, Wheight;

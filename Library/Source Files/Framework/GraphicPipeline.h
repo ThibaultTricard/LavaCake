@@ -171,9 +171,7 @@ namespace LavaCake {
 				m_taskCount = count;
 			}
 
-			~GraphicPipeline() {
-
-			}
+      ~GraphicPipeline() override = default;
 
 		private:
 

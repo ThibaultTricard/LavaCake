@@ -81,7 +81,7 @@ namespace LavaCake {
      \param stage the shader stage where the uniform buffer is going to be used
      \param binding the binding point of the uniform shader, 0 by default
      */
-    virtual void addUniformBuffer(UniformBuffer* uniform, VkShaderStageFlags stage, int binding = 0) {
+    void addUniformBuffer(UniformBuffer* uniform, VkShaderStageFlags stage, int binding = 0) {
       m_uniforms.push_back({uniform ,binding,stage});
     };
     
@@ -91,7 +91,7 @@ namespace LavaCake {
      \param stage the shader stage where the texture buffer is going to be used
      \param binding the binding point of the texture buffer, 0 by default
      */
-    virtual void addTextureBuffer(Image* texture, VkShaderStageFlags stage, int binding = 0) {
+    void addTextureBuffer(Image* texture, VkShaderStageFlags stage, int binding = 0) {
       m_textures.push_back({ texture,binding,stage});
     };
     
@@ -101,7 +101,7 @@ namespace LavaCake {
      \param stage the shader stage where the frame buffer is going to be used
      \param binding the binding point of the frame buffer, 0 by default
      */
-    virtual void addFrameBuffer(FrameBuffer* frame, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
+    void addFrameBuffer(FrameBuffer* frame, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
       m_frameBuffers.push_back({frame,binding,stage,view});
     };
     
@@ -111,7 +111,7 @@ namespace LavaCake {
      \param stage the shader stage where the storage image is going to be used
      \param binding the binding point of the storage image, 0 by default
      */
-    virtual void addStorageImage(Image* storage, VkShaderStageFlags stage, int binding = 0) {
+    void addStorageImage(Image* storage, VkShaderStageFlags stage, int binding = 0) {
       m_storageImages.push_back({ storage,binding,stage });
     };
     
@@ -122,7 +122,7 @@ namespace LavaCake {
      \param stage the shader stage where the attachment is going to be used
      \param binding the binding point of the attachment, 0 by default
      */
-    virtual void addAttachment(Image* attachement, VkShaderStageFlags stage, int binding = 0) {
+    void addAttachment(Image* attachement, VkShaderStageFlags stage, int binding = 0) {
       m_attachments.push_back({ attachement,binding,stage });
     };
     
@@ -132,7 +132,7 @@ namespace LavaCake {
      \param stage the shader stage where the texel buffer is going to be used
      \param binding the binding point of the texel buffer, 0 by default
      */
-    virtual void addTexelBuffer(Buffer* texel, VkShaderStageFlags stage, int binding = 0) {
+    void addTexelBuffer(Buffer* texel, VkShaderStageFlags stage, int binding = 0) {
       m_texelBuffers.push_back({ texel,binding,stage });
     };
     
@@ -142,7 +142,7 @@ namespace LavaCake {
      \param stage the shader stage where the buffer is going to be used
      \param binding the binding point of the buffer, 0 by default
      */
-    virtual void addBuffer(Buffer* buffer, VkShaderStageFlags stage, int binding = 0) {
+    void addBuffer(Buffer* buffer, VkShaderStageFlags stage, int binding = 0) {
       m_buffers.push_back({ buffer,binding,stage });
     };
     
@@ -539,7 +539,7 @@ namespace LavaCake {
 
 
       // acceleration structure descriptors
-      for (int i = 0; i < m_AS.size(); i++) {
+      for (size_t i = 0; i < m_AS.size(); i++) {
         write_descriptors.push_back({
           VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
           &descriptorAccelerationStructureInfos[i],																																// const void                     * pNext

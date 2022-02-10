@@ -18,10 +18,9 @@ namespace LavaCake {
 			
 			SwapChainImage(){}
 
-			SwapChainImage(VkExtent2D size, VkFormat imageFormat, VkImage image) {
+      SwapChainImage(VkExtent2D /*size*/, VkFormat imageFormat, VkImage image) {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
-				VkPhysicalDevice physical = d->getPhysicalDevice();
 				m_image = image;
 
 				VkImageViewCreateInfo image_view_create_info = {

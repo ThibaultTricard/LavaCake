@@ -221,7 +221,7 @@ namespace LavaCake {
 					std::vector<attachment> attachment = m_subpass[i][k]->getAttachments();
 					for (size_t l = 0; l < attachment.size(); l++) {
 						bool insert = true;
-						for (int m = 0; m < tia.size(); m++) {
+            for (size_t m = 0; m < tia.size(); m++) {
 							if (attachment[l].i == tia[m]) {
 								insert = false;
 							}
@@ -318,8 +318,6 @@ namespace LavaCake {
 				ErrorCheck::setError("Could not create sampler for this FrameBuffer.");
 			}
 
-			bool linear_filtering = true;
-
 			VkImageUsageFlagBits usage;
 			VkImageAspectFlagBits aspect;
 			VkImageLayout layout;
@@ -331,7 +329,7 @@ namespace LavaCake {
 
 
 			commandBuffer.beginRecord();
-			for (int i = 0; i < m_attachmentype.size(); i ++) {
+      for (size_t i = 0; i < m_attachmentype.size(); i ++) {
 				
 
 				if (m_attachmentype[i] & RENDERPASS_COLOR_ATTACHMENT) {
@@ -380,7 +378,7 @@ namespace LavaCake {
 				}
 				//frameBuffer.m_layouts.push_back(layout);
 
-				if (i == m_khr_attachement) {
+        if (static_cast<int>(i) == m_khr_attachement) {
 					frameBuffer.m_swapChainImageIndex = i;
 					continue;
 				}
