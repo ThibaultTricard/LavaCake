@@ -109,7 +109,7 @@ namespace LavaCake {
           m_vertices.insert(m_vertices.end(), vertex.begin(), vertex.end());
       }
 
-      virtual void appendIndex(uint32_t index) override {
+      virtual void appendIndex(uint32_t /*index*/) override {
       }
 
       virtual size_t vertexSize() const override {

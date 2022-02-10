@@ -111,6 +111,7 @@ namespace LavaCake {
 						VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO,
 						nullptr,
 						memProp,
+            0
 						};
 
 						VkMemoryAllocateInfo buffer_memory_allocate_info = {
@@ -161,9 +162,6 @@ namespace LavaCake {
 
 				cmdBuff.resetFence();
 				cmdBuff.beginRecord();
-
-				VkPipelineStageFlags																stage = m_stage;
-				VkAccessFlagBits																		access = m_access;
 
 				setAccess(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED);
 
@@ -230,7 +228,7 @@ namespace LavaCake {
 				 \param image: the destination image
 				 \param regions: The listt of regions of the image to be copied to the buffer
       */
-			void copyToImage(CommandBuffer& cmdBuff, Image& image, std::vector<VkBufferImageCopy> regions);
+      void copyToImage(CommandBuffer& cmdBuff, Image& image, const std::vector<VkBufferImageCopy>& regions);
       
       /**
 				 \brief Copy a region(s) of the buffer another buffer
@@ -238,7 +236,7 @@ namespace LavaCake {
 				 \param buffer: the destination buffer
 				 \param regions: The list of regions of the image to be copied to the buffer
       */
-			void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, std::vector<VkBufferCopy> regions);
+      void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const std::vector<VkBufferCopy>& regions);
       
 			
       /**
@@ -261,10 +259,6 @@ namespace LavaCake {
       */
       template <typename t>
 			void readBack(Queue* queue, CommandBuffer& cmdBuff, std::vector<t>& data){
-        Device* d = Device::getDevice();
-        VkPhysicalDevice physical = d->getPhysicalDevice();
-        VkDevice logical = d->getLogicalDevice();
-
         Buffer stagingBuffer;
 
         stagingBuffer.allocate(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
@@ -272,9 +266,6 @@ namespace LavaCake {
         data = std::vector<t>(m_dataSize/sizeof(t));
 
         cmdBuff.beginRecord();
-
-        VkPipelineStageFlags                                stage = m_stage;
-        VkAccessFlagBits                                    access = m_access;
 
         setAccess(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED);
 

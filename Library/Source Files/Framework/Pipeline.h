@@ -155,7 +155,7 @@ namespace LavaCake {
         return  m_descriptorSet->getAttachments();
 			};
 
-			~Pipeline() {
+      virtual ~Pipeline() {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 

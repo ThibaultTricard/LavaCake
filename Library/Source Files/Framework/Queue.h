@@ -14,30 +14,27 @@ namespace LavaCake {
 		public:
 
       
-			Queue() {
-				m_handle = new VkQueue();
+      Queue() : m_handle() {
 			}
 
-			virtual bool initIndex(VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surface = nullptr) { return false; };
+      virtual bool initIndex(VkPhysicalDevice& /*physicalDevice*/, VkSurfaceKHR* surface = nullptr) { return false; };
 
       /**
        \brief Get the handle of the Queue
        */
 			VkQueue& getHandle() {
-				return *m_handle;
+        return m_handle;
 			}
 
 			uint32_t getIndex() {
 				return m_familyIndex;
 			}
 
-			void setHandle(VkQueue*	handle) {
-				m_handle = handle;
-			}
+//			void setHandle(VkQueue*	handle) {
+//				m_handle = handle;
+//			}
 
-			~Queue() {
-
-			}
+      virtual ~Queue() = default;
 
 		protected:
 
@@ -84,7 +81,7 @@ namespace LavaCake {
 				return false;
       }
 
-			VkQueue*		m_handle ;
+      VkQueue  		m_handle ;
 			uint32_t		m_familyIndex =0;
 		};
 

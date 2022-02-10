@@ -97,8 +97,8 @@ namespace LavaCake {
 				return true;
 			}
 
-			void destroyShaderModule(VkDevice         logical_device,
-				VkShaderModule& shader_module) {
+      void destroyShaderModule(VkDevice /*logical_device*/,
+                               VkShaderModule& /*shader_module*/) {
 			}
 
 			VkShaderModule								            m_module = VK_NULL_HANDLE;
