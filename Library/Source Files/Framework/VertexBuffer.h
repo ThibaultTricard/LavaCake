@@ -16,9 +16,9 @@ namespace LavaCake {
 
 			void allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0) );
 			
-			Buffer* getVertexBuffer();
+			std::shared_ptr<Buffer> getVertexBuffer();
 			
-			Buffer* getIndexBuffer();
+			std::shared_ptr<Buffer> getIndexBuffer();
 
 			void swapMeshes(std::vector<LavaCake::Geometry::Mesh_t*>				m);
 
@@ -82,24 +82,24 @@ namespace LavaCake {
 			bool isIndexed();
 
 			~VertexBuffer() {
-				delete m_vertexBuffer;
-				delete m_indexBuffer;
+				//delete m_vertexBuffer;
+				//delete m_indexBuffer;
 			}
 
 		private :
 
 
-			std::vector<VkVertexInputAttributeDescription>			m_attributeDescriptions;
+			std::vector<VkVertexInputAttributeDescription>				m_attributeDescriptions;
 			std::vector<VkVertexInputBindingDescription>				m_bindingDescriptions;
-			Buffer*																							m_vertexBuffer;
-			Buffer*																							m_indexBuffer;
-			std::vector<float>																	m_vertices;
-      uint32_t                                            m_verticesSize;
-      uint32_t                                            m_indicesSize;
-			uint32_t																						m_stride;
-			std::vector<uint32_t>																m_indices;
-			bool																								m_indexed;
-			LavaCake::Geometry::topology												m_topology;
+			std::shared_ptr<Buffer>										m_vertexBuffer;
+			std::shared_ptr<Buffer>										m_indexBuffer;
+			std::vector<float>											m_vertices;
+			uint32_t													m_verticesSize;
+			uint32_t													m_indicesSize;
+			uint32_t													m_stride;
+			std::vector<uint32_t>										m_indices;
+			bool														m_indexed;
+			LavaCake::Geometry::topology								m_topology;
 		};
 
 	}

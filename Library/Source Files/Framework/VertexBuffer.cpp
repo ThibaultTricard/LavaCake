@@ -9,8 +9,8 @@ namespace LavaCake {
 			m_topology = m[0]->getTopology();
 			m_stride = (uint32_t)m[0]->vertexSize();
 			m_attributeDescriptions = m[0]->VkDescription();
-			m_vertexBuffer = new Buffer();
-			m_indexBuffer = new Buffer();
+			m_vertexBuffer = std::make_shared<Buffer>();
+			m_indexBuffer = std::make_shared<Buffer>();
 			for (size_t t = 0; t < m_attributeDescriptions.size(); t++) {
 				m_attributeDescriptions[t].binding = binding;
 			}
@@ -36,19 +36,19 @@ namespace LavaCake {
 
 			}
       
-      m_verticesSize =(uint32_t)m_vertices.size();
-      m_vertices.clear();
-      m_indicesSize  = (uint32_t)m_indices.size();
-      m_indices.clear();
+			m_verticesSize =(uint32_t)m_vertices.size();
+			m_vertices.clear();
+			m_indicesSize  = (uint32_t)m_indices.size();
+			m_indices.clear();
 		}
 
 		
 		
-		Buffer* VertexBuffer::getVertexBuffer() {
+		std::shared_ptr<Buffer> VertexBuffer::getVertexBuffer() {
 			return m_vertexBuffer;
 		}
 
-		Buffer* VertexBuffer::getIndexBuffer() {
+		std::shared_ptr<Buffer> VertexBuffer::getIndexBuffer() {
 			return m_indexBuffer;
 		}
 

@@ -56,6 +56,8 @@
 #include "glfw3.h"
 #include "glfw3native.h"
 
+#undef interface
+
 namespace LavaCake {
 
   // Vulkan library type
