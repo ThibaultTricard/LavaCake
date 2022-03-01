@@ -169,13 +169,21 @@ namespace LavaCake{
 			return m_bufferView;
 		}
 
-    void Buffer::copyToImage(CommandBuffer& cmdBuff, Image& image, const std::vector<VkBufferImageCopy>& regions) {
+    void Buffer::copyToImage(CommandBuffer& cmdBuff, Image& image, const VkBufferImageCopy& region) {
+      vkCmdCopyBufferToImage(cmdBuff.getHandle(), m_buffer, image.getHandle(), image.getLayout(), static_cast<uint32_t>(1), &region);
+    }
+
+    void Buffer::copyToImage(CommandBuffer& cmdBuff, Image& image, const std::span<VkBufferImageCopy>& regions) {
 			if (regions.size() > 0) {
 				vkCmdCopyBufferToImage(cmdBuff.getHandle(), m_buffer, image.getHandle(), image.getLayout(), static_cast<uint32_t>(regions.size()), regions.data());
 			}
 		}
 
-    void Buffer::copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const std::vector<VkBufferCopy>& regions) {
+    void Buffer::copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const VkBufferCopy& region) {
+      vkCmdCopyBuffer(cmdBuff.getHandle(), m_buffer, buffer.getHandle(), static_cast<uint32_t>(1), &region);
+    }
+
+    void Buffer::copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const std::span<VkBufferCopy>& regions) {
 			if (regions.size() > 0) {
 				vkCmdCopyBuffer(cmdBuff.getHandle(), m_buffer, buffer.getHandle(), static_cast<uint32_t>(regions.size()), regions.data());
 			}

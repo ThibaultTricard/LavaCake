@@ -15,17 +15,9 @@ namespace LavaCake {
 
 			m_buffer.setAccess(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
 
-			std::vector<VkBufferCopy> regions = {
-				{
-					0,                        // VkDeviceSize     srcOffset
-					0,                        // VkDeviceSize     dstOffset
-          m_variables.data().size()             // VkDeviceSize     size
-				}
-			};
-
       // Idea : template copyToBuffer to avoid memory allocation (or just take a span as input)
       // then we can use an std::array for regions above
-			m_stagingBuffer.copyToBuffer(commandBuffer, m_buffer, regions);
+      m_stagingBuffer.copyToBuffer(commandBuffer, m_buffer, { 0, 0, m_variables.data().size() });
 
 			m_buffer.setAccess(commandBuffer, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT);
 		}

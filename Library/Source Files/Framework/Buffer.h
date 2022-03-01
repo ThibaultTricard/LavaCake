@@ -4,6 +4,8 @@
 #include "Queue.h"
 #include "Image.h"
 
+#include <span>
+
 namespace LavaCake {
   namespace Framework {
     
@@ -40,7 +42,7 @@ namespace LavaCake {
 				\param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
       */
 			template <typename t>
-			void allocate(Queue* queue, CommandBuffer& cmdBuff, std::vector<t>& rawdata, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
+      void allocate(Queue* queue, CommandBuffer& cmdBuff, const std::vector<t>& rawdata, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
 				Device* d = Device::getDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				VkDevice logical = d->getLogicalDevice();
@@ -165,7 +167,7 @@ namespace LavaCake {
 
 				setAccess(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED);
 
-				stagingBuffer.copyToBuffer(cmdBuff, *this, { { 0, 0, m_dataSize + m_padding  } });
+        stagingBuffer.copyToBuffer(cmdBuff, *this, { 0, 0, m_dataSize + m_padding  });
 
 				setAccess(cmdBuff, m_stage, m_access, VK_QUEUE_FAMILY_IGNORED);
 
@@ -223,20 +225,36 @@ namespace LavaCake {
       VkDeviceMemory& getMemory();
       
       /**
+         \brief Copy a region of the buffer to an image
+         \param cmdBuff: the command buffer used for this operation, must be in a  recording state
+         \param image: the destination image
+         \param region: The region of the image to be copied to the buffer
+      */
+      void copyToImage(CommandBuffer& cmdBuff, Image& image, const VkBufferImageCopy& region);
+
+      /**
 				 \brief Copy a region(s) of the buffer to an image
 				 \param cmdBuff: the command buffer used for this operation, must be in a  recording state
 				 \param image: the destination image
 				 \param regions: The listt of regions of the image to be copied to the buffer
       */
-      void copyToImage(CommandBuffer& cmdBuff, Image& image, const std::vector<VkBufferImageCopy>& regions);
+      void copyToImage(CommandBuffer& cmdBuff, Image& image, const std::span<VkBufferImageCopy>& regions);
       
+      /**
+         \brief Copy a region of the buffer another buffer
+         \param cmdBuff: the command buffer used for this operation, must be in a  recording state
+         \param buffer: the destination buffer
+         \param region: The region of the image to be copied to the buffer
+      */
+      void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const VkBufferCopy& region);
+
       /**
 				 \brief Copy a region(s) of the buffer another buffer
 				 \param cmdBuff: the command buffer used for this operation, must be in a  recording state
 				 \param buffer: the destination buffer
 				 \param regions: The list of regions of the image to be copied to the buffer
       */
-      void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const std::vector<VkBufferCopy>& regions);
+      void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const std::span<VkBufferCopy>& regions);
       
 			
       /**
@@ -269,7 +287,7 @@ namespace LavaCake {
 
         setAccess(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_QUEUE_FAMILY_IGNORED);
 
-        copyToBuffer(cmdBuff, stagingBuffer, { { 0, 0,  m_dataSize + m_padding } });
+        copyToBuffer(cmdBuff, stagingBuffer, { 0, 0,  m_dataSize + m_padding });
 
         setAccess(cmdBuff, m_stage, m_access, VK_QUEUE_FAMILY_IGNORED);
 
@@ -303,22 +321,20 @@ namespace LavaCake {
 				
 				m_mapped = map();
 
-				std::memcpy(m_mapped, &data[0], sizeof(t) * static_cast<size_t>(data.size()));
+        std::memcpy(m_mapped, data.data(), sizeof(t) * static_cast<size_t>(data.size()));
 
-				std::vector<VkMappedMemoryRange> memory_ranges = {
-					{
+        VkMappedMemoryRange memory_ranges = {
 						VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,  // VkStructureType    sType
 						nullptr,                                // const void       * pNext
 						m_bufferMemory,													// VkDeviceMemory     memory
 						0,																			// VkDeviceSize       offset
 						VK_WHOLE_SIZE                           // VkDeviceSize       size
-					}
 				};
 
-				VkResult result = vkFlushMappedMemoryRanges(logical, static_cast<uint32_t>(memory_ranges.size()), memory_ranges.data());
+        VkResult result = vkFlushMappedMemoryRanges(logical, 1u, &memory_ranges);
 				if (VK_SUCCESS != result) {
-					std::cout << "Could not flush mapped memory." << std::endl;
-				}
+          ErrorCheck::setError("Could not flush mapped memory.", 0);
+        }
 
 				unmap();
 			}

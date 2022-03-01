@@ -28,7 +28,6 @@ namespace LavaCake {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
         VkCommandPool pool = d->getCommandPool();
-        std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
 
         VkCommandBufferAllocateInfo command_buffer_allocate_info = {
         VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,   // VkStructureType          sType
@@ -39,12 +38,10 @@ namespace LavaCake {
         };
 
 
-        VkResult result = vkAllocateCommandBuffers(logical, &command_buffer_allocate_info, buffers.data());
+        VkResult result = vkAllocateCommandBuffers(logical, &command_buffer_allocate_info, &m_commandBuffer);
         if (VK_SUCCESS != result) {
           ErrorCheck::setError("Failed to allocate commande buffer.");
         }
-
-        m_commandBuffer = buffers[0];
 
         VkFenceCreateInfo fence_create_info = {
         VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,          // VkStructureType        sType
