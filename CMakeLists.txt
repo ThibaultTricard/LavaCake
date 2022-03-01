@@ -184,6 +184,7 @@ set(LIBRARY_FRAMEWORK_DIR "Library/Source Files/Framework")
 
 set(LIBRARY_FRAMEWORK_HEADER 
 ${LIBRARY_FRAMEWORK_DIR}/Buffer.h
+${LIBRARY_FRAMEWORK_DIR}/ByteDictionary.h
 ${LIBRARY_FRAMEWORK_DIR}/CommandBuffer.h
 ${LIBRARY_FRAMEWORK_DIR}/ComputePipeline.h
 ${LIBRARY_FRAMEWORK_DIR}/Constant.h

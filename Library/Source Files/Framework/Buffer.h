@@ -297,7 +297,7 @@ namespace LavaCake {
 				The buffer must be host visible for this operation to succeed
       */
 			template <typename t>
-			void write(std::vector<t>& data) {
+      void write(const std::vector<t>& data) {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 				

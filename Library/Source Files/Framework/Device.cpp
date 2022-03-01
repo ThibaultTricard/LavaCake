@@ -10,7 +10,9 @@ namespace LavaCake {
     "VK_LAYER_KHRONOS_validation"
   };
 #else
-  const std::vector<const char*> validationLayers = {};
+  const std::vector<const char*> validationLayers = {
+    "VK_LAYER_KHRONOS_validation"
+  };
 #endif
 
   const std::vector<const char*> raytracingExtension = {

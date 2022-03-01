@@ -6,8 +6,8 @@ namespace LavaCake {
 
     void UniformBuffer::end() {
       //allocate both the buffer and the staging buffer
-      m_stagingBuffer.allocate(m_data.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-      m_buffer.allocate(m_data.size(), (VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+      m_stagingBuffer.allocate(m_variables.data().size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+      m_buffer.allocate(m_variables.data().size(), (VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     }
 
     void UniformBuffer::update(CommandBuffer& commandBuffer) {
@@ -19,7 +19,7 @@ namespace LavaCake {
 				{
 					0,                        // VkDeviceSize     srcOffset
 					0,                        // VkDeviceSize     dstOffset
-          m_data.size()             // VkDeviceSize     size
+          m_variables.data().size()             // VkDeviceSize     size
 				}
 			};
 
@@ -35,7 +35,7 @@ namespace LavaCake {
 		};
 
     void UniformBuffer::copyToStageMemory(bool /*all*/) {
-      m_stagingBuffer.write(m_data);
+      m_stagingBuffer.write(m_variables.data());
 		}
 	}
 }
