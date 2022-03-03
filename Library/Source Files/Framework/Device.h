@@ -4,6 +4,59 @@
 #include "ErrorCheck.h"
 
 
+#if defined(LAVACAKE_WINDOW_MANAGER_GLFW)
+#define GLFW_INCLUDE_NONE
+#ifdef _WIN32
+#include <Windows.h>
+#define GLFW_EXPOSE_NATIVE_WIN32 true
+#elif __APPLE__
+#define GLFW_INCLUDE_VULKAN
+#endif
+
+#include "glfw3.h"
+#include "glfw3native.h"
+
+#undef interface
+ 
+#elif defined(LAVACAKE_WINDOW_MANAGER_CUSTOM)
+
+#endif
+
+
+
+#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
+namespace LavaCake {
+  namespace Framework {
+    class SurfaceInitialisator {
+    public : 
+      virtual VkSurfaceKHR init(const VkInstance&) = 0;
+    };
+
+
+#ifdef LAVACAKE_WINDOW_MANAGER_GLFW
+    class GLFWSurfaceInitialisator : public SurfaceInitialisator {
+    public:
+      GLFWSurfaceInitialisator(GLFWwindow* window) {
+        m_window = window;
+      }
+      VkSurfaceKHR init(const VkInstance& instance) override {
+        VkSurfaceKHR surface = VK_NULL_HANDLE;
+        VkResult result = glfwCreateWindowSurface(instance, m_window, nullptr, &surface);
+        if (result != VK_SUCCESS || surface == VK_NULL_HANDLE) {
+          ErrorCheck::setError("Failed to create presentation surface");
+        }
+        return surface;
+      }
+
+    private : 
+      GLFWwindow* m_window = nullptr;
+    };
+#endif // LAVACAKE_WINDOW_MANAGER_GLFW
+
+  }
+}
+#endif // !LAVACAKE_WINDOW_MANAGER_HEADLESS
+
 namespace LavaCake {
   namespace Framework {
 
@@ -93,8 +146,16 @@ namespace LavaCake {
        \param desiredDeviceFeatures the device feature requiered by the application
        \return a reference to a ComputeQueue
        */
-			void initDevices( int nbComputeQueue, int nbGraphicQueue, WindowParameters&	windowParams, VkPhysicalDeviceFeatures * desiredDeviceFeatures = nullptr);
+			void initDevices( 
+        int nbComputeQueue, 
+        int nbGraphicQueue, 
+#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
+        SurfaceInitialisator& window,
+#endif
+        VkPhysicalDeviceFeatures * desiredDeviceFeatures = nullptr);
       
+
+
       /**
        \brief free all the vulkan handle hold by the device and destroy the singleton 
       */

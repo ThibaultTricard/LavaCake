@@ -406,7 +406,6 @@ namespace LavaCake {
 				if (m_type == pipelineType::Graphic) {
 					if (m_vertexBuffers[i].buffer->isIndexed()) {
 						uint32_t count = (uint32_t)m_vertexBuffers[i].buffer->getIndicesNumber();
-
 						vkCmdDrawIndexed(buffer.getHandle(), count, 1, 0, 0, 0);
 					}
 					else {
