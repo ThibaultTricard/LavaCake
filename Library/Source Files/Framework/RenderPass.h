@@ -54,6 +54,8 @@ namespace LavaCake {
 
 		class RenderPass {
 
+			using SubPass = std::vector< std::shared_ptr<GraphicPipeline> >;
+
 			struct SubpassParameters {
 				VkPipelineBindPoint                  PipelineType;
 				std::vector<VkAttachmentReference>   InputAttachments;
@@ -84,14 +86,13 @@ namespace LavaCake {
 			/*
 			* add a subpass composed of multiple graphics pipeline and setup their attachments 
 			*/
-			void addSubPass(std::vector<GraphicPipeline*> p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
+			void addSubPass(const SubPass& p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
 
 			/*
 			* prepare the render pass for drawing 
 			*/
 			void compile();
 
-			void reloadShaders();
 
 			/*
 			* Draw the render pass using a specific command buffer into a framebuffer
@@ -104,7 +105,7 @@ namespace LavaCake {
 			VkRenderPass& getHandle();
 
 
-			void prepareOutputFrameBuffer(Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& FrameBuffer);
+			void prepareOutputFrameBuffer(const Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& FrameBuffer);
 
 
 			void setSwapChainImage(FrameBuffer& FrameBuffer, SwapChainImage& image);
@@ -140,7 +141,7 @@ namespace LavaCake {
 			VkFormat																							m_imageFormat;
 			VkFormat																							m_depthFormat;
 			std::vector<SubpassParameters>												m_subpassParameters;
-			std::vector < std::vector<GraphicPipeline*>	>					m_subpass;
+			std::vector < SubPass >																m_subpass;
 			std::vector<VkAttachmentReference>										m_depthAttachments;
 			std::vector<VkAttachmentDescription>									m_attachmentDescriptions;
 			std::vector<VkSubpassDependency>											m_dependencies;

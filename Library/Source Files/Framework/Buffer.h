@@ -15,16 +15,11 @@ namespace LavaCake {
   */
     class Buffer {
     public :
-      
-      /**
-				\brief Default constructor
-      */
-			Buffer();
 
       
 			Buffer(const Buffer& buffer) = delete;
 
-			Image& operator=(const Image&) = delete;
+			Buffer& operator=(const Buffer&) = delete;
 
 
 			Buffer(Buffer&& b) {
@@ -60,7 +55,7 @@ namespace LavaCake {
 				\param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
       */
 			template <typename t>
-			void allocate(Queue& queue, CommandBuffer& cmdBuff, const std::vector<t>& rawdata, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
+			Buffer(const Queue& queue, CommandBuffer& cmdBuff, const std::vector<t>& rawdata, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
 				Device* d = Device::getDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				VkDevice logical = d->getLogicalDevice();
@@ -174,9 +169,7 @@ namespace LavaCake {
 					}
 				}
 
-				Buffer stagingBuffer;
-
-				stagingBuffer.allocate(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+				Buffer stagingBuffer(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 				stagingBuffer.write(rawdata);
 
@@ -213,7 +206,7 @@ namespace LavaCake {
 				\param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
 				\param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
       */
-			void allocate(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT);
+			Buffer(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT);
       
       /**
 				\brief Change the acces mode of the buffer
@@ -278,10 +271,8 @@ namespace LavaCake {
 				\param data: the vector on witch the content of the data will be written
       */
       template <typename t>
-			void readBack(Queue& queue, CommandBuffer& cmdBuff, std::vector<t>& data){
-        Buffer stagingBuffer;
-
-        stagingBuffer.allocate(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+			void readBack(const Queue& queue, CommandBuffer& cmdBuff, std::vector<t>& data){
+        Buffer stagingBuffer(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
         data = std::vector<t>(m_dataSize/sizeof(t));
 
@@ -386,14 +377,10 @@ namespace LavaCake {
 
 		class TransformBuffer {
 		public : 
-			TransformBuffer(VkTransformMatrixKHR& transform) {
-				m_transformData = transform;
+			TransformBuffer(const Queue& queue, CommandBuffer& cmdBuff, VkTransformMatrixKHR& transform) : 
+				m_buffer(queue, cmdBuff, std::vector<VkTransformMatrixKHR>{ transform }, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR))
+			{
 
-			}
-
-			void allocate(Queue& queue, CommandBuffer& cmdBuff) {
-				std::vector<VkTransformMatrixKHR> transform{ m_transformData };
-				m_buffer.allocate(queue, cmdBuff, transform, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR));
 			}
 
 			Buffer& getBuffer() {
@@ -402,7 +389,6 @@ namespace LavaCake {
 
 		private :
 
-			VkTransformMatrixKHR m_transformData;
 
 			Buffer m_buffer;
 

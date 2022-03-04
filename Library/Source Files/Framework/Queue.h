@@ -22,17 +22,18 @@ namespace LavaCake {
       /**
        \brief Get the handle of the Queue
        */
-			VkQueue& getHandle() {
+			const VkQueue& getHandle() const{
         return m_handle;
 			}
 
-			uint32_t getIndex() {
+			void setHandle(VkQueue queue) {
+				m_handle = queue;
+			}
+
+			uint32_t getIndex() const{
 				return m_familyIndex;
 			}
 
-//			void setHandle(VkQueue*	handle) {
-//				m_handle = handle;
-//			}
 
       virtual ~Queue() = default;
 

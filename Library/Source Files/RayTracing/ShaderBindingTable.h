@@ -30,7 +30,7 @@ namespace LavaCake {
         m_hitGroup.push_back({ groupIndex, inlineData });
       }
 
-      void compile(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, VkPipeline raytracingPipeline);
+      void compile(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, VkPipeline raytracingPipeline);
 
       VkStridedDeviceAddressRegionKHR& raygenShaderBindingTable() {
         return m_raygenShaderBindingTable;
@@ -83,9 +83,9 @@ namespace LavaCake {
 
       VkDeviceSize m_sbtSize;
       
-      Framework::Buffer m_raygenBuffer;
-      Framework::Buffer m_missBuffer;
-      Framework::Buffer m_hitBuffer;
+      std::shared_ptr < Framework::Buffer > m_raygenBuffer;
+      std::shared_ptr < Framework::Buffer > m_missBuffer;
+      std::shared_ptr < Framework::Buffer > m_hitBuffer;
     };
 
   }

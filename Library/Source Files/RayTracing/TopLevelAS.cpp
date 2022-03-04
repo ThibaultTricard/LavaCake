@@ -18,25 +18,25 @@ namespace LavaCake {
 
       }
 
-      void TopLevelAccelerationStructure::alloctate(Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
+      void TopLevelAccelerationStructure::alloctate(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
         Framework::Device* d = Framework::Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
         VkPhysicalDevice phyDevice = d->getPhysicalDevice();
-        m_instancesBuffers = std::vector<Framework::Buffer>(m_AccelerationStructureInstances.size());
+        m_instancesBuffers = std::vector<std::shared_ptr<Framework::Buffer>>(m_AccelerationStructureInstances.size());
         std::vector<VkAccelerationStructureGeometryKHR> accelerationStructureGeometry;
         uint32_t primitive_count = 0;
         for (int i = 0; i < m_AccelerationStructureInstances.size(); i++) {
           // Buffer for instance data
           std::vector<VkAccelerationStructureInstanceKHR> instance = { m_AccelerationStructureInstances[i] };
 
-          m_instancesBuffers[i].allocate(queue,
+          m_instancesBuffers[i] = std::make_shared<Framework::Buffer>(queue,
             cmdBuff,
             instance,
             VkBufferUsageFlagBits(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR),
             VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
 
           VkDeviceOrHostAddressConstKHR instanceDataDeviceAddress{};
-          instanceDataDeviceAddress.deviceAddress = m_instancesBuffers[i].getBufferDeviceAddress();
+          instanceDataDeviceAddress.deviceAddress = m_instancesBuffers[i]->getBufferDeviceAddress();
 
           VkAccelerationStructureGeometryKHR asg{};
           asg.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
@@ -73,11 +73,11 @@ namespace LavaCake {
         createAccelerationStructure( VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, accelerationStructureBuildSizesInfo);
 
         // Create a small scratch buffer used during build of the top level acceleration structure
-        m_scratchBuffer.allocate(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        m_scratchBuffer = std::make_shared<Framework::Buffer>(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
         VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};
         scratchBufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-        scratchBufferDeviceAddressInfo.buffer = m_scratchBuffer.getHandle();
+        scratchBufferDeviceAddressInfo.buffer = m_scratchBuffer->getHandle();
 
 
         m_accelerationBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
@@ -140,8 +140,7 @@ namespace LavaCake {
         Framework::Device* d = Framework::Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
 
-        m_ASBuffer = new Framework::Buffer();
-        m_ASBuffer->allocate(buildSizeInfo.accelerationStructureSize, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        m_ASBuffer = std::make_shared<Framework::Buffer>(buildSizeInfo.accelerationStructureSize, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
         // Buffer and memory
 
 

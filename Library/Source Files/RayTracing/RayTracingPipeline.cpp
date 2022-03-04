@@ -165,7 +165,7 @@ namespace LavaCake {
 				m_currentGroupIndex++;
 			}
 
-			void RayTracingPipeline::compile(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff) {
+			void RayTracingPipeline::compile(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff) {
 
 				Framework::Device* d = Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();

@@ -34,7 +34,7 @@ namespace LavaCake {
 
 			void endHitGroup();
 
-			void compile(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff);
+			void compile(const  Framework::Queue& queue, Framework::CommandBuffer& cmdBuff);
 
 			void trace(Framework::CommandBuffer& cmdbuff);
 

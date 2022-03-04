@@ -144,21 +144,21 @@ namespace LavaCake {
        \brief Retourn the Presentation Queue used to draw on the screen
        \return a reference to PresentationQueue used by the application
        */
-			PresentationQueue& getPresentQueue();
+			const PresentationQueue& getPresentQueue();
 
       /**
        \brief Retourn a specific Graphic Queue
        \param i the index of the wanted queue
        \return a reference to a GraphicQueue
        */
-			GraphicQueue& getGraphicQueue(int i);
+			const GraphicQueue& getGraphicQueue(int i);
 
       /**
        \brief Retourn a specific Compute Queue
        \param i the index of the wanted queue
        \return a reference to a ComputeQueue
        */
-			ComputeQueue& getComputeQueue(int i);
+			const ComputeQueue& getComputeQueue(int i);
 
       
 #ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS

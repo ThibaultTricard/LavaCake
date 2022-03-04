@@ -6,7 +6,7 @@ namespace LavaCake {
 	namespace Framework {
 
 
-		Image createAttachment(Queue& queue, CommandBuffer& cmdBuff, int width, int height, VkFormat f, attachmentType type) {
+		Image createAttachment(const Queue& queue, CommandBuffer& cmdBuff, int width, int height, VkFormat f, attachmentType type) {
 
 			VkImageAspectFlagBits aspect;
 			if (type == COLOR_ATTACHMENT) {
@@ -47,7 +47,7 @@ namespace LavaCake {
 		}
 
 
-		Image createStorageImage(Queue& queue, CommandBuffer& cmdBuff, int width, int height, int depth, VkFormat f) {
+		Image createStorageImage(const Queue& queue, CommandBuffer& cmdBuff, int width, int height, int depth, VkFormat f) {
 			Image image(width, height, depth, f, VK_IMAGE_ASPECT_COLOR_BIT, (VkImageUsageFlagBits)(VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT));
 			cmdBuff.beginRecord();
 
@@ -70,7 +70,7 @@ namespace LavaCake {
 			return Image(width, height, depth, format, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 		}
 
-		Image createTextureBuffer(Queue& queue, CommandBuffer& cmdBuff, const std::string& filename, int nbChannel, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
+		Image createTextureBuffer(const Queue& queue, CommandBuffer& cmdBuff, const std::string& filename, int nbChannel, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
 			int width, height;
 			std::vector<unsigned char> data = std::vector<unsigned char>();
 			if (!Helpers::LoadTextureDataFromFile(filename.data(), nbChannel, data, &width, &height)) {
@@ -80,15 +80,13 @@ namespace LavaCake {
 			return createTextureBuffer(queue, cmdBuff, data, width, height, 1, nbChannel, f, stageFlagBit);
 		}
 
-		Image createTextureBuffer(Queue& queue, CommandBuffer& cmdBuff,const std::vector<unsigned char>& data, int width, int height, int depth, int nbChannel, VkFormat format, VkPipelineStageFlagBits stageFlagBit) {
+		Image createTextureBuffer(const Queue& queue, CommandBuffer& cmdBuff,const std::vector<unsigned char>& data, int width, int height, int depth, int nbChannel, VkFormat format, VkPipelineStageFlagBits stageFlagBit) {
 
 			Image image(width, height, depth, format, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 
 			image.createSampler();
 
-			Buffer stagingBuffer;
-
-			stagingBuffer.allocate(queue, cmdBuff, data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+			Buffer stagingBuffer(queue, cmdBuff, data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 			cmdBuff.beginRecord();
 
@@ -123,7 +121,7 @@ namespace LavaCake {
 			return std::move(image);
 		}
 
-		Image createCubeMap(Queue& queue, CommandBuffer& cmdBuff,const std::string& path, int nbChannel,const std::array<std::string,6>& images, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
+		Image createCubeMap(const  Queue& queue, CommandBuffer& cmdBuff,const std::string& path, int nbChannel,const std::array<std::string,6>& images, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
 
 			std::vector<unsigned char> cubemap_image_data;
 
@@ -142,9 +140,7 @@ namespace LavaCake {
 
 			image.createSampler();
 
-			Buffer stagingBuffer;
-
-			stagingBuffer.allocate(queue, cmdBuff, data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+			Buffer stagingBuffer(queue, cmdBuff, data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 			cmdBuff.beginRecord();
 

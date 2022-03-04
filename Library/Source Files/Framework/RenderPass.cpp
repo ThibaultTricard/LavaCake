@@ -189,7 +189,8 @@ namespace LavaCake {
 				});
 		}
 
-		void RenderPass::addSubPass(std::vector<GraphicPipeline*> p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
+
+		void RenderPass::addSubPass(const SubPass& p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
 			for (size_t i = 0; i < p.size(); i++) {
 				p[i]->setSubpassNumber(static_cast<uint32_t>(m_subpass.size()));
 			}
@@ -244,18 +245,6 @@ namespace LavaCake {
 
 		}
 
-		void RenderPass::reloadShaders() {
-
-			for (uint32_t i = 0; i < m_subpass.size(); i++) {
-				for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
-					m_subpass[i][j]->reloadShaders();
-				}
-			}
-
-			compile();
-
-		}
-
 		void RenderPass::draw(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const & clear_values) {
 
 			VkRenderPassBeginInfo renderPassBeginInfo = {
@@ -288,7 +277,7 @@ namespace LavaCake {
 			return m_renderPass;
 		}
 
-		void RenderPass::prepareOutputFrameBuffer(Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& frameBuffer) {
+		void RenderPass::prepareOutputFrameBuffer(const Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& frameBuffer) {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			

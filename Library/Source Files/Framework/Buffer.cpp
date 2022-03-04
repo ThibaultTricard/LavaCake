@@ -4,12 +4,7 @@ namespace LavaCake{
 	namespace Framework {
 
 
-		Buffer::Buffer() {
-
-		}
-
-
-		void Buffer::allocate(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag , VkPipelineStageFlagBits stageFlagBit , VkFormat format ) {
+		Buffer::Buffer(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag , VkPipelineStageFlagBits stageFlagBit , VkFormat format ) {
 			Device* d = Device::getDevice();
 			VkPhysicalDevice physical = d->getPhysicalDevice();
 			VkDevice logical = d->getLogicalDevice();

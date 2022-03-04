@@ -116,7 +116,7 @@ namespace LavaCake {
         0x00010038
     };
 
-    ImGuiWrapper::ImGuiWrapper(Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize) {
+    ImGuiWrapper::ImGuiWrapper(const Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize) {
       IMGUI_CHECKVERSION();
       ImGui::CreateContext();
       ImGui::StyleColorsDark();
@@ -162,8 +162,8 @@ namespace LavaCake {
       m_mesh->appendIndex(2);
 
 
-      m_vertexBuffer = std::make_unique<Framework::VertexBuffer>(std::vector< LavaCake::Geometry::Mesh_t* >{ m_mesh.get() });
-      m_vertexBuffer->allocate(queue, cmdBuff);
+      m_vertexBuffer = std::make_unique<Framework::VertexBuffer>(queue, cmdBuff, std::vector< LavaCake::Geometry::Mesh_t* >{ m_mesh.get()});
+
 
       vec2f scale = vec2f({0.0f,0.0f});
       vec2f translate = vec2f({0.0f,0.0f});
@@ -176,11 +176,11 @@ namespace LavaCake {
       memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
 
       m_pipeline = std::make_unique<GraphicPipeline>(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
-      VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
-      m_pipeline->setVertexModule(sphereVertex);
+      m_vertexShader = std::make_shared<Framework::VertexShaderModule>(vertSpirv);
+      m_pipeline->setVertexModule(m_vertexShader);
 
-      FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
-      m_pipeline->setFragmentModule(sphereFrag);
+      m_fragmentShader = std::make_shared < Framework::FragmentShaderModule>(fragSpirv);
+      m_pipeline->setFragmentModule(m_fragmentShader);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
       
       constantDescription constantInfo;
@@ -201,7 +201,7 @@ namespace LavaCake {
     
 
     
-    void ImGuiWrapper::prepareGui(Queue& queue, CommandBuffer& cmdBuff) {
+    void ImGuiWrapper::prepareGui(const Queue& queue, CommandBuffer& cmdBuff) {
 
       ImGui::Render();
       ImDrawData* draw_data = ImGui::GetDrawData();
@@ -232,8 +232,7 @@ namespace LavaCake {
 
 			
 
-      m_vertexBuffer->swapMeshes({ m_mesh.get()});
-      m_vertexBuffer->allocate(queue, cmdBuff);
+      m_vertexBuffer = std::make_unique<Framework::VertexBuffer>(queue, cmdBuff, std::vector< LavaCake::Geometry::Mesh_t* >{ m_mesh.get()});
 
       vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
       vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });
@@ -254,18 +253,11 @@ namespace LavaCake {
       if (windowSize[0] > 0 && windowSize[1] > 0)
         io.DisplayFramebufferScale = ImVec2((float)frameBufferSize[0] / windowSize[0], (float)frameBufferSize[1] / windowSize[1]);
 
-
-      std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv) / sizeof(unsigned char));
-      memcpy(&vertSpirv[0], __glsl_shader_vert_spv, sizeof(__glsl_shader_vert_spv));
-      std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
-      memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
-
       m_pipeline = std::make_shared<GraphicPipeline>(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
-      VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
-      m_pipeline->setVertexModule(sphereVertex);
+ 
+      m_pipeline->setVertexModule(m_vertexShader);
 
-      FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
-      m_pipeline->setFragmentModule(sphereFrag);
+      m_pipeline->setFragmentModule(m_fragmentShader);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
       
       m_pipeline->addTextureBuffer(m_fontBuffer.get(), VK_SHADER_STAGE_FRAGMENT_BIT, 0);

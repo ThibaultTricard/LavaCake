@@ -167,7 +167,7 @@ namespace LavaCake {
        \param waitSemaphoreInfo : description of the semaphores to to wait on before executing it
        \param signalSemaphores : the list of that will be raised by the execution of this command buffer
        */
-      void submit(Queue& queue, std::vector<WaitSemaphoreInfo> waitSemaphoreInfo, std::vector<VkSemaphore>  signalSemaphores) {
+      void submit(const Queue& queue, const std::vector<WaitSemaphoreInfo>& waitSemaphoreInfo, const std::vector<VkSemaphore>&  signalSemaphores) {
         std::vector<VkSemaphore>          wait_semaphore_handles;
         std::vector<VkPipelineStageFlags> wait_semaphore_stages;
         for (auto& wait_semaphore_info : waitSemaphoreInfo) {
@@ -212,8 +212,7 @@ namespace LavaCake {
           vkDestroyFence(logical, m_fence, nullptr);
         }
         if (m_commandBuffer != VK_NULL_HANDLE) {
-          std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
-          vkFreeCommandBuffers(logical, d->getCommandPool(), 1, &buffers[0]);
+          vkFreeCommandBuffers(logical, d->getCommandPool(), 1, &m_commandBuffer);
         }
       };
 

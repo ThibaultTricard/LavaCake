@@ -85,8 +85,8 @@ namespace LavaCake {
       template<typename T, std::size_t TExtent = std::dynamic_extent>
       void setVariableRange(const std::string& name, const std::span<T,TExtent> data);
 
-      Buffer                                                    m_buffer;
-      Buffer                                                    m_stagingBuffer;
+      std::shared_ptr < Buffer >                                                    m_buffer;
+      std::shared_ptr < Buffer >                                                    m_stagingBuffer;
 
       std::map<std::string, std::pair<uint32_t,uint32_t>>       m_variableNames; // maybe use a struct to name attribute ?
       std::vector<std::byte>                                    m_data;

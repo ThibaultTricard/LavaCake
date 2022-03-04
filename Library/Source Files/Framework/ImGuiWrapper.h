@@ -23,7 +23,7 @@ namespace LavaCake {
      \param windowSize: the size of the window
      \param frameBufferSize: the size of the frame buffer imgui is used in
      */
-     ImGuiWrapper(Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize);
+     ImGuiWrapper(const Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize);
 
 
     /**
@@ -31,7 +31,7 @@ namespace LavaCake {
      \param queue : a pointer to the queue that will be used to copy data to the Buffer
      \param cmdBuff : the command buffer used for this operation, must not be in a recording state
      */
-    void prepareGui(Queue& queue, CommandBuffer& cmdBuff);
+    void prepareGui(const Queue& queue, CommandBuffer& cmdBuff);
 
     /**
      \brief resize the gui
@@ -58,6 +58,9 @@ namespace LavaCake {
       std::unique_ptr < VertexBuffer >       m_vertexBuffer;
       std::unique_ptr < Geometry::Mesh_t >   m_mesh;
       std::unique_ptr < Image >              m_fontBuffer;
+
+      std::shared_ptr<VertexShaderModule>    m_vertexShader;
+      std::shared_ptr<FragmentShaderModule>  m_fragmentShader;
       
     };
 

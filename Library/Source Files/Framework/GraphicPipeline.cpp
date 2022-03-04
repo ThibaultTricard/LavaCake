@@ -45,7 +45,7 @@ namespace LavaCake {
 
 		};
 
-		void GraphicPipeline::setVertexModule(VertexShaderModule*	module) {
+		void GraphicPipeline::setVertexModule(std::shared_ptr < const VertexShaderModule >	module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
 				m_vertexModule = module;
 				m_type = pipelineType::Graphic;
@@ -55,7 +55,7 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::setTesselationControlModule(TessellationControlShaderModule*	module) {
+		void GraphicPipeline::setTesselationControlModule(std::shared_ptr < const TessellationControlShaderModule >	module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
 				m_tesselationControlModule = module;
 				m_type = pipelineType::Graphic;
@@ -65,7 +65,7 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::setTesselationEvaluationModule(TessellationEvaluationShaderModule*	module) {
+		void GraphicPipeline::setTesselationEvaluationModule(std::shared_ptr < const TessellationEvaluationShaderModule >	module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
 				m_tesselationEvaluationModule = module;
 				m_type = pipelineType::Graphic;
@@ -75,7 +75,7 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::setGeometryModule(GeometryShaderModule*	module) {
+		void GraphicPipeline::setGeometryModule(std::shared_ptr < const GeometryShaderModule >	module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
 				m_geometryModule = module;
 				m_type = pipelineType::Graphic;
@@ -86,11 +86,11 @@ namespace LavaCake {
 
 		}
 
-		void GraphicPipeline::setFragmentModule(FragmentShaderModule*	module) {
+		void GraphicPipeline::setFragmentModule(std::shared_ptr < const FragmentShaderModule >	module) {
 			m_fragmentModule = module;
 		}
 
-		void GraphicPipeline::setMeshModule(MeshShaderModule* module) {
+		void GraphicPipeline::setMeshModule(std::shared_ptr < const MeshShaderModule > module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::MeshTask) {
 				m_meshModule = module;
 				m_type = pipelineType::MeshTask;
@@ -100,7 +100,7 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::setTaskModule(TaskShaderModule* module) {
+		void GraphicPipeline::setTaskModule(std::shared_ptr< const TaskShaderModule> module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::MeshTask) {
 				m_taskModule = module;
 				m_type = pipelineType::MeshTask;
@@ -295,30 +295,6 @@ namespace LavaCake {
 				ErrorCheck::setError("Can't create Graphics piepeline");
 			}
 			m_pipeline = pipelines[0];
-		}
-
-		void GraphicPipeline::reloadShaders() {
-			if (m_vertexModule != nullptr) {
-				m_vertexModule->refresh();
-			}
-			if (m_tesselationControlModule != nullptr) {
-				m_tesselationControlModule->refresh();
-			}
-			if (m_tesselationEvaluationModule != nullptr) {
-				m_tesselationEvaluationModule->refresh();
-			}
-			if (m_geometryModule != nullptr) {
-				m_geometryModule->refresh();
-			}
-			if (m_fragmentModule != nullptr) {
-				m_fragmentModule->refresh();
-			}
-			if (m_meshModule != nullptr) {
-				m_meshModule->refresh();
-			}
-			if (m_taskModule != nullptr) {
-				m_taskModule->refresh();
-			}
 		}
 
 		void GraphicPipeline::setSubpassNumber(uint32_t number) {

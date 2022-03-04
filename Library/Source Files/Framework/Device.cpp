@@ -182,15 +182,15 @@ namespace LavaCake {
 			return m_logical;
 		}
 
-		PresentationQueue& Device::getPresentQueue() {
+		const PresentationQueue& Device::getPresentQueue() {
 			return m_presentQueue;
 		};
 
-		GraphicQueue& Device::getGraphicQueue(int i) {
+		const GraphicQueue& Device::getGraphicQueue(int i) {
 			return m_graphicQueues[i];
 		};
 
-		ComputeQueue& Device::getComputeQueue(int i) {
+		const ComputeQueue& Device::getComputeQueue(int i) {
 			return m_computeQueues[i];
 		}
 
@@ -609,15 +609,21 @@ namespace LavaCake {
 
 
             for (int i = 0; i < nbGraphicQueue; i++) {
-              LavaCake::vkGetDeviceQueue(m_logical, m_graphicQueues[i].getIndex(), 0, &m_graphicQueues[i].getHandle());
+              VkQueue queue = VK_NULL_HANDLE;
+              LavaCake::vkGetDeviceQueue(m_logical, m_graphicQueues[i].getIndex(), 0, &queue);
+              m_graphicQueues[i].setHandle(queue);
             }
 
             for (int i = 0; i < nbComputeQueue; i++) {
-              LavaCake::vkGetDeviceQueue(m_logical, m_computeQueues[i].getIndex(), 0, &m_computeQueues[i].getHandle());
+              VkQueue queue = VK_NULL_HANDLE;
+              LavaCake::vkGetDeviceQueue(m_logical, m_computeQueues[i].getIndex(), 0, &queue);
+              m_computeQueues[i].setHandle(queue);
             }
 
 #ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
-              LavaCake::vkGetDeviceQueue(m_logical, m_presentQueue.getIndex(), 0, &m_presentQueue.getHandle());
+            VkQueue queue = VK_NULL_HANDLE;
+            LavaCake::vkGetDeviceQueue(m_logical, m_presentQueue.getIndex(), 0, &queue);
+            m_presentQueue.setHandle(queue);
 #endif
             //Todo Check if getHandle()  works
 
