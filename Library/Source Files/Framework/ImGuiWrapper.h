@@ -18,24 +18,20 @@ namespace LavaCake {
     
     /**
      \brief Default Constructor
-     */
-    ImGuiWrapper() {};
-
-    /**
-     \brief Initialise ImGui and create it's graphic pipeline
      \param queue : a pointer to the queue that will be used to copy data to the Buffer
      \param cmdBuff : the command buffer used for this operation, must not be in a recording state
      \param windowSize: the size of the window
      \param frameBufferSize: the size of the frame buffer imgui is used in
      */
-    void initGui(Queue* queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize);
+     ImGuiWrapper(Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize);
+
 
     /**
      \brief Prepare the gui for the current frame
      \param queue : a pointer to the queue that will be used to copy data to the Buffer
      \param cmdBuff : the command buffer used for this operation, must not be in a recording state
      */
-    void prepareGui(Queue* queue, CommandBuffer& cmdBuff);
+    void prepareGui(Queue& queue, CommandBuffer& cmdBuff);
 
     /**
      \brief resize the gui
@@ -48,23 +44,20 @@ namespace LavaCake {
      \brief Return the graphic pipelin for the gui
      \return a pointer to the graphic pipeline
      */
-    GraphicPipeline* getPipeline() {
+    std::shared_ptr < GraphicPipeline > getPipeline() {
       return m_pipeline;
     }
 
     ~ImGuiWrapper() {
-      delete m_pipeline;
-      delete m_pushConstant;
-      delete m_vertexBuffer;
     }
 
     private : 
       
-      GraphicPipeline* m_pipeline = nullptr;
-      PushConstant* m_pushConstant = nullptr;
-      VertexBuffer* m_vertexBuffer = nullptr;
-      Geometry::Mesh_t* m_mesh = nullptr;
-      Image* m_fontBuffer = nullptr;
+      std::shared_ptr< GraphicPipeline >     m_pipeline;
+      PushConstant                           m_pushConstant;
+      std::unique_ptr < VertexBuffer >       m_vertexBuffer;
+      std::unique_ptr < Geometry::Mesh_t >   m_mesh;
+      std::unique_ptr < Image >              m_fontBuffer;
       
     };
 

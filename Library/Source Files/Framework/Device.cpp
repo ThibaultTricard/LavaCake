@@ -182,16 +182,16 @@ namespace LavaCake {
 			return m_logical;
 		}
 
-		PresentationQueue* Device::getPresentQueue() {
+		PresentationQueue& Device::getPresentQueue() {
 			return m_presentQueue;
 		};
 
-		GraphicQueue* Device::getGraphicQueue(int i) {
-			return &m_graphicQueues[i];
+		GraphicQueue& Device::getGraphicQueue(int i) {
+			return m_graphicQueues[i];
 		};
 
-		ComputeQueue* Device::getComputeQueue(int i) {
-			return& m_computeQueues[i];
+		ComputeQueue& Device::getComputeQueue(int i) {
+			return m_computeQueues[i];
 		}
 
 
@@ -420,7 +420,7 @@ namespace LavaCake {
         }
 
 #ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
-          if (!m_presentQueue->initIndex(device.device, &m_presentationSurface)) {
+          if (!m_presentQueue.initIndex(device.device, &m_presentationSurface)) {
             continue;
           }
 #endif
@@ -454,17 +454,17 @@ namespace LavaCake {
 
 #ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
           for (int j = 0; j < nbGraphicQueue; j++) {
-            if (m_presentQueue->getIndex() == m_graphicQueues[j].getIndex()) {
+            if (m_presentQueue.getIndex() == m_graphicQueues[j].getIndex()) {
               goto 	endConcPresent;
             }
           }
 
           for (int j = 0; j < nbComputeQueue; j++) {
-            if (m_presentQueue->getIndex() == m_computeQueues[j].getIndex()) {
+            if (m_presentQueue.getIndex() == m_computeQueues[j].getIndex()) {
               break;
             }
           }
-          requested_queues.push_back({ m_presentQueue->getIndex(),{ 1.0f } });
+          requested_queues.push_back({ m_presentQueue.getIndex(),{ 1.0f } });
 #endif
       endConcPresent:;
 
@@ -617,7 +617,7 @@ namespace LavaCake {
             }
 
 #ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
-              LavaCake::vkGetDeviceQueue(m_logical, m_presentQueue->getIndex(), 0, &m_presentQueue->getHandle());
+              LavaCake::vkGetDeviceQueue(m_logical, m_presentQueue.getIndex(), 0, &m_presentQueue.getHandle());
 #endif
             //Todo Check if getHandle()  works
 

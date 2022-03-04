@@ -18,7 +18,7 @@ namespace LavaCake {
      */
     class Image {
     public :
-      
+
       /**
        \brief Create an image
        \param witdh the witdth of the image
@@ -39,6 +39,37 @@ namespace LavaCake {
         VkImageUsageFlags usage,
         VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         bool cubemap = false);
+
+
+      Image(const Image&) = delete;
+
+      Image& operator=(const Image&) = delete;
+
+      Image(Image&& i) {
+
+        m_width = i.m_width;
+        m_height = i.m_height;
+        m_depth = i.m_depth;
+        m_format = i.m_format;
+
+        m_layout = i.m_layout;
+        m_stage = i.m_stage;
+        m_aspect = i.m_aspect;
+
+        m_image = i.m_image;
+        m_imageMemory = i.m_imageMemory;
+        m_imageView = i.m_imageView;
+        m_sampler = i.m_sampler;
+        m_cubemap = i.m_cubemap;
+        m_mappedMemory = i.m_mappedMemory;
+
+        i.m_image = VK_NULL_HANDLE;
+        i.m_imageMemory = VK_NULL_HANDLE;
+        i.m_imageView = VK_NULL_HANDLE;
+        i.m_sampler = VK_NULL_HANDLE;
+        i.m_mappedMemory = nullptr;
+
+      };
 
 
       void createSampler();
@@ -161,8 +192,8 @@ namespace LavaCake {
       uint32_t														m_depth = 0;
       VkFormat														m_format;
 
-			VkImageLayout												m_layout;
-			VkPipelineStageFlags								m_stage;
+			VkImageLayout												m_layout = VK_IMAGE_LAYOUT_UNDEFINED;
+			VkPipelineStageFlags								m_stage = VK_PIPELINE_STAGE_NONE_KHR;
 			VkImageAspectFlagBits								m_aspect;
 
       VkImage                             m_image  = VK_NULL_HANDLE;
@@ -170,9 +201,9 @@ namespace LavaCake {
       VkImageView                         m_imageView  = VK_NULL_HANDLE;
       VkSampler             							m_sampler = VK_NULL_HANDLE;
 
-			bool																m_cubemap;
+			bool																m_cubemap = false;
 
-			void*																m_mappedMemory;
+			void*																m_mappedMemory = nullptr;
     };
 
   }

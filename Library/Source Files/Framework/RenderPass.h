@@ -104,7 +104,7 @@ namespace LavaCake {
 			VkRenderPass& getHandle();
 
 
-			void prepareOutputFrameBuffer(Queue* queue, CommandBuffer& commandBuffer, FrameBuffer& FrameBuffer);
+			void prepareOutputFrameBuffer(Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& FrameBuffer);
 
 
 			void setSwapChainImage(FrameBuffer& FrameBuffer, SwapChainImage& image);

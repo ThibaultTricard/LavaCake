@@ -21,11 +21,31 @@ namespace LavaCake {
       */
 			Buffer();
 
-      /**
-				\brief Copy constructor
-				\param buffer : the buffer to be copied
-      */
-			Buffer(const Buffer& buffer);
+      
+			Buffer(const Buffer& buffer) = delete;
+
+			Image& operator=(const Image&) = delete;
+
+
+			Buffer(Buffer&& b) {
+				m_buffer = b.m_buffer;
+				m_bufferMemory = b.m_bufferMemory;
+				m_bufferView = b.m_bufferView;
+
+
+				m_stage = b.m_stage;
+				m_access = b.m_access;
+				m_queueFamily = b.m_queueFamily;
+				m_dataSize = b.m_dataSize;
+				m_padding = b.m_padding;
+
+				m_mapped = b.m_mapped;
+
+				b.m_buffer = VK_NULL_HANDLE;
+				b.m_bufferMemory = VK_NULL_HANDLE;
+				b.m_bufferView = VK_NULL_HANDLE;
+				b.m_mapped = nullptr;
+			}
       
       
 			/**
@@ -40,7 +60,7 @@ namespace LavaCake {
 				\param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
       */
 			template <typename t>
-			void allocate(Queue* queue, CommandBuffer& cmdBuff, std::vector<t>& rawdata, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
+			void allocate(Queue& queue, CommandBuffer& cmdBuff, const std::vector<t>& rawdata, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
 				Device* d = Device::getDevice();
 				VkPhysicalDevice physical = d->getPhysicalDevice();
 				VkDevice logical = d->getLogicalDevice();
@@ -55,7 +75,7 @@ namespace LavaCake {
 
 				m_stage = stageFlagBit;
 				m_access = accessmod;
-				m_queueFamily = queue->getIndex();
+				m_queueFamily = queue.getIndex();
 
 				uint32_t memProp = 0;
 				if (usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT) {
@@ -258,7 +278,7 @@ namespace LavaCake {
 				\param data: the vector on witch the content of the data will be written
       */
       template <typename t>
-			void readBack(Queue* queue, CommandBuffer& cmdBuff, std::vector<t>& data){
+			void readBack(Queue& queue, CommandBuffer& cmdBuff, std::vector<t>& data){
         Buffer stagingBuffer;
 
         stagingBuffer.allocate(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
@@ -297,7 +317,7 @@ namespace LavaCake {
 				The buffer must be host visible for this operation to succeed
       */
 			template <typename t>
-			void write(std::vector<t>& data) {
+			void write(const std::vector<t>& data) {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 				
@@ -371,7 +391,7 @@ namespace LavaCake {
 
 			}
 
-			void allocate(Queue* queue, CommandBuffer& cmdBuff) {
+			void allocate(Queue& queue, CommandBuffer& cmdBuff) {
 				std::vector<VkTransformMatrixKHR> transform{ m_transformData };
 				m_buffer.allocate(queue, cmdBuff, transform, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR));
 			}

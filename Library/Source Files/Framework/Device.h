@@ -144,21 +144,21 @@ namespace LavaCake {
        \brief Retourn the Presentation Queue used to draw on the screen
        \return a reference to PresentationQueue used by the application
        */
-			PresentationQueue* getPresentQueue();
+			PresentationQueue& getPresentQueue();
 
       /**
        \brief Retourn a specific Graphic Queue
        \param i the index of the wanted queue
        \return a reference to a GraphicQueue
        */
-			GraphicQueue* getGraphicQueue(int i);
+			GraphicQueue& getGraphicQueue(int i);
 
       /**
        \brief Retourn a specific Compute Queue
        \param i the index of the wanted queue
        \return a reference to a ComputeQueue
        */
-			ComputeQueue* getComputeQueue(int i);
+			ComputeQueue& getComputeQueue(int i);
 
       
 #ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
@@ -241,7 +241,7 @@ namespace LavaCake {
 				VkCommandPool					              			m_commandPool = VK_NULL_HANDLE;
 				std::vector<GraphicQueue>									m_graphicQueues;
 				std::vector<ComputeQueue>									m_computeQueues;
-				PresentationQueue*												m_presentQueue = new PresentationQueue();
+        PresentationQueue												  m_presentQueue;
 
         
         bool                                      m_raytracingEnabled = false;

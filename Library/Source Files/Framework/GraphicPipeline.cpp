@@ -425,7 +425,7 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::SetCullMode(VkCullModeFlagBits cullMode) {
+		void GraphicPipeline::setCullMode(VkCullModeFlagBits cullMode) {
 			m_cullMode = cullMode;
 		}
 		

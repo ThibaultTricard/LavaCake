@@ -31,6 +31,7 @@ namespace LavaCake {
 		{
 		public:
 
+
       /**
        \brief Constructor for the gaphic pipelin class
        \param viewportMin the minimum coordinate of view port
@@ -123,7 +124,7 @@ namespace LavaCake {
 			/**
        \brief Set the cull mode for the pipeline, if not set the pipeline cull the back faces
 			*/
-			void SetCullMode(VkCullModeFlagBits cullMode);
+			void setCullMode(VkCullModeFlagBits cullMode);
 
 			/**
        \brief Register a push constant to the pand specify it's shader stage,

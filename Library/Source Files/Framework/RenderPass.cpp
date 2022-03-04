@@ -288,7 +288,7 @@ namespace LavaCake {
 			return m_renderPass;
 		}
 
-		void RenderPass::prepareOutputFrameBuffer(Queue* queue, CommandBuffer& commandBuffer, FrameBuffer& frameBuffer) {
+		void RenderPass::prepareOutputFrameBuffer(Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& frameBuffer) {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			

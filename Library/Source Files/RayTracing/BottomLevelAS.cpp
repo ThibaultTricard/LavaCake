@@ -46,7 +46,7 @@ namespace LavaCake {
 			}
 
 
-			void BottomLevelAccelerationStructure::allocate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
+			void BottomLevelAccelerationStructure::allocate(Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
 
 				Framework::Device* d = Framework::Device::getDevice();
 				VkDevice device = d->getLogicalDevice();

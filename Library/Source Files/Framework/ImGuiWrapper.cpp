@@ -116,7 +116,7 @@ namespace LavaCake {
         0x00010038
     };
 
-    void ImGuiWrapper::initGui(Queue* queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize) {
+    ImGuiWrapper::ImGuiWrapper(Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize) {
       IMGUI_CHECKVERSION();
       ImGui::CreateContext();
       ImGui::StyleColorsDark();
@@ -134,14 +134,14 @@ namespace LavaCake {
       unsigned char* pixels;
       int width, height;
       io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-      std::vector<unsigned char>* textureData = new std::vector<unsigned char>(pixels, pixels + width * height * 4);
+      std::vector<unsigned char> textureData(pixels, pixels + width * height * 4);
 
 
 
-      m_fontBuffer = Framework::createTextureBuffer(queue, cmdBuff, textureData, width, height,1, 4);
+      m_fontBuffer = std::make_unique<Image>(Framework::createTextureBuffer(queue, cmdBuff, textureData, width, height,1, 4));
 
 
-      m_mesh = (Geometry::Mesh_t*) (new Geometry::IndexedMesh<Geometry::TRIANGLE>(imguiformat));
+      m_mesh = std::make_unique<Geometry::IndexedMesh<Geometry::TRIANGLE>>((imguiformat));
 
 
       m_mesh->appendVertex({
@@ -162,22 +162,20 @@ namespace LavaCake {
       m_mesh->appendIndex(2);
 
 
-
-      m_vertexBuffer = new Framework::VertexBuffer({ m_mesh });
+      m_vertexBuffer = std::make_unique<Framework::VertexBuffer>(std::vector< LavaCake::Geometry::Mesh_t* >{ m_mesh.get() });
       m_vertexBuffer->allocate(queue, cmdBuff);
 
-      m_pushConstant = new PushConstant();
       vec2f scale = vec2f({0.0f,0.0f});
       vec2f translate = vec2f({0.0f,0.0f});
-      m_pushConstant->addVariable("uScale", scale);
-      m_pushConstant->addVariable("uTranslate", translate);
+      m_pushConstant.addVariable("uScale", scale);
+      m_pushConstant.addVariable("uTranslate", translate);
 
       std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv) / sizeof(unsigned char));
       memcpy(&vertSpirv[0], __glsl_shader_vert_spv, sizeof(__glsl_shader_vert_spv));
       std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
       memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
 
-      m_pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
+      m_pipeline = std::make_unique<GraphicPipeline>(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
       VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
       m_pipeline->setVertexModule(sphereVertex);
 
@@ -187,14 +185,14 @@ namespace LavaCake {
       
       constantDescription constantInfo;
       constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
-      constantInfo.constantSize = m_pushConstant->size();
+      constantInfo.constantSize = m_pushConstant.size();
       m_pipeline->setPushContantInfo({ constantInfo });
 
-      m_pipeline->setVertices({ {m_vertexBuffer, {{m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}} });
-      m_pipeline->setVertices({ m_vertexBuffer });
+      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}}});
+      m_pipeline->setVertices({ m_vertexBuffer.get()});
 
-      m_pipeline->addTextureBuffer(m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
-      m_pipeline->SetCullMode(VK_CULL_MODE_NONE);
+      m_pipeline->addTextureBuffer(m_fontBuffer.get(), VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+      m_pipeline->setCullMode(VK_CULL_MODE_NONE);
       m_pipeline->setAlphaBlending(true);
 
     }
@@ -203,7 +201,7 @@ namespace LavaCake {
     
 
     
-    void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer& cmdBuff) {
+    void ImGuiWrapper::prepareGui(Queue& queue, CommandBuffer& cmdBuff) {
 
       ImGui::Render();
       ImDrawData* draw_data = ImGui::GetDrawData();
@@ -234,13 +232,13 @@ namespace LavaCake {
 
 			
 
-      m_vertexBuffer->swapMeshes({ m_mesh });
+      m_vertexBuffer->swapMeshes({ m_mesh.get()});
       m_vertexBuffer->allocate(queue, cmdBuff);
 
       vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
       vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });
-      m_pushConstant->setVariable("uScale", scale);
-      m_pushConstant->setVariable("uTranslate", translate);
+      m_pushConstant.setVariable("uScale", scale);
+      m_pushConstant.setVariable("uTranslate", translate);
 
     }
 
@@ -262,7 +260,7 @@ namespace LavaCake {
       std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
       memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
 
-      m_pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
+      m_pipeline = std::make_shared<GraphicPipeline>(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
       VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
       m_pipeline->setVertexModule(sphereVertex);
 
@@ -270,17 +268,17 @@ namespace LavaCake {
       m_pipeline->setFragmentModule(sphereFrag);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
       
-      m_pipeline->addTextureBuffer(m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
-      m_pipeline->SetCullMode(VK_CULL_MODE_NONE);
+      m_pipeline->addTextureBuffer(m_fontBuffer.get(), VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+      m_pipeline->setCullMode(VK_CULL_MODE_NONE);
       m_pipeline->setAlphaBlending(true);
 
 
       constantDescription constantInfo;
       constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
-      constantInfo.constantSize = m_pushConstant->size();
+      constantInfo.constantSize = m_pushConstant.size();
       m_pipeline->setPushContantInfo({ constantInfo });
 
-      m_pipeline->setVertices({ {m_vertexBuffer, { {m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT} } } });
+      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}}});
     }
 
 

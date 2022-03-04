@@ -13,7 +13,7 @@ namespace LavaCake {
 
 			void addVertexBuffer(Framework::VertexBuffer* vertexBuffer, Framework::TransformBuffer* transformBuffer, bool opaque = true);
 
-			void allocate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
+			void allocate(Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
 
 			VkAccelerationStructureKHR& getHandle();
 

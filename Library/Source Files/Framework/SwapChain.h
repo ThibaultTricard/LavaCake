@@ -186,7 +186,7 @@ namespace LavaCake {
 				return *m_swapchainImages[index];
 			}
       
-      void presentImage(PresentationQueue* queue, SwapChainImage& image, std::vector<VkSemaphore> semaphores){
+      void presentImage(PresentationQueue& queue, SwapChainImage& image, std::vector<VkSemaphore> semaphores){
         /*Core::PresentInfo present_info = {
           m_handle,                                    // VkSwapchainKHR         Swapchain
           image.getIndex()                              // uint32_t               ImageIndex
@@ -214,7 +214,7 @@ namespace LavaCake {
           nullptr                                               // VkResult*                pResults
         };
         
-        result = vkQueuePresentKHR(queue->getHandle(), &present_info);
+        result = vkQueuePresentKHR(queue.getHandle(), &present_info);
         
         if(result != VK_SUCCESS){
           ErrorCheck::setError("Failed to present the image");

@@ -11,13 +11,13 @@ namespace LavaCake {
     public:
       void addInstance(BottomLevelAccelerationStructure* bottomLevelAS, VkTransformMatrixKHR& transform, uint32_t instanceID, uint32_t hitGroupOffset);
 
-      void alloctate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
+      void alloctate(Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
 
       VkAccelerationStructureKHR& getHandle() {
         return m_accelerationStructure;
       }
 
-      void createAccelerationStructure(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo);
+      void createAccelerationStructure(VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo);
 
 		private : 
 

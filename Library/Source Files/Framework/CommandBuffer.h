@@ -167,7 +167,7 @@ namespace LavaCake {
        \param waitSemaphoreInfo : description of the semaphores to to wait on before executing it
        \param signalSemaphores : the list of that will be raised by the execution of this command buffer
        */
-      void submit(Queue* queue, std::vector<WaitSemaphoreInfo> waitSemaphoreInfo, std::vector<VkSemaphore>  signalSemaphores) {
+      void submit(Queue& queue, std::vector<WaitSemaphoreInfo> waitSemaphoreInfo, std::vector<VkSemaphore>  signalSemaphores) {
         std::vector<VkSemaphore>          wait_semaphore_handles;
         std::vector<VkPipelineStageFlags> wait_semaphore_stages;
         for (auto& wait_semaphore_info : waitSemaphoreInfo) {
@@ -189,7 +189,7 @@ namespace LavaCake {
           signalSemaphores.data()                              // const VkSemaphore            * pSignalSemaphores
         };
 
-        VkResult result = vkQueueSubmit(queue->getHandle(), 1, &submit_info, getFence());
+        VkResult result = vkQueueSubmit(queue.getHandle(), 1, &submit_info, getFence());
         if (VK_SUCCESS != result) {
           ErrorCheck::setError("Error occurred during command buffer submission.");
           return;

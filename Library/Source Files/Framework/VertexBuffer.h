@@ -10,11 +10,11 @@ namespace LavaCake {
 
 		class VertexBuffer {
 		public:
-			
-			VertexBuffer(std::vector<LavaCake::Geometry::Mesh_t*> m, uint32_t binding = 0,  VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX);
+		
 
+			VertexBuffer(const std::vector<LavaCake::Geometry::Mesh_t*>& m, uint32_t binding = 0,  VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX);
 
-			void allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0) );
+			void allocate(Queue& queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0) );
 			
 			std::shared_ptr<Buffer> getVertexBuffer();
 			
@@ -82,24 +82,22 @@ namespace LavaCake {
 			bool isIndexed();
 
 			~VertexBuffer() {
-				//delete m_vertexBuffer;
-				//delete m_indexBuffer;
 			}
 
 		private :
 
 
 			std::vector<VkVertexInputAttributeDescription>				m_attributeDescriptions;
-			std::vector<VkVertexInputBindingDescription>				m_bindingDescriptions;
-			std::shared_ptr<Buffer>										m_vertexBuffer;
-			std::shared_ptr<Buffer>										m_indexBuffer;
-			std::vector<float>											m_vertices;
-			uint32_t													m_verticesSize;
-			uint32_t													m_indicesSize;
-			uint32_t													m_stride;
-			std::vector<uint32_t>										m_indices;
-			bool														m_indexed;
-			LavaCake::Geometry::topology								m_topology;
+			std::vector<VkVertexInputBindingDescription>					m_bindingDescriptions;
+			std::shared_ptr<Buffer>																m_vertexBuffer;
+			std::shared_ptr<Buffer>																m_indexBuffer;
+			std::vector<float>																		m_vertices;
+			uint32_t																							m_verticesSize = 0;
+			uint32_t																							m_indicesSize = 0;
+			uint32_t																							m_stride = 0;
+			std::vector<uint32_t>																	m_indices;
+			bool																									m_indexed = false;
+			LavaCake::Geometry::topology													m_topology;
 		};
 
 	}

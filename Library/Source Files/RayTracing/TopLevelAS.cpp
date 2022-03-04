@@ -18,7 +18,7 @@ namespace LavaCake {
 
       }
 
-      void TopLevelAccelerationStructure::alloctate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
+      void TopLevelAccelerationStructure::alloctate(Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
         Framework::Device* d = Framework::Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
         VkPhysicalDevice phyDevice = d->getPhysicalDevice();
@@ -70,7 +70,7 @@ namespace LavaCake {
           &primitive_count,
           &accelerationStructureBuildSizesInfo);
 
-        createAccelerationStructure(queue, cmdBuff, VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, accelerationStructureBuildSizesInfo);
+        createAccelerationStructure( VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, accelerationStructureBuildSizesInfo);
 
         // Create a small scratch buffer used during build of the top level acceleration structure
         m_scratchBuffer.allocate(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -135,7 +135,7 @@ namespace LavaCake {
 
       }
 
-      void TopLevelAccelerationStructure::createAccelerationStructure(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo)
+      void TopLevelAccelerationStructure::createAccelerationStructure(VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo)
       {
         Framework::Device* d = Framework::Device::getDevice();
         VkDevice logical = d->getLogicalDevice();

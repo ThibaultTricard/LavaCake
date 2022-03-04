@@ -8,14 +8,6 @@ namespace LavaCake{
 
 		}
 
-		Buffer::Buffer(const Buffer& a) {
-			m_buffer = (a.m_buffer);
-			m_bufferMemory = (a.m_bufferMemory);
-			m_bufferView = (a.m_bufferView);
-
-			m_dataSize = a.m_dataSize;
-			m_padding = a.m_padding;
-		}
 
 		void Buffer::allocate(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag , VkPipelineStageFlagBits stageFlagBit , VkFormat format ) {
 			Device* d = Device::getDevice();

@@ -4,7 +4,7 @@
 namespace LavaCake {
 	namespace Framework {
 
-		VertexBuffer::VertexBuffer(std::vector<LavaCake::Geometry::Mesh_t*> m, uint32_t binding ,VkVertexInputRate inputRate) {
+		VertexBuffer::VertexBuffer(const std::vector<LavaCake::Geometry::Mesh_t*>& m, uint32_t binding ,VkVertexInputRate inputRate) {
 
 			m_topology = m[0]->getTopology();
 			m_stride = (uint32_t)m[0]->vertexSize();
@@ -25,7 +25,7 @@ namespace LavaCake {
 			swapMeshes(m);
 		};
 
-		void VertexBuffer::allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage) {
+		void VertexBuffer::allocate(Queue& queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage) {
 			if (m_vertices.size() == 0)return;
 
 			m_vertexBuffer->allocate(queue, cmdBuff, m_vertices, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT| otherUsage), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_FORMAT_R32_SFLOAT, VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT);
