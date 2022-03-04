@@ -48,15 +48,15 @@ namespace LavaCake {
      \brief Return the graphic pipelin for the gui
      \return a pointer to the graphic pipeline
      */
-      GraphicPipeline* getPipeline() {
-        return m_pipeline;
-      }
+    GraphicPipeline* getPipeline() {
+      return m_pipeline;
+    }
 
-      ~ImGuiWrapper() {
-        delete m_pipeline;
-        delete m_pushConstant;
-        delete m_vertexBuffer;
-      }
+    ~ImGuiWrapper() {
+      delete m_pipeline;
+      delete m_pushConstant;
+      delete m_vertexBuffer;
+    }
 
     private : 
       
@@ -77,7 +77,10 @@ namespace LavaCake {
     static GLFWcursorposfun     s_PrevUserCallbackMouseMotion = NULL; 
 
 
-
+    /**
+     \brief bind GLWF inputs to Imgui
+     \params window a pointer to the GLFWwindow
+     */
     void prepareInputs(GLFWwindow* window);
 #endif
 	}
