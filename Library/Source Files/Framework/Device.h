@@ -4,11 +4,86 @@
 #include "ErrorCheck.h"
 
 
+#if defined(LAVACAKE_WINDOW_MANAGER_GLFW)
+#define GLFW_INCLUDE_NONE
+#ifdef _WIN32
+#include <Windows.h>
+#define GLFW_EXPOSE_NATIVE_WIN32 true
+#elif __APPLE__
+#define GLFW_INCLUDE_VULKAN
+#endif
+
+#include "glfw3.h"
+#include "glfw3native.h"
+
+#undef interface
+ 
+#elif defined(LAVACAKE_WINDOW_MANAGER_CUSTOM)
+
+#endif
+
+
+
+#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
+namespace LavaCake {
+  namespace Framework {
+    /**
+     \brief Helps the Device class initialize the vulkan surface
+     */
+    class SurfaceInitialisator {
+    public : 
+      /**
+       \brief initialize the vulkan surface
+       \param instance: the Vulkan instance used to initialize the surface
+       \return a VkSurface
+       */
+      virtual VkSurfaceKHR init(const VkInstance& instance)= 0;
+    };
+
+
+#ifdef LAVACAKE_WINDOW_MANAGER_GLFW
+    /**
+     \brief Helps the Device class initialize the vulkan surface with GLFW
+     Inherit the SurfaceInitialisator class and specialize it for GLFW
+     */
+    class GLFWSurfaceInitialisator : public SurfaceInitialisator {
+    public:
+
+      /**
+       \brief constructor for GLFWSurfaceInitialisator
+       \param window a poiter to the GLFWwindow
+       */
+      GLFWSurfaceInitialisator(GLFWwindow* window) {
+        m_window = window;
+      }
+
+      /**
+       \brief initialize the vulkan surface for GLFW
+       \param instance: the Vulkan instance used to initialize the surface
+       \return a VkSurface
+       */
+      VkSurfaceKHR init(const VkInstance& instance) override {
+        VkSurfaceKHR surface = VK_NULL_HANDLE;
+        VkResult result = glfwCreateWindowSurface(instance, m_window, nullptr, &surface);
+        if (result != VK_SUCCESS || surface == VK_NULL_HANDLE) {
+          ErrorCheck::setError("Failed to create presentation surface");
+        }
+        return surface;
+      }
+
+    private : 
+      GLFWwindow* m_window = nullptr;
+    };
+#endif // LAVACAKE_WINDOW_MANAGER_GLFW
+
+  }
+}
+#endif // !LAVACAKE_WINDOW_MANAGER_HEADLESS
+
 namespace LavaCake {
   namespace Framework {
 
   /**
-   Class Device :
    \brief helps manage Vulkan device related task
    This class is a singleton
    */
@@ -85,16 +160,37 @@ namespace LavaCake {
        */
 			ComputeQueue* getComputeQueue(int i);
 
+      
+#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
       /**
        \brief Initialise the device
        \param nbComputeQueue the number of compute queue requiered by the application
        \param nbGraphicQueue the number of graphic queue requiered by the application
-       \param windowParams the windows parameter of the application
+       \param window the helper for surface initialisation
        \param desiredDeviceFeatures the device feature requiered by the application
        \return a reference to a ComputeQueue
        */
-			void initDevices( int nbComputeQueue, int nbGraphicQueue, WindowParameters&	windowParams, VkPhysicalDeviceFeatures * desiredDeviceFeatures = nullptr);
-      
+			void initDevices( 
+        int nbComputeQueue, 
+        int nbGraphicQueue, 
+        SurfaceInitialisator& window,
+        VkPhysicalDeviceFeatures * desiredDeviceFeatures = nullptr);
+#else
+      /**
+       \brief Initialise the device
+       \param nbComputeQueue the number of compute queue requiered by the application
+       \param nbGraphicQueue the number of graphic queue requiered by the application
+       \param desiredDeviceFeatures the device feature requiered by the application
+       \return a reference to a ComputeQueue
+       */
+      void initDevices(
+        int nbComputeQueue,
+        int nbGraphicQueue,
+        SurfaceInitialisator& window,
+        VkPhysicalDeviceFeatures* desiredDeviceFeatures = nullptr);
+#endif  
+
+
       /**
        \brief free all the vulkan handle hold by the device and destroy the singleton 
       */
@@ -108,23 +204,27 @@ namespace LavaCake {
 
       /**
        \brief Ask the device to enable all feature related to raytracing
-       \param optional: a boolean indicating if the device creation can success even if raytracing feature are not found
+       \param optional: a boolean indicating if the device creation can success even if raytracing features are not found
        */
       void enableRaytracing(bool optional = false);
 
+      /**
+       \brief Ask the device to enable all feature related to mesh shaders
+       \param optional: a boolean indicating if the device creation can success even if mesh shader features are not found
+       */
       void enableMeshShader(bool optional = false);
 
       /*
-        \brief check if raytracing features have been successfuly loaded
-        \return true if raytracing is available
+       \brief check if raytracing features have been successfuly loaded
+       \return true if raytracing is available
       */
       bool raytracingAvailable() {
         return m_raytracingAvailable;
       }
 
       /*
-        \brief check if mesh shader features have been successfuly loaded
-        \return true if mesh shader is available
+       \brief check if mesh shader features have been successfuly loaded
+       \return true if mesh shader is available
       */
       bool meshShaderAvailable() {
         return m_meshShaderAvailable;
