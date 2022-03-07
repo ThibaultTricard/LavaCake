@@ -273,7 +273,7 @@ namespace LavaCake {
 		}
 
 
-		VkRenderPass& RenderPass::getHandle() {
+		const VkRenderPass& RenderPass::getHandle() const{
 			return m_renderPass;
 		}
 
@@ -412,7 +412,7 @@ namespace LavaCake {
 			}
 		}
 
-		void RenderPass::setSwapChainImage(FrameBuffer& frameBuffer, SwapChainImage& image) {
+		void RenderPass::setSwapChainImage(FrameBuffer& frameBuffer, const SwapChainImage& image) {
 			if (m_khr_attachement != -1) {
         std::vector<VkImageView> imageViews{};
         for(auto i : frameBuffer.m_images){

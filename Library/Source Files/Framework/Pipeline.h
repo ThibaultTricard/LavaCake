@@ -157,7 +157,7 @@ namespace LavaCake {
         m_descriptorSet = set;
       }
 
-			std::vector<attachment>& getAttachments() {
+			const std::vector<attachment>& getAttachments(){
         if(!m_descriptorSet){
           m_descriptorSet = std::make_shared< DescriptorSet >();
           ErrorCheck::setError("No Descripor was provided for this pipeline, a default one will be used instead", 1);

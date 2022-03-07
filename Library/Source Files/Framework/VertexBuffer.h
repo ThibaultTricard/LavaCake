@@ -15,9 +15,9 @@ namespace LavaCake {
 			VertexBuffer(const Queue& queue, CommandBuffer& cmdBuff, const std::vector<LavaCake::Geometry::Mesh_t*>& m, uint32_t binding = 0,  VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0));
 
 			
-			std::shared_ptr<Buffer> getVertexBuffer();
+			std::shared_ptr<Buffer> getVertexBuffer() const;
 			
-			std::shared_ptr<Buffer> getIndexBuffer();
+			std::shared_ptr<Buffer> getIndexBuffer() const;
 
 			void swapMeshes(std::vector<LavaCake::Geometry::Mesh_t*>				m);
 
@@ -62,23 +62,23 @@ namespace LavaCake {
 				}
 			}
 
-			size_t getIndicesNumber() {
+			size_t getIndicesNumber() const{
 				return m_indicesSize;
 			}
 
-			size_t getVerticiesNumber() {
+			size_t getVerticiesNumber() const{
 				return m_verticesSize / m_stride;
 			}
 			
-			uint32_t getStrideSize() {
+			uint32_t getStrideSize() const{
 				return m_stride;
 			}
 
-			uint32_t getByteStrideSize() {
+			uint32_t getByteStrideSize() const{
 				return m_stride * sizeof(float);
 			}
 
-			bool isIndexed();
+			bool isIndexed() const;
 
 			~VertexBuffer() {
 			}

@@ -140,7 +140,7 @@ namespace LavaCake {
        \brief Return the handle of command buffer
        \return a handle to the VkCommandBuffer
        */
-      const VkCommandBuffer& getHandle() {
+      const VkCommandBuffer& getHandle() const{
         return m_commandBuffer;
       }
       
@@ -149,7 +149,7 @@ namespace LavaCake {
        \param i the index of the wanted semaphore
        \return a handle to a VkSemaphore
        */
-      const VkSemaphore& getSemaphore(int i) {
+      const VkSemaphore& getSemaphore(int i) const{
         return m_semaphores[i];
       }
 
@@ -157,7 +157,7 @@ namespace LavaCake {
        \brief Return the fence of the command buffer
        \return a handle to a VkFence
        */
-      const VkFence& getFence() {
+      const VkFence& getFence() const{
         return m_fence;
       }
 
@@ -216,7 +216,7 @@ namespace LavaCake {
         }
       };
 
-      bool ready(){
+      bool ready() const{
         auto device = Device::getDevice()->getLogicalDevice();
         VkResult res = vkGetFenceStatus(device, m_fence);
         if(res == VK_SUCCESS){

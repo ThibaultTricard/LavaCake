@@ -102,13 +102,13 @@ namespace LavaCake {
 			/*
 			*	return the handle of the render pass
 			*/
-			VkRenderPass& getHandle();
+			const VkRenderPass& getHandle() const;
 
 
 			void prepareOutputFrameBuffer(const Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& FrameBuffer);
 
 
-			void setSwapChainImage(FrameBuffer& FrameBuffer, SwapChainImage& image);
+			void setSwapChainImage(FrameBuffer& FrameBuffer, const SwapChainImage& image);
 
 
 			~RenderPass() {

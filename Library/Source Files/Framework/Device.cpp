@@ -174,32 +174,32 @@ namespace LavaCake {
  
 		Device* Device::m_device;
 
-		VkPhysicalDevice& Device::getPhysicalDevice() {
+    const VkPhysicalDevice& Device::getPhysicalDevice() const {
 			return m_physical;
 		}
 
-		VkDevice& Device::getLogicalDevice() {
+		const VkDevice& Device::getLogicalDevice() const {
 			return m_logical;
 		}
 
-		const PresentationQueue& Device::getPresentQueue() {
+		const PresentationQueue& Device::getPresentQueue() const {
 			return m_presentQueue;
 		};
 
-		const GraphicQueue& Device::getGraphicQueue(int i) {
+		const GraphicQueue& Device::getGraphicQueue(int i) const{
 			return m_graphicQueues[i];
 		};
 
-		const ComputeQueue& Device::getComputeQueue(int i) {
+		const ComputeQueue& Device::getComputeQueue(int i) const{
 			return m_computeQueues[i];
 		}
 
 
-		VkCommandPool  Device::getCommandPool() {
+    const VkCommandPool&  Device::getCommandPool() const {
 			return m_commandPool;
 		};
 
-		VkSurfaceKHR  Device::getSurface() {
+    const VkSurfaceKHR&  Device::getSurface() const {
 			return m_presentationSurface;
 		};
 

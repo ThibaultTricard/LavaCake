@@ -303,7 +303,7 @@ namespace LavaCake {
 				\brief Get the Buffer device address,
 				\return the address of the buffer on the device
       */
-			uint64_t getBufferDeviceAddress();
+			uint64_t getBufferDeviceAddress() const;
 
       /**
 				\brief Write a set of data to the buffer,

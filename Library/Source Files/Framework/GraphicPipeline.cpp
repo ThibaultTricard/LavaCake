@@ -139,7 +139,7 @@ namespace LavaCake {
 
 		void GraphicPipeline::compile(VkRenderPass& renderpass, uint16_t nbColorAttachments) {
 			Device* d = Device::getDevice();
-			VkDevice& logical = d->getLogicalDevice();
+			const VkDevice& logical = d->getLogicalDevice();
 			generateDescriptorLayout();
 
 			std::vector<VkPushConstantRange> push_constant_ranges = {};
@@ -286,16 +286,6 @@ namespace LavaCake {
 			m_compiled = true;
 		}
 
-		void GraphicPipeline::recompile() {
-			Device* d = Device::getDevice();
-			VkDevice& logical = d->getLogicalDevice();
-
-			std::vector<VkPipeline> pipelines;
-			if (!Pipeline::CreateGraphicsPipelines(logical, { m_pipelineCreateInfo }, VK_NULL_HANDLE, pipelines)) {
-				ErrorCheck::setError("Can't create Graphics piepeline");
-			}
-			m_pipeline = pipelines[0];
-		}
 
 		void GraphicPipeline::setSubpassNumber(uint32_t number) {
 			m_subpassNumber = number;
@@ -321,12 +311,6 @@ namespace LavaCake {
 				topology,																											// VkPrimitiveTopology                       topology
 				false																													// VkBool32                                  primitiveRestartEnable
 			};
-
-			if (m_compiled) {
-				m_pipelineCreateInfo.pVertexInputState = &m_vertexInfo;
-				m_pipelineCreateInfo.pInputAssemblyState = &m_inputInfo;
-				recompile();
-			}
 		}
 
 		void GraphicPipeline::setPushContantInfo(const std::vector<constantDescription>& constantDescriptions) {

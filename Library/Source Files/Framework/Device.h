@@ -112,7 +112,7 @@ namespace LavaCake {
        \brief Retourn the Vulkan instance
        \return the VkInstance used by the application
        */
-			VkInstance getInstance() {
+			const VkInstance getInstance() const {
 				return m_instance;
 			};
 
@@ -120,45 +120,45 @@ namespace LavaCake {
        \brief Retourn the Physical Device
        \return the VkPhysicalDevice used by the application
        */
-			VkPhysicalDevice& getPhysicalDevice();
+			const VkPhysicalDevice& getPhysicalDevice() const;
 
       /**
        \brief Retourn the Logical Device
        \return the VkDevice used by the application
        */
-			VkDevice& getLogicalDevice();
+			const VkDevice& getLogicalDevice() const;
 
       /**
        \brief Retourn the Command pool
        \return the VkCommandPool used by the application
        */
-			VkCommandPool getCommandPool();
+			const VkCommandPool& getCommandPool() const;
 
       /**
        \brief Retourn the Vulkan surface
        \return the VkSurfaceKHR used by the application
        */
-			VkSurfaceKHR getSurface();
+			const VkSurfaceKHR& getSurface() const;
 
       /**
        \brief Retourn the Presentation Queue used to draw on the screen
        \return a reference to PresentationQueue used by the application
        */
-			const PresentationQueue& getPresentQueue();
+			const PresentationQueue& getPresentQueue() const;
 
       /**
        \brief Retourn a specific Graphic Queue
        \param i the index of the wanted queue
        \return a reference to a GraphicQueue
        */
-			const GraphicQueue& getGraphicQueue(int i);
+			const GraphicQueue& getGraphicQueue(int i) const;
 
       /**
        \brief Retourn a specific Compute Queue
        \param i the index of the wanted queue
        \return a reference to a ComputeQueue
        */
-			const ComputeQueue& getComputeQueue(int i);
+			const ComputeQueue& getComputeQueue(int i)const;
 
       
 #ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
@@ -218,7 +218,7 @@ namespace LavaCake {
        \brief check if raytracing features have been successfuly loaded
        \return true if raytracing is available
       */
-      bool raytracingAvailable() {
+      bool raytracingAvailable() const{
         return m_raytracingAvailable;
       }
 
@@ -226,7 +226,7 @@ namespace LavaCake {
        \brief check if mesh shader features have been successfuly loaded
        \return true if mesh shader is available
       */
-      bool meshShaderAvailable() {
+      bool meshShaderAvailable() const{
         return m_meshShaderAvailable;
       }
 

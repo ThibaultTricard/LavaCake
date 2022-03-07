@@ -62,19 +62,19 @@ namespace LavaCake {
 				}
 			}
 
-			VkSemaphore getSemaphore() {
+			const VkSemaphore& getSemaphore() const{
 				return m_aquiredSemaphore;
 			}
 
-			VkImageView getView() {
+			const VkImageView& getView() const{
 				return m_imageView;
 			}
 
-			VkImage getImage() {
+			const VkImage getImage() const {
 				return m_image;
 			}
 
-			uint32_t getIndex() {
+			uint32_t getIndex() const {
 				return m_index;
 			}
 
@@ -130,8 +130,6 @@ namespace LavaCake {
 
 			static void destroy() {
 				delete m_swapChain;
-
-				
 			}
 
 			VkSwapchainKHR& getHandle() {
@@ -144,19 +142,19 @@ namespace LavaCake {
 
       void resize();
       
-			VkFormat imageFormat() {
+			VkFormat imageFormat() const{
 				return m_format;
 			}
 
-			VkFormat depthFormat() {
+			VkFormat depthFormat() const{
 				return m_depthFormat;
 			}
 			
-			VkExtent2D size() {
+			VkExtent2D size() const{
 				return m_size;
 			}
 
-			SwapChainImage& acquireImage() {
+			const SwapChainImage& acquireImage() {
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 				VkSemaphoreCreateInfo semaphore_create_info = {
@@ -186,7 +184,7 @@ namespace LavaCake {
 				return *m_swapchainImages[index];
 			}
       
-      void presentImage(PresentationQueue& queue, SwapChainImage& image, std::vector<VkSemaphore> semaphores){
+      void presentImage(const PresentationQueue& queue, const SwapChainImage& image, std::vector<VkSemaphore> semaphores) const{
         /*Core::PresentInfo present_info = {
           m_handle,                                    // VkSwapchainKHR         Swapchain
           image.getIndex()                              // uint32_t               ImageIndex

@@ -163,7 +163,7 @@ namespace LavaCake {
       m_AS.push_back({ AS.getHandle() , binding, stage });
     }
 
-    std::vector<attachment>& getAttachments() {
+    const std::vector<attachment>& getAttachments() const{
       return m_attachments;
     };
     
@@ -567,15 +567,15 @@ namespace LavaCake {
     }
     
     
-    const VkDescriptorSet& getHandle(){
+    const VkDescriptorSet& getHandle() const{
       return m_descriptorSet;
     }
     
-    const VkDescriptorSetLayout& getLayout(){
+    const VkDescriptorSetLayout& getLayout() const{
       return m_descriptorSetLayout;
     }
     
-    bool isEmpty(){
+    bool isEmpty() const{
       return m_empty;
     }
     

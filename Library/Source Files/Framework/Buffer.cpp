@@ -195,7 +195,7 @@ namespace LavaCake{
 			vkUnmapMemory(logical, m_bufferMemory);
 		}
 
-		uint64_t Buffer::getBufferDeviceAddress()
+		uint64_t Buffer::getBufferDeviceAddress() const
 		{
 			Framework::Device* d = Framework::Device::getDevice();
 			VkBufferDeviceAddressInfoKHR bufferDeviceAI{};

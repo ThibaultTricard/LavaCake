@@ -88,10 +88,6 @@ namespace LavaCake {
 			
 			void compile(VkRenderPass& renderpass, uint16_t nbColorAttachments);
 
-      /**
-       \brief Reload all the spirv shaders module from source
-       */
-			void reloadShaders();
 
 			/*
 			* \brief set the Vertices info that describe what kind of vertex buffer will be used by the pipeline
@@ -180,8 +176,6 @@ namespace LavaCake {
 				Undefined,Graphic,MeshTask
 			};
 
-
-			void recompile();
 
 			ShaderStageParameters                                 m_vertexModule{};
 			ShaderStageParameters                     m_tesselationControlModule{};

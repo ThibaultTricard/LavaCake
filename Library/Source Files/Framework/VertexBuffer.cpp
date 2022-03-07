@@ -60,11 +60,11 @@ namespace LavaCake {
 		};
 		
 		
-		std::shared_ptr<Buffer> VertexBuffer::getVertexBuffer() {
+		std::shared_ptr<Buffer> VertexBuffer::getVertexBuffer() const{
 			return m_vertexBuffer;
 		}
 
-		std::shared_ptr<Buffer> VertexBuffer::getIndexBuffer() {
+		std::shared_ptr<Buffer> VertexBuffer::getIndexBuffer() const{
 			return m_indexBuffer;
 		}
 
@@ -76,7 +76,7 @@ namespace LavaCake {
 			return m_bindingDescriptions;
 		}
 
-		bool VertexBuffer::isIndexed() {
+		bool VertexBuffer::isIndexed() const{
 			return m_indexed;
 		};
 

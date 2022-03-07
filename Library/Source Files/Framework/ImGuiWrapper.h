@@ -44,7 +44,7 @@ namespace LavaCake {
      \brief Return the graphic pipelin for the gui
      \return a pointer to the graphic pipeline
      */
-    std::shared_ptr < GraphicPipeline > getPipeline() {
+    std::shared_ptr < GraphicPipeline > getPipeline() const{
       return m_pipeline;
     }
 
