@@ -20,17 +20,17 @@ namespace LavaCake {
 			};
 
 
-			void addRayGenModule(RayGenShaderModule* module);
+			void addRayGenModule(const RayGenShaderModule& module);
 
-			void addMissModule(MissShaderModule* module);
+			void addMissModule(const MissShaderModule& module);
 
 			void startHitGroup();
 
-			void setClosestHitModule(ClosestHitShaderModule* module);
+			void setClosestHitModule(const ClosestHitShaderModule& module);
 
-			void setAnyHitModule(AnyHitShaderModule* module);
+			void setAnyHitModule(const AnyHitShaderModule& module);
 
-			void setIntersectionModule(IntersectionShaderModule* module);
+			void setIntersectionModule(const IntersectionShaderModule& module);
 
 			void endHitGroup();
 
@@ -40,9 +40,9 @@ namespace LavaCake {
 
 			void setMaxRecursion(uint16_t recursion = 1);
 
-			void addAccelerationStructure(TopLevelAccelerationStructure* AS, VkShaderStageFlags stage, uint32_t	binding) {
+			void addAccelerationStructure(const TopLevelAccelerationStructure& AS, VkShaderStageFlags stage, uint32_t	binding) {
 				if (m_descriptorSet == nullptr) {
-					m_descriptorSet = new LavaCake::Framework::DescriptorSet();
+					m_descriptorSet = std::make_shared < LavaCake::Framework::DescriptorSet >();
 					m_isDescriptorPipelineGenerated = true;
 				}
 				if (m_isDescriptorPipelineGenerated) {

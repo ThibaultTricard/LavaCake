@@ -299,34 +299,35 @@ namespace LavaCake {
 			}
 		}
 
-		VkImage& Image::getHandle() {
+		const VkImage& Image::getHandle() const{
 			return m_image;
 		}
-		VkDeviceMemory& Image::getImageMemory() {
+
+		const VkDeviceMemory& Image::getImageMemory() const{
 			return m_imageMemory;
 		}
 
-		VkImageView& Image::getImageView() {
+		const VkImageView& Image::getImageView() const{
 			return m_imageView;
 		}
 
-		VkImageLayout& Image::getLayout() {
+		VkImageLayout Image::getLayout() const {
 			return m_layout;
 		}
 
-		VkSampler& Image::getSampler() {
+		const VkSampler& Image::getSampler() const{
 			return m_sampler;
 		}
 
-		uint32_t Image::width() {
+		uint32_t Image::width() const{
 			return m_width;
 		}
 
-		uint32_t Image::height() {
+		uint32_t Image::height() const{
 			return m_height;
 		}
 
-		uint32_t Image::depth() {
+		uint32_t Image::depth() const{
 			return m_depth;
 		}
 

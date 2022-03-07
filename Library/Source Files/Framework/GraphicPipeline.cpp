@@ -45,9 +45,9 @@ namespace LavaCake {
 
 		};
 
-		void GraphicPipeline::setVertexModule(std::shared_ptr < const VertexShaderModule >	module) {
+		void GraphicPipeline::setVertexModule(const VertexShaderModule&	module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
-				m_vertexModule = module;
+				m_vertexModule = module.getStageParameter();
 				m_type = pipelineType::Graphic;
 			}
 			else if(m_type == pipelineType::MeshTask) {
@@ -55,9 +55,9 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::setTesselationControlModule(std::shared_ptr < const TessellationControlShaderModule >	module) {
+		void GraphicPipeline::setTesselationControlModule(const TessellationControlShaderModule&	module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
-				m_tesselationControlModule = module;
+				m_tesselationControlModule = module.getStageParameter();
 				m_type = pipelineType::Graphic;
 			}
 			else if (m_type == pipelineType::MeshTask) {
@@ -65,9 +65,9 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::setTesselationEvaluationModule(std::shared_ptr < const TessellationEvaluationShaderModule >	module) {
+		void GraphicPipeline::setTesselationEvaluationModule(const TessellationEvaluationShaderModule&	module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
-				m_tesselationEvaluationModule = module;
+				m_tesselationEvaluationModule = module.getStageParameter();
 				m_type = pipelineType::Graphic;
 			}
 			else if (m_type == pipelineType::MeshTask) {
@@ -75,9 +75,9 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::setGeometryModule(std::shared_ptr < const GeometryShaderModule >	module) {
+		void GraphicPipeline::setGeometryModule(const GeometryShaderModule&	module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::Graphic) {
-				m_geometryModule = module;
+				m_geometryModule = module.getStageParameter();
 				m_type = pipelineType::Graphic;
 			}
 			else if (m_type == pipelineType::MeshTask) {
@@ -86,13 +86,13 @@ namespace LavaCake {
 
 		}
 
-		void GraphicPipeline::setFragmentModule(std::shared_ptr < const FragmentShaderModule >	module) {
-			m_fragmentModule = module;
+		void GraphicPipeline::setFragmentModule(const FragmentShaderModule&	module) {
+			m_fragmentModule = module.getStageParameter();
 		}
 
-		void GraphicPipeline::setMeshModule(std::shared_ptr < const MeshShaderModule > module) {
+		void GraphicPipeline::setMeshModule(const MeshShaderModule& module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::MeshTask) {
-				m_meshModule = module;
+				m_meshModule = module.getStageParameter();
 				m_type = pipelineType::MeshTask;
 			}
 			else if (m_type == pipelineType::Graphic) {
@@ -100,9 +100,9 @@ namespace LavaCake {
 			}
 		}
 
-		void GraphicPipeline::setTaskModule(std::shared_ptr< const TaskShaderModule> module) {
+		void GraphicPipeline::setTaskModule(const TaskShaderModule& module) {
 			if (m_type == pipelineType::Undefined || m_type == pipelineType::MeshTask) {
-				m_taskModule = module;
+				m_taskModule = module.getStageParameter();
 				m_type = pipelineType::MeshTask;
 			}
 			else if (m_type == pipelineType::Graphic) {
@@ -113,26 +113,26 @@ namespace LavaCake {
 
 		std::vector<ShaderStageParameters> GraphicPipeline::getStageParameter() {
 			std::vector<ShaderStageParameters> stage = std::vector<ShaderStageParameters>();
-			if (m_taskModule != nullptr) {
-				stage.push_back(m_taskModule->getStageParameter());
+			if (m_taskModule.shaderModule != VK_NULL_HANDLE) {
+				stage.push_back(m_taskModule);
 			}
-			if (m_meshModule != nullptr) {
-				stage.push_back(m_meshModule->getStageParameter());
+			if (m_meshModule.shaderModule != VK_NULL_HANDLE) {
+				stage.push_back(m_meshModule);
 			}
-			if (m_vertexModule != nullptr) {
-				stage.push_back(m_vertexModule->getStageParameter());
+			if (m_vertexModule.shaderModule != VK_NULL_HANDLE) {
+				stage.push_back(m_vertexModule);
 			}
-			if (m_tesselationControlModule != nullptr) {
-				stage.push_back(m_tesselationControlModule->getStageParameter());
+			if (m_tesselationControlModule.shaderModule != VK_NULL_HANDLE) {
+				stage.push_back(m_tesselationControlModule);
 			}
-			if (m_tesselationEvaluationModule != nullptr) {
-				stage.push_back(m_tesselationEvaluationModule->getStageParameter());
+			if (m_tesselationEvaluationModule.shaderModule != VK_NULL_HANDLE) {
+				stage.push_back(m_tesselationEvaluationModule);
 			}
-			if (m_geometryModule != nullptr) {
-				stage.push_back(m_geometryModule->getStageParameter());
+			if (m_geometryModule.shaderModule != VK_NULL_HANDLE) {
+				stage.push_back(m_geometryModule);
 			}
-			if (m_fragmentModule != nullptr) {
-				stage.push_back(m_fragmentModule->getStageParameter());
+			if (m_fragmentModule.shaderModule != VK_NULL_HANDLE) {
+				stage.push_back(m_fragmentModule);
 			}
 			return stage;
 		}
@@ -357,7 +357,7 @@ namespace LavaCake {
 			}
 
 			for (uint32_t i = 0; i < m_vertexBuffers.size(); i++) {
-				if (m_vertexBuffers[i].buffer->getVertexBuffer()->getHandle() == VK_NULL_HANDLE)return;
+				if (!m_vertexBuffers[i].buffer->getVertexBuffer() || m_vertexBuffers[i].buffer->getVertexBuffer()->getHandle() == VK_NULL_HANDLE)return;
 				VkDeviceSize size(0);
 				vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1), &m_vertexBuffers[i].buffer->getVertexBuffer()->getHandle(), &size);
 				if (m_vertexBuffers[i].buffer->isIndexed()) {

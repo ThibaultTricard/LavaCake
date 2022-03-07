@@ -7,52 +7,58 @@
 namespace LavaCake {
   namespace Framework{
   struct uniform {
-    UniformBuffer*          buffer;
-    int                     binding;
-    VkShaderStageFlags      stage;
+    const VkBuffer&                   hanle;
+    const int                       binding;
+    const VkShaderStageFlags          stage;
   };
   
   struct texture {
-    Image*                  i;
-    int                     binding;
-    VkShaderStageFlags      stage;
+    const VkSampler&                 sampler;
+    const VkImageView&                  view;
+    const VkImageLayout               layout;
+    const int                        binding;
+    const VkShaderStageFlags           stage;
   };
   
   struct frameBuffer {
-    FrameBuffer*            f;
-    int                     binding;
-    VkShaderStageFlags      stage;
-    uint32_t                viewIndex;
-  };
-  
-  struct attachment {
-    Image*                  i;
-    int                     binding;
-    VkShaderStageFlags      stage;
+    const VkSampler&            sampler;
+    const VkImageView&             view;
+    const VkImageLayout          layout;
+    const int                   binding;
+    const VkShaderStageFlags      stage;
   };
   
   struct storageImage {
-    Image*                  i;
-    int                     binding;
-    VkShaderStageFlags      stage;
+    const VkImageView&         view;
+    const VkImageLayout      layout;
+    const int               binding;
+    const VkShaderStageFlags  stage;
+  };
+
+  struct attachment {
+    std::shared_ptr< Image >  image;
+    const int               binding;
+    const VkShaderStageFlags  stage;
   };
   
+  
+  
   struct texelBuffer {
-    Buffer*                 t;
-    int                     binding;
-    VkShaderStageFlags      stage;
+    const VkBufferView&        view;
+    const int               binding;
+    const VkShaderStageFlags  stage;
   };
   struct buffer {
-    Buffer*                 t;
-    int                     binding;
-    VkShaderStageFlags      stage;
+    const VkBuffer&              handle;
+    const int                   binding;
+    const VkShaderStageFlags      stage;
   };
 
 
   struct accelerationStructure {
-    LavaCake::RayTracing::TopLevelAccelerationStructure* AS;
-    uint32_t								binding;
-    VkShaderStageFlags			stage;
+    const VkAccelerationStructureKHR&   handle;
+    uint32_t								           binding;
+    VkShaderStageFlags			             stage;
   };
   
   class DescriptorSet{
@@ -81,8 +87,8 @@ namespace LavaCake {
      \param stage the shader stage where the uniform buffer is going to be used
      \param binding the binding point of the uniform shader, 0 by default
      */
-    void addUniformBuffer(UniformBuffer* uniform, VkShaderStageFlags stage, int binding = 0) {
-      m_uniforms.push_back({uniform ,binding,stage});
+    void addUniformBuffer(const UniformBuffer& uniformBuffer, VkShaderStageFlags stage, int binding = 0) {
+      m_uniforms.push_back({ uniformBuffer.getHandle() ,binding,stage});
     };
     
     /**
@@ -91,8 +97,8 @@ namespace LavaCake {
      \param stage the shader stage where the texture buffer is going to be used
      \param binding the binding point of the texture buffer, 0 by default
      */
-    void addTextureBuffer(Image* texture, VkShaderStageFlags stage, int binding = 0) {
-      m_textures.push_back({ texture,binding,stage});
+    void addTextureBuffer(const Image& texture, VkShaderStageFlags stage, int binding = 0) {
+      m_textures.push_back({ texture.getSampler(), texture.getImageView(), texture.getLayout(),binding,stage});
     };
     
     /**
@@ -101,8 +107,8 @@ namespace LavaCake {
      \param stage the shader stage where the frame buffer is going to be used
      \param binding the binding point of the frame buffer, 0 by default
      */
-    void addFrameBuffer(FrameBuffer* frame, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
-      m_frameBuffers.push_back({frame,binding,stage,view});
+    void addFrameBuffer(const FrameBuffer& frame, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
+      m_frameBuffers.push_back({frame.getSampler(),frame.getImageView(view),frame.getLayout(view),binding,stage});
     };
     
     /**
@@ -111,8 +117,8 @@ namespace LavaCake {
      \param stage the shader stage where the storage image is going to be used
      \param binding the binding point of the storage image, 0 by default
      */
-    void addStorageImage(Image* storage, VkShaderStageFlags stage, int binding = 0) {
-      m_storageImages.push_back({ storage,binding,stage });
+    void addStorageImage(const Image& storage, VkShaderStageFlags stage, int binding = 0) {
+      m_storageImages.push_back({ storage.getImageView(), storage.getLayout(),binding,stage});
     };
     
     
@@ -122,8 +128,8 @@ namespace LavaCake {
      \param stage the shader stage where the attachment is going to be used
      \param binding the binding point of the attachment, 0 by default
      */
-    void addAttachment(Image* attachement, VkShaderStageFlags stage, int binding = 0) {
-      m_attachments.push_back({ attachement,binding,stage });
+    void addAttachment(std::shared_ptr < Image > attachement, VkShaderStageFlags stage, int binding = 0) {
+      m_attachments.push_back({ attachement,binding,stage});
     };
     
     /**
@@ -132,8 +138,8 @@ namespace LavaCake {
      \param stage the shader stage where the texel buffer is going to be used
      \param binding the binding point of the texel buffer, 0 by default
      */
-    void addTexelBuffer(Buffer* texel, VkShaderStageFlags stage, int binding = 0) {
-      m_texelBuffers.push_back({ texel,binding,stage });
+    void addTexelBuffer(const Buffer& texel, VkShaderStageFlags stage, int binding = 0) {
+      m_texelBuffers.push_back({ texel.getBufferView(),binding,stage});
     };
     
     /**
@@ -142,8 +148,8 @@ namespace LavaCake {
      \param stage the shader stage where the buffer is going to be used
      \param binding the binding point of the buffer, 0 by default
      */
-    void addBuffer(Buffer* buffer, VkShaderStageFlags stage, int binding = 0) {
-      m_buffers.push_back({ buffer,binding,stage });
+    void addBuffer(const Buffer& buffer, VkShaderStageFlags stage, int binding = 0) {
+      m_buffers.push_back({ buffer.getHandle(),binding,stage});
     };
     
 
@@ -153,8 +159,8 @@ namespace LavaCake {
      \param stage the shader stage where the acceleration structureis going to be used
      \param binding the binding point of the acceleration structure, 0 by default
      */
-    void addAccelerationStructure(LavaCake::RayTracing::TopLevelAccelerationStructure* AS, VkShaderStageFlags stage, uint32_t	binding) {
-      m_AS.push_back({ AS, binding, stage });
+    void addAccelerationStructure(const LavaCake::RayTracing::TopLevelAccelerationStructure& AS, VkShaderStageFlags stage, uint32_t	binding) {
+      m_AS.push_back({ AS.getHandle() , binding, stage });
     }
 
     std::vector<attachment>& getAttachments() {
@@ -361,7 +367,7 @@ namespace LavaCake {
         uniformDescriptor.push_back(
         {                        // std::vector<VkDescriptorBufferInfo>  BufferInfos
           {
-            m_uniforms[i].buffer->getHandle(),                                    // VkBuffer                             buffer
+            m_uniforms[i].hanle,                                                  // VkBuffer                             buffer
             0,                                                                    // VkDeviceSize                         offset
             VK_WHOLE_SIZE                                                         // VkDeviceSize                         range
           }
@@ -385,9 +391,9 @@ namespace LavaCake {
 
         textureDescriptor.push_back({
           {
-            m_textures[i].i->getSampler(),                                        // vkSampler                            buffer
-            m_textures[i].i->getImageView(),                                      // VkImageView                          offset
-            m_textures[i].i->getLayout()                                          // VkImageLayout                         range
+            m_textures[i].sampler,
+            m_textures[i].view,
+            m_textures[i].layout
            } 
         });
         write_descriptors.push_back({
@@ -410,9 +416,9 @@ namespace LavaCake {
         FBDescriptor.push_back(
         {
           {
-            m_frameBuffers[i].f->getSampler(),
-            m_frameBuffers[i].f->getImageViews(m_frameBuffers[i].viewIndex),
-            m_frameBuffers[i].f->getLayout(m_frameBuffers[i].viewIndex),
+            m_frameBuffers[i].sampler,
+            m_frameBuffers[i].view,
+            m_frameBuffers[i].layout,
           }
         });
 
@@ -436,8 +442,8 @@ namespace LavaCake {
         {
           {
             VK_NULL_HANDLE,
-            m_attachments[i].i->getImageView(),
-            m_attachments[i].i->getLayout(),
+            m_attachments[i].image->getImageView(),
+            m_attachments[i].image->getLayout(),
           }
         });
 
@@ -463,8 +469,8 @@ namespace LavaCake {
         {
           {
             VK_NULL_HANDLE,
-            m_storageImages[i].i->getImageView(),
-            m_storageImages[i].i->getLayout(),
+            m_storageImages[i].view,
+            m_storageImages[i].layout,
           }
         });
 
@@ -484,7 +490,7 @@ namespace LavaCake {
       std::vector<std::vector<VkBufferView>> texelViews;
       for (uint32_t i = 0; i < m_texelBuffers.size(); i++) {
         
-        texelViews.push_back({ m_texelBuffers[i].t->getBufferView() });
+        texelViews.push_back({ m_texelBuffers[i].view });
 
         write_descriptors.push_back({
           VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,                                 // VkStructureType                  sType
@@ -505,7 +511,7 @@ namespace LavaCake {
 
         bufferDescriptor.push_back({                        // std::vector<VkDescriptorBufferInfo>  BufferInfos
             {
-            m_buffers[i].t->getHandle(),                                          // VkBuffer                             buffer
+            m_buffers[i].handle,                                          // VkBuffer                             buffer
             0,                                                                    // VkDeviceSize                         offset
             VK_WHOLE_SIZE                                                         // VkDeviceSize                         range
             }
@@ -533,7 +539,7 @@ namespace LavaCake {
           VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR,
           nullptr,
           1,
-          &AS_descriptor.AS->getHandle()
+          &AS_descriptor.handle
           });
       }
 
@@ -561,11 +567,11 @@ namespace LavaCake {
     }
     
     
-    VkDescriptorSet& getHandle(){
+    const VkDescriptorSet& getHandle(){
       return m_descriptorSet;
     }
     
-    VkDescriptorSetLayout& getLayout(){
+    const VkDescriptorSetLayout& getLayout(){
       return m_descriptorSetLayout;
     }
     

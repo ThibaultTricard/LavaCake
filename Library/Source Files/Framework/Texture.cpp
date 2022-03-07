@@ -189,23 +189,23 @@ namespace LavaCake {
 			m_height = height;
 		};
 
-		VkImageView& FrameBuffer::getImageViews(uint8_t i) {
+		const VkImageView& FrameBuffer::getImageView(uint8_t i) const{
 			return m_images[i]->getImageView();
 		}
 
-		size_t FrameBuffer::getImageViewSize(){
+		size_t FrameBuffer::getImageViewSize() const{
 			return m_images.size();
 		}
 
-		VkImageLayout& FrameBuffer::getLayout(uint8_t i){
+		VkImageLayout FrameBuffer::getLayout(uint8_t i) const{
 			return m_images[i]->getLayout();
 		}
 
-		VkSampler&	FrameBuffer::getSampler() {
+		const VkSampler&	FrameBuffer::getSampler() const{
 			return m_sampler;
 		}
 
-		VkFramebuffer& FrameBuffer::getHandle() {
+		const VkFramebuffer& FrameBuffer::getHandle() const{
 			return m_frameBuffer;
 		}
 

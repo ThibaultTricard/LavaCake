@@ -23,7 +23,7 @@ namespace LavaCake {
       /**
        \brief set the compute shader module that will be used by the pipeline
        */
-			void setComputeModule(ComputeShaderModule* module);
+			void setComputeModule(const ComputeShaderModule& module);
 			
 			/**
        \brief Compile the pipeline
@@ -45,7 +45,7 @@ namespace LavaCake {
 			}
 		private :
 			
-			ComputeShaderModule*																	m_computeModule = NULL;
+			ShaderStageParameters																	m_computeModule;
 
 		};
 	}

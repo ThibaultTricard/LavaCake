@@ -12,7 +12,7 @@ namespace LavaCake {
 			}
 
 			std::vector<VkPipelineShaderStageCreateInfo> shader_stage_create_infos;
-			SpecifyPipelineShaderStages({ m_computeModule->getStageParameter() }, shader_stage_create_infos);
+			SpecifyPipelineShaderStages({ m_computeModule}, shader_stage_create_infos);
 
 
 			VkComputePipelineCreateInfo compute_pipeline_create_info = {
@@ -31,16 +31,17 @@ namespace LavaCake {
 			}
 		}
 
-		void ComputePipeline::setComputeModule(ComputeShaderModule*	module) {
-			m_computeModule = module;
+		void ComputePipeline::setComputeModule(const ComputeShaderModule& module) {
+			m_computeModule = module.getStageParameter();
 		}
 
 		void ComputePipeline::compute(CommandBuffer& buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ) {
 
-      std::vector<VkDescriptorSet> descriptorSets = {m_descriptorSet->getHandle()};
-			vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, m_pipelineLayout, 0,
-				static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(),
-				0, {});
+			if (!m_descriptorSet->isEmpty()) {
+				vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, m_pipelineLayout, 0,
+					static_cast<uint32_t>(1), &m_descriptorSet->getHandle(),
+					0, {});
+			}
 
 			vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, m_pipeline);
 

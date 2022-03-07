@@ -32,7 +32,7 @@ namespace LavaCake {
       static ErrorCheck*       m_instance ;
       bool                     m_printError = false;
       const char*              m_errorMessage = (char*)"";
-      uint8_t                  m_errorLvl;
+      uint8_t                  m_errorLvl = 0;
       uint8_t                  m_minErrorLevel = 0;
 
     public :

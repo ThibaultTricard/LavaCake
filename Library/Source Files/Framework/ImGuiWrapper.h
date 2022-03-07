@@ -57,10 +57,11 @@ namespace LavaCake {
       PushConstant                           m_pushConstant;
       std::unique_ptr < VertexBuffer >       m_vertexBuffer;
       std::unique_ptr < Geometry::Mesh_t >   m_mesh;
-      std::unique_ptr < Image >              m_fontBuffer;
+      std::shared_ptr < Image >              m_fontBuffer;
 
-      std::shared_ptr<VertexShaderModule>    m_vertexShader;
-      std::shared_ptr<FragmentShaderModule>  m_fragmentShader;
+      std::unique_ptr < VertexShaderModule >    m_vertexShader;
+      std::unique_ptr < FragmentShaderModule >  m_fragmentShader;
+      std::shared_ptr < DescriptorSet >         m_descritporSet;
       
     };
 

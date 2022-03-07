@@ -45,43 +45,43 @@ namespace LavaCake {
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a vertex shader module
 			*/
-			void setVertexModule(std::shared_ptr < const VertexShaderModule >	module);
+			void setVertexModule(const VertexShaderModule&	module);
 
       /**
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a tessellation control shader module
       */
-			void setTesselationControlModule(std::shared_ptr < const TessellationControlShaderModule >	module);
+			void setTesselationControlModule(const TessellationControlShaderModule& 	module);
 
       /**
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a tessellation evaluation shader module
       */
-			void setTesselationEvaluationModule(std::shared_ptr < const TessellationEvaluationShaderModule >	module);
+			void setTesselationEvaluationModule(const TessellationEvaluationShaderModule&	module);
 
       /**
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a geomety shader module
       */
-			void setGeometryModule(std::shared_ptr < const GeometryShaderModule >	module);
+			void setGeometryModule(const GeometryShaderModule&	module);
 
       /**
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a fragment shader module
       */
-			void setFragmentModule(std::shared_ptr < const FragmentShaderModule >	module);
+			void setFragmentModule(const FragmentShaderModule&	module);
 
 			/**
 			 \brief Set the mesh shader module for the pipeline
 			 \param module a pointer to a mesh shader module
 			*/
-			void setMeshModule(std::shared_ptr < const MeshShaderModule > module);
+			void setMeshModule(const MeshShaderModule& module);
 
 			/**
 			 \brief Set the task shader module for the pipeline
 			 \param module a pointer to a mesh shader module
 			*/
-			void setTaskModule(std::shared_ptr < const TaskShaderModule > module);
+			void setTaskModule(const TaskShaderModule& module);
 
 			std::vector<ShaderStageParameters> getStageParameter();
 
@@ -183,13 +183,13 @@ namespace LavaCake {
 
 			void recompile();
 
-			std::shared_ptr < const VertexShaderModule >                                  m_vertexModule = nullptr;
-			std::shared_ptr < const TessellationControlShaderModule >                     m_tesselationControlModule = nullptr;
-			std::shared_ptr < const TessellationEvaluationShaderModule >                  m_tesselationEvaluationModule = nullptr;
-			std::shared_ptr < const GeometryShaderModule >                                m_geometryModule = nullptr;
-			std::shared_ptr < const FragmentShaderModule >                                m_fragmentModule = nullptr;
-			std::shared_ptr < const MeshShaderModule >						                        m_meshModule = nullptr;
-			std::shared_ptr < const TaskShaderModule >																		m_taskModule = nullptr;
+			ShaderStageParameters                                 m_vertexModule{};
+			ShaderStageParameters                     m_tesselationControlModule{};
+			ShaderStageParameters                  m_tesselationEvaluationModule{};
+			ShaderStageParameters                                m_geometryModule{};
+			ShaderStageParameters                                m_fragmentModule{};
+			ShaderStageParameters						                        m_meshModule{};
+			ShaderStageParameters																		m_taskModule{};
 
 			VkPipelineRasterizationStateCreateInfo								m_rasterizationStateCreateInfo;
 			VkPipelineMultisampleStateCreateInfo									m_multisampleStateCreateInfo;

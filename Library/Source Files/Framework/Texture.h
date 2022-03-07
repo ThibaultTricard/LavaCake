@@ -31,39 +31,39 @@ namespace LavaCake {
 				\param i: the index of the layer
 				\return a VkImageLayout
 			*/
-			VkImageLayout& getLayout(uint8_t i);
+			VkImageLayout getLayout(uint8_t i) const;
 
 
 			/**
 				\brief get the sampler of the frameBuffer
 				\return a VkSampler
 			*/
-			VkSampler&	getSampler();
+			const VkSampler&	getSampler() const;
 
 			/**
 				\brief get the image view of one layer of the Framebuffer
 				\param i the index of the layer
 				\brief a VkImageView
 			*/
-			VkImageView&	 getImageViews(uint8_t i);
+			const VkImageView& getImageView(uint8_t i) const;
 
 			/**
 				\brief get the number of image view in the Framebuffer
 				\return a size_t
 			*/
-			size_t getImageViewSize();
+			size_t getImageViewSize() const;
 
 			/**
 				\brief get the handle of the Framebuffer
 				\return a VkFramebuffer
 			*/
-			VkFramebuffer& getHandle();
+			const VkFramebuffer& getHandle() const;
 
       /**
 				\brief get the resolution of the Framebuffer
 				\return a vec2u
       */
-			vec2u size() {
+			vec2u size() const {
 				return vec2u({ m_width , m_height });
 			}
 
@@ -74,7 +74,7 @@ namespace LavaCake {
 				for (uint32_t i = 0; i < m_images.size(); i++) {
 					if (i != m_swapChainImageIndex) {
 						if (m_images[i] != nullptr) {
-							delete m_images[i];
+							m_images[i] = nullptr;
 						}
 					}
 				}
@@ -106,7 +106,7 @@ namespace LavaCake {
 			VkDeviceMemory            															m_imageMemory = VK_NULL_HANDLE;
 
       
-      std::vector<Image*>                                      m_images;
+      std::vector<std::shared_ptr<Image>>                     m_images;
 
 			uint32_t																								m_swapChainImageIndex;
 			friend class RenderPass;

@@ -24,9 +24,10 @@ namespace LavaCake {
        \param stage the shader stage where the uniform buffer is going to be used
        \param binding the binding point of the uniform shader, 0 by default
       */
-			virtual void addUniformBuffer(UniformBuffer* uniform, VkShaderStageFlags stage, int binding = 0) {
-        if(m_descriptorSet ==nullptr){
-          m_descriptorSet = new DescriptorSet();
+      [[deprecated("Deprecated: Create your own descriptor set and bind it to the pipeline instead with setDescirptorSet")]]
+			virtual void addUniformBuffer(const UniformBuffer& uniform, VkShaderStageFlags stage, int binding = 0) {
+        if(!m_descriptorSet){
+          m_descriptorSet = std::make_shared< DescriptorSet >();
           m_isDescriptorPipelineGenerated = true;
         }
         if(m_isDescriptorPipelineGenerated){
@@ -42,9 +43,10 @@ namespace LavaCake {
        \param stage the shader stage where the texture buffer is going to be used
        \param binding the binding point of the texture buffer, 0 by default
 			*/
-			virtual void addTextureBuffer(Image* texture, VkShaderStageFlags stage, int binding = 0) {
-        if(m_descriptorSet ==nullptr){
-          m_descriptorSet = new DescriptorSet();
+      [[deprecated("Deprecated: Create your own descriptor set and bind it to the pipeline instead with setDescirptorSet")]]
+			virtual void addTextureBuffer(const Image& texture, VkShaderStageFlags stage, int binding = 0) {
+        if(!m_descriptorSet){
+          m_descriptorSet = std::make_shared< DescriptorSet >();
           m_isDescriptorPipelineGenerated = true;
         }
         if(m_isDescriptorPipelineGenerated){
@@ -60,9 +62,10 @@ namespace LavaCake {
        \param stage the shader stage where the frame buffer is going to be used
        \param binding the binding point of the frame buffer, 0 by default
 			*/
-			virtual void addFrameBuffer(FrameBuffer* frame, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
-        if(m_descriptorSet ==nullptr){
-          m_descriptorSet = new DescriptorSet();
+      [[deprecated("Deprecated: Create your own descriptor set and bind it to the pipeline instead with setDescirptorSet")]]
+			virtual void addFrameBuffer(const FrameBuffer& frame, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
+        if(!m_descriptorSet){
+          m_descriptorSet = std::make_shared< DescriptorSet >();
           m_isDescriptorPipelineGenerated = true;
         }
         if(m_isDescriptorPipelineGenerated){
@@ -78,9 +81,10 @@ namespace LavaCake {
        \param stage the shader stage where the storage image is going to be used
        \param binding the binding point of the storage image, 0 by default
 			*/
-			virtual void addStorageImage(Image* storage, VkShaderStageFlags stage, int binding = 0) {
-        if(m_descriptorSet ==nullptr){
-          m_descriptorSet = new DescriptorSet();
+      [[deprecated("Deprecated: Create your own descriptor set and bind it to the pipeline instead with setDescirptorSet")]]
+			virtual void addStorageImage(const Image& storage, VkShaderStageFlags stage, int binding = 0) {
+        if(!m_descriptorSet){
+          m_descriptorSet = std::make_shared< DescriptorSet >();
           m_isDescriptorPipelineGenerated = true;
         }
         if(m_isDescriptorPipelineGenerated){
@@ -97,9 +101,10 @@ namespace LavaCake {
        \param stage the shader stage where the storage image is going to be used
        \param binding the binding point of the storage image, 0 by default
 			*/
-			virtual void addAttachment(Image* attachement, VkShaderStageFlags stage, int binding = 0) {
-        if(m_descriptorSet ==nullptr){
-          m_descriptorSet = new DescriptorSet();
+      [[deprecated("Deprecated: Create your own descriptor set and bind it to the pipeline instead with setDescirptorSet")]]
+			virtual void addAttachment(std::shared_ptr<Image> attachement, VkShaderStageFlags stage, int binding = 0) {
+        if(!m_descriptorSet){
+          m_descriptorSet = std::make_shared< DescriptorSet >();
           m_isDescriptorPipelineGenerated = true;
         }
         if(m_isDescriptorPipelineGenerated){
@@ -115,9 +120,10 @@ namespace LavaCake {
        \param stage the shader stage where the texel buffer is going to be used
        \param binding the binding point of the texel buffer, 0 by default
        */
-			virtual void addTexelBuffer(Buffer* texel, VkShaderStageFlags stage, int binding = 0) {
-        if(m_descriptorSet ==nullptr){
-          m_descriptorSet = new DescriptorSet();
+      [[deprecated("Deprecated: Create your own descriptor set and bind it to the pipeline instead with setDescirptorSet")]]
+			virtual void addTexelBuffer(const Buffer& texel, VkShaderStageFlags stage, int binding = 0) {
+        if(!m_descriptorSet){
+          m_descriptorSet = std::make_shared< DescriptorSet >();
           m_isDescriptorPipelineGenerated = true;
         }
         if(m_isDescriptorPipelineGenerated){
@@ -133,9 +139,10 @@ namespace LavaCake {
        \param stage the shader stage where the texel buffer is going to be used
        \param binding the binding point of the texel buffer, 0 by default
        */
-			virtual void addBuffer(Buffer* buffer, VkShaderStageFlags stage, int binding = 0) {
-        if(m_descriptorSet ==nullptr){
-          m_descriptorSet = new DescriptorSet();
+      [[deprecated("Deprecated: Create your own descriptor set and bind it to the pipeline instead with setDescirptorSet")]]
+			virtual void addBuffer(const Buffer& buffer, VkShaderStageFlags stage, int binding = 0) {
+        if(!m_descriptorSet){
+          m_descriptorSet = std::make_shared< DescriptorSet >();
           m_isDescriptorPipelineGenerated = true;
         }
         if(m_isDescriptorPipelineGenerated){
@@ -146,9 +153,13 @@ namespace LavaCake {
 			};
 
       
+      virtual void setDescriptorSet(std::shared_ptr < DescriptorSet > set) {
+        m_descriptorSet = set;
+      }
+
 			std::vector<attachment>& getAttachments() {
-        if(m_descriptorSet==nullptr){
-          m_descriptorSet = new DescriptorSet();
+        if(!m_descriptorSet){
+          m_descriptorSet = std::make_shared< DescriptorSet >();
           ErrorCheck::setError("No Descripor was provided for this pipeline, a default one will be used instead", 1);
         }
           
@@ -168,11 +179,6 @@ namespace LavaCake {
 					vkDestroyPipelineLayout(logical, m_pipelineLayout, nullptr);
 					m_pipelineLayout = VK_NULL_HANDLE;
 				}
-
-				
-        if (m_descriptorSet != nullptr) {
-          delete m_descriptorSet;
-        }
 
 			};
 
@@ -194,33 +200,10 @@ namespace LavaCake {
 				std::vector<VkPipeline>& graphics_pipelines);
 
 
-
-
 			VkPipeline																					            m_pipeline = VK_NULL_HANDLE;
 			VkPipelineLayout																		            m_pipelineLayout = VK_NULL_HANDLE;
 
-			/*
-      VkDescriptorSetLayout															              m_descriptorSetLayout = VK_NULL_HANDLE;
-			VkDescriptorPool																		            m_descriptorPool = VK_NULL_HANDLE;
-			std::vector<VkDescriptorSet>																		m_descriptorSets;
-			std::vector<VkDescriptorPoolSize>																m_descriptorPoolSize;
-			std::vector<VkDescriptorSetLayoutBinding>												m_descriptorSetLayoutBinding;
-			uint32_t																												m_descriptorCount = 0;
-
-			std::vector<Core::BufferDescriptorInfo>													m_bufferDescriptorUpdate;
-			std::vector<Core::ImageDescriptorInfo>													m_imageDescriptorUpdate;
-			std::vector<Core::TexelBufferDescriptorInfo>										m_texelBufferDescriptorUpdate;
-
-			std::vector<uniform>																						m_uniforms;
-			std::vector<texture>																						m_textures;
-			std::vector<frameBuffer>																				m_frameBuffers;
-			std::vector<attachment>																					m_attachments;
-			std::vector<storageImage>																				m_storageImages;
-			std::vector<texelBuffer>																				m_texelBuffers;
-			std::vector<buffer>																							m_buffers;
-			std::vector<constant>																						m_constants;*/
-      
-      DescriptorSet*                                                  m_descriptorSet = nullptr;
+      std::shared_ptr < DescriptorSet >                               m_descriptorSet;
       bool                                                            m_isDescriptorPipelineGenerated =false;
 		};
 	}

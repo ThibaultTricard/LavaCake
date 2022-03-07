@@ -7,10 +7,10 @@ namespace LavaCake {
 	namespace Framework{
 
 		struct ShaderStageParameters {
-			VkShaderStageFlagBits        ShaderStage;
-			VkShaderModule               ShaderModule;
-			char const* EntryPointName;
-			VkSpecializationInfo const* SpecializationInfo;
+			VkShaderStageFlagBits        shaderStage;
+			VkShaderModule               shaderModule = VK_NULL_HANDLE;
+			char const*                  entryPointName = nullptr;
+			VkSpecializationInfo const*  specializationInfo;
 		};
 
     
@@ -52,7 +52,7 @@ namespace LavaCake {
 
 			ShaderModule(ShaderModule&) = delete;
 
-			ShaderModule(ShaderModule&& s) {
+			ShaderModule(ShaderModule&& s) noexcept{
 				m_module = s.m_module;
 				m_path = s.m_path;
 				m_stageParameter = s.m_stageParameter;

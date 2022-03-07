@@ -45,7 +45,7 @@ namespace LavaCake {
 
       Image& operator=(const Image&) = delete;
 
-      Image(Image&& i) {
+      Image(Image&& i) noexcept{
 
         m_width = i.m_width;
         m_height = i.m_height;
@@ -118,19 +118,19 @@ namespace LavaCake {
        \brief Get the handle of the image
        \return VkImage : the handle of the image
        */
-			VkImage& getHandle();
+			const VkImage& getHandle() const ;
       
       /**
        \brief Get the handle of the image memory
        \return VkDeviceMemory : the image memory of the image
        */
-			VkDeviceMemory& getImageMemory();
+      const VkDeviceMemory& getImageMemory() const;
 
       /**
        \brief Get the handle of the image view
        \return VkImageView : the image view of the image
        */
-			VkImageView& getImageView();
+      const VkImageView& getImageView() const;
 
 			~Image() {
 				Device* d = Device::getDevice();
@@ -162,28 +162,28 @@ namespace LavaCake {
        \brief Get the Layout of the image
        \return the VkImageLayout of the image
        */
-			VkImageLayout& getLayout();
+      VkImageLayout getLayout() const;
 
 
-      VkSampler& getSampler();
+      const VkSampler& getSampler() const;
 
       /**
        \brief Get the witdh of the image
        \return uint32_t the width of the image
        */
-			uint32_t width();
+      uint32_t width() const;
 
       /**
        \brief Get the height of the image
        \return uint32_t the height of the image
        */
-			uint32_t height();
+       uint32_t height() const;
 
       /**
        \brief Get the depth of the image
        \return uint32_t the depth of the image
        */
-			uint32_t depth();
+      uint32_t depth() const;
 
     private:
 

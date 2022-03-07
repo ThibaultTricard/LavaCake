@@ -22,7 +22,7 @@ namespace LavaCake {
 			Buffer& operator=(const Buffer&) = delete;
 
 
-			Buffer(Buffer&& b) {
+			Buffer(Buffer&& b) noexcept{
 				m_buffer = b.m_buffer;
 				m_bufferMemory = b.m_bufferMemory;
 				m_bufferView = b.m_bufferView;
@@ -221,19 +221,21 @@ namespace LavaCake {
 				 \brief Return the handle of the buffer
 				 \return a VkBuffer: the vulkan representation of the buffer
       */
-			VkBuffer& getHandle();
+			const VkBuffer& getHandle() const;
+
+			//VkBuffer& getHandle();
 
       /**
 				 \brief Return the buffer view
 				 \return a VkBuffer: the vulkan representation of the buffer
       */
-			VkBufferView& getBufferView();
+			const VkBufferView& getBufferView() const;
 
       /**
 				 \brief Return the buffer memory
 				 \return a VkDeviceMemory: the memory of the buffer on the GPU
       */
-      VkDeviceMemory& getMemory();
+			const VkDeviceMemory& getMemory() const ;
       
       /**
 				 \brief Copy a region(s) of the buffer to an image

@@ -5,7 +5,7 @@ namespace LavaCake {
 
 
 
-			void RayTracingPipeline::addRayGenModule(RayGenShaderModule* module) {
+			void RayTracingPipeline::addRayGenModule(const RayGenShaderModule& module) {
 				if (m_isHitGroupOpen)
 				{
 					Framework::ErrorCheck::setError("Cannot add raygen stage in when hit group open");
@@ -16,7 +16,7 @@ namespace LavaCake {
 				stageCreate.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				stageCreate.pNext = nullptr;
 				stageCreate.stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-				stageCreate.module = module->getStageParameter().ShaderModule;
+				stageCreate.module = module.getStageParameter().shaderModule;
 				// This member has to be 'main', regardless of the actual entry point of the shader
 				stageCreate.pName = "main";
 				stageCreate.flags = 0;
@@ -40,7 +40,7 @@ namespace LavaCake {
 
 			}
 
-			void RayTracingPipeline::addMissModule(MissShaderModule* module) {
+			void RayTracingPipeline::addMissModule(const MissShaderModule& module) {
 				if (m_isHitGroupOpen)
 				{
 					Framework::ErrorCheck::setError("Cannot add miss stage in when hit group open");
@@ -51,7 +51,7 @@ namespace LavaCake {
 				stageCreate.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				stageCreate.pNext = nullptr;
 				stageCreate.stage = VK_SHADER_STAGE_MISS_BIT_KHR;
-				stageCreate.module = module->getStageParameter().ShaderModule;
+				stageCreate.module = module.getStageParameter().shaderModule;
 				// This member has to be 'main', regardless of the actual entry point of the shader
 				stageCreate.pName = "main";
 				stageCreate.flags = 0;
@@ -94,7 +94,7 @@ namespace LavaCake {
 
 			}
 
-			void RayTracingPipeline::setClosestHitModule(ClosestHitShaderModule* module) {
+			void RayTracingPipeline::setClosestHitModule(const ClosestHitShaderModule& module) {
 				if (!m_isHitGroupOpen) {
 					Framework::ErrorCheck::setError("No open hitgroup");
 					return;
@@ -102,10 +102,9 @@ namespace LavaCake {
 				VkPipelineShaderStageCreateInfo stageCreate;
 				stageCreate.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				stageCreate.pNext = nullptr;
-				stageCreate.stage = module->getStageParameter().ShaderStage;
-				stageCreate.module = module->getStageParameter().ShaderModule;
-				// This member has to be 'main', regardless of the actual entry point of the shader
-				stageCreate.pName = module->getStageParameter().EntryPointName;
+				stageCreate.stage =  module.getStageParameter().shaderStage;
+				stageCreate.module = module.getStageParameter().shaderModule;
+				stageCreate.pName =  module.getStageParameter().entryPointName;
 				stageCreate.flags = 0;
 				stageCreate.pSpecializationInfo = nullptr;
 
@@ -114,7 +113,7 @@ namespace LavaCake {
 				m_shaderGroups[m_shaderGroups.size() - 1].closestHitShader = shaderIndex;
 			}
 
-			void RayTracingPipeline::setAnyHitModule(AnyHitShaderModule* module) {
+			void RayTracingPipeline::setAnyHitModule(const AnyHitShaderModule& module) {
 				if (!m_isHitGroupOpen) {
 					Framework::ErrorCheck::setError("No open hitgroup");
 					return;
@@ -122,10 +121,9 @@ namespace LavaCake {
 				VkPipelineShaderStageCreateInfo stageCreate;
 				stageCreate.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				stageCreate.pNext = nullptr;
-				stageCreate.stage = module->getStageParameter().ShaderStage;
-				stageCreate.module = module->getStageParameter().ShaderModule;
-				// This member has to be 'main', regardless of the actual entry point of the shader
-				stageCreate.pName = module->getStageParameter().EntryPointName;
+				stageCreate.stage =  module.getStageParameter().shaderStage;
+				stageCreate.module = module.getStageParameter().shaderModule;
+				stageCreate.pName =  module.getStageParameter().entryPointName;
 				stageCreate.flags = 0;
 				stageCreate.pSpecializationInfo = nullptr;
 
@@ -134,7 +132,7 @@ namespace LavaCake {
 				m_shaderGroups[m_shaderGroups.size() - 1].anyHitShader = shaderIndex;
 			}
 
-			void RayTracingPipeline::setIntersectionModule(IntersectionShaderModule* module) {
+			void RayTracingPipeline::setIntersectionModule(const IntersectionShaderModule& module) {
 				if (m_isHitGroupOpen) {
 					Framework::ErrorCheck::setError("No open hitgroup");
 					return;
@@ -142,10 +140,9 @@ namespace LavaCake {
 				VkPipelineShaderStageCreateInfo stageCreate;
 				stageCreate.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				stageCreate.pNext = nullptr;
-				stageCreate.stage = module->getStageParameter().ShaderStage;
-				stageCreate.module = module->getStageParameter().ShaderModule;
-				// This member has to be 'main', regardless of the actual entry point of the shader
-				stageCreate.pName = module->getStageParameter().EntryPointName;
+				stageCreate.stage =  module.getStageParameter().shaderStage;
+				stageCreate.module = module.getStageParameter().shaderModule;
+				stageCreate.pName =  module.getStageParameter().entryPointName;
 				stageCreate.flags = 0;
 				stageCreate.pSpecializationInfo = nullptr;
 

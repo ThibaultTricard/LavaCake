@@ -148,11 +148,15 @@ namespace LavaCake{
 
 		}
 
-		VkBuffer& Buffer::getHandle() {
+	  const VkBuffer& Buffer::getHandle()  const{
 			return m_buffer;
 		}
 
-		VkBufferView& Buffer::getBufferView() {
+		/*VkBuffer& Buffer::getHandle() {
+			return m_buffer;
+		}*/
+
+		const VkBufferView& Buffer::getBufferView() const{
 			return m_bufferView;
 		}
 
@@ -164,11 +168,11 @@ namespace LavaCake{
 
     void Buffer::copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const std::vector<VkBufferCopy>& regions) {
 			if (regions.size() > 0) {
-				vkCmdCopyBuffer(cmdBuff.getHandle(), m_buffer, buffer.getHandle(), static_cast<uint32_t>(regions.size()), regions.data());
+				vkCmdCopyBuffer(cmdBuff.getHandle(), m_buffer, buffer.m_buffer, static_cast<uint32_t>(regions.size()), regions.data());
 			}
 		}
 
-		VkDeviceMemory& Buffer::getMemory() {
+		const VkDeviceMemory& Buffer::getMemory() const{
 			return m_bufferMemory;
 		}
 

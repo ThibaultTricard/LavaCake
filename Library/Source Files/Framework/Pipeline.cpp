@@ -10,10 +10,10 @@ namespace LavaCake {
 					VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,  // VkStructureType                    sType
 					nullptr,                                              // const void                       * pNext
 					0,                                                    // VkPipelineShaderStageCreateFlags   flags
-					shader_stage.ShaderStage,                             // VkShaderStageFlagBits              stage
-					shader_stage.ShaderModule,                            // VkShaderModule                     module
-					shader_stage.EntryPointName,                          // const char                       * pName
-					shader_stage.SpecializationInfo                       // const VkSpecializationInfo       * pSpecializationInfo
+					shader_stage.shaderStage,                             // VkShaderStageFlagBits              stage
+					shader_stage.shaderModule,                            // VkShaderModule                     module
+					shader_stage.entryPointName,                          // const char                       * pName
+					shader_stage.specializationInfo                       // const VkSpecializationInfo       * pSpecializationInfo
 					});
 			}
 		}
@@ -57,8 +57,8 @@ namespace LavaCake {
 		}
 
 		void Pipeline::generateDescriptorLayout() {
-      if(m_descriptorSet == nullptr){
-        m_descriptorSet = new DescriptorSet();
+      if(!m_descriptorSet){
+        m_descriptorSet = std::make_shared < DescriptorSet >();
         ErrorCheck::setError("No Descripor was provided for this pipeline, a default one will be used instead", 1);
       }
       m_descriptorSet->generateDescriptorLayout();

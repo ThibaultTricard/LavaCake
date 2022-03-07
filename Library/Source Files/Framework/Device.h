@@ -235,7 +235,7 @@ namespace LavaCake {
         
 				VkPhysicalDevice													m_physical = VK_NULL_HANDLE;
 				VkDevice            											m_logical = VK_NULL_HANDLE;
-				LIBRARY_TYPE															m_vulkanLibrary;
+				LIBRARY_TYPE															m_vulkanLibrary = nullptr;
 				VkInstance            										m_instance = VK_NULL_HANDLE;
 				VkSurfaceKHR                              m_presentationSurface = VK_NULL_HANDLE;
 				VkCommandPool					              			m_commandPool = VK_NULL_HANDLE;

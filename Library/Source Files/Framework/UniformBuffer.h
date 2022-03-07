@@ -63,7 +63,7 @@ namespace LavaCake {
       */
       void update(CommandBuffer& commandBuffer);
 
-			VkBuffer& getHandle();
+			const VkBuffer& getHandle() const;
 
     private :
 

@@ -13,7 +13,7 @@ namespace LavaCake {
 
       void alloctate(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
 
-      VkAccelerationStructureKHR& getHandle() {
+      const VkAccelerationStructureKHR& getHandle() const{
         return m_accelerationStructure;
       }
 

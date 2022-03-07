@@ -138,8 +138,8 @@ namespace LavaCake {
 				VkRenderPass& render_pass);
 
 			VkRenderPass															            m_renderPass = VK_NULL_HANDLE;
-			VkFormat																							m_imageFormat;
-			VkFormat																							m_depthFormat;
+			VkFormat																							m_imageFormat = VK_FORMAT_UNDEFINED;
+			VkFormat																							m_depthFormat = VK_FORMAT_UNDEFINED;
 			std::vector<SubpassParameters>												m_subpassParameters;
 			std::vector < SubPass >																m_subpass;
 			std::vector<VkAttachmentReference>										m_depthAttachments;
@@ -148,7 +148,7 @@ namespace LavaCake {
 
 			std::vector<RenderPassAttachmentType>									m_attachmentype;
 
-			std::vector<Image*>																		m_inputAttachements;
+			std::vector<std::shared_ptr<Image>>										m_inputAttachements;
 
 			std::vector<std::vector<uint32_t>>										m_subpassAttachements;
 

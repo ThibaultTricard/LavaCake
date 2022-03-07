@@ -30,9 +30,10 @@ namespace LavaCake {
 			m_buffer->setAccess(commandBuffer, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT);
 		}
 
-		VkBuffer& UniformBuffer::getHandle() {
+		const VkBuffer& UniformBuffer::getHandle() const {
 			return m_buffer->getHandle();
 		};
+
 
     void UniformBuffer::copyToStageMemory(bool /*all*/) {
       m_stagingBuffer->write(m_data);

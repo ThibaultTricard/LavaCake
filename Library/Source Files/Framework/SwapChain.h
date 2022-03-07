@@ -228,7 +228,7 @@ namespace LavaCake {
 			const VkFormat														m_depthFormat = VK_FORMAT_D16_UNORM;
 			VkExtent2D																m_size = {uint32_t(0), uint32_t(0)};
 
-      VkImageUsageFlags                         m_swapchainImageUsage;
+      VkImageUsageFlags                         m_swapchainImageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
       
 			std::vector<SwapChainImage*>							m_swapchainImages;
 
