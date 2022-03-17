@@ -102,7 +102,7 @@ namespace LavaCake {
 
 
 		class SwapChain {
-			static SwapChain* m_swapChain;
+			inline static SwapChain* m_swapChain = nullptr;
 			SwapChain() {
 				
 			};
@@ -132,7 +132,7 @@ namespace LavaCake {
 				delete m_swapChain;
 			}
 
-			VkSwapchainKHR& getHandle() {
+			const VkSwapchainKHR& getHandle() const{
 				return m_handle;
 			}
 

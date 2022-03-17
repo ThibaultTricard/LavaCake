@@ -2,7 +2,7 @@
 namespace LavaCake {
 	namespace Framework {
 
-		SwapChain* SwapChain::m_swapChain;
+		//SwapChain* SwapChain::m_swapChain;
 
 		void SwapChain::init(
 				VkImageUsageFlags													swapchain_image_usage
