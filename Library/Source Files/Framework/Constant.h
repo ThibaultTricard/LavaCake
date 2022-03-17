@@ -25,11 +25,26 @@ namespace LavaCake {
       */
       template<typename T>
       void addVariable(const std::string& name, const T& value) {
-        if constexpr(std::ranges::sized_range<T> && std::ranges::contiguous_range<T>) {
-          m_variables.addVariableRange(name, std::span { value });
-        } else {
-          m_variables.addVariableRange(name, std::span<const T,1> { &value, 1 });
-        }
+        //    if constexpr(std::ranges::sized_range<T> && std::ranges::contiguous_range<T>) {
+        //      m_variables.addVariableRange(name, std::span { value });
+        //    } else {
+        m_variables.addVariableRange(name, std::span<const T,1> { &value, 1 });
+        //    }
+      }
+      
+      template<typename T>
+      void addVariable(const std::string& name, const std::vector<T>& value) {
+        m_variables.addVariableRange(name, std::span { value });
+      }
+      
+      template<typename T, std::size_t N>
+      void addVariable(const std::string& name, const std::array<T,N>& value) {
+        m_variables.addVariableRange(name, std::span { value });
+      }
+      
+      template<typename T, std::size_t Extent>
+      void addVariable(const std::string& name, const std::span<T,Extent>& value) {
+        m_variables.addVariableRange(name, std::span { value });
       }
 
       /**
@@ -39,13 +54,27 @@ namespace LavaCake {
       */
       template<typename T>
       void setVariable(const std::string& name, const T& value) {
-        if constexpr(std::ranges::sized_range<T> && std::ranges::contiguous_range<T>) {
-          m_variables.setVariableRange(name, std::span{ value });
-        } else {
-          m_variables.setVariableRange(name, std::span<const T,1>{ &value, 1 });
-        }
+        //    if constexpr(std::ranges::sized_range<T> && std::ranges::contiguous_range<T>) {
+        //      m_variables.setVariableRange(name, std::span{ value });
+        //    } else {
+        m_variables.setVariableRange(name, std::span<const T,1>{ &value, 1 });
+        //    }
       }
-
+      
+      template<typename T>
+      void setVariable(const std::string& name, const std::vector<T>& value) {
+        m_variables.setVariableRange(name, std::span { value });
+      }
+      
+      template<typename T, std::size_t N>
+      void setVariable(const std::string& name, const std::array<T,N>& value) {
+        m_variables.setVariableRange(name, std::span { value });
+      }
+      
+      template<typename T, std::size_t Extent>
+      void setVariable(const std::string& name, const std::span<T,Extent>& value) {
+        m_variables.setVariableRange(name, std::span { value });
+      }
 			void push(VkCommandBuffer buffer, VkPipelineLayout layout, VkShaderStageFlags flag);
 
 			uint32_t size();
