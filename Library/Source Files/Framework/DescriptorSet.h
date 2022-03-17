@@ -7,7 +7,7 @@
 namespace LavaCake {
   namespace Framework{
   struct uniform {
-    const VkBuffer&                   hanle;
+    const VkBuffer&                   handle;
     const int                       binding;
     const VkShaderStageFlags          stage;
   };
@@ -367,7 +367,7 @@ namespace LavaCake {
         uniformDescriptor.push_back(
         {                        // std::vector<VkDescriptorBufferInfo>  BufferInfos
           {
-            m_uniforms[i].hanle,                                                  // VkBuffer                             buffer
+            m_uniforms[i].handle,                                                  // VkBuffer                             buffer
             0,                                                                    // VkDeviceSize                         offset
             VK_WHOLE_SIZE                                                         // VkDeviceSize                         range
           }

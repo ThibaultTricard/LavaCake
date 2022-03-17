@@ -6,7 +6,7 @@
 #include "Tools.h"
 #include "ErrorCheck.h"
 #include "Device.h"
-
+#include "ByteDictionary.h"
 
 namespace LavaCake {
 	namespace Framework {
@@ -16,48 +16,74 @@ namespace LavaCake {
   */
 		class PushConstant {
 		public:
-
-			/**
-				\brief Add a variable into the dictionary.
-				\param name: the name of constant.
-				\param value: the variable.
-			*/
-			template<typename T>
-			void addVariable(const std::string& name, T& value) {
-				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
-				std::memcpy(&v[0], &value, sizeof(T));
-				addArray(name, v);
-			}
+      ~PushConstant() = default;
 
       /**
-				\brief set a variable into the dictionary
-				\param name : the name of constant
-				\param value : the variable
+       \brief Add a variable into the dictionary.
+       \param name: the name of constant.
+       \param value: the variable, either a simple data type of a contiguous range of simple data type.
       */
-			template<typename T>
-			void setVariable(const std::string& name, T& value) {
-				std::vector<int> v = std::vector<int>(sizeof(value) / sizeof(int));
-				std::memcpy(&v[0], &value, sizeof(value));
-				setArray(name, v);
-			}
+      template<typename T>
+      void addVariable(const std::string& name, const T& value) {
+        //    if constexpr(std::ranges::sized_range<T> && std::ranges::contiguous_range<T>) {
+        //      m_variables.addVariableRange(name, std::span { value });
+        //    } else {
+        m_variables.addVariableRange(name, std::span<const T,1> { &value, 1 });
+        //    }
+      }
+      
+      template<typename T>
+      void addVariable(const std::string& name, const std::vector<T>& value) {
+        m_variables.addVariableRange(name, std::span { value });
+      }
+      
+      template<typename T, std::size_t N>
+      void addVariable(const std::string& name, const std::array<T,N>& value) {
+        m_variables.addVariableRange(name, std::span { value });
+      }
+      
+      template<typename T, std::size_t Extent>
+      void addVariable(const std::string& name, const std::span<T,Extent>& value) {
+        m_variables.addVariableRange(name, std::span { value });
+      }
 
+      /**
+        \brief set a variable into the dictionary.
+        \param name : the name of constant
+        \param value: the variable, either a simple data type of a contiguous range of simple data type.
+      */
+      template<typename T>
+      void setVariable(const std::string& name, const T& value) {
+        //    if constexpr(std::ranges::sized_range<T> && std::ranges::contiguous_range<T>) {
+        //      m_variables.setVariableRange(name, std::span{ value });
+        //    } else {
+        m_variables.setVariableRange(name, std::span<const T,1>{ &value, 1 });
+        //    }
+      }
+      
+      template<typename T>
+      void setVariable(const std::string& name, const std::vector<T>& value) {
+        m_variables.setVariableRange(name, std::span { value });
+      }
+      
+      template<typename T, std::size_t N>
+      void setVariable(const std::string& name, const std::array<T,N>& value) {
+        m_variables.setVariableRange(name, std::span { value });
+      }
+      
+      template<typename T, std::size_t Extent>
+      void setVariable(const std::string& name, const std::span<T,Extent>& value) {
+        m_variables.setVariableRange(name, std::span { value });
+      }
 			void push(VkCommandBuffer buffer, VkPipelineLayout layout, VkShaderStageFlags flag);
 
 			uint32_t size();
 
 		private:
 
-
-			void addArray(const std::string& name, std::vector<int>& value);
-			void setArray(const std::string& name, std::vector<int>& value);
-
-
 			VkDeviceSize                                              m_bufferSize = 0;
-			std::map<std::string, int>                                m_variableNames;
-			std::vector<std::vector<int>>                             m_variables;
-			std::vector<bool>                                         m_modified;
-			std::vector<std::pair<VkDeviceSize, VkDeviceSize>>        m_typeSizeOffset;
-			uint32_t																									m_size = 0;
+      ByteDictionary                                            m_variables;
 		};
+
 	}
 }
