@@ -11,19 +11,15 @@ namespace LavaCake {
     class VertexBuffer {
     public:
 
-
       VertexBuffer(const Queue& queue, CommandBuffer& cmdBuff, const std::vector<LavaCake::Geometry::Mesh_t*>& m, uint32_t binding = 0, VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0));
-
 
       std::shared_ptr<Buffer> getVertexBuffer() const;
 
       std::shared_ptr<Buffer> getIndexBuffer() const;
 
-      void swapMeshes(std::vector<LavaCake::Geometry::Mesh_t*>				m);
+      const std::vector<VkVertexInputAttributeDescription>& getAttributeDescriptions() const;
 
-      std::vector<VkVertexInputAttributeDescription>& getAttributeDescriptions();
-
-      std::vector<VkVertexInputBindingDescription>& getBindingDescriptions();
+      const std::vector<VkVertexInputBindingDescription>& getBindingDescriptions() const;
 
       VkPrimitiveTopology primitiveTopology() {
         switch (m_topology)

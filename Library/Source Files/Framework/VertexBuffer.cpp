@@ -68,11 +68,11 @@ namespace LavaCake {
       return m_indexBuffer;
     }
 
-    std::vector<VkVertexInputAttributeDescription>& VertexBuffer::getAttributeDescriptions() {
+    const std::vector<VkVertexInputAttributeDescription>& VertexBuffer::getAttributeDescriptions() const {
       return m_attributeDescriptions;
     }
 
-    std::vector<VkVertexInputBindingDescription>& VertexBuffer::getBindingDescriptions() {
+    const std::vector<VkVertexInputBindingDescription>& VertexBuffer::getBindingDescriptions() const {
       return m_bindingDescriptions;
     }
 
@@ -81,9 +81,5 @@ namespace LavaCake {
     };
 
 
-    void VertexBuffer::swapMeshes(std::vector<LavaCake::Geometry::Mesh_t*>				m) {
-
-
-    };
   }
 }

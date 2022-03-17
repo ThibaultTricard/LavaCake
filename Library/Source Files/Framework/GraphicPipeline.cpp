@@ -291,8 +291,8 @@ namespace LavaCake {
       m_subpassNumber = number;
     }
 
-    void GraphicPipeline::setVerticesInfo(std::vector<VkVertexInputBindingDescription>& bindingDescription,
-      std::vector<VkVertexInputAttributeDescription>& attributeDescriptions,
+    void GraphicPipeline::setVerticesInfo(const std::vector<VkVertexInputBindingDescription>& bindingDescription,
+      const std::vector<VkVertexInputAttributeDescription>& attributeDescriptions,
       VkPrimitiveTopology topology) {
       m_vertexInfo = {
         VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,								// VkStructureType                           sType

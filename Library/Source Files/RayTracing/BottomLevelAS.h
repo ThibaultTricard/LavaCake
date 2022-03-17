@@ -11,15 +11,15 @@ namespace LavaCake {
 		public :
 			BottomLevelAccelerationStructure() {};
 
-			void addVertexBuffer(Framework::VertexBuffer* vertexBuffer, Framework::TransformBuffer* transformBuffer, bool opaque = true);
+			void addVertexBuffer(std::shared_ptr<Framework::VertexBuffer> vertexBuffer, std::shared_ptr < Framework::TransformBuffer> transformBuffer, bool opaque = true);
 
 			void allocate(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
 
-			VkAccelerationStructureKHR& getHandle();
+			const VkAccelerationStructureKHR& getHandle() const;
 
-			uint64_t getDeviceAddress();
+			uint64_t getDeviceAddress() const;
 
-			uint32_t getPrimitiveNumber();
+			uint32_t getPrimitiveNumber() const;
 
 		private:
 

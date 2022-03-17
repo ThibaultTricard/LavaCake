@@ -43,7 +43,7 @@ namespace LavaCake {
       cmdBuff.wait(UINT32_MAX);
       cmdBuff.resetFence();
 
-      return std::move(image);
+      return image;
     }
 
 
@@ -62,7 +62,7 @@ namespace LavaCake {
       cmdBuff.wait(UINT32_MAX);
       cmdBuff.resetFence();
 
-      return std::move(image);
+      return image;
     }
 
 
@@ -118,14 +118,14 @@ namespace LavaCake {
       cmdBuff.submit(queue, {}, {});
       cmdBuff.wait(UINT32_MAX);
       cmdBuff.resetFence();
-      return std::move(image);
+      return image;
     }
 
     Image createCubeMap(const  Queue& queue, CommandBuffer& cmdBuff, const std::string& path, int nbChannel, const std::array<std::string, 6>& images, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
 
       std::vector<unsigned char> cubemap_image_data;
 
-      int width, height;
+      int width = 0, height = 0;
       std::vector<unsigned char> data;
       for (size_t i = 0; i < images.size(); ++i) {
         std::vector<unsigned char> cubemap_image_data;
@@ -175,7 +175,7 @@ namespace LavaCake {
 
       cmdBuff.resetFence();
 
-      return std::move(image);
+      return image;
     };
 
 

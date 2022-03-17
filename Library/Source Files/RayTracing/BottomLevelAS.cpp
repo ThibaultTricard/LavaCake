@@ -3,7 +3,7 @@
 namespace LavaCake {
 	namespace RayTracing {
 
-			void BottomLevelAccelerationStructure::addVertexBuffer(Framework::VertexBuffer* vertexBuffer, Framework::TransformBuffer* transformBuffer, bool opaque ) {
+			void BottomLevelAccelerationStructure::addVertexBuffer(std::shared_ptr<Framework::VertexBuffer> vertexBuffer, std::shared_ptr<Framework::TransformBuffer> transformBuffer, bool opaque ) {
 
 				VkDeviceOrHostAddressConstKHR vertexBufferDeviceAddress{};
 				VkDeviceOrHostAddressConstKHR indexBufferDeviceAddress{};
@@ -154,15 +154,15 @@ namespace LavaCake {
 			}
 
 
-			VkAccelerationStructureKHR& BottomLevelAccelerationStructure::getHandle() {
+			const VkAccelerationStructureKHR& BottomLevelAccelerationStructure::getHandle() const {
 				return m_accelerationStructure;
 			}
 
-			uint64_t BottomLevelAccelerationStructure::getDeviceAddress() {
+			uint64_t BottomLevelAccelerationStructure::getDeviceAddress() const {
 				return m_deviceAddress;
 			}
 
-			uint32_t BottomLevelAccelerationStructure::getPrimitiveNumber() {
+			uint32_t BottomLevelAccelerationStructure::getPrimitiveNumber() const {
 				return (uint32_t)m_geometry.size();
 			}
 

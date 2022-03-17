@@ -32,20 +32,20 @@ namespace LavaCake {
 
       void compile(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, VkPipeline raytracingPipeline);
 
-      VkStridedDeviceAddressRegionKHR& raygenShaderBindingTable() {
+      const VkStridedDeviceAddressRegionKHR& raygenShaderBindingTable() const {
         return m_raygenShaderBindingTable;
       }
 
-      VkStridedDeviceAddressRegionKHR& missShaderBindingTable() {
+      const VkStridedDeviceAddressRegionKHR& missShaderBindingTable() const {
         return m_missShaderBindingTable;
       }
 
-      VkStridedDeviceAddressRegionKHR& hitShaderBindingTable() {
+      const VkStridedDeviceAddressRegionKHR& hitShaderBindingTable() const{
         return m_hitShaderBindingTable;
       }
       
       
-      VkStridedDeviceAddressRegionKHR callableShaderBindingTable() {
+      const VkStridedDeviceAddressRegionKHR callableShaderBindingTable() const{
         return m_callableShaderBindingTable;
       }
 

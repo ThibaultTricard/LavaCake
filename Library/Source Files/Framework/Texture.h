@@ -108,7 +108,7 @@ namespace LavaCake {
 
       std::vector<std::shared_ptr<Image>>                     m_images;
 
-      uint32_t																								m_swapChainImageIndex;
+      uint32_t																								m_swapChainImageIndex = 0;
       friend class RenderPass;
     };
 

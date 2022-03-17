@@ -94,8 +94,8 @@ namespace LavaCake {
       * \param bindingDescriptions describe the binding of the vertex buffer
       * \param topology describe what kind of toplogy the vertex buffer will use
       */
-      void setVerticesInfo(std::vector<VkVertexInputBindingDescription>& bindingDescriptions,
-        std::vector<VkVertexInputAttributeDescription>& attributeDescriptions,
+      void setVerticesInfo(const std::vector< VkVertexInputBindingDescription>& bindingDescriptions,
+        const std::vector< VkVertexInputAttributeDescription>& attributeDescriptions,
         VkPrimitiveTopology topology);
 
       /**
