@@ -46,7 +46,7 @@ namespace LavaCake {
 			}
 
 
-			void BottomLevelAccelerationStructure::allocate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
+			void BottomLevelAccelerationStructure::allocate(const  Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
 
 				Framework::Device* d = Framework::Device::getDevice();
 				VkDevice device = d->getLogicalDevice();
@@ -76,23 +76,23 @@ namespace LavaCake {
 					&m_primCount,
 					&accelerationStructureBuildSizesInfo);
 
-				m_ASBuffer.allocate(accelerationStructureBuildSizesInfo.accelerationStructureSize, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+				m_ASBuffer = std::make_shared<Framework::Buffer>(accelerationStructureBuildSizesInfo.accelerationStructureSize, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 
 				VkAccelerationStructureCreateInfoKHR accelerationStructureCreateInfo{};
 				accelerationStructureCreateInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
-				accelerationStructureCreateInfo.buffer = m_ASBuffer.getHandle();
+				accelerationStructureCreateInfo.buffer = m_ASBuffer->getHandle();
 				accelerationStructureCreateInfo.size = accelerationStructureBuildSizesInfo.accelerationStructureSize;
 				accelerationStructureCreateInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
 				vkCreateAccelerationStructureKHR(device, &accelerationStructureCreateInfo, nullptr, &m_accelerationStructure);
 
 
 				
-				m_scratchBuffer.allocate(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+				m_scratchBuffer = std::make_shared<Framework::Buffer>(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 				VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};
 				scratchBufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-				scratchBufferDeviceAddressInfo.buffer = m_scratchBuffer.getHandle();
+				scratchBufferDeviceAddressInfo.buffer = m_scratchBuffer->getHandle();
 
 				VkAccelerationStructureBuildGeometryInfoKHR accelerationBuildGeometryInfo{};
 				accelerationBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;

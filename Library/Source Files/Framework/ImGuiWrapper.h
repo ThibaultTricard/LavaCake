@@ -4,7 +4,6 @@
 #include "CommandBuffer.h"
 #include "Texture.h"
 #include "RenderPass.h"
-#include "Window.h"
 
 namespace LavaCake {
 	namespace Framework {
@@ -19,61 +18,67 @@ namespace LavaCake {
     
     /**
      \brief Default Constructor
-     */
-    ImGuiWrapper() {};
-
-    
-    void initGui(Window* window, Queue* queue, CommandBuffer* cmdBuff);
-    
-    /**
-     \brief Initialise ImGui and create it's graphic pipeline
      \param queue : a pointer to the queue that will be used to copy data to the Buffer
      \param cmdBuff : the command buffer used for this operation, must not be in a recording state
-     \param window a pointer to the current Window
+     \param windowSize: the size of the window
+     \param frameBufferSize: the size of the frame buffer imgui is used in
      */
-    void initGui(Queue* queue, CommandBuffer& cmdBuff,  Window* window ){
-      initGui(window, queue, &cmdBuff);
-    }
+     ImGuiWrapper(const Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize);
+
 
     /**
      \brief Prepare the gui for the current frame
      \param queue : a pointer to the queue that will be used to copy data to the Buffer
      \param cmdBuff : the command buffer used for this operation, must not be in a recording state
      */
-    void prepareGui(Queue* queue, CommandBuffer& cmdBuff);
+    void prepareGui(const Queue& queue, CommandBuffer& cmdBuff);
 
-
-    void resizeGui(Window* win);
+    /**
+     \brief resize the gui
+     \param windowSize: the new size of the window
+     \param frameBufferSize: the new size of the frame buffer imgui is used in
+     */
+    void resizeGui(const vec2i& windowSize, const vec2i& frameBufferSize);
 
     /**
      \brief Return the graphic pipelin for the gui
      \return a pointer to the graphic pipeline
      */
-      GraphicPipeline* getPipeline() {
-        return m_pipeline;
-      }
+    std::shared_ptr < GraphicPipeline > getPipeline() const{
+      return m_pipeline;
+    }
 
-      ~ImGuiWrapper() {
-        delete m_pipeline;
-        delete m_pushConstant;
-        delete m_vertexBuffer;
-      }
+    ~ImGuiWrapper() {
+    }
 
     private : 
       
-      GraphicPipeline* m_pipeline = nullptr;
-      PushConstant* m_pushConstant = nullptr;
-      VertexBuffer* m_vertexBuffer = nullptr;
-      Geometry::Mesh_t* m_mesh = nullptr;
-      Image* m_fontBuffer = nullptr;
+      std::shared_ptr< GraphicPipeline >     m_pipeline;
+      PushConstant                           m_pushConstant;
+      std::unique_ptr < VertexBuffer >       m_vertexBuffer;
+      std::unique_ptr < Geometry::Mesh_t >   m_mesh;
+      std::shared_ptr < Image >              m_fontBuffer;
+
+      std::unique_ptr < VertexShaderModule >    m_vertexShader;
+      std::unique_ptr < FragmentShaderModule >  m_fragmentShader;
+      std::shared_ptr < DescriptorSet >         m_descritporSet;
       
     };
 
+
+#if defined(LAVACAKE_WINDOW_MANAGER_GLFW)
     static GLFWmousebuttonfun   s_PrevUserCallbackMousebutton = NULL;
     static GLFWscrollfun        s_PrevUserCallbackScroll = NULL;
     static GLFWkeyfun           s_PrevUserCallbackKey = NULL;
     static GLFWcharfun          s_PrevUserCallbackChar = NULL;
-    static GLFWcursorposfun     s_PrevUserCallbackMouseMotion = NULL;
-    void prepareInput(GLFWwindow* window); 
+    static GLFWcursorposfun     s_PrevUserCallbackMouseMotion = NULL; 
+
+
+    /**
+     \brief bind GLWF inputs to Imgui
+     \params window a pointer to the GLFWwindow
+     */
+    void prepareInputs(GLFWwindow* window);
+#endif
 	}
 }

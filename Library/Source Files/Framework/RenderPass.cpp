@@ -189,7 +189,8 @@ namespace LavaCake {
 				});
 		}
 
-		void RenderPass::addSubPass(std::vector<GraphicPipeline*> p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
+
+		void RenderPass::addSubPass(const SubPass& p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
 			for (size_t i = 0; i < p.size(); i++) {
 				p[i]->setSubpassNumber(static_cast<uint32_t>(m_subpass.size()));
 			}
@@ -212,22 +213,22 @@ namespace LavaCake {
 				}
 			}
 
-			std::vector<Image*> tempInputAttachements = std::vector<Image*>(m_attachmentype.size());
+			std::vector<std::shared_ptr<Image>> tempInputAttachements = std::vector<std::shared_ptr<Image>>(m_attachmentype.size());
 
 			for (size_t i = 0; i < m_subpassAttachements.size(); i++) {
 				tempInputAttachements[i] = nullptr;
-				std::vector<Image*> tia;
+				std::vector<std::shared_ptr<Image>> tia;
 				for (size_t k = 0; k < m_subpass[i].size(); k++) {
 					std::vector<attachment> attachment = m_subpass[i][k]->getAttachments();
 					for (size_t l = 0; l < attachment.size(); l++) {
 						bool insert = true;
             for (size_t m = 0; m < tia.size(); m++) {
-							if (attachment[l].i == tia[m]) {
+							if (attachment[l].image == tia[m]) {
 								insert = false;
 							}
 						}
 						if (insert) {
-							tia.push_back(attachment[l].i);
+							tia.push_back(attachment[l].image);
 						}
 					}
 				}
@@ -241,18 +242,6 @@ namespace LavaCake {
 					m_inputAttachements.push_back(tempInputAttachements[i]);
 				}
 			}
-
-		}
-
-		void RenderPass::reloadShaders() {
-
-			for (uint32_t i = 0; i < m_subpass.size(); i++) {
-				for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
-					m_subpass[i][j]->reloadShaders();
-				}
-			}
-
-			compile();
 
 		}
 
@@ -284,11 +273,11 @@ namespace LavaCake {
 		}
 
 
-		VkRenderPass& RenderPass::getHandle() {
+		const VkRenderPass& RenderPass::getHandle() const{
 			return m_renderPass;
 		}
 
-		void RenderPass::prepareOutputFrameBuffer(Queue* queue, CommandBuffer& commandBuffer, FrameBuffer& frameBuffer) {
+		void RenderPass::prepareOutputFrameBuffer(const Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& frameBuffer) {
 			Device* d = Device::getDevice();
 			VkDevice logical = d->getLogicalDevice();
 			
@@ -323,7 +312,7 @@ namespace LavaCake {
 			VkImageLayout layout;
 			VkFormat format;
 			
-			frameBuffer.m_images = std::vector<Image*>(m_attachmentype.size());
+			frameBuffer.m_images = std::vector<std::shared_ptr<Image>>(m_attachmentype.size());
 
 			int attachementIndex = 0;
 
@@ -379,12 +368,12 @@ namespace LavaCake {
 				//frameBuffer.m_layouts.push_back(layout);
 
         if (static_cast<int>(i) == m_khr_attachement) {
-					frameBuffer.m_swapChainImageIndex = i;
+					frameBuffer.m_swapChainImageIndex = static_cast<uint32_t>(i);
 					continue;
 				}
 
         
-        frameBuffer.m_images[i] = new Image((uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1, format, aspect, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,false);
+        frameBuffer.m_images[i] = std::make_shared< Image > ((uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1, format, aspect, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,false);
 				
 				VkImageSubresourceRange subresourceRange{ (VkImageAspectFlags)aspect, 0, 1, 0, 1 };
 
@@ -423,7 +412,7 @@ namespace LavaCake {
 			}
 		}
 
-		void RenderPass::setSwapChainImage(FrameBuffer& frameBuffer, SwapChainImage& image) {
+		void RenderPass::setSwapChainImage(FrameBuffer& frameBuffer, const SwapChainImage& image) {
 			if (m_khr_attachement != -1) {
         std::vector<VkImageView> imageViews{};
         for(auto i : frameBuffer.m_images){

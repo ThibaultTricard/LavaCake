@@ -11,13 +11,13 @@ namespace LavaCake {
     public:
       void addInstance(BottomLevelAccelerationStructure* bottomLevelAS, VkTransformMatrixKHR& transform, uint32_t instanceID, uint32_t hitGroupOffset);
 
-      void alloctate(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
+      void alloctate(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
 
-      VkAccelerationStructureKHR& getHandle() {
+      const VkAccelerationStructureKHR& getHandle() const{
         return m_accelerationStructure;
       }
 
-      void createAccelerationStructure(Framework::Queue* queue, Framework::CommandBuffer& cmdBuff, VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo);
+      void createAccelerationStructure(VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo);
 
 		private : 
 
@@ -42,9 +42,9 @@ namespace LavaCake {
 
       std::vector<uint32_t> m_primitive_count;
       VkAccelerationStructureBuildGeometryInfoKHR m_accelerationBuildGeometryInfo = {};
-      Framework::Buffer* m_ASBuffer = nullptr;
-      Framework::Buffer m_scratchBuffer;
-      std::vector<Framework::Buffer> m_instancesBuffers;
+      std::shared_ptr < Framework::Buffer> m_ASBuffer = nullptr;
+      std::shared_ptr < Framework::Buffer> m_scratchBuffer;
+      std::vector<std::shared_ptr<Framework::Buffer>> m_instancesBuffers;
 		};
 	}
 }

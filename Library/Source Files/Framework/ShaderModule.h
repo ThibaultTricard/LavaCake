@@ -7,22 +7,23 @@ namespace LavaCake {
 	namespace Framework{
 
 		struct ShaderStageParameters {
-			VkShaderStageFlagBits        ShaderStage;
-			VkShaderModule               ShaderModule;
-			char const* EntryPointName;
-			VkSpecializationInfo const* SpecializationInfo;
+			VkShaderStageFlagBits        shaderStage;
+			VkShaderModule               shaderModule = VK_NULL_HANDLE;
+			char const*                  entryPointName = nullptr;
+			VkSpecializationInfo const*  specializationInfo;
 		};
 
     
 		class ShaderModule {
 		protected :
-			ShaderModule(std::string path, VkShaderStageFlagBits stageBits, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) {
+			ShaderModule(const std::string& path, VkShaderStageFlagBits stageBits, char const* entrypoint = "main", VkSpecializationInfo const * specialization = nullptr) {
 				m_path = path;
-				if (!GetBinaryFileContents(path, m_spirv)) {
+				std::vector<unsigned char> spriv;
+				if (!GetBinaryFileContents(path, spriv)) {
 					ErrorCheck::setError("Can't read the Shader file.");
 				}
 				
-				if (!createShaderModule( m_spirv)) {
+				if (!createShaderModule(spriv)) {
 					ErrorCheck::setError("Can't create the Shader module.");
 				}
 				
@@ -34,11 +35,10 @@ namespace LavaCake {
 				};
 			}
 
-			ShaderModule(std::vector<unsigned char>	spirv, VkShaderStageFlagBits stageBits, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) {
+			ShaderModule(const std::vector<unsigned char>&	spirv, VkShaderStageFlagBits stageBits, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) {
 				m_path = "";
-				m_spirv = spirv;
 				
-				if (!createShaderModule(m_spirv)) {
+				if (!createShaderModule(spirv)) {
 					ErrorCheck::setError("Can't create the Shader module.");
 				}
 
@@ -49,26 +49,23 @@ namespace LavaCake {
 						specialization
 				};
 			}
-      public :
-			ShaderStageParameters&	getStageParameter() {
-				return m_stageParameter;
+
+			ShaderModule(ShaderModule&) = delete;
+
+			ShaderModule(ShaderModule&& s) noexcept{
+				m_module = s.m_module;
+				m_path = s.m_path;
+				m_stageParameter = s.m_stageParameter;
+				s.m_module = VK_NULL_HANDLE;
 			}
 
-			void refresh() {
-				if (!GetBinaryFileContents(m_path, m_spirv)) {
-					ErrorCheck::setError("Can't read the Shader file.");
-				}
-
-				if (!createShaderModule(m_spirv)) {
-					ErrorCheck::setError("Can't create the Shader module.");
-				}
-
-				m_stageParameter.ShaderModule = m_module;
+      public :
+			const ShaderStageParameters&	getStageParameter() const{
+				return m_stageParameter;
 			}
 
 			~ShaderModule() {
 				m_path = "";
-				m_spirv.clear();
 				m_stageParameter = {};
 				Device* d = Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
@@ -80,7 +77,7 @@ namespace LavaCake {
 
 		private :
 
-			bool createShaderModule(std::vector<unsigned char> const& src) {
+			bool createShaderModule(const std::vector<unsigned char>& src) {
 				VkShaderModuleCreateInfo createInfo = {
 					VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,              // VkStructureType              sType
 					nullptr,                                                  // const void                 * pNext
@@ -103,7 +100,6 @@ namespace LavaCake {
 
 			VkShaderModule								            m_module = VK_NULL_HANDLE;
 			std::string																m_path;
-			std::vector<unsigned char>								m_spirv;
 			ShaderStageParameters											m_stageParameter;
 		};
 

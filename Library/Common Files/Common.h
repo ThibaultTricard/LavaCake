@@ -45,18 +45,8 @@
 #include <memory>
 #include "VulkanFunctions.h"
 
-#define GLFW_INCLUDE_NONE
-#ifdef _WIN32
-    #include <Windows.h>
-    #define GLFW_EXPOSE_NATIVE_WIN32 true
-#elif __APPLE__
-    #define GLFW_INCLUDE_VULKAN
-#endif
 
-#include "glfw3.h"
-#include "glfw3native.h"
 
-#undef interface
 
 namespace LavaCake {
 
@@ -70,12 +60,10 @@ namespace LavaCake {
 #endif
 
  
-  struct WindowParameters {
+  /*struct WindowParameters {
     GLFWwindow*     Window;
     bool headless = false;
-  };
-
-
+  };*/
 } // namespace LavaCake
 
 #endif // COMMON

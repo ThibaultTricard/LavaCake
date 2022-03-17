@@ -31,6 +31,7 @@ namespace LavaCake {
 		{
 		public:
 
+
       /**
        \brief Constructor for the gaphic pipelin class
        \param viewportMin the minimum coordinate of view port
@@ -44,53 +45,49 @@ namespace LavaCake {
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a vertex shader module
 			*/
-			void setVertexModule(VertexShaderModule*	module);
+			void setVertexModule(const VertexShaderModule&	module);
 
       /**
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a tessellation control shader module
       */
-			void setTesselationControlModule(TessellationControlShaderModule*	module);
+			void setTesselationControlModule(const TessellationControlShaderModule& 	module);
 
       /**
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a tessellation evaluation shader module
       */
-			void setTesselationEvaluationModule(TessellationEvaluationShaderModule*	module);
+			void setTesselationEvaluationModule(const TessellationEvaluationShaderModule&	module);
 
       /**
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a geomety shader module
       */
-			void setGeometryModule(GeometryShaderModule*	module);
+			void setGeometryModule(const GeometryShaderModule&	module);
 
       /**
        \brief Set the vertex shader module for the pipeline
        \param module a pointer to a fragment shader module
       */
-			void setFragmentModule(FragmentShaderModule*	module);
+			void setFragmentModule(const FragmentShaderModule&	module);
 
 			/**
 			 \brief Set the mesh shader module for the pipeline
 			 \param module a pointer to a mesh shader module
 			*/
-			void setMeshModule(MeshShaderModule* module);
+			void setMeshModule(const MeshShaderModule& module);
 
 			/**
 			 \brief Set the task shader module for the pipeline
 			 \param module a pointer to a mesh shader module
 			*/
-			void setTaskModule(TaskShaderModule* module);
+			void setTaskModule(const TaskShaderModule& module);
 
 			std::vector<ShaderStageParameters> getStageParameter();
 
 			
 			void compile(VkRenderPass& renderpass, uint16_t nbColorAttachments);
 
-      /**
-       \brief Reload all the spirv shaders module from source
-       */
-			void reloadShaders();
 
 			/*
 			* \brief set the Vertices info that describe what kind of vertex buffer will be used by the pipeline
@@ -123,7 +120,7 @@ namespace LavaCake {
 			/**
        \brief Set the cull mode for the pipeline, if not set the pipeline cull the back faces
 			*/
-			void SetCullMode(VkCullModeFlagBits cullMode);
+			void setCullMode(VkCullModeFlagBits cullMode);
 
 			/**
        \brief Register a push constant to the pand specify it's shader stage,
@@ -180,15 +177,13 @@ namespace LavaCake {
 			};
 
 
-			void recompile();
-
-			VertexShaderModule*																		m_vertexModule = nullptr;
-			TessellationControlShaderModule*											m_tesselationControlModule = nullptr;
-			TessellationEvaluationShaderModule*										m_tesselationEvaluationModule = nullptr;
-			GeometryShaderModule*																	m_geometryModule = nullptr;
-			FragmentShaderModule*																	m_fragmentModule = nullptr;
-			MeshShaderModule*																			m_meshModule = nullptr;
-			TaskShaderModule*																			m_taskModule = nullptr;
+			ShaderStageParameters                                 m_vertexModule{};
+			ShaderStageParameters                     m_tesselationControlModule{};
+			ShaderStageParameters                  m_tesselationEvaluationModule{};
+			ShaderStageParameters                                m_geometryModule{};
+			ShaderStageParameters                                m_fragmentModule{};
+			ShaderStageParameters						                        m_meshModule{};
+			ShaderStageParameters																		m_taskModule{};
 
 			VkPipelineRasterizationStateCreateInfo								m_rasterizationStateCreateInfo;
 			VkPipelineMultisampleStateCreateInfo									m_multisampleStateCreateInfo;

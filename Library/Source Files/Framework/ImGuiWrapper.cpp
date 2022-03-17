@@ -6,80 +6,7 @@
 namespace LavaCake {
   namespace Framework {
 
-    static void ImGui_ImplGlfw_Mouse_Position(GLFWwindow* window, double xpos, double ypos) {
-      ImGuiIO& io = ImGui::GetIO();
-      io.MousePos = ImVec2((float)xpos, (float)ypos);
-      if (s_PrevUserCallbackMousebutton!= NULL) {
-        s_PrevUserCallbackMouseMotion(window, xpos, ypos);
-      }
-    }
-    static const char* ImGui_ImplGlfw_GetClipboardText(void* user_data)
-    {
-      return glfwGetClipboardString((GLFWwindow*)user_data);
-    }
 
-    static void ImGui_ImplGlfw_SetClipboardText(void* user_data, const char* text)
-    {
-      glfwSetClipboardString((GLFWwindow*)user_data, text);
-    }
-
-    void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
-    {
-
-      if (action == GLFW_PRESS && button >= 0) {
-        ImGuiIO& io = ImGui::GetIO();
-        io.MouseDown[button] = true;
-      }
-      if (action == GLFW_RELEASE && button >= 0) {
-        ImGuiIO& io = ImGui::GetIO();
-        io.MouseDown[button] = false;
-      }
-      if (s_PrevUserCallbackMousebutton != NULL) {
-        s_PrevUserCallbackMousebutton(window, button, action, mods);
-      }
-    }
-
-    void ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
-    {
-      ImGuiIO& io = ImGui::GetIO();
-      io.MouseWheelH += (float)xoffset;
-      io.MouseWheel += (float)yoffset;
-      if (s_PrevUserCallbackScroll != NULL) {
-        s_PrevUserCallbackScroll(window, xoffset, yoffset);
-      }
-    }
-
-    void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-      ImGuiIO& io = ImGui::GetIO();
-      if (action == GLFW_PRESS)
-        io.KeysDown[key] = true;
-      if (action == GLFW_RELEASE)
-        io.KeysDown[key] = false;
-
-      // Modifiers are not reliable across systems
-      io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-      io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-      io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-#ifdef _WIN32
-      io.KeySuper = false;
-#else
-      io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
-#endif
-      if (s_PrevUserCallbackKey != NULL) {
-        s_PrevUserCallbackKey(window,  key,  scancode,  action,  mods);
-      }
-    }
-
-    void ImGui_ImplGlfw_CharCallback(GLFWwindow* window, unsigned int c)
-    {
-      ImGuiIO& io = ImGui::GetIO();
-      io.AddInputCharacter(c);
-
-      if (s_PrevUserCallbackChar != NULL) {
-        s_PrevUserCallbackChar(window,c);
-      }
-    }
 
     // glsl_shader.vert, compiled with:
     // # glslangValidator -V -x -o glsl_shader.vert.u32 glsl_shader.vert
@@ -189,36 +116,30 @@ namespace LavaCake {
         0x00010038
     };
 
-    void ImGuiWrapper::initGui(Window* win, Queue* queue, CommandBuffer* cmdBuff) {
+    ImGuiWrapper::ImGuiWrapper(const Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize) {
       IMGUI_CHECKVERSION();
       ImGui::CreateContext();
       ImGui::StyleColorsDark();
-      prepareInput(win->m_window);
       ImGuiIO& io = ImGui::GetIO();
      
       // Setup display size (every frame to accommodate for window resizing)
-      int Wwidth, Wheight;
-      int display_w, display_h;
-      glfwGetWindowSize(win->m_window, &Wwidth, &Wheight);
-      glfwGetFramebufferSize(win->m_window, &display_w, &display_h);
-      io.DisplaySize = ImVec2((float)Wwidth, (float)Wheight);
-      if (Wwidth > 0 && Wheight > 0)
-        io.DisplayFramebufferScale = ImVec2((float)display_w / Wwidth, (float)display_h / Wheight);
+      io.DisplaySize = ImVec2((float)windowSize[0], (float)windowSize[1]);
+      if (windowSize[0] > 0 && windowSize[1] > 0)
+        io.DisplayFramebufferScale = ImVec2((float)frameBufferSize[0] / windowSize[0], (float)frameBufferSize[1] / windowSize[1]);
+    
 
-      SwapChain* s = SwapChain::getSwapChain();
-      VkExtent2D size = s->size();
 
       unsigned char* pixels;
       int width, height;
       io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-      std::vector<unsigned char>* textureData = new std::vector<unsigned char>(pixels, pixels + width * height * 4);
+      std::vector<unsigned char> textureData(pixels, pixels + width * height * 4);
 
 
 
-      m_fontBuffer = Framework::createTextureBuffer(queue, *cmdBuff, textureData, width, height,1, 4);
+      m_fontBuffer = std::make_unique<Image>(Framework::createTextureBuffer(queue, cmdBuff, textureData, width, height,1, 4));
 
 
-      m_mesh = (Geometry::Mesh_t*) (new Geometry::IndexedMesh<Geometry::TRIANGLE>(imguiformat));
+      m_mesh = std::make_unique<Geometry::IndexedMesh<Geometry::TRIANGLE>>((imguiformat));
 
 
       m_mesh->appendVertex({
@@ -239,39 +160,39 @@ namespace LavaCake {
       m_mesh->appendIndex(2);
 
 
+      m_vertexBuffer = std::make_unique<Framework::VertexBuffer>(queue, cmdBuff, std::vector< LavaCake::Geometry::Mesh_t* >{ m_mesh.get()});
 
-      m_vertexBuffer = new Framework::VertexBuffer({ m_mesh });
-      m_vertexBuffer->allocate(queue, *cmdBuff);
 
-      m_pushConstant = new PushConstant();
       vec2f scale = vec2f({0.0f,0.0f});
       vec2f translate = vec2f({0.0f,0.0f});
-      m_pushConstant->addVariable("uScale", scale);
-      m_pushConstant->addVariable("uTranslate", translate);
+      m_pushConstant.addVariable("uScale", scale);
+      m_pushConstant.addVariable("uTranslate", translate);
 
       std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv) / sizeof(unsigned char));
       memcpy(&vertSpirv[0], __glsl_shader_vert_spv, sizeof(__glsl_shader_vert_spv));
       std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
       memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
 
-      m_pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
-      VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
-      m_pipeline->setVertexModule(sphereVertex);
+      m_pipeline = std::make_shared<GraphicPipeline>(vec3f({ 0,0,0 }), vec3f({ float(frameBufferSize[0]),float(frameBufferSize[1]),1.0f }), vec2f({ 0,0 }), vec2f({ float(frameBufferSize[0]),float(frameBufferSize[1]) }));
+      m_vertexShader = std::make_unique < VertexShaderModule >(vertSpirv);
+      m_pipeline->setVertexModule(*m_vertexShader);
 
-      FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
-      m_pipeline->setFragmentModule(sphereFrag);
+      m_fragmentShader = std::make_unique < FragmentShaderModule >(fragSpirv);
+      m_pipeline->setFragmentModule(*m_fragmentShader);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
       
       constantDescription constantInfo;
       constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
-      constantInfo.constantSize = m_pushConstant->size();
+      constantInfo.constantSize = m_pushConstant.size();
       m_pipeline->setPushContantInfo({ constantInfo });
 
-      m_pipeline->setVertices({ {m_vertexBuffer, {{m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}} });
-      m_pipeline->setVertices({ m_vertexBuffer });
+      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}}});
+      m_pipeline->setVertices({ m_vertexBuffer.get()});
 
-      m_pipeline->addTextureBuffer(m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT,0);
-      m_pipeline->SetCullMode(VK_CULL_MODE_NONE);
+      m_descritporSet = std::make_shared< DescriptorSet >();
+      m_descritporSet->addTextureBuffer(*m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
+      m_pipeline->setDescriptorSet(m_descritporSet);
+      m_pipeline->setCullMode(VK_CULL_MODE_NONE);
       m_pipeline->setAlphaBlending(true);
 
     }
@@ -280,7 +201,7 @@ namespace LavaCake {
     
 
     
-    void ImGuiWrapper::prepareGui(Queue* queue, CommandBuffer& cmdBuff) {
+    void ImGuiWrapper::prepareGui(const Queue& queue, CommandBuffer& cmdBuff) {
 
       ImGui::Render();
       ImDrawData* draw_data = ImGui::GetDrawData();
@@ -310,25 +231,133 @@ namespace LavaCake {
       }
 
 			
+      if (draw_data->CmdListsCount != 0) {
+        m_vertexBuffer = std::make_unique<Framework::VertexBuffer>(queue, cmdBuff, std::vector< LavaCake::Geometry::Mesh_t* >{ m_mesh.get()});
+        m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}} });
 
-      m_vertexBuffer->swapMeshes({ m_mesh });
-      m_vertexBuffer->allocate(queue, cmdBuff);
-
-      vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
-      vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });
-      m_pushConstant->setVariable("uScale", scale);
-      m_pushConstant->setVariable("uTranslate", translate);
+        vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
+        vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });
+        m_pushConstant.setVariable("uScale", scale);
+        m_pushConstant.setVariable("uTranslate", translate);
+      }
 
     }
 
 
-    void prepareInput(GLFWwindow* window) {
+
+    void ImGuiWrapper::resizeGui(const vec2i& windowSize, const vec2i& frameBufferSize) {
+      
+
+      ImGuiIO& io = ImGui::GetIO();
+      io.DisplaySize = ImVec2((float)windowSize[0], (float)windowSize[1]);
+      if (windowSize[0] > 0 && windowSize[1] > 0)
+        io.DisplayFramebufferScale = ImVec2((float)frameBufferSize[0] / windowSize[0], (float)frameBufferSize[1] / windowSize[1]);
+
+      m_pipeline = std::make_shared<GraphicPipeline>(vec3f({ 0,0,0 }), vec3f({ float(frameBufferSize[0]),float(frameBufferSize[1]),1.0f}), vec2f({0,0}), vec2f({float(frameBufferSize[0]),float(frameBufferSize[1])}));
+ 
+      m_pipeline->setVertexModule(*m_vertexShader);
+
+      m_pipeline->setFragmentModule(*m_fragmentShader);
+      m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
+      
+      m_pipeline->setDescriptorSet(m_descritporSet);
+      m_pipeline->setCullMode(VK_CULL_MODE_NONE);
+      m_pipeline->setAlphaBlending(true);
+
+
+      constantDescription constantInfo;
+      constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
+      constantInfo.constantSize = m_pushConstant.size();
+      m_pipeline->setPushContantInfo({ constantInfo });
+
+      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}}});
+    }
+
+
+
+#if defined(LAVACAKE_WINDOW_MANAGER_GLFW)
+    static void ImGui_ImplGlfw_Mouse_Position(GLFWwindow* window, double xpos, double ypos) {
+      ImGuiIO& io = ImGui::GetIO();
+      io.MousePos = ImVec2((float)xpos, (float)ypos);
+      if (s_PrevUserCallbackMousebutton != NULL) {
+        s_PrevUserCallbackMouseMotion(window, xpos, ypos);
+      }
+    }
+    static const char* ImGui_ImplGlfw_GetClipboardText(void* user_data)
+    {
+      return glfwGetClipboardString((GLFWwindow*)user_data);
+    }
+
+    static void ImGui_ImplGlfw_SetClipboardText(void* user_data, const char* text)
+    {
+      glfwSetClipboardString((GLFWwindow*)user_data, text);
+    }
+
+    void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+    {
+
+      if (action == GLFW_PRESS && button >= 0) {
+        ImGuiIO& io = ImGui::GetIO();
+        io.MouseDown[button] = true;
+      }
+      if (action == GLFW_RELEASE && button >= 0) {
+        ImGuiIO& io = ImGui::GetIO();
+        io.MouseDown[button] = false;
+      }
+      if (s_PrevUserCallbackMousebutton != NULL) {
+        s_PrevUserCallbackMousebutton(window, button, action, mods);
+      }
+    }
+
+    void ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+    {
+      ImGuiIO& io = ImGui::GetIO();
+      io.MouseWheelH += (float)xoffset;
+      io.MouseWheel += (float)yoffset;
+      if (s_PrevUserCallbackScroll != NULL) {
+        s_PrevUserCallbackScroll(window, xoffset, yoffset);
+      }
+    }
+
+    void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+    {
+      ImGuiIO& io = ImGui::GetIO();
+      if (action == GLFW_PRESS)
+        io.KeysDown[key] = true;
+      if (action == GLFW_RELEASE)
+        io.KeysDown[key] = false;
+
+      // Modifiers are not reliable across systems
+      io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+      io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+      io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+#ifdef _WIN32
+      io.KeySuper = false;
+#else
+      io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+#endif
+      if (s_PrevUserCallbackKey != NULL) {
+        s_PrevUserCallbackKey(window, key, scancode, action, mods);
+      }
+    }
+
+    void ImGui_ImplGlfw_CharCallback(GLFWwindow* window, unsigned int c)
+    {
+      ImGuiIO& io = ImGui::GetIO();
+      io.AddInputCharacter(c);
+
+      if (s_PrevUserCallbackChar != NULL) {
+        s_PrevUserCallbackChar(window, c);
+      }
+    }
+
+
+    void prepareInputs(GLFWwindow* window) {
 
       // Setup back-end capabilities flags
       ImGuiIO& io = ImGui::GetIO();
       io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;         // We can honor GetMouseCursor() values (optional)
       io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)
-      io.BackendPlatformName = "imgui_impl_glfw";
 
       io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
       io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
@@ -364,50 +393,9 @@ namespace LavaCake {
       s_PrevUserCallbackKey = glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback);
       s_PrevUserCallbackChar = glfwSetCharCallback(window, ImGui_ImplGlfw_CharCallback);
       s_PrevUserCallbackMouseMotion = glfwSetCursorPosCallback(window, ImGui_ImplGlfw_Mouse_Position);
-         
+
     }
-
-
-    void ImGuiWrapper::resizeGui(Window* win) {
-      
-      SwapChain* s = SwapChain::getSwapChain();
-      VkExtent2D size = s->size();
-
-      ImGuiIO& io = ImGui::GetIO();
-      int Wwidth, Wheight;
-      int display_w, display_h;
-      glfwGetWindowSize(win->m_window, &Wwidth, &Wheight);
-      glfwGetFramebufferSize(win->m_window, &display_w, &display_h);
-      io.DisplaySize = ImVec2((float)Wwidth, (float)Wheight);
-      if (Wwidth > 0 && Wheight > 0)
-        io.DisplayFramebufferScale = ImVec2((float)display_w / Wwidth, (float)display_h / Wheight);
-
-
-      std::vector<unsigned char>	vertSpirv(sizeof(__glsl_shader_vert_spv) / sizeof(unsigned char));
-      memcpy(&vertSpirv[0], __glsl_shader_vert_spv, sizeof(__glsl_shader_vert_spv));
-      std::vector<unsigned char>	fragSpirv(sizeof(__glsl_shader_frag_spv) / sizeof(unsigned char));
-      memcpy(&fragSpirv[0], __glsl_shader_frag_spv, sizeof(__glsl_shader_frag_spv));
-
-      m_pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
-      VertexShaderModule* sphereVertex = new Framework::VertexShaderModule(vertSpirv);
-      m_pipeline->setVertexModule(sphereVertex);
-
-      FragmentShaderModule* sphereFrag = new Framework::FragmentShaderModule(fragSpirv);
-      m_pipeline->setFragmentModule(sphereFrag);
-      m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
-      
-      m_pipeline->addTextureBuffer(m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
-      m_pipeline->SetCullMode(VK_CULL_MODE_NONE);
-      m_pipeline->setAlphaBlending(true);
-
-
-      constantDescription constantInfo;
-      constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
-      constantInfo.constantSize = m_pushConstant->size();
-      m_pipeline->setPushContantInfo({ constantInfo });
-
-      m_pipeline->setVertices({ {m_vertexBuffer, { {m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT} } } });
-    }
+#endif
 
   }
 }

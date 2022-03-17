@@ -31,39 +31,39 @@ namespace LavaCake {
 				\param i: the index of the layer
 				\return a VkImageLayout
 			*/
-			VkImageLayout& getLayout(uint8_t i);
+			VkImageLayout getLayout(uint8_t i) const;
 
 
 			/**
 				\brief get the sampler of the frameBuffer
 				\return a VkSampler
 			*/
-			VkSampler&	getSampler();
+			const VkSampler&	getSampler() const;
 
 			/**
 				\brief get the image view of one layer of the Framebuffer
 				\param i the index of the layer
 				\brief a VkImageView
 			*/
-			VkImageView&	 getImageViews(uint8_t i);
+			const VkImageView& getImageView(uint8_t i) const;
 
 			/**
 				\brief get the number of image view in the Framebuffer
 				\return a size_t
 			*/
-			size_t getImageViewSize();
+			size_t getImageViewSize() const;
 
 			/**
 				\brief get the handle of the Framebuffer
 				\return a VkFramebuffer
 			*/
-			VkFramebuffer& getHandle();
+			const VkFramebuffer& getHandle() const;
 
       /**
 				\brief get the resolution of the Framebuffer
 				\return a vec2u
       */
-			vec2u size() {
+			vec2u size() const {
 				return vec2u({ m_width , m_height });
 			}
 
@@ -74,7 +74,7 @@ namespace LavaCake {
 				for (uint32_t i = 0; i < m_images.size(); i++) {
 					if (i != m_swapChainImageIndex) {
 						if (m_images[i] != nullptr) {
-							delete m_images[i];
+							m_images[i] = nullptr;
 						}
 					}
 				}
@@ -106,7 +106,7 @@ namespace LavaCake {
 			VkDeviceMemory            															m_imageMemory = VK_NULL_HANDLE;
 
       
-      std::vector<Image*>                                      m_images;
+      std::vector<std::shared_ptr<Image>>                     m_images;
 
 			uint32_t																								m_swapChainImageIndex;
 			friend class RenderPass;
@@ -131,7 +131,7 @@ namespace LavaCake {
 			\param format: the format of the image
 			\param type: the attachment type (see attachementType)
 		*/
-		Image* createAttachment(Queue* queue, CommandBuffer& cmdBuff, int width, int height, VkFormat format, attachmentType type);
+		Image createAttachment(const Queue& queue, CommandBuffer& cmdBuff, int width, int height, VkFormat format, attachmentType type);
 
 
 		/**
@@ -143,7 +143,7 @@ namespace LavaCake {
 			\param depth: the depth of the image 
 			\param format: the format of the image
 		*/
-		Image* createStorageImage(Queue* queue, CommandBuffer& cmdBuff, int width, int height, int depth = 1, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
+		Image createStorageImage(const Queue& queue, CommandBuffer& cmdBuff, int width, int height, int depth = 1, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM);
 
 		/**
 			\brief create an image specialized to be a texture buffer.
@@ -152,7 +152,7 @@ namespace LavaCake {
 			\param depth: the depth of the image
 			\param format: the format of the image
 		*/
-		Image* createTextureBuffer(int width, int height, int depth, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM);
+		Image createTextureBuffer(int width, int height, int depth, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM);
 
 
 		/**
@@ -164,7 +164,7 @@ namespace LavaCake {
 			\param format: the format of the image
 			\param stageFlagBit: the stage in which the shader will be used
 		*/
-		Image* createTextureBuffer(Queue* queue, CommandBuffer& cmdBuff, std::string filename, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+		Image createTextureBuffer(const Queue& queue, CommandBuffer& cmdBuff,const std::string& filename, int nbChannel, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 
 		/**
@@ -179,7 +179,7 @@ namespace LavaCake {
 			\param format: the format of the image
 			\param stageFlagBit: the stage in which the shader will be used
 		*/
-		Image* createTextureBuffer(Queue* queue, CommandBuffer& cmdBuff, std::vector<unsigned char>* data, int width, int height, int depth, int nbChannel, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+		Image createTextureBuffer(const Queue& queue, CommandBuffer& cmdBuff, const std::vector<unsigned char>& data, int width, int height, int depth, int nbChannel, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 
 		/**
@@ -192,7 +192,7 @@ namespace LavaCake {
 			\param format: the format of the image
 			\param stageFlagBit: the stage in which the shader will be used
 		*/
-		Image* createCubeMap(Queue* queue, CommandBuffer& cmdBuff, std::string path, int nbChannel, std::vector<std::string> images = { "posx.jpg","negx.jpg","posy.jpg","negy.jpg","posz.jpg","negz.jpg" }, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+		Image createCubeMap(const Queue& queue, CommandBuffer& cmdBuff, const std::string& path, int nbChannel, const std::array<std::string,6>& images = { "posx.jpg","negx.jpg","posy.jpg","negy.jpg","posz.jpg","negz.jpg" }, VkFormat f = VK_FORMAT_R8G8B8A8_UNORM, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
 
 	}
 }

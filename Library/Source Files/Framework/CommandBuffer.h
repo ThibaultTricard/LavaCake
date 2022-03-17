@@ -137,7 +137,7 @@ namespace LavaCake {
        \brief Return the handle of command buffer
        \return a handle to the VkCommandBuffer
        */
-      VkCommandBuffer& getHandle() {
+      const VkCommandBuffer& getHandle() const{
         return m_commandBuffer;
       }
       
@@ -146,7 +146,7 @@ namespace LavaCake {
        \param i the index of the wanted semaphore
        \return a handle to a VkSemaphore
        */
-      VkSemaphore& getSemaphore(int i) {
+      const VkSemaphore& getSemaphore(int i) const{
         return m_semaphores[i];
       }
 
@@ -154,7 +154,7 @@ namespace LavaCake {
        \brief Return the fence of the command buffer
        \return a handle to a VkFence
        */
-      VkFence& getFence() {
+      const VkFence& getFence() const{
         return m_fence;
       }
 
@@ -164,7 +164,7 @@ namespace LavaCake {
        \param waitSemaphoreInfo : description of the semaphores to to wait on before executing it
        \param signalSemaphores : the list of that will be raised by the execution of this command buffer
        */
-      void submit(Queue* queue, std::vector<WaitSemaphoreInfo> waitSemaphoreInfo, std::vector<VkSemaphore>  signalSemaphores) {
+      void submit(const Queue& queue, const std::vector<WaitSemaphoreInfo>& waitSemaphoreInfo, const std::vector<VkSemaphore>&  signalSemaphores) {
         std::vector<VkSemaphore>          wait_semaphore_handles;
         std::vector<VkPipelineStageFlags> wait_semaphore_stages;
         for (auto& wait_semaphore_info : waitSemaphoreInfo) {
@@ -186,7 +186,7 @@ namespace LavaCake {
           signalSemaphores.data()                              // const VkSemaphore            * pSignalSemaphores
         };
 
-        VkResult result = vkQueueSubmit(queue->getHandle(), 1, &submit_info, getFence());
+        VkResult result = vkQueueSubmit(queue.getHandle(), 1, &submit_info, getFence());
         if (VK_SUCCESS != result) {
           ErrorCheck::setError("Error occurred during command buffer submission.");
           return;
@@ -209,12 +209,11 @@ namespace LavaCake {
           vkDestroyFence(logical, m_fence, nullptr);
         }
         if (m_commandBuffer != VK_NULL_HANDLE) {
-          std::vector<VkCommandBuffer> buffers = { m_commandBuffer };
-          vkFreeCommandBuffers(logical, d->getCommandPool(), 1, &buffers[0]);
+          vkFreeCommandBuffers(logical, d->getCommandPool(), 1, &m_commandBuffer);
         }
       };
 
-      bool ready(){
+      bool ready() const{
         auto device = Device::getDevice()->getLogicalDevice();
         VkResult res = vkGetFenceStatus(device, m_fence);
         if(res == VK_SUCCESS){

@@ -6,8 +6,8 @@ namespace Framework {
 
 void UniformBuffer::end() {
   //allocate both the buffer and the staging buffer
-  m_stagingBuffer.allocate(m_variables.data().size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-  m_buffer.allocate(m_variables.data().size(), (VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+  m_stagingBuffer = std::move(Buffer(m_variables.data().size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+  m_buffer = std::move(Buffer(m_variables.data().size(), (VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT));
 }
 
 void UniformBuffer::update(CommandBuffer& commandBuffer) {
@@ -29,5 +29,6 @@ const VkBuffer& UniformBuffer::getHandle() const {
 void UniformBuffer::copyToStageMemory(bool /*all*/) {
   m_stagingBuffer.write(m_variables.data());
 }
+
 }
 }

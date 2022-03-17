@@ -6,7 +6,7 @@ namespace LavaCake {
 	namespace Framework {
 
 
-		Image* createAttachment(Queue* queue, CommandBuffer& cmdBuff, int width, int height, VkFormat f, attachmentType type) {
+		Image createAttachment(const Queue& queue, CommandBuffer& cmdBuff, int width, int height, VkFormat f, attachmentType type) {
 
 			VkImageAspectFlagBits aspect;
 			if (type == COLOR_ATTACHMENT) {
@@ -30,11 +30,11 @@ namespace LavaCake {
 				usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 			}
 
-			auto image = new Image(width, height, 1, f, aspect, (VkImageUsageFlagBits)(usage | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT));
+			Image image(width, height, 1, f, aspect, (VkImageUsageFlagBits)(usage | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT));
 
 			cmdBuff.beginRecord();
 			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-			image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, subresourceRange);
+			image.setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, subresourceRange);
 
 			cmdBuff.endRecord();
 
@@ -43,16 +43,16 @@ namespace LavaCake {
 			cmdBuff.wait(UINT32_MAX);
 			cmdBuff.resetFence();
 
-			return image;
+			return std::move(image);
 		}
 
 
-		Image* createStorageImage(Queue* queue, CommandBuffer& cmdBuff, int width, int height, int depth, VkFormat f) {
-			Image* image = new Image(width, height, depth, f, VK_IMAGE_ASPECT_COLOR_BIT, (VkImageUsageFlagBits)(VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT));
+		Image createStorageImage(const Queue& queue, CommandBuffer& cmdBuff, int width, int height, int depth, VkFormat f) {
+			Image image(width, height, depth, f, VK_IMAGE_ASPECT_COLOR_BIT, (VkImageUsageFlagBits)(VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT));
 			cmdBuff.beginRecord();
 
 			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-			image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_GENERAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, subresourceRange);
+			image.setLayout(cmdBuff, VK_IMAGE_LAYOUT_GENERAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, subresourceRange);
 
 			cmdBuff.endRecord();
 
@@ -62,39 +62,37 @@ namespace LavaCake {
 			cmdBuff.wait(UINT32_MAX);
 			cmdBuff.resetFence();
 
-			return image;
+			return std::move(image);
 		}
 
 
-		Image* createTextureBuffer(int width, int height, int depth, VkFormat format) {
-			return new Image(width, height, depth, format, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+		Image createTextureBuffer(int width, int height, int depth, VkFormat format) {
+			return Image(width, height, depth, format, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 		}
 
-		Image* createTextureBuffer(Queue* queue, CommandBuffer& cmdBuff, std::string filename, int nbChannel, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
+		Image createTextureBuffer(const Queue& queue, CommandBuffer& cmdBuff, const std::string& filename, int nbChannel, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
 			int width, height;
-			std::vector<unsigned char>* data = new std::vector<unsigned char>();
-			if (!Helpers::LoadTextureDataFromFile(filename.data(), nbChannel, *data, &width, &height)) {
+			std::vector<unsigned char> data = std::vector<unsigned char>();
+			if (!Helpers::LoadTextureDataFromFile(filename.data(), nbChannel, data, &width, &height)) {
 				ErrorCheck::setError("Could not load texture file");
 			}
 
-			return  createTextureBuffer(queue, cmdBuff, data, width, height, 1, nbChannel, f, stageFlagBit);
+			return createTextureBuffer(queue, cmdBuff, data, width, height, 1, nbChannel, f, stageFlagBit);
 		}
 
-		Image* createTextureBuffer(Queue* queue, CommandBuffer& cmdBuff, std::vector<unsigned char>* data, int width, int height, int depth, int nbChannel, VkFormat format, VkPipelineStageFlagBits stageFlagBit) {
+		Image createTextureBuffer(const Queue& queue, CommandBuffer& cmdBuff,const std::vector<unsigned char>& data, int width, int height, int depth, int nbChannel, VkFormat format, VkPipelineStageFlagBits stageFlagBit) {
 
-			Image* image = new Image(width, height, depth, format, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+			Image image(width, height, depth, format, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 
-			image->createSampler();
+			image.createSampler();
 
-			Buffer stagingBuffer;
-
-			stagingBuffer.allocate(queue, cmdBuff, *data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+			Buffer stagingBuffer(queue, cmdBuff, data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 			cmdBuff.beginRecord();
 
 			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
-			image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, subresourceRange);
+			image.setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, subresourceRange);
 
 			VkImageSubresourceLayers image_subresource_layer = {
 				VK_IMAGE_ASPECT_COLOR_BIT,    // VkImageAspectFlags     aspectMask
@@ -109,21 +107,21 @@ namespace LavaCake {
 						0,																																								// uint32_t                   bufferImageHeight
 						image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
 						{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
-						{ image->width(), image->height(), image->depth() },												// VkExtent3D                 imageExtent
+						{ image.width(), image.height(), image.depth() },																	// VkExtent3D                 imageExtent
 			};
 
-			stagingBuffer.copyToImage(cmdBuff, *image, { region });
+			stagingBuffer.copyToImage(cmdBuff, image, { region });
 
-			image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, stageFlagBit, subresourceRange);
+			image.setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, stageFlagBit, subresourceRange);
 
 			cmdBuff.endRecord();
 			cmdBuff.submit(queue, {}, {});
 			cmdBuff.wait(UINT32_MAX);
 			cmdBuff.resetFence();
-			return image;
+			return std::move(image);
 		}
 
-		Image* createCubeMap(Queue* queue, CommandBuffer& cmdBuff, std::string path, int nbChannel, std::vector<std::string> images, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
+		Image createCubeMap(const  Queue& queue, CommandBuffer& cmdBuff,const std::string& path, int nbChannel,const std::array<std::string,6>& images, VkFormat f, VkPipelineStageFlagBits stageFlagBit) {
 
 			std::vector<unsigned char> cubemap_image_data;
 
@@ -138,13 +136,11 @@ namespace LavaCake {
 				data.insert(data.end(), cubemap_image_data.begin(), cubemap_image_data.end());
 			}
 
-			Image* image = new Image(width, height, 1, f, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true);
+			Image image = Image(width, height, 1, f, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true);
 
-			image->createSampler();
+			image.createSampler();
 
-			Buffer stagingBuffer;
-
-			stagingBuffer.allocate(queue, cmdBuff, data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+			Buffer stagingBuffer(queue, cmdBuff, data, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 			cmdBuff.beginRecord();
 
@@ -161,15 +157,15 @@ namespace LavaCake {
 						0,																																								// uint32_t                   bufferImageHeight
 						image_subresource_layer,																													// VkImageSubresourceLayers   imageSubresource
 						{ 0, 0, 0 },																																			// VkOffset3D                 imageOffset
-						{ image->width(), image->height(), image->depth() },															// VkExtent3D                 imageExtent
+						{ image.width(), image.height(), image.depth() },															// VkExtent3D                 imageExtent
 			};
 
 			VkImageSubresourceRange subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1,static_cast<uint32_t>(0), 6 };
-			image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, subresourceRange);
+			image.setLayout(cmdBuff, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, subresourceRange);
 
-			stagingBuffer.copyToImage(cmdBuff, *image, { region });
+			stagingBuffer.copyToImage(cmdBuff, image, { region });
 
-			image->setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, stageFlagBit, subresourceRange);
+			image.setLayout(cmdBuff, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, stageFlagBit, subresourceRange);
 
 			cmdBuff.endRecord();
 
@@ -179,7 +175,7 @@ namespace LavaCake {
 
 			cmdBuff.resetFence();
 
-			return image;
+			return std::move(image);
 		};
 
 
@@ -193,23 +189,23 @@ namespace LavaCake {
 			m_height = height;
 		};
 
-		VkImageView& FrameBuffer::getImageViews(uint8_t i) {
+		const VkImageView& FrameBuffer::getImageView(uint8_t i) const{
 			return m_images[i]->getImageView();
 		}
 
-		size_t FrameBuffer::getImageViewSize(){
+		size_t FrameBuffer::getImageViewSize() const{
 			return m_images.size();
 		}
 
-		VkImageLayout& FrameBuffer::getLayout(uint8_t i){
+		VkImageLayout FrameBuffer::getLayout(uint8_t i) const{
 			return m_images[i]->getLayout();
 		}
 
-		VkSampler&	FrameBuffer::getSampler() {
+		const VkSampler&	FrameBuffer::getSampler() const{
 			return m_sampler;
 		}
 
-		VkFramebuffer& FrameBuffer::getHandle() {
+		const VkFramebuffer& FrameBuffer::getHandle() const{
 			return m_frameBuffer;
 		}
 

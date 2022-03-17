@@ -1,8 +1,8 @@
 #pragma once
+#include "Device.h"
 #include "Buffer.h"
 #include "Common.h"
 #include "AllHeaders.h"
-#include "Window.h"
 #include "SwapChain.h"
 #include "Queue.h"
 #include "VertexBuffer.h"
@@ -10,7 +10,6 @@
 #include "GraphicPipeline.h"
 #include "ComputePipeline.h"
 #include "RenderPass.h"
-#include "Device.h"
 #include "ErrorCheck.h"
 #include "UniformBuffer.h"
 #include "Texture.h"

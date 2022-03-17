@@ -32,7 +32,7 @@ namespace LavaCake {
       static ErrorCheck*       m_instance ;
       bool                     m_printError = false;
       const char*              m_errorMessage = (char*)"";
-      uint8_t                  m_errorLvl;
+      uint8_t                  m_errorLvl = 0;
       uint8_t                  m_minErrorLevel = 0;
 
     public :
@@ -92,7 +92,7 @@ namespace LavaCake {
        \brief Define if the ErrorCheck singleton can print error on console
        \param print a boolean that define if ErrorCheck can print error on console
 			*/
-      static void PrintError(bool print = true, uint8_t lvl = 0) {
+      static void printError(bool print = true, uint8_t lvl = 0) {
         if (m_instance == nullptr) {
           m_instance = new ErrorCheck();
         }

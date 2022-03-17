@@ -10,15 +10,14 @@ namespace LavaCake {
 
 		class VertexBuffer {
 		public:
-			
-			VertexBuffer(std::vector<LavaCake::Geometry::Mesh_t*> m, uint32_t binding = 0,  VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX);
+		
 
+			VertexBuffer(const Queue& queue, CommandBuffer& cmdBuff, const std::vector<LavaCake::Geometry::Mesh_t*>& m, uint32_t binding = 0,  VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0));
 
-			void allocate(Queue* queue, CommandBuffer& cmdBuff, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0) );
 			
-			std::shared_ptr<Buffer> getVertexBuffer();
+			std::shared_ptr<Buffer> getVertexBuffer() const;
 			
-			std::shared_ptr<Buffer> getIndexBuffer();
+			std::shared_ptr<Buffer> getIndexBuffer() const;
 
 			void swapMeshes(std::vector<LavaCake::Geometry::Mesh_t*>				m);
 
@@ -63,43 +62,39 @@ namespace LavaCake {
 				}
 			}
 
-			size_t getIndicesNumber() {
+			size_t getIndicesNumber() const{
 				return m_indicesSize;
 			}
 
-			size_t getVerticiesNumber() {
+			size_t getVerticiesNumber() const{
 				return m_verticesSize / m_stride;
 			}
 			
-			uint32_t getStrideSize() {
+			uint32_t getStrideSize() const{
 				return m_stride;
 			}
 
-			uint32_t getByteStrideSize() {
+			uint32_t getByteStrideSize() const{
 				return m_stride * sizeof(float);
 			}
 
-			bool isIndexed();
+			bool isIndexed() const;
 
 			~VertexBuffer() {
-				//delete m_vertexBuffer;
-				//delete m_indexBuffer;
 			}
 
 		private :
 
 
 			std::vector<VkVertexInputAttributeDescription>				m_attributeDescriptions;
-			std::vector<VkVertexInputBindingDescription>				m_bindingDescriptions;
-			std::shared_ptr<Buffer>										m_vertexBuffer;
-			std::shared_ptr<Buffer>										m_indexBuffer;
-			std::vector<float>											m_vertices;
-			uint32_t													m_verticesSize;
-			uint32_t													m_indicesSize;
-			uint32_t													m_stride;
-			std::vector<uint32_t>										m_indices;
-			bool														m_indexed;
-			LavaCake::Geometry::topology								m_topology;
+			std::vector<VkVertexInputBindingDescription>					m_bindingDescriptions;
+			std::shared_ptr<Buffer>																m_vertexBuffer;
+			std::shared_ptr<Buffer>																m_indexBuffer;
+			uint32_t																							m_verticesSize = 0;
+			uint32_t																							m_indicesSize = 0;
+			uint32_t																							m_stride = 0;
+			bool																									m_indexed = false;
+			LavaCake::Geometry::topology													m_topology;
 		};
 
 	}

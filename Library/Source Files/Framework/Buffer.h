@@ -21,28 +21,60 @@ public :
   /**
         \brief Default constructor
       */
-  Buffer();
+  Buffer() = default;
+
+  Buffer(const Buffer& buffer) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
+  Buffer(Buffer&& b) noexcept
+    : m_buffer(std::exchange(b.m_buffer, VK_NULL_HANDLE)),
+      m_bufferMemory(std::exchange(b.m_bufferMemory, VK_NULL_HANDLE)),
+      m_bufferView(std::exchange(b.m_bufferView, VK_NULL_HANDLE)),
+      m_stage(std::exchange(b.m_stage, 0)),
+      m_access(std::move(b.m_access)),
+      m_queueFamily(std::exchange(b.m_queueFamily, 0)),
+      m_dataSize(std::exchange(b.m_dataSize, 0)),
+      m_padding(std::exchange(b.m_padding, 0)),
+      m_mapped(std::exchange(b.m_mapped, nullptr))
+  {}
+
+  Buffer& operator=(Buffer&& b) noexcept
+  {
+    if (this != &b)
+    {
+      m_buffer = std::exchange(b.m_buffer, VK_NULL_HANDLE);
+      m_bufferMemory = std::exchange(b.m_bufferMemory, VK_NULL_HANDLE);
+      m_bufferView = std::exchange(b.m_bufferView, VK_NULL_HANDLE);
+      m_stage = std::exchange(b.m_stage, 0);
+      m_access = std::move(b.m_access);
+      m_queueFamily = std::exchange(b.m_queueFamily, 0);
+      m_dataSize = std::exchange(b.m_dataSize, 0);
+      m_padding = std::exchange(b.m_padding, 0);
+      m_mapped = std::exchange(b.m_mapped, nullptr);
+    }
+    return *this;
+  }
+
 
   /**
-        \brief Copy constructor
-        \param buffer : the buffer to be copied
-      */
-  Buffer(const Buffer& buffer);
-
-
-  /**
-        \brief Allocate and initialise the Buffer with a list of data
-        \param queue : a pointer to the queue that will be used to copy data to the Buffer
-        \param cmdBuff : the command buffer used for this operation, must not be in a recording state
-        \param rawdata : a vector of data to be pushed to the buffer
-        \param usage : the usage of the buffer see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a>
-        \param memPropertyFlag : the memory property of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
-        \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
-        \param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
-        \param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
-      */
+    \brief Allocate and initialise the Buffer with a list of data
+    \param queue : a pointer to the queue that will be used to copy data to the Buffer
+    \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+    \param rawdata : a vector of data to be pushed to the buffer
+    \param usage : the usage of the buffer see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a>
+    \param memPropertyFlag : the memory property of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
+    \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
+    \param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
+    \param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
+  */
   template <typename t>
-  void allocate(Queue* queue, CommandBuffer& cmdBuff, const std::vector<t>& rawdata, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT, VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
+  Buffer(const Queue& queue, CommandBuffer& cmdBuff,
+         const std::vector<t>& rawdata,
+         VkBufferUsageFlags usage,
+         VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+         VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT,
+         VkFormat format = VK_FORMAT_R32_SFLOAT,
+         VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
     Device* d = Device::getDevice();
     VkPhysicalDevice physical = d->getPhysicalDevice();
     VkDevice logical = d->getLogicalDevice();
@@ -57,7 +89,7 @@ public :
 
     m_stage = stageFlagBit;
     m_access = accessmod;
-    m_queueFamily = queue->getIndex();
+    m_queueFamily = queue.getIndex();
 
     uint32_t memProp = 0;
     if (usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT) {
@@ -156,9 +188,7 @@ public :
       }
     }
 
-    Buffer stagingBuffer;
-
-    stagingBuffer.allocate(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    Buffer stagingBuffer(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
     stagingBuffer.write(rawdata);
 
@@ -179,107 +209,107 @@ public :
     cmdBuff.wait(UINT32_MAX);
     cmdBuff.resetFence();
     /*if (!LavaCake::Core::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physical, logical, sizeof(rawdata[0]) * rawdata.size(), &rawdata[0],
-          *m_buffer, 0, 0, accessmod, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, stageFlagBit, queue->getHandle(), cmdBuff.getHandle() , {})) {
-          ErrorCheck::setError("Can't copy data to buffer");
-        }*/
+            *m_buffer, 0, 0, accessmod, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, stageFlagBit, queue->getHandle(), cmdBuff.getHandle() , {})) {
+            ErrorCheck::setError("Can't copy data to buffer");
+          }*/
   }
 
 
 
   /**
-        \brief Allocate a Buffer of a given size
-        \param byteSize : the size in byte of the buffer
-        \param usage : the usage of the buffer see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a>
-        \param memPropertyFlag : the memory property of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
-        \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
-        \param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
-        \param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
-      */
-  void allocate(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT);
+          \brief Allocate a Buffer of a given size
+          \param byteSize : the size in byte of the buffer
+          \param usage : the usage of the buffer see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a>
+          \param memPropertyFlag : the memory property of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
+          \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
+          \param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
+          \param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
+        */
+  Buffer(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT);
 
   /**
-        \brief Change the acces mode of the buffer
-        \param cmdBuff : the command buffer used for this opperation, must be in a recording state
-        \param dstStage : the new stage of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
-        \param dstAccessMode : the new access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
-        \param dstQueueFamily : (optional) the new family queue of  the buffer, if ignored the buffer will remain on the same family queue
-      */
+          \brief Change the acces mode of the buffer
+          \param cmdBuff : the command buffer used for this opperation, must be in a recording state
+          \param dstStage : the new stage of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
+          \param dstAccessMode : the new access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
+          \param dstQueueFamily : (optional) the new family queue of  the buffer, if ignored the buffer will remain on the same family queue
+        */
   void setAccess(CommandBuffer& cmdBuff, VkPipelineStageFlags dstStage, VkAccessFlagBits dstAccessMode, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED);
 
   /**
-         \brief Return the handle of the buffer
-         \return a VkBuffer: the vulkan representation of the buffer
-      */
+           \brief Return the handle of the buffer
+           \return a VkBuffer: the vulkan representation of the buffer
+        */
   const VkBuffer& getHandle() const;
 
-  /**
-         \brief Return the buffer view
-         \return a VkBuffer: the vulkan representation of the buffer
-      */
-  VkBufferView& getBufferView();
+  //VkBuffer& getHandle();
 
   /**
-         \brief Return the buffer memory
-         \return a VkDeviceMemory: the memory of the buffer on the GPU
-      */
-  VkDeviceMemory& getMemory();
+           \brief Return the buffer view
+           \return a VkBuffer: the vulkan representation of the buffer
+        */
+  const VkBufferView& getBufferView() const;
 
   /**
-         \brief Copy a region of the buffer to an image
-         \param cmdBuff: the command buffer used for this operation, must be in a  recording state
-         \param image: the destination image
-         \param region: The region of the image to be copied to the buffer
-      */
+           \brief Return the buffer memory
+           \return a VkDeviceMemory: the memory of the buffer on the GPU
+        */
+  const VkDeviceMemory& getMemory() const ;
+
+  /**
+           \brief Copy a region of the buffer to an image
+           \param cmdBuff: the command buffer used for this operation, must be in a  recording state
+           \param image: the destination image
+           \param region: The region of the image to be copied to the buffer
+        */
   void copyToImage(CommandBuffer& cmdBuff, Image& image, const VkBufferImageCopy& region);
 
   /**
-         \brief Copy a region(s) of the buffer to an image
-         \param cmdBuff: the command buffer used for this operation, must be in a  recording state
-         \param image: the destination image
-         \param regions: The listt of regions of the image to be copied to the buffer
-      */
+           \brief Copy a region(s) of the buffer to an image
+           \param cmdBuff: the command buffer used for this operation, must be in a  recording state
+           \param image: the destination image
+           \param regions: The listt of regions of the image to be copied to the buffer
+        */
   void copyToImage(CommandBuffer& cmdBuff, Image& image, const std::span<VkBufferImageCopy>& regions);
 
   /**
-         \brief Copy a region of the buffer another buffer
-         \param cmdBuff: the command buffer used for this operation, must be in a  recording state
-         \param buffer: the destination buffer
-         \param region: The region of the image to be copied to the buffer
-      */
+           \brief Copy a region of the buffer another buffer
+           \param cmdBuff: the command buffer used for this operation, must be in a  recording state
+           \param buffer: the destination buffer
+           \param region: The region of the image to be copied to the buffer
+        */
   void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const VkBufferCopy& region);
 
   /**
-         \brief Copy a region(s) of the buffer another buffer
-         \param cmdBuff: the command buffer used for this operation, must be in a  recording state
-         \param buffer: the destination buffer
-         \param regions: The list of regions of the image to be copied to the buffer
-      */
+           \brief Copy a region(s) of the buffer another buffer
+           \param cmdBuff: the command buffer used for this operation, must be in a  recording state
+           \param buffer: the destination buffer
+           \param regions: The list of regions of the image to be copied to the buffer
+        */
   void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const std::span<VkBufferCopy>& regions);
 
 
   /**
-        \brief Map the buffer memory to a pointer
-        \return a void* pointer to mapped memory
-      */
+          \brief Map the buffer memory to a pointer
+          \return a void* pointer to mapped memory
+        */
   void* map();
 
   /**
-        \brief Unmap the buffer memory
+          \brief Unmap the buffer memory
 
-      */
+        */
   void unmap();
 
   /**
-        \brief Read  back the data contained in a buffer and return it in a vector
-        \param queue : a pointer to the queue that will be used to copy data to the Buffer
-        \param cmdBuff : the command buffer used for this operation, must not be in a recording state
-        \param data: the vector on witch the content of the data will be written
-      */
+          \brief Read  back the data contained in a buffer and return it in a vector
+          \param queue : a pointer to the queue that will be used to copy data to the Buffer
+          \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+          \param data: the vector on witch the content of the data will be written
+        */
   template <typename t>
-  void readBack(Queue* queue, CommandBuffer& cmdBuff, std::vector<t>& data){
-    Buffer stagingBuffer;
-
-    stagingBuffer.allocate(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+  void readBack(const Queue& queue, CommandBuffer& cmdBuff, std::vector<t>& data){
+    Buffer stagingBuffer(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
     data = std::vector<t>(m_dataSize/sizeof(t));
 
@@ -305,15 +335,15 @@ public :
   }
 
   /**
-        \brief Get the Buffer device address,
-        \return the address of the buffer on the device
-      */
-  uint64_t getBufferDeviceAddress();
+          \brief Get the Buffer device address,
+          \return the address of the buffer on the device
+        */
+  uint64_t getBufferDeviceAddress() const;
 
   /**
-        \brief Write a set of data to the buffer,
-        The buffer must be host visible for this operation to succeed
-      */
+          \brief Write a set of data to the buffer,
+          The buffer must be host visible for this operation to succeed
+        */
   template <typename t>
   void write(const std::vector<t>& data) {
     Device* d = Device::getDevice();
@@ -321,19 +351,21 @@ public :
 
     m_mapped = map();
 
-    std::memcpy(m_mapped, data.data(), sizeof(t) * static_cast<size_t>(data.size()));
+    std::memcpy(m_mapped, &data[0], sizeof(t) * static_cast<size_t>(data.size()));
 
-    VkMappedMemoryRange memory_ranges = {
-      VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,  // VkStructureType    sType
-      nullptr,                                // const void       * pNext
-      m_bufferMemory,													// VkDeviceMemory     memory
-      0,																			// VkDeviceSize       offset
-      VK_WHOLE_SIZE                           // VkDeviceSize       size
+    std::vector<VkMappedMemoryRange> memory_ranges = {
+      {
+        VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,  // VkStructureType    sType
+        nullptr,                                // const void       * pNext
+        m_bufferMemory,													// VkDeviceMemory     memory
+        0,																			// VkDeviceSize       offset
+        VK_WHOLE_SIZE                           // VkDeviceSize       size
+      }
     };
 
-    VkResult result = vkFlushMappedMemoryRanges(logical, 1u, &memory_ranges);
+    VkResult result = vkFlushMappedMemoryRanges(logical, static_cast<uint32_t>(memory_ranges.size()), memory_ranges.data());
     if (VK_SUCCESS != result) {
-      ErrorCheck::setError("Could not flush mapped memory.", 0);
+      std::cout << "Could not flush mapped memory." << std::endl;
     }
 
     unmap();
@@ -374,7 +406,7 @@ protected:
   uint64_t																						m_dataSize = 0;
   uint64_t																						m_padding = 0;
 
-  void*																								m_mapped;
+  void*																								m_mapped = nullptr;
 
 
 };
@@ -382,14 +414,10 @@ protected:
 
 class TransformBuffer {
 public :
-  TransformBuffer(VkTransformMatrixKHR& transform) {
-    m_transformData = transform;
+  TransformBuffer(const Queue& queue, CommandBuffer& cmdBuff, VkTransformMatrixKHR& transform) :
+    m_buffer(queue, cmdBuff, std::vector<VkTransformMatrixKHR>{ transform }, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR))
+  {
 
-  }
-
-  void allocate(Queue* queue, CommandBuffer& cmdBuff) {
-    std::vector<VkTransformMatrixKHR> transform{ m_transformData };
-    m_buffer.allocate(queue, cmdBuff, transform, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR));
   }
 
   Buffer& getBuffer() {
@@ -398,12 +426,13 @@ public :
 
 private :
 
-  VkTransformMatrixKHR m_transformData;
 
   Buffer m_buffer;
 
 
 
 };
+
+
 }
 }

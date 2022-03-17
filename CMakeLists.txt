@@ -31,7 +31,6 @@ endif()
 if ( APPLE )
 	add_definitions( -DVK_USE_PLATFORM_MACOS_MVK )
 	add_definitions( -DVK_USE_PLATFORM_METAL_EXT )
-
 else()
 
 	if( VK_USE_PLATFORM STREQUAL "VK_USE_PLATFORM_WIN32_KHR" )
@@ -62,16 +61,28 @@ endif()
 ###############################################################
 # External Library                                            #
 ###############################################################
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-option(USE_SYSTEM_GLFW "\
-    If not activated, use submodule for glfw, otherwise, use version provided by system.
-    " OFF)
 
-if(NOT USE_SYSTEM_GLFW)
-  add_subdirectory(./External/lib/glfw/)
+set(LAVACAKE_WINDOW_MANAGER "GLFW" CACHE STRING "lib used by Lavacake for window management")
+
+if(LAVACAKE_WINDOW_MANAGER STREQUAL "GLFW")
+	
+	set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+	set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+	set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+	option(USE_SYSTEM_GLFW "\
+    	If not activated, use submodule for glfw, otherwise, use version provided by system.
+    	" OFF)
+
+	if(NOT LAVACAKE_USE_SYSTEM_GLFW)
+  		add_subdirectory(./External/lib/glfw/)
+	endif()
+	add_definitions(-DLAVACAKE_WINDOW_MANAGER_GLFW)
+elseif(LAVACAKE_WINDOW_MANAGER STREQUAL "headless")
+	add_definitions(-DLAVACAKE_WINDOW_MANAGER_HEADLESS)
+elseif(LAVACAKE_WINDOW_MANAGER STREQUAL "custom")
+	add_definitions(-DLAVACAKE_WINDOW_MANAGER_CUSTOM)
 endif()
 
 set(IMGUI_SOURCE 
@@ -203,7 +214,6 @@ ${LIBRARY_FRAMEWORK_DIR}/SwapChain.h
 ${LIBRARY_FRAMEWORK_DIR}/Texture.h
 ${LIBRARY_FRAMEWORK_DIR}/UniformBuffer.h
 ${LIBRARY_FRAMEWORK_DIR}/VertexBuffer.h
-${LIBRARY_FRAMEWORK_DIR}/Window.h
 )
 
 set(LIBRARY_FRAMEWORK_SOURCE
@@ -223,7 +233,6 @@ ${LIBRARY_FRAMEWORK_DIR}/SwapChain.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Texture.cpp
 ${LIBRARY_FRAMEWORK_DIR}/UniformBuffer.cpp
 ${LIBRARY_FRAMEWORK_DIR}/VertexBuffer.cpp
-${LIBRARY_FRAMEWORK_DIR}/Window.cpp
 )
 
 source_group( "Library\\Framework\\Header" FILES ${LIBRARY_FRAMEWORK_HEADER} )
