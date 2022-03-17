@@ -7,200 +7,200 @@
 #include "Device.h"
 
 
- 
+
 
 namespace LavaCake {
-	namespace Framework {
+  namespace Framework {
 
 
-		class SwapChainImage {
-		public:
-			
-			SwapChainImage(){}
+    class SwapChainImage {
+    public:
+
+      SwapChainImage() {}
 
       SwapChainImage(VkExtent2D /*size*/, VkFormat imageFormat, VkImage image) {
-				Device* d = Device::getDevice();
-				VkDevice logical = d->getLogicalDevice();
-				m_image = image;
+        Device* d = Device::getDevice();
+        VkDevice logical = d->getLogicalDevice();
+        m_image = image;
 
-				VkImageViewCreateInfo image_view_create_info = {
-				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,   // VkStructureType            sType
-				nullptr,                                    // const void               * pNext
-				0,                                          // VkImageViewCreateFlags     flags
-				m_image,                                    // VkImage                    image
-				VK_IMAGE_VIEW_TYPE_2D,                      // VkImageViewType            viewType
-				imageFormat,                                // VkFormat                   format
-				{                                           // VkComponentMapping         components
-					VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         r
-					VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         g
-					VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         b
-					VK_COMPONENT_SWIZZLE_IDENTITY               // VkComponentSwizzle         a
-				},
-				{                                           // VkImageSubresourceRange    subresourceRange
-					VK_IMAGE_ASPECT_COLOR_BIT,                  // VkImageAspectFlags         aspectMask
-					0,                                          // uint32_t                   baseMipLevel
-					VK_REMAINING_MIP_LEVELS,                    // uint32_t                   levelCount
-					0,                                          // uint32_t                   baseArrayLayer
-					VK_REMAINING_ARRAY_LAYERS                   // uint32_t                   layerCount
-				}
-				};
+        VkImageViewCreateInfo image_view_create_info = {
+        VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,   // VkStructureType            sType
+        nullptr,                                    // const void               * pNext
+        0,                                          // VkImageViewCreateFlags     flags
+        m_image,                                    // VkImage                    image
+        VK_IMAGE_VIEW_TYPE_2D,                      // VkImageViewType            viewType
+        imageFormat,                                // VkFormat                   format
+        {                                           // VkComponentMapping         components
+          VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         r
+          VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         g
+          VK_COMPONENT_SWIZZLE_IDENTITY,              // VkComponentSwizzle         b
+          VK_COMPONENT_SWIZZLE_IDENTITY               // VkComponentSwizzle         a
+        },
+        {                                           // VkImageSubresourceRange    subresourceRange
+          VK_IMAGE_ASPECT_COLOR_BIT,                  // VkImageAspectFlags         aspectMask
+          0,                                          // uint32_t                   baseMipLevel
+          VK_REMAINING_MIP_LEVELS,                    // uint32_t                   levelCount
+          0,                                          // uint32_t                   baseArrayLayer
+          VK_REMAINING_ARRAY_LAYERS                   // uint32_t                   layerCount
+        }
+        };
 
-				VkResult result = vkCreateImageView(logical, &image_view_create_info, nullptr, &m_imageView);
-				if (VK_SUCCESS != result) {
-					ErrorCheck::setError("Could not create an image view");
-				}
+        VkResult result = vkCreateImageView(logical, &image_view_create_info, nullptr, &m_imageView);
+        if (VK_SUCCESS != result) {
+          ErrorCheck::setError("Could not create an image view");
+        }
 
-				VkSemaphoreCreateInfo semaphore_create_info = {
-					VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,    // VkStructureType            sType
-					nullptr,                                    // const void               * pNext
-					0                                           // VkSemaphoreCreateFlags     flags
-				};
+        VkSemaphoreCreateInfo semaphore_create_info = {
+          VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,    // VkStructureType            sType
+          nullptr,                                    // const void               * pNext
+          0                                           // VkSemaphoreCreateFlags     flags
+        };
 
-				result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &m_aquiredSemaphore);
-				if (VK_SUCCESS != result) {
-					ErrorCheck::setError("Could not create a semaphore.");
-				}
-			}
+        result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &m_aquiredSemaphore);
+        if (VK_SUCCESS != result) {
+          ErrorCheck::setError("Could not create a semaphore.");
+        }
+      }
 
-			const VkSemaphore& getSemaphore() const{
-				return m_aquiredSemaphore;
-			}
+      const VkSemaphore& getSemaphore() const {
+        return m_aquiredSemaphore;
+      }
 
-			const VkImageView& getView() const{
-				return m_imageView;
-			}
+      const VkImageView& getView() const {
+        return m_imageView;
+      }
 
-			const VkImage getImage() const {
-				return m_image;
-			}
+      const VkImage getImage() const {
+        return m_image;
+      }
 
-			uint32_t getIndex() const {
-				return m_index;
-			}
+      uint32_t getIndex() const {
+        return m_index;
+      }
 
-			~SwapChainImage() {
-				Device* d = Device::getDevice();
-				VkDevice logical = d->getLogicalDevice();
+      ~SwapChainImage() {
+        Device* d = Device::getDevice();
+        VkDevice logical = d->getLogicalDevice();
 
-				if (VK_NULL_HANDLE != m_imageView) {
-					vkDestroyImageView(logical, m_imageView, nullptr);
-					m_imageView = VK_NULL_HANDLE;
-				}
+        if (VK_NULL_HANDLE != m_imageView) {
+          vkDestroyImageView(logical, m_imageView, nullptr);
+          m_imageView = VK_NULL_HANDLE;
+        }
 
-				if (m_aquiredSemaphore != VK_NULL_HANDLE) {
-					vkDestroySemaphore(logical, m_aquiredSemaphore, nullptr);
-				}
-			}
+        if (m_aquiredSemaphore != VK_NULL_HANDLE) {
+          vkDestroySemaphore(logical, m_aquiredSemaphore, nullptr);
+        }
+      }
 
-		private:
-			uint32_t																	m_index =0;
-			VkImage																		m_image = VK_NULL_HANDLE;
-			VkImageView									              m_imageView = VK_NULL_HANDLE;
-			VkSemaphore									              m_aquiredSemaphore = VK_NULL_HANDLE;
-			friend class SwapChain;
-		};
+    private:
+      uint32_t																	m_index = 0;
+      VkImage																		m_image = VK_NULL_HANDLE;
+      VkImageView									              m_imageView = VK_NULL_HANDLE;
+      VkSemaphore									              m_aquiredSemaphore = VK_NULL_HANDLE;
+      friend class SwapChain;
+    };
 
 
-		class SwapChain {
-			inline static SwapChain* m_swapChain = nullptr;
-			SwapChain() {
-				
-			};
+    class SwapChain {
+      inline static SwapChain* m_swapChain = nullptr;
+      SwapChain() {
 
-			~SwapChain() {
-				Device* d = Device::getDevice();
-				VkDevice logical = d->getLogicalDevice();
-				for (uint32_t i = 0; i < m_swapchainImages.size(); i++) {
-					delete m_swapchainImages[i];
-				}
-				m_swapchainImages.clear();
-				vkDestroySwapchainKHR(logical, m_handle, nullptr);
-				m_handle = VK_NULL_HANDLE;
+      };
 
-			};
+      ~SwapChain() {
+        Device* d = Device::getDevice();
+        VkDevice logical = d->getLogicalDevice();
+        for (uint32_t i = 0; i < m_swapchainImages.size(); i++) {
+          delete m_swapchainImages[i];
+        }
+        m_swapchainImages.clear();
+        vkDestroySwapchainKHR(logical, m_handle, nullptr);
+        m_handle = VK_NULL_HANDLE;
 
-		public :
-			
-			static SwapChain* getSwapChain() {
-				if (!m_swapChain) {
-					m_swapChain = new SwapChain();
-				}
-				return m_swapChain;
-			}
+      };
 
-			static void destroy() {
-				delete m_swapChain;
-			}
+    public:
 
-			const VkSwapchainKHR& getHandle() const{
-				return m_handle;
-			}
+      static SwapChain* getSwapChain() {
+        if (!m_swapChain) {
+          m_swapChain = new SwapChain();
+        }
+        return m_swapChain;
+      }
 
-			void init(
-				VkImageUsageFlags													swapchain_image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-			);
+      static void destroy() {
+        delete m_swapChain;
+      }
+
+      const VkSwapchainKHR& getHandle() const {
+        return m_handle;
+      }
+
+      void init(
+        VkImageUsageFlags													swapchain_image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+      );
 
       void resize();
-      
-			VkFormat imageFormat() const{
-				return m_format;
-			}
 
-			VkFormat depthFormat() const{
-				return m_depthFormat;
-			}
-			
-			VkExtent2D size() const{
-				return m_size;
-			}
+      VkFormat imageFormat() const {
+        return m_format;
+      }
 
-			const SwapChainImage& acquireImage() {
-				Device* d = Device::getDevice();
-				VkDevice logical = d->getLogicalDevice();
-				VkSemaphoreCreateInfo semaphore_create_info = {
-					VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,    // VkStructureType            sType
-					nullptr,                                    // const void               * pNext
-					0                                           // VkSemaphoreCreateFlags     flags
-				};
-				uint32_t index;
-				VkSemaphore semaphore;
-				VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &semaphore);
-				if (VK_SUCCESS != result) {
-					ErrorCheck::setError("Could not create a semaphore.");
-				}
+      VkFormat depthFormat() const {
+        return m_depthFormat;
+      }
 
-				result = vkAcquireNextImageKHR(logical, m_handle, 2000000000, semaphore, VK_NULL_HANDLE, &index);
-				if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-					ErrorCheck::setError("Could not create a semaphore.");
-				}
+      VkExtent2D size() const {
+        return m_size;
+      }
 
-				if (m_swapchainImages[index]->m_aquiredSemaphore != VK_NULL_HANDLE) {
-					vkDestroySemaphore(logical, m_swapchainImages[index]->m_aquiredSemaphore, nullptr);
-				}
-				
+      const SwapChainImage& acquireImage() {
+        Device* d = Device::getDevice();
+        VkDevice logical = d->getLogicalDevice();
+        VkSemaphoreCreateInfo semaphore_create_info = {
+          VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,    // VkStructureType            sType
+          nullptr,                                    // const void               * pNext
+          0                                           // VkSemaphoreCreateFlags     flags
+        };
+        uint32_t index;
+        VkSemaphore semaphore;
+        VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &semaphore);
+        if (VK_SUCCESS != result) {
+          ErrorCheck::setError("Could not create a semaphore.");
+        }
 
-				m_swapchainImages[index]->m_aquiredSemaphore = std::move(semaphore);
-				m_swapchainImages[index]->m_index = index;
-				return *m_swapchainImages[index];
-			}
-      
-      void presentImage(const PresentationQueue& queue, const SwapChainImage& image, std::vector<VkSemaphore> semaphores) const{
+        result = vkAcquireNextImageKHR(logical, m_handle, 2000000000, semaphore, VK_NULL_HANDLE, &index);
+        if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+          ErrorCheck::setError("Could not create a semaphore.");
+        }
+
+        if (m_swapchainImages[index]->m_aquiredSemaphore != VK_NULL_HANDLE) {
+          vkDestroySemaphore(logical, m_swapchainImages[index]->m_aquiredSemaphore, nullptr);
+        }
+
+
+        m_swapchainImages[index]->m_aquiredSemaphore = std::move(semaphore);
+        m_swapchainImages[index]->m_index = index;
+        return *m_swapchainImages[index];
+      }
+
+      void presentImage(const PresentationQueue& queue, const SwapChainImage& image, std::vector<VkSemaphore> semaphores) const {
         /*Core::PresentInfo present_info = {
           m_handle,                                    // VkSwapchainKHR         Swapchain
           image.getIndex()                              // uint32_t               ImageIndex
         };*/
-        
+
         VkResult result;
         std::vector<VkSwapchainKHR> swapchains;
         std::vector<uint32_t> image_indices;
-        
-        
-        
-        
+
+
+
+
         swapchains.emplace_back(m_handle);
         image_indices.emplace_back(image.getIndex());
-        
-        
+
+
         VkPresentInfoKHR present_info = {
           VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,                   // VkStructureType          sType
           nullptr,                                              // const void*              pNext
@@ -211,30 +211,30 @@ namespace LavaCake {
           image_indices.data(),                                 // const uint32_t         * pImageIndices
           nullptr                                               // VkResult*                pResults
         };
-        
+
         result = vkQueuePresentKHR(queue.getHandle(), &present_info);
-        
-        if(result != VK_SUCCESS){
+
+        if (result != VK_SUCCESS) {
           ErrorCheck::setError("Failed to present the image");
         }
       }
-      
-		private :
 
-			VkSwapchainKHR														m_handle = VK_NULL_HANDLE;
-			VkFormat																	m_format = VK_FORMAT_UNDEFINED;
-			const VkFormat														m_depthFormat = VK_FORMAT_D16_UNORM;
-			VkExtent2D																m_size = {uint32_t(0), uint32_t(0)};
+    private:
+
+      VkSwapchainKHR														m_handle = VK_NULL_HANDLE;
+      VkFormat																	m_format = VK_FORMAT_UNDEFINED;
+      const VkFormat														m_depthFormat = VK_FORMAT_D16_UNORM;
+      VkExtent2D																m_size = { uint32_t(0), uint32_t(0) };
 
       VkImageUsageFlags                         m_swapchainImageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-      
-			std::vector<SwapChainImage*>							m_swapchainImages;
 
-		};
+      std::vector<SwapChainImage*>							m_swapchainImages;
+
+    };
 
 
-		
 
-	}
+
+  }
 }
 

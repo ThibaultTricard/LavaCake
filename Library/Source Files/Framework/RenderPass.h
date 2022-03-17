@@ -4,157 +4,157 @@
 #include "SwapChain.h"
 
 namespace LavaCake {
-	namespace Framework {
-		
-		enum RenderPassFlag {
-			SHOW_ON_SCREEN	= 1,
-			USE_COLOR				= 2,
-			USE_DEPTH				= 4,
-			OP_STORE_COLOR	= 8,
-			OP_STORE_DEPTH  = 16,
-			ADD_INPUT				= 32
-		};
-		
-		struct SubpassAttachment {
-			uint16_t nbColor = 0;
-			bool storeColor = false;
+  namespace Framework {
 
-			bool useDepth = false;
-			bool storeDepth = false;
+    enum RenderPassFlag {
+      SHOW_ON_SCREEN = 1,
+      USE_COLOR = 2,
+      USE_DEPTH = 4,
+      OP_STORE_COLOR = 8,
+      OP_STORE_DEPTH = 16,
+      ADD_INPUT = 32
+    };
 
-			bool addInput = false;
+    struct SubpassAttachment {
+      uint16_t nbColor = 0;
+      bool storeColor = false;
 
-			bool showOnScreen = false;
-			uint16_t showOnScreenIndex = 0;
-		};
+      bool useDepth = false;
+      bool storeDepth = false;
 
+      bool addInput = false;
 
-		inline RenderPassFlag operator|(RenderPassFlag a, RenderPassFlag b)
-		{
-			return static_cast<RenderPassFlag>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
-		}
+      bool showOnScreen = false;
+      uint16_t showOnScreenIndex = 0;
+    };
 
 
-		enum RenderPassAttachmentType {
-			RENDERPASS_UNDEFINED_ATTACHMENT = 0,
-			RENDERPASS_COLOR_ATTACHMENT = 1, 
-			RENDERPASS_DEPTH_ATTACHMENT = 2, 
-			RENDERPASS_STENCIL_ATTACHMENT= 4, 
-			RENDERPASS_INPUT_ATTACHMENT = 8,
-			
-		};
-
-		inline RenderPassAttachmentType operator|(RenderPassAttachmentType a, RenderPassAttachmentType b)
-		{
-			return static_cast<RenderPassAttachmentType>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
-		}
-		
-
-		RenderPassAttachmentType toAttachmentType(VkFormat format);
-
-		class RenderPass {
-
-			using SubPass = std::vector< std::shared_ptr<GraphicPipeline> >;
-
-			struct SubpassParameters {
-				VkPipelineBindPoint                  PipelineType;
-				std::vector<VkAttachmentReference>   InputAttachments;
-				std::vector<VkAttachmentReference>   ColorAttachments;
-				std::vector<VkAttachmentReference>   ResolveAttachments;
-				VkAttachmentReference const* DepthStencilAttachment;
-				std::vector<uint32_t>                PreserveAttachments;
-			};
-
-		public :
-
-			/*
-			* renderPass Constructor for an image with the swapchain format
-			*/
-			RenderPass();
+    inline RenderPassFlag operator|(RenderPassFlag a, RenderPassFlag b)
+    {
+      return static_cast<RenderPassFlag>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+    }
 
 
-			/*
-			* renderPass Constructor for a specific image format and depth format
-			*/
-			RenderPass( VkFormat ImageFormat, VkFormat DepthFormat);
+    enum RenderPassAttachmentType {
+      RENDERPASS_UNDEFINED_ATTACHMENT = 0,
+      RENDERPASS_COLOR_ATTACHMENT = 1,
+      RENDERPASS_DEPTH_ATTACHMENT = 2,
+      RENDERPASS_STENCIL_ATTACHMENT = 4,
+      RENDERPASS_INPUT_ATTACHMENT = 8,
 
-			/*
-			* add dependencies for the render pass
-			*/
-			void addDependencies(uint32_t srcSubpass, uint32_t dstSubpass, VkPipelineStageFlags srcPipe, VkPipelineStageFlags dstPipe, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkDependencyFlags dependency);
+    };
 
-			/*
-			* add a subpass composed of multiple graphics pipeline and setup their attachments 
-			*/
-			void addSubPass(const SubPass& p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
-
-			/*
-			* prepare the render pass for drawing 
-			*/
-			void compile();
+    inline RenderPassAttachmentType operator|(RenderPassAttachmentType a, RenderPassAttachmentType b)
+    {
+      return static_cast<RenderPassAttachmentType>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+    }
 
 
-			/*
-			* Draw the render pass using a specific command buffer into a framebuffer
-			*/
-			void draw(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const & clear_values = {{ 1.0f, 0 }});
+    RenderPassAttachmentType toAttachmentType(VkFormat format);
 
-			/*
-			*	return the handle of the render pass
-			*/
-			const VkRenderPass& getHandle() const;
+    class RenderPass {
 
+      using SubPass = std::vector< std::shared_ptr<GraphicPipeline> >;
 
-			void prepareOutputFrameBuffer(const Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& FrameBuffer);
+      struct SubpassParameters {
+        VkPipelineBindPoint                  PipelineType;
+        std::vector<VkAttachmentReference>   InputAttachments;
+        std::vector<VkAttachmentReference>   ColorAttachments;
+        std::vector<VkAttachmentReference>   ResolveAttachments;
+        VkAttachmentReference const* DepthStencilAttachment;
+        std::vector<uint32_t>                PreserveAttachments;
+      };
 
+    public:
 
-			void setSwapChainImage(FrameBuffer& FrameBuffer, const SwapChainImage& image);
-
-
-			~RenderPass() {
-				Device* d = Device::getDevice();
-				VkDevice logical = d->getLogicalDevice();
-				DestroyRenderPass(logical, m_renderPass);
-			}
-
-		private : 
+      /*
+      * renderPass Constructor for an image with the swapchain format
+      */
+      RenderPass();
 
 
-			/*
-			* add an attachment for a subpass
-			*/
-			void addAttatchments(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
+      /*
+      * renderPass Constructor for a specific image format and depth format
+      */
+      RenderPass(VkFormat ImageFormat, VkFormat DepthFormat);
 
-			void SpecifySubpassDescriptions(std::vector<SubpassParameters> const& subpass_parameters,
-				std::vector<VkSubpassDescription>& subpass_descriptions);
+      /*
+      * add dependencies for the render pass
+      */
+      void addDependencies(uint32_t srcSubpass, uint32_t dstSubpass, VkPipelineStageFlags srcPipe, VkPipelineStageFlags dstPipe, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkDependencyFlags dependency);
 
-			bool CreateRenderPass(VkDevice                                     logical_device,
-				std::vector<VkAttachmentDescription> const& attachments_descriptions,
-				std::vector<SubpassParameters> const& subpass_parameters,
-				std::vector<VkSubpassDependency> const& subpass_dependencies,
-				VkRenderPass& render_pass);
+      /*
+      * add a subpass composed of multiple graphics pipeline and setup their attachments
+      */
+      void addSubPass(const SubPass& p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
 
-			void DestroyRenderPass(VkDevice       logical_device,
-				VkRenderPass& render_pass);
+      /*
+      * prepare the render pass for drawing
+      */
+      void compile();
 
-			VkRenderPass															            m_renderPass = VK_NULL_HANDLE;
-			VkFormat																							m_imageFormat = VK_FORMAT_UNDEFINED;
-			VkFormat																							m_depthFormat = VK_FORMAT_UNDEFINED;
-			std::vector<SubpassParameters>												m_subpassParameters;
-			std::vector < SubPass >																m_subpass;
-			std::vector<VkAttachmentReference>										m_depthAttachments;
-			std::vector<VkAttachmentDescription>									m_attachmentDescriptions;
-			std::vector<VkSubpassDependency>											m_dependencies;
 
-			std::vector<RenderPassAttachmentType>									m_attachmentype;
+      /*
+      * Draw the render pass using a specific command buffer into a framebuffer
+      */
+      void draw(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const& clear_values = { { 1.0f, 0 } });
 
-			std::vector<std::shared_ptr<Image>>										m_inputAttachements;
+      /*
+      *	return the handle of the render pass
+      */
+      const VkRenderPass& getHandle() const;
 
-			std::vector<std::vector<uint32_t>>										m_subpassAttachements;
 
-			int																										m_khr_attachement = -1;
+      void prepareOutputFrameBuffer(const Queue& queue, CommandBuffer& commandBuffer, FrameBuffer& FrameBuffer);
 
-			
-		};
-	}
+
+      void setSwapChainImage(FrameBuffer& FrameBuffer, const SwapChainImage& image);
+
+
+      ~RenderPass() {
+        Device* d = Device::getDevice();
+        VkDevice logical = d->getLogicalDevice();
+        DestroyRenderPass(logical, m_renderPass);
+      }
+
+    private:
+
+
+      /*
+      * add an attachment for a subpass
+      */
+      void addAttatchments(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
+
+      void SpecifySubpassDescriptions(std::vector<SubpassParameters> const& subpass_parameters,
+        std::vector<VkSubpassDescription>& subpass_descriptions);
+
+      bool CreateRenderPass(VkDevice                                     logical_device,
+        std::vector<VkAttachmentDescription> const& attachments_descriptions,
+        std::vector<SubpassParameters> const& subpass_parameters,
+        std::vector<VkSubpassDependency> const& subpass_dependencies,
+        VkRenderPass& render_pass);
+
+      void DestroyRenderPass(VkDevice       logical_device,
+        VkRenderPass& render_pass);
+
+      VkRenderPass															            m_renderPass = VK_NULL_HANDLE;
+      VkFormat																							m_imageFormat = VK_FORMAT_UNDEFINED;
+      VkFormat																							m_depthFormat = VK_FORMAT_UNDEFINED;
+      std::vector<SubpassParameters>												m_subpassParameters;
+      std::vector < SubPass >																m_subpass;
+      std::vector<VkAttachmentReference>										m_depthAttachments;
+      std::vector<VkAttachmentDescription>									m_attachmentDescriptions;
+      std::vector<VkSubpassDependency>											m_dependencies;
+
+      std::vector<RenderPassAttachmentType>									m_attachmentype;
+
+      std::vector<std::shared_ptr<Image>>										m_inputAttachements;
+
+      std::vector<std::vector<uint32_t>>										m_subpassAttachements;
+
+      int																										m_khr_attachement = -1;
+
+
+    };
+  }
 }

@@ -1,17 +1,17 @@
 #include "Buffer.h"
 
-namespace LavaCake{
+namespace LavaCake {
   namespace Framework {
 
 
-    Buffer::Buffer(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag , VkPipelineStageFlagBits stageFlagBit , VkFormat format ) {
+    Buffer::Buffer(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag, VkPipelineStageFlagBits stageFlagBit, VkFormat format) {
       Device* d = Device::getDevice();
       VkPhysicalDevice physical = d->getPhysicalDevice();
       VkDevice logical = d->getLogicalDevice();
       m_dataSize = byteSize;
 
       VkPhysicalDeviceProperties p;
-      vkGetPhysicalDeviceProperties(physical,&p);
+      vkGetPhysicalDeviceProperties(physical, &p);
 
       m_padding = p.limits.nonCoherentAtomSize - m_dataSize % p.limits.nonCoherentAtomSize;
 
@@ -44,7 +44,7 @@ namespace LavaCake{
       nullptr,                                // const void           * pNext
       0,                                      // VkBufferCreateFlags    flags
       m_dataSize + m_padding,                 // VkDeviceSize           size
-      usage|VK_BUFFER_USAGE_TRANSFER_DST_BIT, // VkBufferUsageFlags     usage
+      usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // VkBufferUsageFlags     usage
       VK_SHARING_MODE_EXCLUSIVE,              // VkSharingMode          sharingMode
       0,                                      // uint32_t               queueFamilyIndexCount
       nullptr                                 // const uint32_t       * pQueueFamilyIndices
@@ -117,7 +117,7 @@ namespace LavaCake{
 
     }
 
-    void Buffer::setAccess(CommandBuffer& cmdBuff, VkPipelineStageFlags dstStage, VkAccessFlagBits dstAccessMode, uint32_t dstQueueFamily ) {
+    void Buffer::setAccess(CommandBuffer& cmdBuff, VkPipelineStageFlags dstStage, VkAccessFlagBits dstAccessMode, uint32_t dstQueueFamily) {
 
       VkBufferMemoryBarrier bufferMemoryBarrier{};
       bufferMemoryBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
@@ -137,7 +137,7 @@ namespace LavaCake{
       bufferMemoryBarrier.size = VK_WHOLE_SIZE;
 
 
-      vkCmdPipelineBarrier(cmdBuff.getHandle(), m_stage, dstStage, 0, 0, nullptr, 1,  &bufferMemoryBarrier , 0, nullptr);
+      vkCmdPipelineBarrier(cmdBuff.getHandle(), m_stage, dstStage, 0, 0, nullptr, 1, &bufferMemoryBarrier, 0, nullptr);
 
 
       m_stage = dstStage;
@@ -148,7 +148,7 @@ namespace LavaCake{
 
     }
 
-    const VkBuffer& Buffer::getHandle()  const{
+    const VkBuffer& Buffer::getHandle()  const {
       return m_buffer;
     }
 
@@ -156,7 +156,7 @@ namespace LavaCake{
       return m_buffer;
     }*/
 
-    const VkBufferView& Buffer::getBufferView() const{
+    const VkBufferView& Buffer::getBufferView() const {
       return m_bufferView;
     }
 
@@ -180,7 +180,7 @@ namespace LavaCake{
       }
     }
 
-    const VkDeviceMemory& Buffer::getMemory() const{
+    const VkDeviceMemory& Buffer::getMemory() const {
       return m_bufferMemory;
     }
 

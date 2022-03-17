@@ -19,7 +19,7 @@ namespace LavaCake {
     */
     class CommandBuffer {
     public:
-      
+
       /**
        Constructor the CommandBuffer class
        \brief Initialise a VkCommandBuffer and a VkFence for it's synchronisation
@@ -55,7 +55,7 @@ namespace LavaCake {
           //std::cout << "Could not create a fence." << std::endl;
         }
       };
-      
+
       /**
        \brief Create a VkSemaphore and add it into an intern list
        */
@@ -81,18 +81,18 @@ namespace LavaCake {
        \param force (optional) if set to true, will wait even if it was not submited
        */
       void wait(uint32_t waitingTime = UINT32_MAX, bool force = false) {
-        if(m_submitted || force){
+        if (m_submitted || force) {
           Device* d = Device::getDevice();
           VkDevice logical = d->getLogicalDevice();
-          
-          VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1),  &m_fence , true, waitingTime);
+
+          VkResult result = vkWaitForFences(logical, static_cast<uint32_t>(1), &m_fence, true, waitingTime);
           if (VK_SUCCESS != result) {
             ErrorCheck::setError("Waiting on fence failed");
           }
         }
         m_submitted = false;
       }
-      
+
       /**
        \brief Reset the fence associated with this buffer.
        Must be called before re-submiting the command buffer
@@ -100,12 +100,12 @@ namespace LavaCake {
       void resetFence() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
-        VkResult result = vkResetFences(logical, static_cast<uint32_t>(1),  &m_fence );
+        VkResult result = vkResetFences(logical, static_cast<uint32_t>(1), &m_fence);
         if (VK_SUCCESS != result) {
           ErrorCheck::setError("Error occurred when tried to reset fences");
         }
       }
-      
+
       /**
        \brief Put the command buffer in a recording state
        */
@@ -122,7 +122,7 @@ namespace LavaCake {
           ErrorCheck::setError("Could not begin command buffer recording operation.");
         }
       }
-      
+
       /**
        \brief Put the command buffer out of recording state
        */
@@ -137,16 +137,16 @@ namespace LavaCake {
        \brief Return the handle of command buffer
        \return a handle to the VkCommandBuffer
        */
-      const VkCommandBuffer& getHandle() const{
+      const VkCommandBuffer& getHandle() const {
         return m_commandBuffer;
       }
-      
+
       /**
        \brief Return the semaphore at a given index
        \param i the index of the wanted semaphore
        \return a handle to a VkSemaphore
        */
-      const VkSemaphore& getSemaphore(int i) const{
+      const VkSemaphore& getSemaphore(int i) const {
         return m_semaphores[i];
       }
 
@@ -154,7 +154,7 @@ namespace LavaCake {
        \brief Return the fence of the command buffer
        \return a handle to a VkFence
        */
-      const VkFence& getFence() const{
+      const VkFence& getFence() const {
         return m_fence;
       }
 
@@ -164,7 +164,7 @@ namespace LavaCake {
        \param waitSemaphoreInfo : description of the semaphores to to wait on before executing it
        \param signalSemaphores : the list of that will be raised by the execution of this command buffer
        */
-      void submit(const Queue& queue, const std::vector<WaitSemaphoreInfo>& waitSemaphoreInfo, const std::vector<VkSemaphore>&  signalSemaphores) {
+      void submit(const Queue& queue, const std::vector<WaitSemaphoreInfo>& waitSemaphoreInfo, const std::vector<VkSemaphore>& signalSemaphores) {
         std::vector<VkSemaphore>          wait_semaphore_handles;
         std::vector<VkPipelineStageFlags> wait_semaphore_stages;
         for (auto& wait_semaphore_info : waitSemaphoreInfo) {
@@ -191,7 +191,7 @@ namespace LavaCake {
           ErrorCheck::setError("Error occurred during command buffer submission.");
           return;
         }
-        m_submitted =true;
+        m_submitted = true;
       }
 
 
@@ -213,20 +213,20 @@ namespace LavaCake {
         }
       };
 
-      bool ready() const{
+      bool ready() const {
         auto device = Device::getDevice()->getLogicalDevice();
         VkResult res = vkGetFenceStatus(device, m_fence);
-        if(res == VK_SUCCESS){
+        if (res == VK_SUCCESS) {
           return true;
         }
         return false;
       }
-      
+
     private:
       VkCommandBuffer                           m_commandBuffer = VK_NULL_HANDLE;
       std::vector<VkSemaphore>                  m_semaphores;
       VkFence                                   m_fence = VK_NULL_HANDLE;
-        
+
       bool                                      m_submitted = false;
     };
   }

@@ -6,53 +6,53 @@
 #include "RenderPass.h"
 
 namespace LavaCake {
-	namespace Framework {
-    static Geometry::vertexFormat imguiformat =Geometry::vertexFormat({ Geometry::POS2,Geometry::UV,Geometry::COL4 });
-    
-  /**
-   Class ImGuiWrapper :
-   \brief Wrap Imgui into a Lavacake::Pipeline
-   */
-  class ImGuiWrapper {
-    public :
-    
-    /**
-     \brief Default Constructor
-     \param queue : a pointer to the queue that will be used to copy data to the Buffer
-     \param cmdBuff : the command buffer used for this operation, must not be in a recording state
-     \param windowSize: the size of the window
-     \param frameBufferSize: the size of the frame buffer imgui is used in
-     */
-     ImGuiWrapper(const Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize);
-
+  namespace Framework {
+    static Geometry::vertexFormat imguiformat = Geometry::vertexFormat({ Geometry::POS2,Geometry::UV,Geometry::COL4 });
 
     /**
-     \brief Prepare the gui for the current frame
-     \param queue : a pointer to the queue that will be used to copy data to the Buffer
-     \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+     Class ImGuiWrapper :
+     \brief Wrap Imgui into a Lavacake::Pipeline
      */
-    void prepareGui(const Queue& queue, CommandBuffer& cmdBuff);
+    class ImGuiWrapper {
+    public:
 
-    /**
-     \brief resize the gui
-     \param windowSize: the new size of the window
-     \param frameBufferSize: the new size of the frame buffer imgui is used in
-     */
-    void resizeGui(const vec2i& windowSize, const vec2i& frameBufferSize);
+      /**
+       \brief Default Constructor
+       \param queue : a pointer to the queue that will be used to copy data to the Buffer
+       \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+       \param windowSize: the size of the window
+       \param frameBufferSize: the size of the frame buffer imgui is used in
+       */
+      ImGuiWrapper(const Queue& queue, CommandBuffer& cmdBuff, const vec2i& windowSize, const vec2i& frameBufferSize);
 
-    /**
-     \brief Return the graphic pipelin for the gui
-     \return a pointer to the graphic pipeline
-     */
-    std::shared_ptr < GraphicPipeline > getPipeline() const{
-      return m_pipeline;
-    }
 
-    ~ImGuiWrapper() {
-    }
+      /**
+       \brief Prepare the gui for the current frame
+       \param queue : a pointer to the queue that will be used to copy data to the Buffer
+       \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+       */
+      void prepareGui(const Queue& queue, CommandBuffer& cmdBuff);
 
-    private : 
-      
+      /**
+       \brief resize the gui
+       \param windowSize: the new size of the window
+       \param frameBufferSize: the new size of the frame buffer imgui is used in
+       */
+      void resizeGui(const vec2i& windowSize, const vec2i& frameBufferSize);
+
+      /**
+       \brief Return the graphic pipelin for the gui
+       \return a pointer to the graphic pipeline
+       */
+      std::shared_ptr < GraphicPipeline > getPipeline() const {
+        return m_pipeline;
+      }
+
+      ~ImGuiWrapper() {
+      }
+
+    private:
+
       std::shared_ptr< GraphicPipeline >     m_pipeline;
       PushConstant                           m_pushConstant;
       std::unique_ptr < VertexBuffer >       m_vertexBuffer;
@@ -62,7 +62,7 @@ namespace LavaCake {
       std::unique_ptr < VertexShaderModule >    m_vertexShader;
       std::unique_ptr < FragmentShaderModule >  m_fragmentShader;
       std::shared_ptr < DescriptorSet >         m_descritporSet;
-      
+
     };
 
 
@@ -71,7 +71,7 @@ namespace LavaCake {
     static GLFWscrollfun        s_PrevUserCallbackScroll = NULL;
     static GLFWkeyfun           s_PrevUserCallbackKey = NULL;
     static GLFWcharfun          s_PrevUserCallbackChar = NULL;
-    static GLFWcursorposfun     s_PrevUserCallbackMouseMotion = NULL; 
+    static GLFWcursorposfun     s_PrevUserCallbackMouseMotion = NULL;
 
 
     /**
@@ -80,5 +80,5 @@ namespace LavaCake {
      */
     void prepareInputs(GLFWwindow* window);
 #endif
-	}
+  }
 }
