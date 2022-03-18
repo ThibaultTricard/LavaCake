@@ -4,7 +4,13 @@ namespace LavaCake {
   namespace Framework {
 
 
-    Buffer::Buffer(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag, VkPipelineStageFlagBits stageFlagBit, VkFormat format) {
+    Buffer::Buffer(
+      uint64_t byteSize, 
+      VkBufferUsageFlags usage, 
+      VkMemoryPropertyFlags memPropertyFlag, 
+      VkPipelineStageFlags stageFlagBit, 
+      VkFormat format) {
+
       Device* d = Device::getDevice();
       VkPhysicalDevice physical = d->getPhysicalDevice();
       VkDevice logical = d->getLogicalDevice();
@@ -117,7 +123,11 @@ namespace LavaCake {
 
     }
 
-    void Buffer::setAccess(CommandBuffer& cmdBuff, VkPipelineStageFlags dstStage, VkAccessFlagBits dstAccessMode, uint32_t dstQueueFamily) {
+    void Buffer::setAccess(
+      CommandBuffer& cmdBuff, 
+      VkPipelineStageFlags dstStage, 
+      VkAccessFlags dstAccessMode, 
+      uint32_t dstQueueFamily) {
 
       VkBufferMemoryBarrier bufferMemoryBarrier{};
       bufferMemoryBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
@@ -211,5 +221,19 @@ namespace LavaCake {
       bufferDeviceAI.buffer = m_buffer;
       return vkGetBufferDeviceAddressKHR(d->getLogicalDevice(), &bufferDeviceAI);
     }
+
+
+
+    Buffer createTransformBuffer(
+      const Queue& queue,
+      CommandBuffer& cmdBuff,
+      VkTransformMatrixKHR& transform) {
+      return Buffer(
+        queue,
+        cmdBuff,
+        std::vector<VkTransformMatrixKHR>{ transform },
+        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
+    }
+
   }
 }

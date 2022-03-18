@@ -111,8 +111,8 @@ namespace LavaCake {
     }
 
 
-    std::vector<ShaderStageParameters> GraphicPipeline::getStageParameter() {
-      std::vector<ShaderStageParameters> stage = std::vector<ShaderStageParameters>();
+    std::vector<shaderStageParameters> GraphicPipeline::getStageParameter() {
+      std::vector<shaderStageParameters> stage = std::vector<shaderStageParameters>();
       if (m_taskModule.shaderModule != VK_NULL_HANDLE) {
         stage.push_back(m_taskModule);
       }

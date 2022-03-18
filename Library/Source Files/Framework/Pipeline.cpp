@@ -2,7 +2,7 @@
 namespace LavaCake {
   namespace Framework {
 
-    void Pipeline::SpecifyPipelineShaderStages(std::vector<ShaderStageParameters> const& shader_stage_params,
+    void Pipeline::SpecifyPipelineShaderStages(std::vector<shaderStageParameters> const& shader_stage_params,
       std::vector<VkPipelineShaderStageCreateInfo>& shader_stage_create_infos) {
       shader_stage_create_infos.clear();
       for (auto& shader_stage : shader_stage_params) {

@@ -12,15 +12,12 @@ namespace LavaCake {
     class Image;
 
     /**
-        Class Buffer :
-        \brief This class helps manage Vulkan Buffers their memory and view
-      */
+      Class Buffer :
+      \brief This class helps manage Vulkan Buffers their memory and view
+    */
     class Buffer {
     public:
 
-      /**
-            \brief Default constructor
-          */
       Buffer() = default;
 
       Buffer(const Buffer& buffer) = delete;
@@ -57,24 +54,27 @@ namespace LavaCake {
 
 
       /**
-        \brief Allocate and initialise the Buffer with a list of data
-        \param queue : a pointer to the queue that will be used to copy data to the Buffer
+        \brief Create a buffer and initialise it with data
+        \param queue : a const ref to the queue that will be used to copy data to the buffer
         \param cmdBuff : the command buffer used for this operation, must not be in a recording state
         \param rawdata : a vector of data to be pushed to the buffer
         \param usage : the usage of the buffer see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a>
         \param memPropertyFlag : the memory property of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
-        \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
+        \param stageFlag : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
         \param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
         \param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
       */
       template <typename t>
-      Buffer(const Queue& queue, CommandBuffer& cmdBuff,
+      Buffer(
+        const Queue& queue,
+        CommandBuffer& cmdBuff,
         const std::vector<t>& rawdata,
         VkBufferUsageFlags usage,
-        VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT,
+        VkMemoryPropertyFlags memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        VkPipelineStageFlags stageFlag = VK_PIPELINE_STAGE_TRANSFER_BIT,
         VkFormat format = VK_FORMAT_R32_SFLOAT,
-        VkAccessFlagBits accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
+        VkAccessFlags accessmod = VK_ACCESS_TRANSFER_WRITE_BIT) {
+
         Device* d = Device::getDevice();
         VkPhysicalDevice physical = d->getPhysicalDevice();
         VkDevice logical = d->getLogicalDevice();
@@ -85,9 +85,7 @@ namespace LavaCake {
 
         m_padding = p.limits.nonCoherentAtomSize - m_dataSize % p.limits.nonCoherentAtomSize;
 
-
-
-        m_stage = stageFlagBit;
+        m_stage = stageFlag;
         m_access = accessmod;
         m_queueFamily = queue.getIndex();
 
@@ -201,31 +199,32 @@ namespace LavaCake {
 
         setAccess(cmdBuff, m_stage, m_access, VK_QUEUE_FAMILY_IGNORED);
 
-
         cmdBuff.endRecord();
 
         cmdBuff.submit(queue, {}, {});
 
         cmdBuff.wait(UINT32_MAX);
         cmdBuff.resetFence();
-        /*if (!LavaCake::Core::UseStagingBufferToUpdateBufferWithDeviceLocalMemoryBound(physical, logical, sizeof(rawdata[0]) * rawdata.size(), &rawdata[0],
-                *m_buffer, 0, 0, accessmod, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, stageFlagBit, queue->getHandle(), cmdBuff.getHandle() , {})) {
-                ErrorCheck::setError("Can't copy data to buffer");
-              }*/
+
       }
 
 
 
       /**
-              \brief Allocate a Buffer of a given size
-              \param byteSize : the size in byte of the buffer
-              \param usage : the usage of the buffer see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a>
-              \param memPropertyFlag : the memory property of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
-              \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
-              \param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
-              \param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
-            */
-      Buffer(uint64_t byteSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkPipelineStageFlagBits stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT, VkFormat format = VK_FORMAT_R32_SFLOAT);
+        \brief Create a buffer of a given size
+        \param byteSize : the size in byte of the buffer
+        \param usage : the usage of the buffer see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkBufferUsageFlags.html">here</a>
+        \param memPropertyFlag : the memory property of the buffer, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a>
+        \param stageFlagBit : the stage where the buffer will be used, see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPipelineStageFlagBits.html">here</a>
+        \param format : the format of the buffer  see more <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a>
+        \param accessmod : the access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
+      */
+      Buffer(
+        uint64_t byteSize,
+        VkBufferUsageFlags usage,
+        VkMemoryPropertyFlags memPropertyFlag = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        VkPipelineStageFlags stageFlagBit = VK_PIPELINE_STAGE_TRANSFER_BIT,
+        VkFormat format = VK_FORMAT_R32_SFLOAT);
 
       /**
         \brief Change the acces mode of the buffer
@@ -234,25 +233,27 @@ namespace LavaCake {
         \param dstAccessMode : the new access mode of the buffer <a href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkAccessFlagBits.html">here</a>
         \param dstQueueFamily : (optional) the new family queue of  the buffer, if ignored the buffer will remain on the same family queue
       */
-      void setAccess(CommandBuffer& cmdBuff, VkPipelineStageFlags dstStage, VkAccessFlagBits dstAccessMode, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED);
+      void setAccess(
+        CommandBuffer& cmdBuff,
+        VkPipelineStageFlags dstStage,
+        VkAccessFlags dstAccessMode,
+        uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED);
 
       /**
         \brief Return the handle of the buffer
-        \return a VkBuffer: the vulkan representation of the buffer
+        \return a const ref to a VkBuffer
       */
       const VkBuffer& getHandle() const;
 
-      //VkBuffer& getHandle();
-
       /**
         \brief Return the buffer view
-        \return a VkBuffer: the vulkan representation of the buffer
+        \return a const ref to a VkBufferView
       */
       const VkBufferView& getBufferView() const;
 
       /**
         \brief Return the buffer memory
-        \return a VkDeviceMemory: the memory of the buffer on the GPU
+        \return a const ref to VkDeviceMemory
       */
       const VkDeviceMemory& getMemory() const;
 
@@ -262,7 +263,10 @@ namespace LavaCake {
         \param image: the destination image
         \param region: The region of the image to be copied to the buffer
       */
-      void copyToImage(CommandBuffer& cmdBuff, Image& image, const VkBufferImageCopy& region);
+      void copyToImage(
+        CommandBuffer& cmdBuff,
+        Image& image,
+        const VkBufferImageCopy& region);
 
       /**
         \brief Copy a region(s) of the buffer to an image
@@ -270,7 +274,10 @@ namespace LavaCake {
         \param image: the destination image
         \param regions: The listt of regions of the image to be copied to the buffer
       */
-      void copyToImage(CommandBuffer& cmdBuff, Image& image, const std::span<VkBufferImageCopy>& regions);
+      void copyToImage(
+        CommandBuffer& cmdBuff,
+        Image& image,
+        const std::span<VkBufferImageCopy>& regions);
 
       /**
         \brief Copy a region of the buffer another buffer
@@ -278,7 +285,10 @@ namespace LavaCake {
         \param buffer: the destination buffer
         \param region: The region of the image to be copied to the buffer
       */
-      void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const VkBufferCopy& region);
+      void copyToBuffer(
+        CommandBuffer& cmdBuff,
+        Buffer& buffer,
+        const VkBufferCopy& region);
 
       /**
         \brief Copy a region(s) of the buffer another buffer
@@ -286,7 +296,10 @@ namespace LavaCake {
         \param buffer: the destination buffer
         \param regions: The list of regions of the image to be copied to the buffer
       */
-      void copyToBuffer(CommandBuffer& cmdBuff, Buffer& buffer, const std::span<VkBufferCopy>& regions);
+      void copyToBuffer(
+        CommandBuffer& cmdBuff,
+        Buffer& buffer,
+        const std::span<VkBufferCopy>& regions);
 
 
       /**
@@ -302,12 +315,16 @@ namespace LavaCake {
 
       /**
         \brief Read  back the data contained in a buffer and return it in a vector
-        \param queue : a pointer to the queue that will be used to copy data to the Buffer
+        \param queue : a const ref to the queue that will be used to copy data to the Buffer
         \param cmdBuff : the command buffer used for this operation, must not be in a recording state
         \param data: the vector on witch the content of the data will be written
       */
       template <typename t>
-      void readBack(const Queue& queue, CommandBuffer& cmdBuff, std::vector<t>& data) {
+      void readBack(
+        const Queue& queue,
+        CommandBuffer& cmdBuff,
+        std::vector<t>& data) {
+
         Buffer stagingBuffer(m_dataSize + m_padding, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
         data = std::vector<t>(m_dataSize / sizeof(t));
@@ -389,8 +406,17 @@ namespace LavaCake {
         }
       }
 
+      /**
+        \brief the pipeline stage flag of the buffer
+        return a VkPipelineStageFlags
+      */
       VkPipelineStageFlags getStage() { return m_stage; }
-      VkAccessFlagBits     getAccess() { return m_access; }
+
+      /**
+        \brief the access flag of the buffer
+        return a VkAccessFlagBits
+      */
+      VkAccessFlags     getAccess() { return m_access; }
 
     protected:
 
@@ -400,7 +426,7 @@ namespace LavaCake {
 
 
       VkPipelineStageFlags																m_stage;
-      VkAccessFlagBits																		m_access;
+      VkAccessFlags   																		m_access;
       uint32_t																						m_queueFamily;
       uint64_t																						m_dataSize = 0;
       uint64_t																						m_padding = 0;
@@ -410,24 +436,16 @@ namespace LavaCake {
 
     };
 
-
-    class TransformBuffer {
-    public:
-      TransformBuffer(const Queue& queue, CommandBuffer& cmdBuff, VkTransformMatrixKHR& transform) :
-        m_buffer(queue, cmdBuff, std::vector<VkTransformMatrixKHR>{ transform }, (VkBufferUsageFlagBits)(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR))
-      {
-
-      }
-
-      Buffer& getBuffer() {
-        return m_buffer;
-      }
-
-    private:
-
-      Buffer m_buffer;
-
-    };
+    /**
+      \brief Create a transform buffer from a VkTransformaMatrixKHR
+      \param queue : a const ref to the queue that will be used to copy data to the buffer
+      \param cmdBuff : the command buffer used for this operation, must not be in a recording state
+      \param VkTransformMatrixKHR& : a tranform matrix
+    */
+    Buffer createTransformBuffer(
+      const Queue& queue,
+      CommandBuffer& cmdBuff,
+      VkTransformMatrixKHR& transform);
 
 
   }

@@ -6,7 +6,7 @@
 namespace LavaCake {
   namespace Framework {
 
-    struct ShaderStageParameters {
+    struct shaderStageParameters {
       VkShaderStageFlagBits        shaderStage;
       VkShaderModule               shaderModule = VK_NULL_HANDLE;
       char const* entryPointName = nullptr;
@@ -60,7 +60,7 @@ namespace LavaCake {
       }
 
     public:
-      const ShaderStageParameters& getStageParameter() const {
+      const shaderStageParameters& getStageParameter() const {
         return m_stageParameter;
       }
 
@@ -100,7 +100,7 @@ namespace LavaCake {
 
       VkShaderModule								            m_module = VK_NULL_HANDLE;
       std::string																m_path;
-      ShaderStageParameters											m_stageParameter;
+      shaderStageParameters											m_stageParameter;
     };
 
     /**

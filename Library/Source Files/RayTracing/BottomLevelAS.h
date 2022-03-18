@@ -11,7 +11,7 @@ namespace LavaCake {
 		public :
 			BottomLevelAccelerationStructure() {};
 
-			void addVertexBuffer(std::shared_ptr<Framework::VertexBuffer> vertexBuffer, std::shared_ptr < Framework::TransformBuffer> transformBuffer, bool opaque = true);
+			void addVertexBuffer(std::shared_ptr<Framework::VertexBuffer> vertexBuffer, std::shared_ptr < Framework::Buffer> transformBuffer, bool opaque = true);
 
 			void allocate(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
 

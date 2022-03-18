@@ -45,7 +45,7 @@ namespace LavaCake {
       }
     private:
 
-      ShaderStageParameters																	m_computeModule;
+      shaderStageParameters																	m_computeModule;
 
     };
   }

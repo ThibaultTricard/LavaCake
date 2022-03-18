@@ -3,7 +3,9 @@
 namespace LavaCake {
 	namespace RayTracing {
 
-			void BottomLevelAccelerationStructure::addVertexBuffer(std::shared_ptr<Framework::VertexBuffer> vertexBuffer, std::shared_ptr<Framework::TransformBuffer> transformBuffer, bool opaque ) {
+			void BottomLevelAccelerationStructure::addVertexBuffer(
+				std::shared_ptr<Framework::VertexBuffer> vertexBuffer, 
+				std::shared_ptr<Framework::Buffer> transformBuffer, bool opaque ) {
 
 				VkDeviceOrHostAddressConstKHR vertexBufferDeviceAddress{};
 				VkDeviceOrHostAddressConstKHR indexBufferDeviceAddress{};
@@ -13,7 +15,7 @@ namespace LavaCake {
 				if (vertexBuffer->isIndexed()) {
 					indexBufferDeviceAddress.deviceAddress = vertexBuffer->getIndexBuffer()->getBufferDeviceAddress();
 				}
-				transformBufferDeviceAddress.deviceAddress = transformBuffer->getBuffer().getBufferDeviceAddress();
+				transformBufferDeviceAddress.deviceAddress = transformBuffer->getBufferDeviceAddress();
 
 				VkAccelerationStructureGeometryKHR accelerationStructureGeometry{};
 				accelerationStructureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;

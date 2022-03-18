@@ -192,7 +192,7 @@ namespace LavaCake {
     protected:
       virtual void generateDescriptorLayout();
 
-      void SpecifyPipelineShaderStages(std::vector<Framework::ShaderStageParameters> const& shader_stage_params,
+      void SpecifyPipelineShaderStages(std::vector<Framework::shaderStageParameters> const& shader_stage_params,
         std::vector<VkPipelineShaderStageCreateInfo>& shader_stage_create_infos);
 
 

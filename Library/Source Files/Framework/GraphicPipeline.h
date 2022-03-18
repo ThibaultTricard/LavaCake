@@ -83,7 +83,7 @@ namespace LavaCake {
       */
       void setTaskModule(const TaskShaderModule& module);
 
-      std::vector<ShaderStageParameters> getStageParameter();
+      std::vector<shaderStageParameters> getStageParameter();
 
 
       void compile(VkRenderPass& renderpass, uint16_t nbColorAttachments);
@@ -177,13 +177,13 @@ namespace LavaCake {
       };
 
 
-      ShaderStageParameters                                 m_vertexModule{};
-      ShaderStageParameters                     m_tesselationControlModule{};
-      ShaderStageParameters                  m_tesselationEvaluationModule{};
-      ShaderStageParameters                                m_geometryModule{};
-      ShaderStageParameters                                m_fragmentModule{};
-      ShaderStageParameters						                        m_meshModule{};
-      ShaderStageParameters																		m_taskModule{};
+      shaderStageParameters                                 m_vertexModule{};
+      shaderStageParameters                                 m_tesselationControlModule{};
+      shaderStageParameters                                 m_tesselationEvaluationModule{};
+      shaderStageParameters                                 m_geometryModule{};
+      shaderStageParameters                                 m_fragmentModule{};
+      shaderStageParameters						                      m_meshModule{};
+      shaderStageParameters																	m_taskModule{};
 
       VkPipelineRasterizationStateCreateInfo								m_rasterizationStateCreateInfo;
       VkPipelineMultisampleStateCreateInfo									m_multisampleStateCreateInfo;

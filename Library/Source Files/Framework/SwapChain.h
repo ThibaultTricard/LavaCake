@@ -5,6 +5,7 @@
 #include "Tools.h"
 #include "ErrorCheck.h"
 #include "Device.h"
+#include "CommandBuffer.h"
 
 
 
@@ -50,19 +51,9 @@ namespace LavaCake {
           ErrorCheck::setError("Could not create an image view");
         }
 
-        VkSemaphoreCreateInfo semaphore_create_info = {
-          VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,    // VkStructureType            sType
-          nullptr,                                    // const void               * pNext
-          0                                           // VkSemaphoreCreateFlags     flags
-        };
-
-        result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &m_aquiredSemaphore);
-        if (VK_SUCCESS != result) {
-          ErrorCheck::setError("Could not create a semaphore.");
-        }
       }
 
-      const VkSemaphore& getSemaphore() const {
+      std::shared_ptr<Semaphore> getSemaphore() const {
         return m_aquiredSemaphore;
       }
 
@@ -86,17 +77,13 @@ namespace LavaCake {
           vkDestroyImageView(logical, m_imageView, nullptr);
           m_imageView = VK_NULL_HANDLE;
         }
-
-        if (m_aquiredSemaphore != VK_NULL_HANDLE) {
-          vkDestroySemaphore(logical, m_aquiredSemaphore, nullptr);
-        }
       }
 
     private:
       uint32_t																	m_index = 0;
       VkImage																		m_image = VK_NULL_HANDLE;
       VkImageView									              m_imageView = VK_NULL_HANDLE;
-      VkSemaphore									              m_aquiredSemaphore = VK_NULL_HANDLE;
+      std::shared_ptr<Semaphore>								m_aquiredSemaphore = nullptr;
       friend class SwapChain;
     };
 
@@ -163,28 +150,22 @@ namespace LavaCake {
           0                                           // VkSemaphoreCreateFlags     flags
         };
         uint32_t index;
-        VkSemaphore semaphore;
-        VkResult result = vkCreateSemaphore(logical, &semaphore_create_info, nullptr, &semaphore);
-        if (VK_SUCCESS != result) {
-          ErrorCheck::setError("Could not create a semaphore.");
-        }
+        
 
-        result = vkAcquireNextImageKHR(logical, m_handle, 2000000000, semaphore, VK_NULL_HANDLE, &index);
+        std::shared_ptr<Semaphore> s = std::make_shared <Semaphore>();
+
+
+        VkResult result = vkAcquireNextImageKHR(logical, m_handle, 2000000000, s->getHandle(), VK_NULL_HANDLE, &index);
         if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-          ErrorCheck::setError("Could not create a semaphore.");
+          ErrorCheck::setError("Could not aquire the swapchain image.");
         }
 
-        if (m_swapchainImages[index]->m_aquiredSemaphore != VK_NULL_HANDLE) {
-          vkDestroySemaphore(logical, m_swapchainImages[index]->m_aquiredSemaphore, nullptr);
-        }
-
-
-        m_swapchainImages[index]->m_aquiredSemaphore = std::move(semaphore);
+        m_swapchainImages[index]->m_aquiredSemaphore = s;
         m_swapchainImages[index]->m_index = index;
         return *m_swapchainImages[index];
       }
 
-      void presentImage(const PresentationQueue& queue, const SwapChainImage& image, std::vector<VkSemaphore> semaphores) const {
+      void presentImage(const PresentationQueue& queue, const SwapChainImage& image, const std::vector<std::shared_ptr<Semaphore>>& semaphores) const {
         /*Core::PresentInfo present_info = {
           m_handle,                                    // VkSwapchainKHR         Swapchain
           image.getIndex()                              // uint32_t               ImageIndex
@@ -194,8 +175,10 @@ namespace LavaCake {
         std::vector<VkSwapchainKHR> swapchains;
         std::vector<uint32_t> image_indices;
 
-
-
+        std::vector<VkSemaphore> semaphoreHandles;
+        for (auto& s: semaphores) {
+          semaphoreHandles.push_back(s->getHandle());
+        }
 
         swapchains.emplace_back(m_handle);
         image_indices.emplace_back(image.getIndex());
@@ -205,7 +188,7 @@ namespace LavaCake {
           VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,                   // VkStructureType          sType
           nullptr,                                              // const void*              pNext
           static_cast<uint32_t>(semaphores.size()),             // uint32_t                 waitSemaphoreCount
-          semaphores.data(),                                    // const VkSemaphore      * pWaitSemaphores
+          semaphoreHandles.data(),                              // const VkSemaphore      * pWaitSemaphores
           static_cast<uint32_t>(swapchains.size()),             // uint32_t                 swapchainCount
           swapchains.data(),                                    // const VkSwapchainKHR   * pSwapchains
           image_indices.data(),                                 // const uint32_t         * pImageIndices
