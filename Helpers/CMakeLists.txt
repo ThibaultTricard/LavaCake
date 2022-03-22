@@ -6,6 +6,7 @@ set_property(GLOBAL PROPERTY HELPERS_PATH ${CMAKE_CURRENT_LIST_DIR})
 macro(clearShader)
 	set(INPUT_SHADER)
 	set(OUTPUT_SHADER)
+	set(SPV_VERSION)
 endmacro()
 
 macro(addShader input output)

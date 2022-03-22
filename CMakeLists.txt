@@ -139,7 +139,7 @@ if(APPLE)
 endif()
 
 set(LAVACAKE_INCLUDE_DIR
-"${CMAKE_CURRENT_LIST_DIR}/External" "${CMAKE_CURRENT_LIST_DIR}/Library/Common Files" "${CMAKE_CURRENT_LIST_DIR}/Library/Source Files" "${CMAKE_CURRENT_LIST_DIR}/External/lib/glfw/include/GLFW"
+"${CMAKE_CURRENT_LIST_DIR}/External" "${CMAKE_CURRENT_LIST_DIR}/Library/Common Files" "${CMAKE_CURRENT_LIST_DIR}/Library" "${CMAKE_CURRENT_LIST_DIR}/External/lib/glfw/include/GLFW"
 )
 
 source_group( "External" FILES ${EXTERNAL_HEADER_FILES} ${VULKAN_HEADER_FILES} ${IMGUI_SOURCE} )
@@ -164,7 +164,7 @@ source_group( "Library\\Common\\Header" FILES ${LIBRARY_COMMON_HEADER_FILES} )
 source_group( "Library\\Common\\Source" FILES ${LIBRARY_COMMON_SOURCE_FILES} )
 
 
-set(LIBRARY_HELPER_DIR "Library/Source Files/Helpers")
+set(LIBRARY_HELPER_DIR "Library/LavaCake/Helpers")
 set(LIBRARY_HELPER_HEADER 
 ${LIBRARY_HELPER_DIR}/helpers.h
 ${LIBRARY_HELPER_DIR}/Field.h
@@ -178,7 +178,7 @@ ${LIBRARY_HELPER_DIR}/helpers.cpp
 source_group( "Library\\Helpers\\Header" FILES ${LIBRARY_HELPER_HEADER} )
 source_group( "Library\\Helpers\\Source" FILES ${LIBRARY_HELPER_SOURCE} )
 
-set(LIBRARY_CORE_DIR "Library/Source Files/Core")
+set(LIBRARY_CORE_DIR "Library/LavaCake/Core")
 set(LIBRARY_CORE_HEADER 
 ${LIBRARY_CORE_DIR}/VulkanLoader.h
 )
@@ -191,10 +191,11 @@ ${LIBRARY_CORE_DIR}/VulkanLoader.cpp
 source_group( "Library\\Core\\Header" FILES ${LIBRARY_CORE_HEADER} )
 source_group( "Library\\Core\\Source" FILES ${LIBRARY_CORE_SOURCE} )
 
-set(LIBRARY_FRAMEWORK_DIR "Library/Source Files/Framework")
+set(LIBRARY_FRAMEWORK_DIR "Library/LavaCake/Framework")
 
 set(LIBRARY_FRAMEWORK_HEADER 
 ${LIBRARY_FRAMEWORK_DIR}/Buffer.h
+${LIBRARY_FRAMEWORK_DIR}/ByteDictionary.h
 ${LIBRARY_FRAMEWORK_DIR}/CommandBuffer.h
 ${LIBRARY_FRAMEWORK_DIR}/ComputePipeline.h
 ${LIBRARY_FRAMEWORK_DIR}/Constant.h
@@ -238,7 +239,7 @@ source_group( "Library\\Framework\\Header" FILES ${LIBRARY_FRAMEWORK_HEADER} )
 source_group( "Library\\Framework\\Source" FILES ${LIBRARY_FRAMEWORK_SOURCE} )
 
 
-set(LIBRARY_RAYTRACING_DIR "Library/Source Files/RayTracing")
+set(LIBRARY_RAYTRACING_DIR "Library/LavaCake/RayTracing")
 
 
 set(LIBRARY_RAYTRACING_HEADER 
@@ -261,7 +262,7 @@ source_group( "Library\\RayTracing\\Header" FILES ${LIBRARY_RAYTRACING_HEADER} )
 source_group( "Library\\RayTracing\\Source" FILES ${LIBRARY_RAYTRACING_SOURCE} )
 
 
-set(LIBRARY_GEOMETRY_DIR "Library/Source Files/Geometry")
+set(LIBRARY_GEOMETRY_DIR "Library/LavaCake/Geometry")
 
 set(LIBRARY_GEOMETRY_HEADER 
 ${LIBRARY_GEOMETRY_DIR}/format.h
@@ -278,7 +279,7 @@ source_group( "Library\\Geometry\\Header" FILES ${LIBRARY_GEOMETRY_HEADER} )
 source_group( "Library\\Geometry\\Source" FILES ${LIBRARY_GEOMETRY_SOURCE} )
 
 
-set(LIBRARY_MATH_DIR "Library/Source Files/Math")
+set(LIBRARY_MATH_DIR "Library/LavaCake/Math")
 
 set(LIBRARY_MATH_HEADER
   ${LIBRARY_MATH_DIR}/basics.h
@@ -306,6 +307,5 @@ ${LIBRARY_GEOMETRY_HEADER} ${LIBRARY_GEOMETRY_SOURCE}
 ${IMGUI_SOURCE})
 target_link_libraries( LavaCake ${PLATFORM_LIBRARY} ${Vulkan_LIBRARY} glfw )
 target_include_directories( LavaCake PUBLIC ${LAVACAKE_INCLUDE_DIR} ${Vulkan_INCLUDE_DIRS})
-
-
-
+    
+install(DIRECTORY Library/LavaCake DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
