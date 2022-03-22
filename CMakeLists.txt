@@ -239,7 +239,7 @@ source_group( "Library\\Framework\\Header" FILES ${LIBRARY_FRAMEWORK_HEADER} )
 source_group( "Library\\Framework\\Source" FILES ${LIBRARY_FRAMEWORK_SOURCE} )
 
 
-set(LIBRARY_RAYTRACING_DIR "Library/LavaCake/RayTracing")
+set(LIBRARY_RAYTRACING_DIR "Library/LavaCake/Raytracing")
 
 
 set(LIBRARY_RAYTRACING_HEADER 
