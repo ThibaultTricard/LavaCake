@@ -2,7 +2,7 @@
 #include "UniformBuffer.h"
 #include "Texture.h"
 #include "Constant.h"
-#include <LavaCake/RayTracing/TopLevelAS.h>
+#include <LavaCake/Raytracing/TopLevelAS.h>
 
 namespace LavaCake {
   namespace Framework {
