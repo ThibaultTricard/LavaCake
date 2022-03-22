@@ -1,8 +1,8 @@
 #pragma once
 #include "RayTracingShaderModule.h"
-#include "Framework/CommandBuffer.h"
-#include "Framework/Pipeline.h"
-#include "Framework/ErrorCheck.h"
+#include <LavaCake/Framework/CommandBuffer.h>
+#include <LavaCake/Framework/Pipeline.h>
+#include <LavaCake/Framework/ErrorCheck.h>
 #include "ShaderBindingTable.h"
 #include "TopLevelAS.h"
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "Framework/VertexBuffer.h"
-#include "Framework/ErrorCheck.h"
+#include <LavaCake/Framework/VertexBuffer.h>
+#include <LavaCake/Framework/ErrorCheck.h>
 
 namespace LavaCake {
 	namespace RayTracing {

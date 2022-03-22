@@ -2,7 +2,7 @@
 #include "AllHeaders.h"
 #include "Queue.h"
 #include "Device.h"
-#include "Geometry/mesh.h"
+#include <LavaCake/Geometry/mesh.h>
 #include "Buffer.h"
 
 namespace LavaCake {

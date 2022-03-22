@@ -31,9 +31,9 @@
 
 #ifndef ALL_HEADERS
 #define ALL_HEADERS
-#include "Core/VulkanLoader.h"
+#include <LavaCake/Core/VulkanLoader.h>
 
-#include "Helpers/helpers.h"
+#include <LavaCake/Helpers/helpers.h>
 
 
 #endif // ALL_HEADERS

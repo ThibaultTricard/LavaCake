@@ -1,7 +1,7 @@
 #pragma once
 #include "AllHeaders.h"
-#include "RayTracing/RayTracingShaderModule.h"
-#include "Framework/Buffer.h"
+#include <LavaCake/RayTracing/RayTracingShaderModule.h>
+#include <LavaCake/Framework/Buffer.h>
 
 
 
