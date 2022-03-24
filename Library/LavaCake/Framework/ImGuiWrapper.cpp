@@ -181,13 +181,10 @@ namespace LavaCake {
       m_pipeline->setFragmentModule(*m_fragmentShader);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
 
-      constantDescription constantInfo;
-      constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
-      constantInfo.constantSize = m_pushConstant.size();
+      VkPushConstantRange constantInfo = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant.size()};
       m_pipeline->setPushContantInfo({ constantInfo });
 
-      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}} });
-      m_pipeline->setVertices({ m_vertexBuffer.get() });
+      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, constantInfo}}} });
 
       m_descritporSet = std::make_shared< DescriptorSet >();
       m_descritporSet->addTextureBuffer(*m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
@@ -265,12 +262,10 @@ namespace LavaCake {
       m_pipeline->setAlphaBlending(true);
 
 
-      constantDescription constantInfo;
-      constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
-      constantInfo.constantSize = m_pushConstant.size();
+      VkPushConstantRange constantInfo = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant.size()};
       m_pipeline->setPushContantInfo({ constantInfo });
 
-      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}} });
+      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, constantInfo}}} });
     }
 
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "AllHeaders.h"
-#include <LavaCake/RayTracing/RayTracingShaderModule.h>
+#include <LavaCake/Raytracing/RayTracingShaderModule.h>
 #include <LavaCake/Framework/Buffer.h>
 
 

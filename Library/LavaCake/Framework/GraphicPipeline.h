@@ -6,20 +6,14 @@
 namespace LavaCake {
   namespace Framework {
 
-    struct constantStage {
+    struct constantRange {
       PushConstant* constant = nullptr;
-      VkShaderStageFlags stage = 0;
+      VkPushConstantRange range;
     };
 
     struct vertexBufferConstant {
       VertexBuffer* buffer = nullptr;
-      std::vector<constantStage> constant;
-    };
-
-
-    struct constantDescription {
-      uint32_t constantSize;
-      VkShaderStageFlags constantShader;
+      std::vector<constantRange> constant_ranges;
     };
 
     /**
@@ -130,7 +124,7 @@ namespace LavaCake {
       */
       //void addPushContant(PushConstant* constant, VkShaderStageFlags shadeStage);
 
-      void setPushContantInfo(const std::vector<constantDescription>& constantDescriptions);
+      void setPushContantInfo(const std::vector<VkPushConstantRange>& constantDescriptions);
 
 
       void setSubpassNumber(uint32_t number);
@@ -205,7 +199,7 @@ namespace LavaCake {
       VkPipelineVertexInputStateCreateInfo									m_vertexInfo;
 
       std::vector<vertexBufferConstant>											m_vertexBuffers;
-      std::vector<constantDescription>											m_constantInfos;
+      std::vector<VkPushConstantRange>											m_constantInfos;
       VkPipelineInputAssemblyStateCreateInfo								m_inputInfo;
 
       uint32_t																							m_subpassNumber;

@@ -142,17 +142,7 @@ namespace LavaCake {
       const VkDevice& logical = d->getLogicalDevice();
       generateDescriptorLayout();
 
-      std::vector<VkPushConstantRange> push_constant_ranges = {};
-      for (uint32_t i = 0; i < m_constantInfos.size(); i++) {
-        push_constant_ranges.push_back(
-          {
-            m_constantInfos[i].constantShader,									// VkShaderStageFlags     stageFlags
-            0,																									// uint32_t               offset
-            m_constantInfos[i].constantSize											// uint32_t               size
-          });
-      }
-
-      if (!Pipeline::CreatePipelineLayout(logical, { m_descriptorSet->getLayout() }, push_constant_ranges, m_pipelineLayout)) {
+      if (!Pipeline::CreatePipelineLayout(logical, { m_descriptorSet->getLayout() }, m_constantInfos, m_pipelineLayout)) {
         ErrorCheck::setError("Can't create pipeline layout");
       }
 
@@ -313,7 +303,7 @@ namespace LavaCake {
       };
     }
 
-    void GraphicPipeline::setPushContantInfo(const std::vector<constantDescription>& constantDescriptions) {
+    void GraphicPipeline::setPushContantInfo(const std::vector<VkPushConstantRange>& constantDescriptions) {
       m_constantInfos = constantDescriptions;
     }
 
@@ -357,9 +347,9 @@ namespace LavaCake {
 
         vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
-        for (uint32_t j = 0; j < m_vertexBuffers[i].constant.size(); j++) {
-          if (m_vertexBuffers[i].constant[j].constant != nullptr) {
-            m_vertexBuffers[i].constant[j].constant->push(buffer.getHandle(), m_pipelineLayout, m_vertexBuffers[i].constant[j].stage);
+        for (auto& constant_range : m_vertexBuffers[i].constant_ranges) {
+          if (constant_range.constant) {
+            constant_range.constant->push(buffer.getHandle(), m_pipelineLayout, constant_range.range);
           }
         }
 
