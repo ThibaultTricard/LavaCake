@@ -220,9 +220,8 @@ namespace LavaCake {
     void Device::initDevices(
       int nbComputeQueue,
       int nbGraphicQueue,
-#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
       SurfaceInitialisator& surfaceInitialisator,
-#endif
+      bool headless,
       VkPhysicalDeviceFeatures* desired_device_features) {
 
       //============== Loading Vulkan
@@ -254,26 +253,26 @@ namespace LavaCake {
       std::vector<char const*> instance_extensions;
       instance_extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
-#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
-      instance_extensions.emplace_back(VK_KHR_SURFACE_EXTENSION_NAME);
-      instance_extensions.emplace_back(
+      if(!headless){
+        instance_extensions.emplace_back(VK_KHR_SURFACE_EXTENSION_NAME);
+        instance_extensions.emplace_back(
 #ifdef VK_USE_PLATFORM_WIN32_KHR
-        VK_KHR_WIN32_SURFACE_EXTENSION_NAME
+          VK_KHR_WIN32_SURFACE_EXTENSION_NAME
 
 #elif defined VK_USE_PLATFORM_XCB_KHR
-        VK_KHR_XCB_SURFACE_EXTENSION_NAME
+          VK_KHR_XCB_SURFACE_EXTENSION_NAME
 
 #elif defined VK_USE_PLATFORM_XLIB_KHR
-        VK_KHR_XLIB_SURFACE_EXTENSION_NAME
+          VK_KHR_XLIB_SURFACE_EXTENSION_NAME
 
 #elif defined VK_USE_PLATFORM_MACOS_MVK
-        VK_MVK_MACOS_SURFACE_EXTENSION_NAME
-      );
-      instance_extensions.emplace_back(
-        VK_EXT_METAL_SURFACE_EXTENSION_NAME
+          VK_MVK_MACOS_SURFACE_EXTENSION_NAME
+        );
+        instance_extensions.emplace_back(
+          VK_EXT_METAL_SURFACE_EXTENSION_NAME
 #endif
-      );
-#endif
+        );
+      }
       if (!CreateVulkanInstance(instance_extensions, "LavaCake", m_instance)) {
         ErrorCheck::setError("Could not create the vulkan instance");
       }
@@ -283,9 +282,9 @@ namespace LavaCake {
       }
 
       VkResult result;
-#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
-      m_presentationSurface = surfaceInitialisator.init(m_instance);
-#endif
+      if(!headless){
+        m_presentationSurface = surfaceInitialisator.init(m_instance);
+      }
 
       //=========================== getting all physical Devices
       std::vector<VkPhysicalDevice> physical_devices;
@@ -329,9 +328,9 @@ namespace LavaCake {
 
       std::vector<char const*> device_extensions;
 
-#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
-      device_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-#endif
+      if(!headless){
+        device_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+      }
       std::vector<char const*> device_extensions_optional;
 
 
@@ -421,11 +420,11 @@ namespace LavaCake {
           }
         }
 
-#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
-        if (!m_presentQueue.initIndex(device.device, &m_presentationSurface)) {
-          continue;
+        if(!headless){
+          if (!m_presentQueue.initIndex(device.device, &m_presentationSurface)) {
+            continue;
+          }
         }
-#endif
 
         requested_queues.push_back({ m_graphicQueues[0].getIndex(), { 1.0f } });
         for (int i = 1; i < nbGraphicQueue; i++) {
@@ -454,20 +453,20 @@ namespace LavaCake {
         endConcCompute:;
         }
 
-#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
-        for (int j = 0; j < nbGraphicQueue; j++) {
-          if (m_presentQueue.getIndex() == m_graphicQueues[j].getIndex()) {
-            goto 	endConcPresent;
+        if(!headless){
+          for (int j = 0; j < nbGraphicQueue; j++) {
+            if (m_presentQueue.getIndex() == m_graphicQueues[j].getIndex()) {
+              goto 	endConcPresent;
+            }
           }
-        }
 
-        for (int j = 0; j < nbComputeQueue; j++) {
-          if (m_presentQueue.getIndex() == m_computeQueues[j].getIndex()) {
-            break;
+          for (int j = 0; j < nbComputeQueue; j++) {
+            if (m_presentQueue.getIndex() == m_computeQueues[j].getIndex()) {
+              break;
+            }
           }
+          requested_queues.push_back({ m_presentQueue.getIndex(),{ 1.0f } });
         }
-        requested_queues.push_back({ m_presentQueue.getIndex(),{ 1.0f } });
-#endif
       endConcPresent:;
 
 
@@ -622,11 +621,11 @@ namespace LavaCake {
               m_computeQueues[i].setHandle(queue);
             }
 
-#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
-            VkQueue queue = VK_NULL_HANDLE;
-            LavaCake::vkGetDeviceQueue(m_logical, m_presentQueue.getIndex(), 0, &queue);
-            m_presentQueue.setHandle(queue);
-#endif
+            if(!headless){
+              VkQueue queue = VK_NULL_HANDLE;
+              LavaCake::vkGetDeviceQueue(m_logical, m_presentQueue.getIndex(), 0, &queue);
+              m_presentQueue.setHandle(queue);
+            }
             //Todo Check if getHandle()  works
 
 

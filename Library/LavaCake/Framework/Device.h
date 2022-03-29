@@ -24,7 +24,6 @@
 
 
 
-#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
 namespace LavaCake {
   namespace Framework {
     /**
@@ -39,7 +38,21 @@ namespace LavaCake {
        */
       virtual VkSurfaceKHR init(const VkInstance& instance) = 0;
     };
-
+    
+  
+  class HeadlessInitialisator : public SurfaceInitialisator {
+    public:
+    
+    HeadlessInitialisator(){}
+    /**
+     \brief initialize the vulkan surface
+     \param instance: the Vulkan instance used to initialize the surface
+     \return a VkSurface
+     */
+    VkSurfaceKHR init(const VkInstance& instance) override{
+      return {};
+    };
+  };
 
 #ifdef LAVACAKE_WINDOW_MANAGER_GLFW
     /**
@@ -78,7 +91,6 @@ namespace LavaCake {
 
   }
 }
-#endif // !LAVACAKE_WINDOW_MANAGER_HEADLESS
 
 namespace LavaCake {
   namespace Framework {
@@ -161,7 +173,7 @@ namespace LavaCake {
       const ComputeQueue& getComputeQueue(int i)const;
 
 
-#ifndef LAVACAKE_WINDOW_MANAGER_HEADLESS
+
       /**
        \brief Initialise the device
        \param nbComputeQueue the number of compute queue requiered by the application
@@ -174,8 +186,10 @@ namespace LavaCake {
         int nbComputeQueue,
         int nbGraphicQueue,
         SurfaceInitialisator& window,
-        VkPhysicalDeviceFeatures* desiredDeviceFeatures = nullptr);
-#else
+        VkPhysicalDeviceFeatures* desiredDeviceFeatures = nullptr){
+        initDevices(nbComputeQueue, nbGraphicQueue, window, false);
+      }
+
       /**
        \brief Initialise the device
        \param nbComputeQueue the number of compute queue requiered by the application
@@ -186,9 +200,11 @@ namespace LavaCake {
       void initDevices(
         int nbComputeQueue,
         int nbGraphicQueue,
-        SurfaceInitialisator& window,
-        VkPhysicalDeviceFeatures* desiredDeviceFeatures = nullptr);
-#endif  
+        VkPhysicalDeviceFeatures* desiredDeviceFeatures = nullptr){
+        HeadlessInitialisator headless;
+        initDevices(nbComputeQueue, nbGraphicQueue, headless, true);
+      }
+ 
 
 
       /**
@@ -232,7 +248,15 @@ namespace LavaCake {
 
     private:
 
+      void initDevices(
+          int nbComputeQueue,
+          int nbGraphicQueue,
+          SurfaceInitialisator& window,
+          bool headless,
+          VkPhysicalDeviceFeatures* desiredDeviceFeatures = nullptr);
 
+      
+      
       VkPhysicalDevice													m_physical = VK_NULL_HANDLE;
       VkDevice            											m_logical = VK_NULL_HANDLE;
       LIBRARY_TYPE															m_vulkanLibrary = nullptr;
