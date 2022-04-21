@@ -181,13 +181,10 @@ namespace LavaCake {
       m_pipeline->setFragmentModule(*m_fragmentShader);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
 
-      constantDescription constantInfo;
-      constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
-      constantInfo.constantSize = m_pushConstant.size();
+      VkPushConstantRange constantInfo = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant.size()};
       m_pipeline->setPushContantInfo({ constantInfo });
 
-      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}} });
-      m_pipeline->setVertices({ m_vertexBuffer.get() });
+      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, constantInfo}}} });
 
       m_descritporSet = std::make_shared< DescriptorSet >();
       m_descritporSet->addTextureBuffer(*m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
@@ -233,7 +230,8 @@ namespace LavaCake {
 
       if (draw_data->CmdListsCount != 0) {
         m_vertexBuffer = std::make_unique<Framework::VertexBuffer>(queue, cmdBuff, std::vector< LavaCake::Geometry::Mesh_t* >{ m_mesh.get()});
-        m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}} });
+        VkPushConstantRange constantInfo = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant.size()};
+        m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, constantInfo}}} });
 
         vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
         vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });
@@ -265,12 +263,10 @@ namespace LavaCake {
       m_pipeline->setAlphaBlending(true);
 
 
-      constantDescription constantInfo;
-      constantInfo.constantShader = VK_SHADER_STAGE_VERTEX_BIT;
-      constantInfo.constantSize = m_pushConstant.size();
+      VkPushConstantRange constantInfo = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant.size()};
       m_pipeline->setPushContantInfo({ constantInfo });
 
-      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, VK_SHADER_STAGE_VERTEX_BIT}}} });
+      m_pipeline->setVertices({ {m_vertexBuffer.get(), {{&m_pushConstant, constantInfo}}} });
     }
 
 

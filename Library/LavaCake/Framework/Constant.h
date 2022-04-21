@@ -75,7 +75,7 @@ namespace LavaCake {
       void setVariable(const std::string& name, const std::span<T, Extent>& value) {
         m_variables.setVariableRange(name, std::span{ value });
       }
-      void push(VkCommandBuffer buffer, VkPipelineLayout layout, VkShaderStageFlags flag);
+      void push(VkCommandBuffer buffer, VkPipelineLayout layout, VkPushConstantRange range);
 
       uint32_t size();
 
