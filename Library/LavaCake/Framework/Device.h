@@ -96,9 +96,9 @@ namespace LavaCake {
   namespace Framework {
 
     /**
-     \brief helps manage Vulkan device related task
-     This class is a singleton
-     */
+    \brief helps manage Vulkan device related task
+    This class is a singleton
+    */
     class Device {
       static Device* m_device;
       Device() {};
@@ -110,9 +110,9 @@ namespace LavaCake {
       }
     public:
       /**
-       \brief Retourn the  device
-       \return a static reference to the devince
-       */
+      \brief Retourn the  device
+      \return a static reference to the devince
+      */
       static Device* getDevice() {
         if (!m_device) {
           m_device = new Device();
@@ -121,67 +121,67 @@ namespace LavaCake {
       }
 
       /**
-       \brief Retourn the Vulkan instance
-       \return the VkInstance used by the application
-       */
+      \brief Retourn the Vulkan instance
+      \return the VkInstance used by the application
+      */
       const VkInstance getInstance() const {
         return m_instance;
       };
 
       /**
-       \brief Retourn the Physical Device
-       \return the VkPhysicalDevice used by the application
-       */
+      \brief Retourn the Physical Device
+      \return the VkPhysicalDevice used by the application
+      */
       const VkPhysicalDevice& getPhysicalDevice() const;
 
       /**
-       \brief Retourn the Logical Device
-       \return the VkDevice used by the application
-       */
+      \brief Retourn the Logical Device
+      \return the VkDevice used by the application
+      */
       const VkDevice& getLogicalDevice() const;
 
       /**
-       \brief Retourn the Command pool
-       \return the VkCommandPool used by the application
-       */
+      \brief Retourn the Command pool
+      \return the VkCommandPool used by the application
+      */
       const VkCommandPool& getCommandPool() const;
 
       /**
-       \brief Retourn the Vulkan surface
-       \return the VkSurfaceKHR used by the application
-       */
+      \brief Retourn the Vulkan surface
+      \return the VkSurfaceKHR used by the application
+      */
       const VkSurfaceKHR& getSurface() const;
 
       /**
-       \brief Retourn the Presentation Queue used to draw on the screen
-       \return a reference to PresentationQueue used by the application
-       */
+      \brief Retourn the Presentation Queue used to draw on the screen
+      \return a reference to PresentationQueue used by the application
+      */
       const PresentationQueue& getPresentQueue() const;
 
       /**
-       \brief Retourn a specific Graphic Queue
-       \param i the index of the wanted queue
-       \return a reference to a GraphicQueue
-       */
+      \brief Retourn a specific Graphic Queue
+      \param i the index of the wanted queue
+      \return a reference to a GraphicQueue
+      */
       const GraphicQueue& getGraphicQueue(int i) const;
 
       /**
-       \brief Retourn a specific Compute Queue
-       \param i the index of the wanted queue
-       \return a reference to a ComputeQueue
-       */
+      \brief Retourn a specific Compute Queue
+      \param i the index of the wanted queue
+      \return a reference to a ComputeQueue
+      */
       const ComputeQueue& getComputeQueue(int i)const;
 
 
 
       /**
-       \brief Initialise the device
-       \param nbComputeQueue the number of compute queue requiered by the application
-       \param nbGraphicQueue the number of graphic queue requiered by the application
-       \param window the helper for surface initialisation
-       \param desiredDeviceFeatures the device feature requiered by the application
-       \return a reference to a ComputeQueue
-       */
+      \brief Initialise the device
+      \param nbComputeQueue the number of compute queue requiered by the application
+      \param nbGraphicQueue the number of graphic queue requiered by the application
+      \param window the helper for surface initialisation
+      \param desiredDeviceFeatures the device feature requiered by the application
+      \return a reference to a ComputeQueue
+      */
       void initDevices(
         int nbComputeQueue,
         int nbGraphicQueue,
@@ -191,12 +191,12 @@ namespace LavaCake {
       }
 
       /**
-       \brief Initialise the device
-       \param nbComputeQueue the number of compute queue requiered by the application
-       \param nbGraphicQueue the number of graphic queue requiered by the application
-       \param desiredDeviceFeatures the device feature requiered by the application
-       \return a reference to a ComputeQueue
-       */
+      \brief Initialise the device
+      \param nbComputeQueue the number of compute queue requiered by the application
+      \param nbGraphicQueue the number of graphic queue requiered by the application
+      \param desiredDeviceFeatures the device feature requiered by the application
+      \return a reference to a ComputeQueue
+      */
       void initDevices(
         int nbComputeQueue,
         int nbGraphicQueue,
@@ -204,43 +204,41 @@ namespace LavaCake {
         HeadlessInitialisator headless;
         initDevices(nbComputeQueue, nbGraphicQueue, headless, true);
       }
- 
-
 
       /**
-       \brief free all the vulkan handle hold by the device and destroy the singleton
+      \brief free all the vulkan handle hold by the device and destroy the singleton
       */
       void end();
 
       /**
-       \brief Make sure every command send to the device are finished
-       */
+      \brief Make sure every command send to the device are finished
+      */
       void waitForAllCommands();
 
 
       /**
-       \brief Ask the device to enable all feature related to raytracing
-       \param optional: a boolean indicating if the device creation can success even if raytracing features are not found
-       */
+      \brief Ask the device to enable all feature related to raytracing
+      \param optional: a boolean indicating if the device creation can success even if raytracing features are not found
+      */
       void enableRaytracing(bool optional = false);
 
       /**
-       \brief Ask the device to enable all feature related to mesh shaders
-       \param optional: a boolean indicating if the device creation can success even if mesh shader features are not found
-       */
+      \brief Ask the device to enable all feature related to mesh shaders
+      \param optional: a boolean indicating if the device creation can success even if mesh shader features are not found
+      */
       void enableMeshShader(bool optional = false);
 
       /*
-       \brief check if raytracing features have been successfuly loaded
-       \return true if raytracing is available
+      \brief check if raytracing features have been successfuly loaded
+      \return true if raytracing is available
       */
       bool raytracingAvailable() const {
         return m_raytracingAvailable;
       }
 
       /*
-       \brief check if mesh shader features have been successfuly loaded
-       \return true if mesh shader is available
+      \brief check if mesh shader features have been successfuly loaded
+      \return true if mesh shader is available
       */
       bool meshShaderAvailable() const {
         return m_meshShaderAvailable;
@@ -256,16 +254,16 @@ namespace LavaCake {
           VkPhysicalDeviceFeatures* desiredDeviceFeatures = nullptr);
 
       
-      
-      VkPhysicalDevice													m_physical = VK_NULL_HANDLE;
-      VkDevice            											m_logical = VK_NULL_HANDLE;
-      LIBRARY_TYPE															m_vulkanLibrary = nullptr;
-      VkInstance            										m_instance = VK_NULL_HANDLE;
-      VkSurfaceKHR                              m_presentationSurface = VK_NULL_HANDLE;
-      VkCommandPool					              			m_commandPool = VK_NULL_HANDLE;
-      std::vector<GraphicQueue>									m_graphicQueues;
-      std::vector<ComputeQueue>									m_computeQueues;
-      PresentationQueue												  m_presentQueue;
+
+	  VkPhysicalDevice                                      m_physical = VK_NULL_HANDLE;
+	  VkDevice                                              m_logical = VK_NULL_HANDLE;
+	  LIBRARY_TYPE                                          m_vulkanLibrary = nullptr;
+	  VkInstance                                            m_instance = VK_NULL_HANDLE;
+	  VkSurfaceKHR                                          m_presentationSurface = VK_NULL_HANDLE;
+	  VkCommandPool                                         m_commandPool = VK_NULL_HANDLE;
+	  std::vector<GraphicQueue>	                            m_graphicQueues;
+	  std::vector<ComputeQueue>                             m_computeQueues;
+	  PresentationQueue                                     m_presentQueue;
 
 
       bool                                      m_raytracingEnabled = false;

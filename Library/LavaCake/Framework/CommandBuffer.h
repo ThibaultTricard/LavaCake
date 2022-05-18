@@ -7,9 +7,16 @@
 
 namespace LavaCake {
   namespace Framework {
-
+    /**
+    \brief help manage Vulkan semaphores.
+    */
     class Semaphore {
+    
     public :
+
+      /**
+      \brief Default Constructor, create a semaphores
+      */
       Semaphore() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
@@ -25,9 +32,12 @@ namespace LavaCake {
         }
       }
 
-
-      Semaphore(VkSemaphore s) {
-        m_semaphore = s;
+      /**
+      \brief Create a semaphores from a VKSemaphore
+      \param semaphore the VkSemaphore
+      */
+      Semaphore(VkSemaphore semaphore) {
+        m_semaphore = semaphore;
       }
 
       Semaphore(const Semaphore& semaphore) = delete;
@@ -46,6 +56,11 @@ namespace LavaCake {
         return *this;
       }
 
+
+      /**
+      \brief Returns the handle to the semaphore
+      \return semaphore the VkSemaphore
+      */
       VkSemaphore getHandle() const{
         return m_semaphore;
       }
@@ -79,9 +94,8 @@ namespace LavaCake {
     public:
 
       /**
-       Constructor the CommandBuffer class
-       \brief Initialise a VkCommandBuffer and a VkFence for it's synchronisation
-       */
+      \brief Constructor the CommandBuffer class.
+      */
       CommandBuffer() {
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
@@ -115,9 +129,9 @@ namespace LavaCake {
       };
 
       /**
-       \brief Wait for the CommandBuffer to be executed if it was submitted
-       \param waitingTime (optional) the maximum waiting time allowed to this function in nanoseconds
-       \param force (optional) if set to true, will wait even if it was not submited
+      \brief Wait for the CommandBuffer to be executed if it was submitted
+      \param waitingTime (optional) the maximum waiting time allowed to this function in nanoseconds
+      \param force (optional) if set to true, will wait even if it was not submited
       */
       void wait(uint32_t waitingTime = UINT32_MAX, bool force = false) {
         if (m_submitted || force) {
@@ -133,8 +147,8 @@ namespace LavaCake {
       }
 
       /**
-       \brief Reset the fence associated with this buffer.
-       Must be called before re-submiting the command buffer
+      \brief Reset the fence associated with this buffer.
+      Must be called before re-submiting the command buffer
       */
       void resetFence() {
         Device* d = Device::getDevice();
@@ -146,7 +160,7 @@ namespace LavaCake {
       }
 
       /**
-       \brief Put the command buffer in a recording state
+      \brief Put the command buffer in a recording state
       */
       void beginRecord() {
         VkCommandBufferBeginInfo command_buffer_begin_info = {
@@ -163,7 +177,7 @@ namespace LavaCake {
       }
 
       /**
-       \brief Put the command buffer out of recording state
+      \brief Put the command buffer out of recording state
       */
       void endRecord() {
         VkResult result = vkEndCommandBuffer(m_commandBuffer);
@@ -173,26 +187,26 @@ namespace LavaCake {
       }
 
       /**
-       \brief Return the handle of command buffer
-       \return a handle to the VkCommandBuffer
+      \brief Return the handle of command buffer
+      \return a handle to the VkCommandBuffer
       */
       const VkCommandBuffer& getHandle() const {
         return m_commandBuffer;
       }
 
       /**
-       \brief Return the fence of the command buffer
-       \return a handle to a VkFence
-       */
+      \brief Returns the fence of the command buffer
+      \return a handle to a VkFence
+      */
       const VkFence& getFence() const {
         return m_fence;
       }
 
       /**
-       \brief Submit the command buffer to a queue
-       \param queue : a pointer to the queue that will be used to submit this command buffer
-       \param waitSemaphoreInfo : description of the semaphores to to wait on before executing it
-       \param signalSemaphores : the list of that will be raised by the execution of this command buffer
+      \brief Submit the command buffer to a queue
+      \param queue : a pointer to the queue that will be used to submit this command buffer
+      \param waitSemaphoreInfo : description of the semaphores to to wait on before executing it
+      \param signalSemaphores : the list of that will be raised by the execution of this command buffer
       */
       void submit(const Queue& queue, const std::vector<waitSemaphoreInfo>& waitSemaphoreInfo, const std::vector<std::shared_ptr<Semaphore>>& signalSemaphores) {
         std::vector<VkSemaphore>          wait_semaphore_handles;
@@ -231,8 +245,8 @@ namespace LavaCake {
 
 
       /**
-       \brief Check if the fence of the command buffer has been raised
-       \return bool : a boolean indicating the fence has been raised
+      \brief Check if the fence of the command buffer has been raised
+      \return bool : a boolean indicating the fence has been raised
       */
       bool ready() const {
         auto device = Device::getDevice()->getLogicalDevice();

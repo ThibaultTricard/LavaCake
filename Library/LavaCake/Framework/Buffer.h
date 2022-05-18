@@ -358,6 +358,7 @@ namespace LavaCake {
 
       /**
         \brief Write a set of data to the buffer,
+        \param data a reference to the vector holding the data to be written in the buffer
         The buffer must be host visible for this operation to succeed
       */
       template <typename t>
@@ -420,16 +421,16 @@ namespace LavaCake {
 
     protected:
 
-      VkBuffer																            m_buffer = VK_NULL_HANDLE;
-      VkDeviceMemory													            m_bufferMemory = VK_NULL_HANDLE;
-      VkBufferView														            m_bufferView = VK_NULL_HANDLE;
+      VkBuffer	                                                                    m_buffer = VK_NULL_HANDLE;
+      VkDeviceMemory                                                                m_bufferMemory = VK_NULL_HANDLE;
+      VkBufferView                                                                  m_bufferView = VK_NULL_HANDLE;
 
 
-      VkPipelineStageFlags																m_stage;
-      VkAccessFlags   																		m_access;
-      uint32_t																						m_queueFamily;
-      uint64_t																						m_dataSize = 0;
-      uint64_t																						m_padding = 0;
+      VkPipelineStageFlags                                                          m_stage;
+      VkAccessFlags                                                                 m_access;
+      uint32_t                                                                      m_queueFamily;
+      uint64_t                                                                      m_dataSize = 0;
+      uint64_t                                                                      m_padding = 0;
 
       void* m_mapped = nullptr;
 

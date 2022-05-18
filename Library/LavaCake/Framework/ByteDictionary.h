@@ -11,8 +11,8 @@
 namespace LavaCake {
   namespace Framework {
     /**
-      \brief help manage pushConstant creation and sending them to shaders.
-      This class is mainly a dictionary of variable of different type that can be pushed to a shader.
+      \brief help manage Byte dictionary mainly used in UniformBuffers and PushConstant.
+      This class is mainly a dictionary of variable of different type that are agregated together as byte.
     */
     class ByteDictionary {
     public:

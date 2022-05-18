@@ -51,7 +51,7 @@ namespace LavaCake {
       /**
       \brief Register an error
       \param msg : the error message
-       \param lvl : the level of the error, the lower the level the more important the error is
+      \param lvl : the level of the error, the lower the level the more important the error is
       */
       static void setError(const char* msg, uint8_t lvl = 0) {
         if (m_instance == nullptr) {
@@ -89,8 +89,8 @@ namespace LavaCake {
       }
 
       /**
-       \brief Define if the ErrorCheck singleton can print error on console
-       \param print a boolean that define if ErrorCheck can print error on console
+      \brief Define if the ErrorCheck singleton can print error on console
+      \param print a boolean that define if ErrorCheck can print error on console
       */
       static void printError(bool print = true, uint8_t lvl = 0) {
         if (m_instance == nullptr) {
