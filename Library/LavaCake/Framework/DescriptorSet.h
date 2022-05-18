@@ -170,6 +170,8 @@ namespace LavaCake {
 
       void generateDescriptorLayout() {
 
+        if (m_gernerated) return;
+
         Device* d = Device::getDevice();
         VkDevice logical = d->getLogicalDevice();
 
@@ -598,6 +600,7 @@ namespace LavaCake {
       std::vector<accelerationStructure>                              m_AS;
 
       bool                                                            m_empty = true;
+      bool                                                            m_gernerated = false;
     };
   }
 }
