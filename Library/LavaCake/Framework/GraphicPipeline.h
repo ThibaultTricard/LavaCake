@@ -7,12 +7,12 @@ namespace LavaCake {
   namespace Framework {
 
     struct constantRange {
-      PushConstant* constant = nullptr;
+      std::shared_ptr < PushConstant > constant;
       VkPushConstantRange range;
     };
 
     struct vertexBufferConstant {
-      VertexBuffer* buffer = nullptr;
+      std::shared_ptr<VertexBuffer> buffer;
       std::vector<constantRange> constant_ranges;
     };
 
@@ -94,9 +94,9 @@ namespace LavaCake {
 
       /**
       \brief Set the vertex buffer that will be used by the pipeline
-      \param vertexBuffer the vertex buffer
+      \param vertexBuffers an array of shared pointers to vertex buffers
       */
-      void setVertices(const std::vector<VertexBuffer*>& vertexBuffer);
+      void setVertices(const std::vector<std::shared_ptr<VertexBuffer>>& vertexBuffers);
 
 
       /**
@@ -197,6 +197,7 @@ namespace LavaCake {
       std::vector<VkViewport>                               m_viewports;
       std::vector<VkRect2D>                                 m_scissors;
       VkPipelineVertexInputStateCreateInfo                  m_vertexInfo;
+      bool                                                  m_vertexInfoSet =false;
 
       std::vector<vertexBufferConstant>                     m_vertexBuffers;
       std::vector<VkPushConstantRange>                      m_constantInfos;

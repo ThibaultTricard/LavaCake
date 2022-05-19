@@ -301,22 +301,30 @@ namespace LavaCake {
         topology,																											// VkPrimitiveTopology                       topology
         false																													// VkBool32                                  primitiveRestartEnable
       };
+      m_vertexInfoSet = true;
     }
 
     void GraphicPipeline::setPushContantInfo(const std::vector<VkPushConstantRange>& constantDescriptions) {
       m_constantInfos = constantDescriptions;
     }
 
-    void GraphicPipeline::setVertices(const std::vector<VertexBuffer*>& buffer) {
+    void GraphicPipeline::setVertices(const std::vector<std::shared_ptr<VertexBuffer>>& buffer) {
       m_vertexBuffers.resize(buffer.size());
       for (size_t i = 0; i < buffer.size(); i++) {
         m_vertexBuffers[i].buffer = buffer[i];
+      }
+
+      if (!m_vertexInfoSet) {
+          setVerticesInfo(buffer[0]->getBindingDescriptions(), buffer[0]->getAttributeDescriptions(), buffer[0]->primitiveTopology());
       }
     }
 
 
     void GraphicPipeline::setVertices(const std::vector<vertexBufferConstant>& vertexBufferConstants) {
       m_vertexBuffers = vertexBufferConstants;
+      if (!m_vertexInfoSet) {
+          setVerticesInfo(vertexBufferConstants[0].buffer->getBindingDescriptions(), vertexBufferConstants[0].buffer->getAttributeDescriptions(), vertexBufferConstants[0].buffer->primitiveTopology());
+      }
     }
 
 

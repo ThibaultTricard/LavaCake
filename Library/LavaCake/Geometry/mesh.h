@@ -7,14 +7,10 @@ namespace LavaCake {
    *\brief Class Mesh_t : a Virtual class that represent a mesh
    */
     class Mesh_t {
-    protected:
-      /**
-       *\brief Class Mesh : a Virtual class that represent a mesh
-       */
-      Mesh_t() {};
-
     public :
       
+      Mesh_t() {};
+
       virtual ~Mesh_t() = default;
       
       /**

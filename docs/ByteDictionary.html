@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Byte Dictionary &#8212; LavaCake 1.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="byte-dictionary">
+<h1>Byte Dictionary<a class="headerlink" href="#byte-dictionary" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework14ByteDictionaryE">
+<span id="_CPPv3N8LavaCake9Framework14ByteDictionaryE"></span><span id="_CPPv2N8LavaCake9Framework14ByteDictionaryE"></span><span id="LavaCake::Framework::ByteDictionary"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_byte_dictionary"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ByteDictionary</span></span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework14ByteDictionaryE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>help manage Byte dictionary mainly used in UniformBuffers and <a class="reference internal" href="Constant.html#class_lava_cake_1_1_framework_1_1_push_constant"><span class="std std-ref">PushConstant</span></a>. This class is mainly a dictionary of variable of different type that are agregated together as byte. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16addVariableRangeEvRKNSt6stringEKNSt4spanIK1T7TExtentEE">
+<span id="_CPPv3I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16addVariableRangeERKNSt6stringEKNSt4spanIK1T7TExtentEE"></span><span id="_CPPv2I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16addVariableRangeERKNSt6stringEKNSt4spanIK1T7TExtentEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TExtent</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dynamic_extent</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_byte_dictionary_1af955bac06f8443fbdfa385a28f34a5b0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addVariableRange</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16addVariableRangeEvRKNSt6stringEKNSt4spanIK1T7TExtentEE" title="LavaCake::Framework::ByteDictionary::addVariableRange::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16addVariableRangeEvRKNSt6stringEKNSt4spanIK1T7TExtentEE" title="LavaCake::Framework::ByteDictionary::addVariableRange::TExtent"><span class="n"><span class="pre">TExtent</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16addVariableRangeEvRKNSt6stringEKNSt4spanIK1T7TExtentEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add a span of value into the dictionary. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – the name of constant. </p></li>
+<li><p><strong>data</strong> – the span of value. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16setVariableRangeEvRKNSt6stringEKNSt4spanI1T7TExtentEE">
+<span id="_CPPv3I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16setVariableRangeERKNSt6stringEKNSt4spanI1T7TExtentEE"></span><span id="_CPPv2I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16setVariableRangeERKNSt6stringEKNSt4spanI1T7TExtentEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TExtent</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">dynamic_extent</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_byte_dictionary_1ad8c494dcf04c8096a0531cddddd095f5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVariableRange</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16setVariableRangeEvRKNSt6stringEKNSt4spanI1T7TExtentEE" title="LavaCake::Framework::ByteDictionary::setVariableRange::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16setVariableRangeEvRKNSt6stringEKNSt4spanI1T7TExtentEE" title="LavaCake::Framework::ByteDictionary::setVariableRange::TExtent"><span class="n"><span class="pre">TExtent</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_NSt6size_tEEN8LavaCake9Framework14ByteDictionary16setVariableRangeEvRKNSt6stringEKNSt4spanI1T7TExtentEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>set a span of value into the dictionary </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – : the name of constant </p></li>
+<li><p><strong>data</strong> – the span of value. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div></blockquote>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LavaCake</a></h1>
+
+
+
+<p class="blurb">Just a Vulkan framework</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=ThibaultTricard&repo=LavaCake&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Framework.html">Framework</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Thibault Tricard.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/ByteDictionary.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

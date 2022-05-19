@@ -53,10 +53,9 @@ namespace LavaCake {
 
     private:
 
-      std::shared_ptr< GraphicPipeline >     m_pipeline;
-      PushConstant                           m_pushConstant;
-      std::unique_ptr < VertexBuffer >       m_vertexBuffer;
-      std::unique_ptr < Geometry::Mesh_t >   m_mesh;
+      std::shared_ptr < GraphicPipeline >    m_pipeline;
+      std::shared_ptr < PushConstant >       m_pushConstant;
+      std::shared_ptr < VertexBuffer >       m_vertexBuffer;
       std::shared_ptr < Image >              m_fontBuffer;
 
       std::unique_ptr < VertexShaderModule >    m_vertexShader;

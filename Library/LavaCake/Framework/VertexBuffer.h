@@ -11,7 +11,7 @@ namespace LavaCake {
     class VertexBuffer {
     public:
 
-      VertexBuffer(const Queue& queue, CommandBuffer& cmdBuff, const std::vector<LavaCake::Geometry::Mesh_t*>& m, uint32_t binding = 0, VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0));
+      VertexBuffer(const Queue& queue, CommandBuffer& cmdBuff, const std::vector<std::shared_ptr<LavaCake::Geometry::Mesh_t>>& m, uint32_t binding = 0, VkVertexInputRate inputRate = VK_VERTEX_INPUT_RATE_VERTEX, VkBufferUsageFlags otherUsage = VkBufferUsageFlags(0));
 
       std::shared_ptr<Buffer> getVertexBuffer() const;
 
@@ -82,15 +82,15 @@ namespace LavaCake {
     private:
 
 
-      std::vector<VkVertexInputAttributeDescription>				m_attributeDescriptions;
-      std::vector<VkVertexInputBindingDescription>					m_bindingDescriptions;
-      std::shared_ptr<Buffer>																m_vertexBuffer;
-      std::shared_ptr<Buffer>																m_indexBuffer;
-      uint32_t																							m_verticesSize = 0;
-      uint32_t																							m_indicesSize = 0;
-      uint32_t																							m_stride = 0;
-      bool																									m_indexed = false;
-      LavaCake::Geometry::topology													m_topology;
+      std::vector<VkVertexInputAttributeDescription>                m_attributeDescriptions;
+      std::vector<VkVertexInputBindingDescription>                  m_bindingDescriptions;
+      std::shared_ptr<Buffer>                                       m_vertexBuffer;
+      std::shared_ptr<Buffer>                                       m_indexBuffer;
+      uint32_t                                                      m_verticesSize = 0;
+      uint32_t                                                      m_indicesSize = 0;
+      uint32_t                                                      m_stride = 0;
+      bool                                                          m_indexed = false;
+      LavaCake::Geometry::topology                                  m_topology;
     };
 
   }

@@ -7,7 +7,7 @@ namespace LavaCake {
     VertexBuffer::VertexBuffer(
       const  Queue& queue,
       CommandBuffer& cmdBuff,
-      const std::vector<LavaCake::Geometry::Mesh_t*>& m,
+      const std::vector<std::shared_ptr<LavaCake::Geometry::Mesh_t>>& m,
       uint32_t binding,
       VkVertexInputRate inputRate,
       VkBufferUsageFlags otherUsage) {

@@ -1,0 +1,6 @@
+Byte Dictionary
+####################
+
+	.. doxygenclass:: LavaCake::Framework::ByteDictionary
+		:project: LavaCake
+		:members:

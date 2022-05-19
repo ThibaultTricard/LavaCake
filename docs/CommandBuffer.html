@@ -46,14 +46,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13CommandBuffer13CommandBufferEv">
 <span id="_CPPv3N8LavaCake9Framework13CommandBuffer13CommandBufferEv"></span><span id="_CPPv2N8LavaCake9Framework13CommandBuffer13CommandBufferEv"></span><span id="LavaCake::Framework::CommandBuffer::CommandBuffer"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1afeb8bb995bd4b63b6405fc5d5a80997c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CommandBuffer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13CommandBuffer13CommandBufferEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Initialise a VkCommandBuffer and a VkFence for it’s synchronisation. </p>
-<p>Constructor the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_command_buffer"><span class="std std-ref">CommandBuffer</span></a> class </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13CommandBuffer12addSemaphoreEv">
-<span id="_CPPv3N8LavaCake9Framework13CommandBuffer12addSemaphoreEv"></span><span id="_CPPv2N8LavaCake9Framework13CommandBuffer12addSemaphoreEv"></span><span id="LavaCake::Framework::CommandBuffer::addSemaphore"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1a729ce0870add37ad7a0060b70c3975f9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addSemaphore</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13CommandBuffer12addSemaphoreEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Create a VkSemaphore and add it into an intern list. </p>
+<dd><p>Constructor the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_command_buffer"><span class="std std-ref">CommandBuffer</span></a> class. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -89,8 +82,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13CommandBuffer9getHandleEv">
-<span id="_CPPv3N8LavaCake9Framework13CommandBuffer9getHandleEv"></span><span id="_CPPv2N8LavaCake9Framework13CommandBuffer9getHandleEv"></span><span id="LavaCake::Framework::CommandBuffer::getHandle"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1aa08bb1e138b7ea71d85f9071e856cfc2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">VkCommandBuffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getHandle</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13CommandBuffer9getHandleEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework13CommandBuffer9getHandleEv">
+<span id="_CPPv3NK8LavaCake9Framework13CommandBuffer9getHandleEv"></span><span id="_CPPv2NK8LavaCake9Framework13CommandBuffer9getHandleEv"></span><span id="LavaCake::Framework::CommandBuffer::getHandleC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1a18542cea137c701d3f9e780088fae75c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VkCommandBuffer</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getHandle</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework13CommandBuffer9getHandleEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Return the handle of command buffer. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -100,23 +93,9 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13CommandBuffer12getSemaphoreEi">
-<span id="_CPPv3N8LavaCake9Framework13CommandBuffer12getSemaphoreEi"></span><span id="_CPPv2N8LavaCake9Framework13CommandBuffer12getSemaphoreEi"></span><span id="LavaCake::Framework::CommandBuffer::getSemaphore__i"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1a01e22614e242ba18dfd100386d3f7af2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">VkSemaphore</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getSemaphore</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13CommandBuffer12getSemaphoreEi" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the semaphore at a given index. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>i</strong> – the index of the wanted semaphore </p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a handle to a VkSemaphore </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13CommandBuffer8getFenceEv">
-<span id="_CPPv3N8LavaCake9Framework13CommandBuffer8getFenceEv"></span><span id="_CPPv2N8LavaCake9Framework13CommandBuffer8getFenceEv"></span><span id="LavaCake::Framework::CommandBuffer::getFence"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1abef8fcff9c30f8ef028aa4cf67d78709"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">VkFence</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getFence</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13CommandBuffer8getFenceEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Return the fence of the command buffer. </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework13CommandBuffer8getFenceEv">
+<span id="_CPPv3NK8LavaCake9Framework13CommandBuffer8getFenceEv"></span><span id="_CPPv2NK8LavaCake9Framework13CommandBuffer8getFenceEv"></span><span id="LavaCake::Framework::CommandBuffer::getFenceC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1a58e3fe1f820255b8530f97aa87f74af0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VkFence</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getFence</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework13CommandBuffer8getFenceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the fence of the command buffer. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a handle to a VkFence </p>
@@ -125,8 +104,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13CommandBuffer6submitEP5QueueNSt6vectorIN4Core17WaitSemaphoreInfoEEENSt6vectorI11VkSemaphoreEE">
-<span id="_CPPv3N8LavaCake9Framework13CommandBuffer6submitEP5QueueNSt6vectorIN4Core17WaitSemaphoreInfoEEENSt6vectorI11VkSemaphoreEE"></span><span id="_CPPv2N8LavaCake9Framework13CommandBuffer6submitEP5QueueNSt6vectorIN4Core17WaitSemaphoreInfoEEENSt6vectorI11VkSemaphoreEE"></span><span id="LavaCake::Framework::CommandBuffer::submit__QueueP.std::vector:Core::WaitSemaphoreInfo:.std::vector:VkSemaphore:"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1a71392ecbc5c70bd3914f1af88b9b8fd1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">submit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Queue</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">queue</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Core</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">WaitSemaphoreInfo</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">waitSemaphoreInfo</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">VkSemaphore</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">signalSemaphores</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13CommandBuffer6submitEP5QueueNSt6vectorIN4Core17WaitSemaphoreInfoEEENSt6vectorI11VkSemaphoreEE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13CommandBuffer6submitERK5QueueRKNSt6vectorI17waitSemaphoreInfoEERKNSt6vectorINSt10shared_ptrI9SemaphoreEEEE">
+<span id="_CPPv3N8LavaCake9Framework13CommandBuffer6submitERK5QueueRKNSt6vectorI17waitSemaphoreInfoEERKNSt6vectorINSt10shared_ptrI9SemaphoreEEEE"></span><span id="_CPPv2N8LavaCake9Framework13CommandBuffer6submitERK5QueueRKNSt6vectorI17waitSemaphoreInfoEERKNSt6vectorINSt10shared_ptrI9SemaphoreEEEE"></span><span id="LavaCake::Framework::CommandBuffer::submit__QueueCR.std::vector:waitSemaphoreInfo:CR.std::vector:std::shared_ptr:Semaphore::CR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1aa9630aca5879d9a9742cd13dd4c1e5d1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">submit</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Queue</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">queue</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N8LavaCake9Framework13CommandBuffer6submitERK5QueueRKNSt6vectorI17waitSemaphoreInfoEERKNSt6vectorINSt10shared_ptrI9SemaphoreEEEE" title="LavaCake::Framework::CommandBuffer::submit::waitSemaphoreInfo"><span class="n"><span class="pre">waitSemaphoreInfo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">waitSemaphoreInfo</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Semaphore</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">signalSemaphores</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13CommandBuffer6submitERK5QueueRKNSt6vectorI17waitSemaphoreInfoEERKNSt6vectorINSt10shared_ptrI9SemaphoreEEEE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Submit the command buffer to a queue. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -135,6 +114,17 @@
 <li><p><strong>waitSemaphoreInfo</strong> – : description of the semaphores to to wait on before executing it </p></li>
 <li><p><strong>signalSemaphores</strong> – : the list of that will be raised by the execution of this command buffer </p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework13CommandBuffer5readyEv">
+<span id="_CPPv3NK8LavaCake9Framework13CommandBuffer5readyEv"></span><span id="_CPPv2NK8LavaCake9Framework13CommandBuffer5readyEv"></span><span id="LavaCake::Framework::CommandBuffer::readyC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_command_buffer_1aa624caa77e750fab779b6a706d7bd8a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ready</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework13CommandBuffer5readyEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if the fence of the command buffer has been raised. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>bool : a boolean indicating the fence has been raised </p>
 </dd>
 </dl>
 </dd></dl>
@@ -227,7 +217,7 @@
       &copy;2021, Thibault Tricard.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

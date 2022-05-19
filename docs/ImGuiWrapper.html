@@ -44,29 +44,24 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework12ImGuiWrapper12ImGuiWrapperEv">
-<span id="_CPPv3N8LavaCake9Framework12ImGuiWrapper12ImGuiWrapperEv"></span><span id="_CPPv2N8LavaCake9Framework12ImGuiWrapper12ImGuiWrapperEv"></span><span id="LavaCake::Framework::ImGuiWrapper::ImGuiWrapper"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_im_gui_wrapper_1a85c4b3780dc2741a63b4975116f5c115"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImGuiWrapper</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework12ImGuiWrapper12ImGuiWrapperEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework12ImGuiWrapper12ImGuiWrapperERK5QueueR13CommandBufferRK5vec2iRK5vec2i">
+<span id="_CPPv3N8LavaCake9Framework12ImGuiWrapper12ImGuiWrapperERK5QueueR13CommandBufferRK5vec2iRK5vec2i"></span><span id="_CPPv2N8LavaCake9Framework12ImGuiWrapper12ImGuiWrapperERK5QueueR13CommandBufferRK5vec2iRK5vec2i"></span><span id="LavaCake::Framework::ImGuiWrapper::ImGuiWrapper__QueueCR.CommandBufferR.vec2iCR.vec2iCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_im_gui_wrapper_1a2fb5bb0cdc3e0aae603cab4bb5db9994"></span><span class="sig-name descname"><span class="n"><span class="pre">ImGuiWrapper</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Queue</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">queue</span></span>, <a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vec2i</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">windowSize</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vec2i</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frameBufferSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework12ImGuiWrapper12ImGuiWrapperERK5QueueR13CommandBufferRK5vec2iRK5vec2i" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Default Constructor. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework12ImGuiWrapper7initGuiEP5QueueR13CommandBufferP6Window">
-<span id="_CPPv3N8LavaCake9Framework12ImGuiWrapper7initGuiEP5QueueR13CommandBufferP6Window"></span><span id="_CPPv2N8LavaCake9Framework12ImGuiWrapper7initGuiEP5QueueR13CommandBufferP6Window"></span><span id="LavaCake::Framework::ImGuiWrapper::initGui__QueueP.CommandBufferR.WindowP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_im_gui_wrapper_1ac48671bc3ba6b65d9b4c684ef80a09c7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initGui</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Queue</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">queue</span></span>, <a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span>, <span class="n"><span class="pre">Window</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">window</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework12ImGuiWrapper7initGuiEP5QueueR13CommandBufferP6Window" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Initialise ImGui and create it’s graphic pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>queue</strong> – : a pointer to the queue that will be used to copy data to the <a class="reference internal" href="Buffer.html#class_lava_cake_1_1_framework_1_1_buffer"><span class="std std-ref">Buffer</span></a> </p></li>
 <li><p><strong>cmdBuff</strong> – : the command buffer used for this operation, must not be in a recording state </p></li>
-<li><p><strong>window</strong> – a pointer to the current Window </p></li>
+<li><p><strong>windowSize</strong> – the size of the window </p></li>
+<li><p><strong>frameBufferSize</strong> – the size of the frame buffer imgui is used in </p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework12ImGuiWrapper10prepareGuiEP5QueueR13CommandBuffer">
-<span id="_CPPv3N8LavaCake9Framework12ImGuiWrapper10prepareGuiEP5QueueR13CommandBuffer"></span><span id="_CPPv2N8LavaCake9Framework12ImGuiWrapper10prepareGuiEP5QueueR13CommandBuffer"></span><span id="LavaCake::Framework::ImGuiWrapper::prepareGui__QueueP.CommandBufferR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_im_gui_wrapper_1abb5781a23d9377dfe9dfbab7a0d3a044"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">prepareGui</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Queue</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">queue</span></span>, <a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework12ImGuiWrapper10prepareGuiEP5QueueR13CommandBuffer" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework12ImGuiWrapper10prepareGuiERK5QueueR13CommandBuffer">
+<span id="_CPPv3N8LavaCake9Framework12ImGuiWrapper10prepareGuiERK5QueueR13CommandBuffer"></span><span id="_CPPv2N8LavaCake9Framework12ImGuiWrapper10prepareGuiERK5QueueR13CommandBuffer"></span><span id="LavaCake::Framework::ImGuiWrapper::prepareGui__QueueCR.CommandBufferR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_im_gui_wrapper_1a3cd83034d54c16366213a66401af512d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">prepareGui</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Queue</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">queue</span></span>, <a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework12ImGuiWrapper10prepareGuiERK5QueueR13CommandBuffer" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Prepare the gui for the current frame. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -79,8 +74,22 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework12ImGuiWrapper11getPipelineEv">
-<span id="_CPPv3N8LavaCake9Framework12ImGuiWrapper11getPipelineEv"></span><span id="_CPPv2N8LavaCake9Framework12ImGuiWrapper11getPipelineEv"></span><span id="LavaCake::Framework::ImGuiWrapper::getPipeline"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_im_gui_wrapper_1abc10c457a83205af3baf9036d0ca0b94"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="GraphicPipeline.html#_CPPv4N8LavaCake9Framework15GraphicPipelineE" title="LavaCake::Framework::GraphicPipeline"><span class="n"><span class="pre">GraphicPipeline</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getPipeline</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework12ImGuiWrapper11getPipelineEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework12ImGuiWrapper9resizeGuiERK5vec2iRK5vec2i">
+<span id="_CPPv3N8LavaCake9Framework12ImGuiWrapper9resizeGuiERK5vec2iRK5vec2i"></span><span id="_CPPv2N8LavaCake9Framework12ImGuiWrapper9resizeGuiERK5vec2iRK5vec2i"></span><span id="LavaCake::Framework::ImGuiWrapper::resizeGui__vec2iCR.vec2iCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_im_gui_wrapper_1a50fab471e5bb8d1fb70e9c42f02049db"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resizeGui</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vec2i</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">windowSize</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">vec2i</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frameBufferSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework12ImGuiWrapper9resizeGuiERK5vec2iRK5vec2i" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>resize the gui </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>windowSize</strong> – the new size of the window </p></li>
+<li><p><strong>frameBufferSize</strong> – the new size of the frame buffer imgui is used in </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework12ImGuiWrapper11getPipelineEv">
+<span id="_CPPv3NK8LavaCake9Framework12ImGuiWrapper11getPipelineEv"></span><span id="_CPPv2NK8LavaCake9Framework12ImGuiWrapper11getPipelineEv"></span><span id="LavaCake::Framework::ImGuiWrapper::getPipelineC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_im_gui_wrapper_1af68787e7e57bea7dbbcbd35c3bc44366"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="GraphicPipeline.html#_CPPv4N8LavaCake9Framework15GraphicPipelineE" title="LavaCake::Framework::GraphicPipeline"><span class="n"><span class="pre">GraphicPipeline</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getPipeline</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework12ImGuiWrapper11getPipelineEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Return the graphic pipelin for the gui. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -177,7 +186,7 @@
       &copy;2021, Thibault Tricard.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

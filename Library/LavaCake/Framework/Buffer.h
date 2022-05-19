@@ -12,7 +12,6 @@ namespace LavaCake {
     class Image;
 
     /**
-      Class Buffer :
       \brief This class helps manage Vulkan Buffers their memory and view
     */
     class Buffer {
