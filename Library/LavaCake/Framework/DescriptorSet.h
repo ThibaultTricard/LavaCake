@@ -83,83 +83,83 @@ namespace LavaCake {
       }
 
       /**
-       \brief Add a uniform Buffer to the pipeline and scpecify it's binding and shader stage
-       \param uniform a pointer to the uniform buffer
-       \param stage the shader stage where the uniform buffer is going to be used
-       \param binding the binding point of the uniform shader, 0 by default
-       */
+      \brief Add a uniform Buffer to the pipeline and scpecify it's binding and shader stage
+      \param uniform a pointer to the uniform buffer
+      \param stage the shader stage where the uniform buffer is going to be used
+      \param binding the binding point of the uniform shader, 0 by default
+      */
       void addUniformBuffer(const UniformBuffer& uniformBuffer, VkShaderStageFlags stage, int binding = 0) {
         m_uniforms.push_back({ uniformBuffer.getHandle() ,binding,stage });
       };
 
       /**
-       \brief Add a texture Buffer to the pipeline and scpecify it's binding and shader stage
-       \param texture a pointer to the texture buffer
-       \param stage the shader stage where the texture buffer is going to be used
-       \param binding the binding point of the texture buffer, 0 by default
-       */
+      \brief Add a texture Buffer to the pipeline and scpecify it's binding and shader stage
+      \param texture a pointer to the texture buffer
+      \param stage the shader stage where the texture buffer is going to be used
+      \param binding the binding point of the texture buffer, 0 by default
+      */
       void addTextureBuffer(const Image& texture, VkShaderStageFlags stage, int binding = 0) {
         m_textures.push_back({ texture.getSampler(), texture.getImageView(), texture.getLayout(),binding,stage });
       };
 
       /**
-       \brief Add a frame Buffer to the pipeline and scpecify it's binding and shader stage
-       \param frame a pointer to the frame buffer
-       \param stage the shader stage where the frame buffer is going to be used
-       \param binding the binding point of the frame buffer, 0 by default
-       */
+      \brief Add a frame Buffer to the pipeline and scpecify it's binding and shader stage
+      \param frame a pointer to the frame buffer
+      \param stage the shader stage where the frame buffer is going to be used
+      \param binding the binding point of the frame buffer, 0 by default
+      */
       void addFrameBuffer(const FrameBuffer& frame, VkShaderStageFlags stage, int binding = 0, uint32_t view = 0) {
         m_frameBuffers.push_back({ frame.getSampler(),frame.getImageView(view),frame.getLayout(view),binding,stage });
       };
 
       /**
-       \brief Add a storage Image to the pipeline and scpecify it's binding and shader stage
-       \param storage a pointer to the frame buffer
-       \param stage the shader stage where the storage image is going to be used
-       \param binding the binding point of the storage image, 0 by default
-       */
+      \brief Add a storage Image to the pipeline and scpecify it's binding and shader stage
+      \param storage a pointer to the frame buffer
+      \param stage the shader stage where the storage image is going to be used
+      \param binding the binding point of the storage image, 0 by default
+      */
       void addStorageImage(const Image& storage, VkShaderStageFlags stage, int binding = 0) {
         m_storageImages.push_back({ storage.getImageView(), storage.getLayout(),binding,stage });
       };
 
 
       /**
-       \brief Add an attachment to the pipeline and scpecify it's binding and shader stage
-       \param attachement a pointer to the attachement
-       \param stage the shader stage where the attachment is going to be used
-       \param binding the binding point of the attachment, 0 by default
-       */
+      \brief Add an attachment to the pipeline and scpecify it's binding and shader stage
+      \param attachement a pointer to the attachement
+      \param stage the shader stage where the attachment is going to be used
+      \param binding the binding point of the attachment, 0 by default
+      */
       void addAttachment(std::shared_ptr < Image > attachement, VkShaderStageFlags stage, int binding = 0) {
         m_attachments.push_back({ attachement,binding,stage });
       };
 
       /**
-       \brief Add a texel buffer to the pipeline and scpecify it's binding and shader stage
-       \param texel a pointer to the texel buffer
-       \param stage the shader stage where the texel buffer is going to be used
-       \param binding the binding point of the texel buffer, 0 by default
-       */
+      \brief Add a texel buffer to the pipeline and scpecify it's binding and shader stage
+      \param texel a pointer to the texel buffer
+      \param stage the shader stage where the texel buffer is going to be used
+      \param binding the binding point of the texel buffer, 0 by default
+      */
       void addTexelBuffer(const Buffer& texel, VkShaderStageFlags stage, int binding = 0) {
         m_texelBuffers.push_back({ texel.getBufferView(),binding,stage });
       };
 
       /**
-       \brief Add a buffer to the pipeline and scpecify it's binding and shader stage
-       \param buffer a pointer to the texel buffer
-       \param stage the shader stage where the buffer is going to be used
-       \param binding the binding point of the buffer, 0 by default
-       */
+      \brief Add a buffer to the pipeline and scpecify it's binding and shader stage
+      \param buffer a pointer to the texel buffer
+      \param stage the shader stage where the buffer is going to be used
+      \param binding the binding point of the buffer, 0 by default
+      */
       void addBuffer(const Buffer& buffer, VkShaderStageFlags stage, int binding = 0) {
         m_buffers.push_back({ buffer.getHandle(),binding,stage });
       };
 
 
       /**
-       \brief Add an acceleration structure to the pipeline and scpecify it's binding and shader stage
-       \param AS a pointer to the top level acceleration structure
-       \param stage the shader stage where the acceleration structureis going to be used
-       \param binding the binding point of the acceleration structure, 0 by default
-       */
+      \brief Add an acceleration structure to the pipeline and scpecify it's binding and shader stage
+      \param AS a pointer to the top level acceleration structure
+      \param stage the shader stage where the acceleration structureis going to be used
+      \param binding the binding point of the acceleration structure, 0 by default
+      */
       void addAccelerationStructure(const LavaCake::RayTracing::TopLevelAccelerationStructure& AS, VkShaderStageFlags stage, uint32_t	binding) {
         m_AS.push_back({ AS.getHandle() , binding, stage });
       }

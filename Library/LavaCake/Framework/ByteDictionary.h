@@ -11,8 +11,8 @@
 namespace LavaCake {
   namespace Framework {
     /**
-      \brief help manage Byte dictionary mainly used in UniformBuffers and PushConstant.
-      This class is mainly a dictionary of variable of different type that are agregated together as byte.
+    \brief help manage Byte dictionary mainly used in UniformBuffers and PushConstant.
+    This class is mainly a dictionary of variable of different type that are agregated together as byte.
     */
     class ByteDictionary {
     public:
@@ -21,17 +21,17 @@ namespace LavaCake {
       const std::vector<std::byte>& data() const { return m_data; };
 
       /**
-       \brief Add a span of value into the dictionary.
-       \param name: the name of constant.
-       \param data: the span of value.
+      \brief Add a span of value into the dictionary.
+      \param name: the name of constant.
+      \param data: the span of value.
       */
       template<typename T, std::size_t TExtent = std::dynamic_extent>
       void addVariableRange(const std::string& name, const std::span<const T, TExtent> data);
 
       /**
-        \brief set a span of value into the dictionary
-        \param name : the name of constant
-       \param data: the span of value.
+      \brief set a span of value into the dictionary
+      \param name : the name of constant
+      \param data: the span of value.
       */
       template<typename T, std::size_t TExtent = std::dynamic_extent>
       void setVariableRange(const std::string& name, const std::span<T, TExtent> data);
