@@ -166,6 +166,7 @@ namespace LavaCake {
 
       vec2f scale = vec2f({ 0.0f,0.0f });
       vec2f translate = vec2f({ 0.0f,0.0f });
+      m_pushConstant = std::make_shared<PushConstant>( PushConstant());
       m_pushConstant->addVariable("uScale", scale);
       m_pushConstant->addVariable("uTranslate", translate);
 
