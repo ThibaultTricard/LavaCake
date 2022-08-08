@@ -11,11 +11,10 @@ LavaCake is primarily developed by Thibault Tricard for his research work.
 
 # Disclamer
 
-This Framework is made to help research and toy project, and may need to evolve in function of future evolution of Vulkan and of my needs.\
-Although I will try not to break retrocompatibility between version of the framework, I canot fully guarantee it completely.
+This Framework is made to help research and toy project, and may evolve in function of future evolution of Vulkan and of my needs.\
+Although I will try not to break retrocompatibility between version of the framework, I canot fully guarantee it.
 
 This project is a side project of mine and I don't plan on actively provide support for Lavacake.
-
 
 Documentation is not very detailled at the moment, it's on the way.
 
@@ -32,15 +31,14 @@ Then just use CMake
 Lavacake was originaly developped with windows and is fully compatible with it.
 
 ## Linux
-LavaCake should be compatible with Linux with it's 1.2 version that is currently under developpement.\
-It is untested at the moment.
+LavaCake is be compatible with Linux with it's 1.3 version that is currently under developpement.
 
 ## MacOS
-LavaCake is compatible with MacOS and Metal in it's 1.2 version through MoltenVK.
+LavaCake is compatible with MacOS and Metal in it's 1.3 version through MoltenVK.
 
 # Examples
 
-Multiple exemples of how to use this library is availlable at https://github.com/ThibaultTricard/LavaCake-Examples/tree/dev-1.2
+Multiple exemples of how to use this library is availlable at https://github.com/ThibaultTricard/LavaCake-Examples/tree/dev-1.3
 
 # Credits
 
