@@ -30,8 +30,9 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 macro(AutoSPIRV TARGET_NAME)
 
 	list(LENGTH INPUT_SHADER len1)
-	math(EXPR length "${len1} - 1")
-	if(length GREATER_EQUAL 1)
+	
+	if(${len1} GREATER_EQUAL 1)
+		math(EXPR length "${len1} - 1")
 		set(SHADERS_DEP)
 		foreach(val RANGE ${length})
 			list(GET INPUT_SHADER ${val} val1)
