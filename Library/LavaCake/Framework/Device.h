@@ -56,8 +56,7 @@ namespace LavaCake {
 
 #ifdef LAVACAKE_WINDOW_MANAGER_GLFW
     /**
-     \brief Helps the Device class initialize the vulkan surface with GLFW
-     Inherit the SurfaceInitialisator class and specialize it for GLFW
+     \brief Helps the Device class initialize the vulkan surface with GLFW.
      */
     class GLFWSurfaceInitialisator : public SurfaceInitialisator {
     public:

@@ -1,50 +1,101 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Push Constant &#8212; LavaCake 1.2 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Push Constant &mdash; LavaCake 1.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Device" href="Device.html" />
-    <link rel="prev" title="Compute Pipeline" href="ComputePipeline.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="Compute Pipeline" href="ComputePipeline.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LavaCake
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrameBuffer.html">Frame Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SurfaceInitialisator.html">SurfaceInitialisators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SurfaceInitialisator.html#glfw-surface-initialisator">GLFW Surface Initialisator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Textures.html">Textures</a></li>
+</ul>
+</li>
+</ul>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+        </div>
+      </div>
+    </nav>
 
-          <div class="body" role="main">
-            
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LavaCake</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="Framework.html">Framework</a> &raquo;</li>
+      <li>Push Constant</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Constant.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="push-constant">
-<h1>Push Constant<a class="headerlink" href="#push-constant" title="Permalink to this headline">¶</a></h1>
+<h1>Push Constant<a class="headerlink" href="#push-constant" title="Permalink to this heading"></a></h1>
 <blockquote>
 <div><dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework12PushConstantE">
-<span id="_CPPv3N8LavaCake9Framework12PushConstantE"></span><span id="_CPPv2N8LavaCake9Framework12PushConstantE"></span><span id="LavaCake::Framework::PushConstant"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_push_constant"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PushConstant</span></span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework12PushConstantE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework12PushConstantE"></span><span id="_CPPv2N8LavaCake9Framework12PushConstantE"></span><span id="LavaCake::Framework::PushConstant"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_push_constant"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PushConstant</span></span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework12PushConstantE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>help manage pushConstant creation and sending them to shaders. This class is mainly a dictionary of variable of different type that can be pushed to a shader. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN8LavaCake9Framework12PushConstant11addVariableEvRKNSt6stringERK1T">
-<span id="_CPPv3I0EN8LavaCake9Framework12PushConstant11addVariableERKNSt6stringERK1T"></span><span id="_CPPv2I0EN8LavaCake9Framework12PushConstant11addVariableERKNSt6stringERK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_push_constant_1a23eab2a8e50bacaa171b25a3b234a098"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addVariable</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN8LavaCake9Framework12PushConstant11addVariableEvRKNSt6stringERK1T" title="LavaCake::Framework::PushConstant::addVariable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8LavaCake9Framework12PushConstant11addVariableEvRKNSt6stringERK1T" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN8LavaCake9Framework12PushConstant11addVariableERKNSt6stringERK1T"></span><span id="_CPPv2I0EN8LavaCake9Framework12PushConstant11addVariableERKNSt6stringERK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_push_constant_1a23eab2a8e50bacaa171b25a3b234a098"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addVariable</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN8LavaCake9Framework12PushConstant11addVariableEvRKNSt6stringERK1T" title="LavaCake::Framework::PushConstant::addVariable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8LavaCake9Framework12PushConstant11addVariableEvRKNSt6stringERK1T" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Add a variable into the dictionary. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -58,7 +109,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN8LavaCake9Framework12PushConstant11setVariableEvRKNSt6stringERK1T">
-<span id="_CPPv3I0EN8LavaCake9Framework12PushConstant11setVariableERKNSt6stringERK1T"></span><span id="_CPPv2I0EN8LavaCake9Framework12PushConstant11setVariableERKNSt6stringERK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_push_constant_1a0961373cf8a98a71f3fd38c134cb7cd2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVariable</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN8LavaCake9Framework12PushConstant11setVariableEvRKNSt6stringERK1T" title="LavaCake::Framework::PushConstant::setVariable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8LavaCake9Framework12PushConstant11setVariableEvRKNSt6stringERK1T" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3I0EN8LavaCake9Framework12PushConstant11setVariableERKNSt6stringERK1T"></span><span id="_CPPv2I0EN8LavaCake9Framework12PushConstant11setVariableERKNSt6stringERK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_push_constant_1a0961373cf8a98a71f3fd38c134cb7cd2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVariable</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN8LavaCake9Framework12PushConstant11setVariableEvRKNSt6stringERK1T" title="LavaCake::Framework::PushConstant::setVariable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8LavaCake9Framework12PushConstant11setVariableEvRKNSt6stringERK1T" title="Permalink to this definition"></a><br /></dt>
 <dd><p>set a variable into the dictionary. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -77,97 +128,34 @@
 </section>
 
 
+           </div>
           </div>
-          
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ComputePipeline.html" class="btn btn-neutral float-left" title="Compute Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Device.html" class="btn btn-neutral float-right" title="Device" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Thibault Tricard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">LavaCake</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-<p class="blurb">Just a Vulkan framework</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=ThibaultTricard&repo=LavaCake&type=watch&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Push Constant</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="FrameBuffer.html">Frame Buffer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Textures.html">Textures</a></li>
-</ul>
-</li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="Framework.html">Framework</a><ul>
-      <li>Previous: <a href="ComputePipeline.html" title="previous chapter">Compute Pipeline</a></li>
-      <li>Next: <a href="Device.html" title="next chapter">Device</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021, Thibault Tricard.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/Constant.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

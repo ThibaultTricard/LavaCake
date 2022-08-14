@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SurfaceInitialisators &mdash; LavaCake 1.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Textures" href="Textures.html" />
+    <link rel="prev" title="ImGui Wrapper" href="ImGuiWrapper.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LavaCake
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Constant.html">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrameBuffer.html">Frame Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SurfaceInitialisators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#glfw-surface-initialisator">GLFW Surface Initialisator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Textures.html">Textures</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LavaCake</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="Framework.html">Framework</a> &raquo;</li>
+      <li>SurfaceInitialisators</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/SurfaceInitialisator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="surfaceinitialisators">
+<h1>SurfaceInitialisators<a class="headerlink" href="#surfaceinitialisators" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework20SurfaceInitialisatorE">
+<span id="_CPPv3N8LavaCake9Framework20SurfaceInitialisatorE"></span><span id="_CPPv2N8LavaCake9Framework20SurfaceInitialisatorE"></span><span id="LavaCake::Framework::SurfaceInitialisator"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_surface_initialisator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceInitialisator</span></span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework20SurfaceInitialisatorE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Helps the <a class="reference internal" href="Device.html#class_lava_cake_1_1_framework_1_1_device"><span class="std std-ref">Device</span></a> class initialize the vulkan surface. </p>
+<p>Subclassed by <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_g_l_f_w_surface_initialisator"><span class="std std-ref">LavaCake::Framework::GLFWSurfaceInitialisator</span></a>, LavaCake::Framework::HeadlessInitialisator</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework20SurfaceInitialisator4initERK10VkInstance">
+<span id="_CPPv3N8LavaCake9Framework20SurfaceInitialisator4initERK10VkInstance"></span><span id="_CPPv2N8LavaCake9Framework20SurfaceInitialisator4initERK10VkInstance"></span><span id="LavaCake::Framework::SurfaceInitialisator::init__VkInstanceCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_surface_initialisator_1a2dcee00ec3a3e7fbb793d143b5d8b44e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">VkSurfaceKHR</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VkInstance</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">instance</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework20SurfaceInitialisator4initERK10VkInstance" title="Permalink to this definition"></a><br /></dt>
+<dd><p>initialize the vulkan surface </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instance</strong> – the Vulkan instance used to initialize the surface </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a VkSurface </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div></blockquote>
+</section>
+<section id="glfw-surface-initialisator">
+<h1>GLFW Surface Initialisator<a class="headerlink" href="#glfw-surface-initialisator" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework24GLFWSurfaceInitialisatorE">
+<span id="_CPPv3N8LavaCake9Framework24GLFWSurfaceInitialisatorE"></span><span id="_CPPv2N8LavaCake9Framework24GLFWSurfaceInitialisatorE"></span><span id="LavaCake::Framework::GLFWSurfaceInitialisator"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_g_l_f_w_surface_initialisator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GLFWSurfaceInitialisator</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8LavaCake9Framework20SurfaceInitialisatorE" title="LavaCake::Framework::SurfaceInitialisator"><span class="n"><span class="pre">SurfaceInitialisator</span></span></a><a class="headerlink" href="#_CPPv4N8LavaCake9Framework24GLFWSurfaceInitialisatorE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Helps the <a class="reference internal" href="Device.html#class_lava_cake_1_1_framework_1_1_device"><span class="std std-ref">Device</span></a> class initialize the vulkan surface with GLFW. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework24GLFWSurfaceInitialisator24GLFWSurfaceInitialisatorEP10GLFWwindow">
+<span id="_CPPv3N8LavaCake9Framework24GLFWSurfaceInitialisator24GLFWSurfaceInitialisatorEP10GLFWwindow"></span><span id="_CPPv2N8LavaCake9Framework24GLFWSurfaceInitialisator24GLFWSurfaceInitialisatorEP10GLFWwindow"></span><span id="LavaCake::Framework::GLFWSurfaceInitialisator::GLFWSurfaceInitialisator__GLFWwindowP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_g_l_f_w_surface_initialisator_1ae568683e5ac0c3d64938dfb8f3da0dfb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GLFWSurfaceInitialisator</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">GLFWwindow</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">window</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework24GLFWSurfaceInitialisator24GLFWSurfaceInitialisatorEP10GLFWwindow" title="Permalink to this definition"></a><br /></dt>
+<dd><p>constructor for <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_g_l_f_w_surface_initialisator"><span class="std std-ref">GLFWSurfaceInitialisator</span></a> </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>window</strong> – a poiter to the GLFWwindow </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework24GLFWSurfaceInitialisator4initERK10VkInstance">
+<span id="_CPPv3N8LavaCake9Framework24GLFWSurfaceInitialisator4initERK10VkInstance"></span><span id="_CPPv2N8LavaCake9Framework24GLFWSurfaceInitialisator4initERK10VkInstance"></span><span id="LavaCake::Framework::GLFWSurfaceInitialisator::init__VkInstanceCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_g_l_f_w_surface_initialisator_1a0ba982e4e14f23f8a77b52eead06689a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">VkSurfaceKHR</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VkInstance</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">instance</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework24GLFWSurfaceInitialisator4initERK10VkInstance" title="Permalink to this definition"></a><br /></dt>
+<dd><p>initialize the vulkan surface for GLFW </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instance</strong> – the Vulkan instance used to initialize the surface </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a VkSurface </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div></blockquote>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ImGuiWrapper.html" class="btn btn-neutral float-left" title="ImGui Wrapper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Textures.html" class="btn btn-neutral float-right" title="Textures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Thibault Tricard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

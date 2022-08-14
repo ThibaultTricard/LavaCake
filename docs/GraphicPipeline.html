@@ -1,51 +1,102 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Graphic Pipeline &#8212; LavaCake 1.2 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graphic Pipeline &mdash; LavaCake 1.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="ImGui Wrapper" href="ImGuiWrapper.html" />
-    <link rel="prev" title="Frame Buffer" href="FrameBuffer.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="Frame Buffer" href="FrameBuffer.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LavaCake
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Constant.html">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrameBuffer.html">Frame Buffer</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Graphic Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SurfaceInitialisator.html">SurfaceInitialisators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SurfaceInitialisator.html#glfw-surface-initialisator">GLFW Surface Initialisator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Textures.html">Textures</a></li>
+</ul>
+</li>
+</ul>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+        </div>
+      </div>
+    </nav>
 
-          <div class="body" role="main">
-            
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LavaCake</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="Framework.html">Framework</a> &raquo;</li>
+      <li>Graphic Pipeline</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/GraphicPipeline.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="graphic-pipeline">
-<h1>Graphic Pipeline<a class="headerlink" href="#graphic-pipeline" title="Permalink to this headline">¶</a></h1>
+<h1>Graphic Pipeline<a class="headerlink" href="#graphic-pipeline" title="Permalink to this heading"></a></h1>
 <blockquote>
 <div><dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipelineE">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipelineE"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipelineE"></span><span id="LavaCake::Framework::GraphicPipeline"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">GraphicPipeline</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Pipeline</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipelineE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipelineE"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipelineE"></span><span id="LavaCake::Framework::GraphicPipeline"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GraphicPipeline</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Pipeline</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipelineE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Helps manage a compute pipeline and it’s binding Inherit the pipeline Pipeline class. </p>
 <p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_graphic_pipeline"><span class="std std-ref">GraphicPipeline</span></a> : </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline15GraphicPipelineE5vec3f5vec3f5vec2f5vec2f">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline15GraphicPipelineE5vec3f5vec3f5vec2f5vec2f"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline15GraphicPipelineE5vec3f5vec3f5vec2f5vec2f"></span><span id="LavaCake::Framework::GraphicPipeline::GraphicPipeline__vec3f.vec3f.vec2f.vec2f"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1acb87a636748955ca4358b4514bc3df0e"></span><span class="sig-name descname"><span class="n"><span class="pre">GraphicPipeline</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">vec3f</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">viewportMin</span></span>, <span class="n"><span class="pre">vec3f</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">viewportMax</span></span>, <span class="n"><span class="pre">vec2f</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scissorMin</span></span>, <span class="n"><span class="pre">vec2f</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scissorMax</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline15GraphicPipelineE5vec3f5vec3f5vec2f5vec2f" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline15GraphicPipelineE5vec3f5vec3f5vec2f5vec2f"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline15GraphicPipelineE5vec3f5vec3f5vec2f5vec2f"></span><span id="LavaCake::Framework::GraphicPipeline::GraphicPipeline__vec3f.vec3f.vec2f.vec2f"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1acb87a636748955ca4358b4514bc3df0e"></span><span class="sig-name descname"><span class="n"><span class="pre">GraphicPipeline</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">vec3f</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">viewportMin</span></span>, <span class="n"><span class="pre">vec3f</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">viewportMax</span></span>, <span class="n"><span class="pre">vec2f</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scissorMin</span></span>, <span class="n"><span class="pre">vec2f</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scissorMax</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline15GraphicPipelineE5vec3f5vec3f5vec2f5vec2f" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Constructor for the gaphic pipelin class. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -61,7 +112,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline15setVertexModuleERK18VertexShaderModule">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline15setVertexModuleERK18VertexShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline15setVertexModuleERK18VertexShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setVertexModule__VertexShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a4e5b0234f9440df8b3e3b17366db0b09"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVertexModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VertexShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline15setVertexModuleERK18VertexShaderModule" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline15setVertexModuleERK18VertexShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline15setVertexModuleERK18VertexShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setVertexModule__VertexShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a4e5b0234f9440df8b3e3b17366db0b09"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVertexModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VertexShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline15setVertexModuleERK18VertexShaderModule" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the vertex shader module for the pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -72,7 +123,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline27setTesselationControlModuleERK31TessellationControlShaderModule">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline27setTesselationControlModuleERK31TessellationControlShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline27setTesselationControlModuleERK31TessellationControlShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setTesselationControlModule__TessellationControlShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a0e64326344b3bef6e73186faf9e596e8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTesselationControlModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">TessellationControlShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline27setTesselationControlModuleERK31TessellationControlShaderModule" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline27setTesselationControlModuleERK31TessellationControlShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline27setTesselationControlModuleERK31TessellationControlShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setTesselationControlModule__TessellationControlShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a0e64326344b3bef6e73186faf9e596e8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTesselationControlModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">TessellationControlShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline27setTesselationControlModuleERK31TessellationControlShaderModule" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the vertex shader module for the pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -83,7 +134,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline30setTesselationEvaluationModuleERK34TessellationEvaluationShaderModule">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline30setTesselationEvaluationModuleERK34TessellationEvaluationShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline30setTesselationEvaluationModuleERK34TessellationEvaluationShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setTesselationEvaluationModule__TessellationEvaluationShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a21b98304997694ba16e95ba21b13c909"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTesselationEvaluationModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">TessellationEvaluationShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline30setTesselationEvaluationModuleERK34TessellationEvaluationShaderModule" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline30setTesselationEvaluationModuleERK34TessellationEvaluationShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline30setTesselationEvaluationModuleERK34TessellationEvaluationShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setTesselationEvaluationModule__TessellationEvaluationShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a21b98304997694ba16e95ba21b13c909"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTesselationEvaluationModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">TessellationEvaluationShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline30setTesselationEvaluationModuleERK34TessellationEvaluationShaderModule" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the vertex shader module for the pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -94,7 +145,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline17setGeometryModuleERK20GeometryShaderModule">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline17setGeometryModuleERK20GeometryShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline17setGeometryModuleERK20GeometryShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setGeometryModule__GeometryShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a920d699928d64860207e1737b7cf54b9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setGeometryModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">GeometryShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline17setGeometryModuleERK20GeometryShaderModule" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline17setGeometryModuleERK20GeometryShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline17setGeometryModuleERK20GeometryShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setGeometryModule__GeometryShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a920d699928d64860207e1737b7cf54b9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setGeometryModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">GeometryShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline17setGeometryModuleERK20GeometryShaderModule" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the vertex shader module for the pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -105,7 +156,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline17setFragmentModuleERK20FragmentShaderModule">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline17setFragmentModuleERK20FragmentShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline17setFragmentModuleERK20FragmentShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setFragmentModule__FragmentShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a7517ee572f96a1001c61a118dc13421f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setFragmentModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">FragmentShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline17setFragmentModuleERK20FragmentShaderModule" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline17setFragmentModuleERK20FragmentShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline17setFragmentModuleERK20FragmentShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setFragmentModule__FragmentShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a7517ee572f96a1001c61a118dc13421f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setFragmentModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">FragmentShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline17setFragmentModuleERK20FragmentShaderModule" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the vertex shader module for the pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -116,7 +167,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline13setMeshModuleERK16MeshShaderModule">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline13setMeshModuleERK16MeshShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline13setMeshModuleERK16MeshShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setMeshModule__MeshShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1ad87a76c46112e223f6f78951be498400"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setMeshModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">MeshShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline13setMeshModuleERK16MeshShaderModule" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline13setMeshModuleERK16MeshShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline13setMeshModuleERK16MeshShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setMeshModule__MeshShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1ad87a76c46112e223f6f78951be498400"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setMeshModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">MeshShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline13setMeshModuleERK16MeshShaderModule" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the mesh shader module for the pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -127,7 +178,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline13setTaskModuleERK16TaskShaderModule">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline13setTaskModuleERK16TaskShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline13setTaskModuleERK16TaskShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setTaskModule__TaskShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a138e599dec74028d21714bb857f7a1cd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTaskModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">TaskShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline13setTaskModuleERK16TaskShaderModule" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline13setTaskModuleERK16TaskShaderModule"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline13setTaskModuleERK16TaskShaderModule"></span><span id="LavaCake::Framework::GraphicPipeline::setTaskModule__TaskShaderModuleCR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a138e599dec74028d21714bb857f7a1cd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTaskModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">TaskShaderModule</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">module</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline13setTaskModuleERK16TaskShaderModule" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the task shader module for the pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -137,19 +188,19 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorIP12VertexBufferEE">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorIP12VertexBufferEE"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorIP12VertexBufferEE"></span><span id="LavaCake::Framework::GraphicPipeline::setVertices__std::vector:VertexBufferP:CR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1aa2d4c8b3b352a1a183f232350ee41672"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVertices</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">VertexBuffer</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">vertexBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorIP12VertexBufferEE" title="Permalink to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorINSt10shared_ptrI12VertexBufferEEEE">
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorINSt10shared_ptrI12VertexBufferEEEE"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorINSt10shared_ptrI12VertexBufferEEEE"></span><span id="LavaCake::Framework::GraphicPipeline::setVertices__std::vector:std::shared_ptr:VertexBuffer::CR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a38032126d58dc5991525c0fb039d572b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVertices</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">VertexBuffer</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">vertexBuffers</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorINSt10shared_ptrI12VertexBufferEEEE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the vertex buffer that will be used by the pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>vertexBuffer</strong> – the vertex buffer </p>
+<dd class="field-odd"><p><strong>vertexBuffers</strong> – an array of shared pointers to vertex buffers </p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorI20vertexBufferConstantEE">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorI20vertexBufferConstantEE"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorI20vertexBufferConstantEE"></span><span id="LavaCake::Framework::GraphicPipeline::setVertices__std::vector:vertexBufferConstant:CR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a0bfdc42794ec3cb28ea2607c0546202f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVertices</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">vertexBufferConstant</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">vertexBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorI20vertexBufferConstantEE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorI20vertexBufferConstantEE"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorI20vertexBufferConstantEE"></span><span id="LavaCake::Framework::GraphicPipeline::setVertices__std::vector:vertexBufferConstant:CR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a0bfdc42794ec3cb28ea2607c0546202f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVertices</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">vertexBufferConstant</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">vertexBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline11setVerticesERKNSt6vectorI20vertexBufferConstantEE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the vertex buffer that will be used by the pipeline. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -160,7 +211,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline4drawER13CommandBuffer">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline4drawER13CommandBuffer"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline4drawER13CommandBuffer"></span><span id="LavaCake::Framework::GraphicPipeline::draw__CommandBufferR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a3d57ef1f057b3d98ad9045b29fcb9d89"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">draw</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline4drawER13CommandBuffer" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline4drawER13CommandBuffer"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline4drawER13CommandBuffer"></span><span id="LavaCake::Framework::GraphicPipeline::draw__CommandBufferR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a3d57ef1f057b3d98ad9045b29fcb9d89"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">draw</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline4drawER13CommandBuffer" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Register a the draw call of the pipeline into a command buffer. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -171,13 +222,13 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline11setCullModeE18VkCullModeFlagBits">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline11setCullModeE18VkCullModeFlagBits"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline11setCullModeE18VkCullModeFlagBits"></span><span id="LavaCake::Framework::GraphicPipeline::setCullMode__VkCullModeFlagBits"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a8b6172873b15ad38a27e0e69ccbdbbf6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setCullMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">VkCullModeFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cullMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline11setCullModeE18VkCullModeFlagBits" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline11setCullModeE18VkCullModeFlagBits"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline11setCullModeE18VkCullModeFlagBits"></span><span id="LavaCake::Framework::GraphicPipeline::setCullMode__VkCullModeFlagBits"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a8b6172873b15ad38a27e0e69ccbdbbf6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setCullMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">VkCullModeFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cullMode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline11setCullModeE18VkCullModeFlagBits" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Set the cull mode for the pipeline, if not set the pipeline cull the back faces. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline18setPushContantInfoERKNSt6vectorI19VkPushConstantRangeEE">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline18setPushContantInfoERKNSt6vectorI19VkPushConstantRangeEE"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline18setPushContantInfoERKNSt6vectorI19VkPushConstantRangeEE"></span><span id="LavaCake::Framework::GraphicPipeline::setPushContantInfo__std::vector:VkPushConstantRange:CR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1ac00baee5e381ad59dcfeff41c5b79c98"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setPushContantInfo</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">VkPushConstantRange</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">constantDescriptions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline18setPushContantInfoERKNSt6vectorI19VkPushConstantRangeEE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline18setPushContantInfoERKNSt6vectorI19VkPushConstantRangeEE"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline18setPushContantInfoERKNSt6vectorI19VkPushConstantRangeEE"></span><span id="LavaCake::Framework::GraphicPipeline::setPushContantInfo__std::vector:VkPushConstantRange:CR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1ac00baee5e381ad59dcfeff41c5b79c98"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setPushContantInfo</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">VkPushConstantRange</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">constantDescriptions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline18setPushContantInfoERKNSt6vectorI19VkPushConstantRangeEE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Register a push constant to the pand specify it’s shader stage, only one push constant can be used per shader stage. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -191,7 +242,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline16setAlphaBlendingEb">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline16setAlphaBlendingEb"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline16setAlphaBlendingEb"></span><span id="LavaCake::Framework::GraphicPipeline::setAlphaBlending__b"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a80232d019c42101ef3825c2c45a37c3c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setAlphaBlending</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alphaBlending</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline16setAlphaBlendingEb" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline16setAlphaBlendingEb"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline16setAlphaBlendingEb"></span><span id="LavaCake::Framework::GraphicPipeline::setAlphaBlending__b"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a80232d019c42101ef3825c2c45a37c3c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setAlphaBlending</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">alphaBlending</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline16setAlphaBlendingEb" title="Permalink to this definition"></a><br /></dt>
 <dd><p>enable or disable the alpha blending, if not set the alpha blendig is disable </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -202,7 +253,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline12setLineWidthEf">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline12setLineWidthEf"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline12setLineWidthEf"></span><span id="LavaCake::Framework::GraphicPipeline::setLineWidth__float"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1ae46d84de083671b34233127854004b4b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setLineWidth</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline12setLineWidthEf" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline12setLineWidthEf"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline12setLineWidthEf"></span><span id="LavaCake::Framework::GraphicPipeline::setLineWidth__float"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1ae46d84de083671b34233127854004b4b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setLineWidth</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline12setLineWidthEf" title="Permalink to this definition"></a><br /></dt>
 <dd><p>set the line width used to draw line in the pipeline, if not set the line width will be set to 1.0f </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -213,7 +264,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline14setPolygonModeE13VkPolygonMode">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline14setPolygonModeE13VkPolygonMode"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline14setPolygonModeE13VkPolygonMode"></span><span id="LavaCake::Framework::GraphicPipeline::setPolygonMode__VkPolygonMode"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a7064fcfc04385b718de999839a8b1fbb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setPolygonMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">VkPolygonMode</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline14setPolygonModeE13VkPolygonMode" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline14setPolygonModeE13VkPolygonMode"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline14setPolygonModeE13VkPolygonMode"></span><span id="LavaCake::Framework::GraphicPipeline::setPolygonMode__VkPolygonMode"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a7064fcfc04385b718de999839a8b1fbb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setPolygonMode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">VkPolygonMode</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline14setPolygonModeE13VkPolygonMode" title="Permalink to this definition"></a><br /></dt>
 <dd><p>set the polygon mode used for the pipeline if not set the polgon mode will be VK_POLYGON_MODE_FILL </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -224,7 +275,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework15GraphicPipeline12setTaskCountE8uint32_t">
-<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline12setTaskCountE8uint32_t"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline12setTaskCountE8uint32_t"></span><span id="LavaCake::Framework::GraphicPipeline::setTaskCount__uint32_t"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a8f4dfe390c0441fbaef211104e84db35"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTaskCount</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline12setTaskCountE8uint32_t" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N8LavaCake9Framework15GraphicPipeline12setTaskCountE8uint32_t"></span><span id="_CPPv2N8LavaCake9Framework15GraphicPipeline12setTaskCountE8uint32_t"></span><span id="LavaCake::Framework::GraphicPipeline::setTaskCount__uint32_t"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_graphic_pipeline_1a8f4dfe390c0441fbaef211104e84db35"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTaskCount</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework15GraphicPipeline12setTaskCountE8uint32_t" title="Permalink to this definition"></a><br /></dt>
 <dd><p>set the number of task launch by this pipeline if not set the number of task be 0. this function can be ignored if the pipeline does not use task shader </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -240,97 +291,34 @@
 </section>
 
 
+           </div>
           </div>
-          
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="FrameBuffer.html" class="btn btn-neutral float-left" title="Frame Buffer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ImGuiWrapper.html" class="btn btn-neutral float-right" title="ImGui Wrapper" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Thibault Tricard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">LavaCake</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-<p class="blurb">Just a Vulkan framework</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=ThibaultTricard&repo=LavaCake&type=watch&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Constant.html">Push Constant</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="FrameBuffer.html">Frame Buffer</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Graphic Pipeline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Textures.html">Textures</a></li>
-</ul>
-</li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="Framework.html">Framework</a><ul>
-      <li>Previous: <a href="FrameBuffer.html" title="previous chapter">Frame Buffer</a></li>
-      <li>Next: <a href="ImGuiWrapper.html" title="next chapter">ImGui Wrapper</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021, Thibault Tricard.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/GraphicPipeline.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

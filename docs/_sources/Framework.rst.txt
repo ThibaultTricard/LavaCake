@@ -13,4 +13,5 @@ Framework
    FrameBuffer
    GraphicPipeline
    ImGuiWrapper
+   SurfaceInitialisator
    Textures

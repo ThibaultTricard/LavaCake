@@ -2,47 +2,47 @@
 
 ## Creating a Window
 
-LavaCake use glfw3 as a window manager.
-glfw is wrapped in the Window class : 
+LavaCake use glfw3 as a window manager by default.
+to create a init a GLFW Window :
 
-to create a window use the following command :
+```cpp
+glfwInit();
+glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+GLFWwindow* window = glfwCreateWindow(512, 512, "HelloWorld", nullptr, nullptr);
+```
 
-`LavaCake::Framework::Window window(title, width, height);`
 
-* title : the name of your app.
-* width : the width of your app.
-* height : the height of your app.
+The window should open itself after that
 
-The windows should open itself after that
-
-To know if your window is still alive call the function window.running().
+To know if your window is still alive call the function glfwWindowShouldClose().
 this function return true when the window is alive, and false when the windows must be killed.
 
-To refresh the Window call window.updateInput()
+To refresh the Window call glfwPollEvents()
 
-A typical code to do a render using the LavaCake window manager should look like this : 
+A typical code to render using the LavaCake should look like this : 
 
-
-```
-#include "LavaCake/Window.h"
+```cpp
+#include <LavaCake/Framework/Framework.h> 
 using namespace LavaCake::Framework;
 
 
 int main() {
 
-	Window window("My window", 500, 500);
-        //Vulkan Initialisation
-        
+  glfwInit();
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  GLFWwindow* window = glfwCreateWindow(512, 512, "HelloWorld", nullptr, nullptr);
+  //Vulkan Initialisation
 
-        //Renderering setup
+
+  //Renderering setup
 
 
-	while (window.running()) {
-	window.updateInput();
+  while (!glfwWindowShouldClose(window)) {
+    glfwPollEvents();
 
-	//render loop
+    //render loop
 
-	}
+  }
 }
 ```
 ## Vulkan initialisation
@@ -50,154 +50,396 @@ int main() {
 To initialise vulkan in LavaCake you need to get a reference to the Device singleton provided by LavaCake and initialise it.\
 This singleton holds references to Physical and Logical Device, Queues, Surface and Instances.
 
+To initialise the Device you first need to create a GLFWSurfaceInitialisator with the following line : 
 
+```cpp
+GLFWSurfaceInitialisator surfaceInitialisator(window);
 ```
-Device* d = Device::getDevice();
-d->initDevices(0, 1, window.m_windowParams);
-```
+(The GLFWSurfaceInitialisator class inherits from the SurfaceInitialisator, 
+if you need to use other windows manages you can create your own surface initialisator )
 
+
+```cpp
+Device* device = Device::getDevice();
+device->initDevices(0, 1, surfaceInitialisator);
+```
 
 Then we need initialise the get a reference to the Swapchain singleton and initialise it.\
 This singleton holds the rendering parameter such as the output size, the color and depth format etc...\
 This singleton will also provide the swapchain images requiered to draw on the screen.
 
-```
-SwapChain* s = SwapChain::getSwapChain();
-s->init();
+```cpp
+SwapChain* swapChain = SwapChain::getSwapChain();
+swapChain->init();
 ```
 
 ## Renderering setup
 
+Now we need to prepare all the resources we will need for the rendering.
+
+### Creating a command buffer
+In Lavacake command buffer are wrapped in the CommandBuffer class
+You can create them by simply initialising a CommandBuffer instance :
+
+```cpp
+CommandBuffer  commandBuffer;
+```
+
+### Creating a Sempahore
+
+In LavaCake semmaphore are wraped by the Semaphore class;
+You can create them by simply initialising a shared pointer of a Semaphore instance :
+
+```cpp
+std::shared_ptr<Semaphore> semaphore = std::make_shared<Semaphore>();
+```
+
+### Getting the Queues : 
+
+In LavaCake all the Queues are create and stored by the Device singleton
+You can get a reference to a graphic Queue with the following Line : 
+```cpp
+GraphicQueue graphicQueue = d->getGraphicQueue(0);
+```
+with 0 being the index of the of the graphic queue.
+
+You can get a reference to a Presentation Queue with the following Line : 
+```cpp
+PresentationQueue presentQueue = d->getPresentQueue();
+```
+
+### Creating a mesh
+
+To create a mesh we first need to define the vertex format we will be using.
+In our exemple the vertecies will composed of a 3D position and a color.
+
+```cpp
+vertexFormat format ({ POS3,COL3 });
+```
+
+Then we need to initialise a mesh:
+```cpp
+std::shared_ptr<Mesh_t> triangle = std::make_shared<IndexedMesh<TRIANGLE>>(format);
+```
+We can now add vertices to the mesh:
+```cpp
+triangle->appendVertex({ -0.75f, 0.75f, 0.0f, 1.0f , 0.0f , 0.0f });
+triangle->appendVertex({ 0.75f,	0.75f , 0.0f, 0.0f , 1.0f , 0.0f });
+triangle->appendVertex({ 0.0f , -0.75f, 0.0f, 0.0f , 0.0f , 1.0f });
+```
+
+We can now link the vertices together by creating a triangle:
+```cpp
+triangle->appendIndex(0);
+triangle->appendIndex(1);
+triangle->appendIndex(2);
+```
+
+### Creating a Vertex Buffer
+
+you can create a vertex buffer create a shared pointer of a VertexBuffer :
+
+```cpp
+//creating an allocating a vertex buffer
+std::shared_ptr<VertexBuffer> triangle_vertex_buffer = std::make_shared<VertexBuffer>(
+  graphicQueue, 
+  commandBuffer, 
+  std::vector<std::shared_ptr<Mesh_t>>({ triangle }) 
+);
+```
+
+### Loading shaders
+
+You can load shaders with the following commands :
+
+```cpp
+VertexShaderModule vertexShader("path/to/the/shader.vert.spv");
+FragmentShaderModule fragmentShader("path/to/the/shader.frag.spv");
+```
+
+### Preparing a graphic pipeline
+
+First we need to get the size of the swaphchain : 
+
+```cpp
+VkExtent2D size = swapChain->size();
+```
+
+Then we can create a graphic pipeline that match the size of the swapchain :
+```cpp
+std::shared_ptr<GraphicPipeline> graphicPipeline = std::make_shared<GraphicPipeline>(
+  vec3f({ 0,0,0 }), 
+  vec3f({ float(size.width),float(size.height),1.0f }), 
+  vec2f({ 0,0 }), 
+  vec2f({ float(size.width),float(size.height) })
+);
+```
+
+Finaly we can register the shaders and the vertex buffers into the graphic pipeline : 
+
+```cpp
+graphicPipeline->setVertexModule(vertexShader);
+graphicPipeline->setFragmentModule(fragmentShader);
+graphicPipeline->setVertices({ triangle_vertex_buffer });
+```
+
+### Preparing a render pass
+
+Now we can create a render pass by using the instancing a RenderPass object : 
+```cpp
+RenderPass renderPass;
+```
+
+We now need to add the graphic pipeline we create to the render pass. 
+To do that we need to prepare the information needed by the render pass to create the subpass that will wrap the graphic pipeline : 
+
+```cpp
+SubpassAttachment SA;
+SA.nbColor = 1;
+SA.storeColor = true;
+SA.showOnScreen = true;
+SA.showOnScreenIndex = 0;
+```
+
+By creating this structure we describe the attachement requiered such that the subpass can be draw.
+Here we describe a subpass that :
+	- write in one color attachment
+	- store it's color attachments
+	- will display it's first color attachment on the screen
+
+Finaly we can add the graphic pipeline and the subpass attachement descripor to the render pass : 
+
+```cpp
+renderPass.addSubPass({ graphicPipeline }, SA);
+renderPass.compile();
+```
+
+### Preparing a frame buffer
+
+First we need to create a frame buffer :
+
+```cpp
+FrameBuffer frameBuffer(size.width, size.height);
+```
+
+Then we need to prepare it for the renderpass that will use it : 
+
+```cpp
+renderPass.prepareOutputFrameBuffer(graphicQueue, commandBuffer, frameBuffer);
+```
+
+## Renderering
+
+### Reseting the command buffer
+
+Before being abble to register command into the commqnd buffer we have to make sure it is in the right state.
+To that we can use the following lines:
+
+```cpp
+commandBuffer.wait();
+commandBuffer.resetFence();
+```
+
+### Getting the swap chain image
+
+To be able to draw on the screen of the image we need to get an image from the swapchain.
+To do that we can use the following line : 
+
+```cpp
+const SwapChainImage& image = swapChain->acquireImage();
+```
+
+This will ask the swapchain to prepare a swapchain image for you to draw in.
+However this image will not be ready right away.
+
+To make sure it is ready when we need it we need to prepare the device to wait for image.
+We can do it with the following lines : 
+
+```cpp
+std::vector<waitSemaphoreInfo> waitSemaphoreInfos = {};
+waitSemaphoreInfos.push_back({
+  image.getSemaphore(),                               // VkSemaphore            Semaphore
+  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT	      // VkPipelineStageFlags   WaitingStage
+});
+```
+
+With this line we prepare a structure that hold the semaphore that will be raise when the image is ready,
+and the stage that need to wait for the semaphore.
+Here the pipeline will wait for the image to be ready before trying to write in the color attachment.
+
+Finaly we want to register the swapchain image into the our frame buffer : 
+
+```cpp
+renderPass.setSwapChainImage(frameBuffer, image);
+```
+
+### Preparing the draw call
+
+To draw on the screen we need to regiter a draw call into our command buffer.
+To do that we need to put it in a recording state :
+
+```cpp
+commandBuffer.beginRecord();
+```
+
+Once it is in a recording state we can register a draw call into it :
+
+```cpp
+renderPass.draw(
+	commandBuffer, 
+	frameBuffer, 
+	vec2u({ 0,0 }), 
+	vec2u({size.width, size.height }), 
+	{ { 0.1f, 0.2f, 0.3f, 1.0f } }
+);
+```
+Here we ask the render pass to create a draw call into the command buffer using the frame buffer.
+This draw call will draw in square which diagonal start at the 0,0 coordinates and end at the size.width, size.height coordinates.
+The last parameters describe the value used to reset the frame buffer.
+
+We can now put the command out of the recording state :
+
+```cpp
+commandBuffer.endRecord();
+``` 
+
+Finaly we can submit the command buffer so it can be executed by the device:
+
+```cpp
+commandBuffer.submit(graphicQueue, waitSemaphoreInfos, { semaphore });
+```
+
+Here we submit the command buffer to the graphic queue with waitSempahoreInfos we prepared, and with a semaphore to raise when the all the command will be done.
+
+### Drawing on the screen 
+
+Now we can draw our result on the screen : 
+
+```cpp
+swapChain->presentImage(presentQueue, image, { semaphore });
+```
+Here we ask the swapchain to present an image on the screen using the presentation queue after the given semaphore as been raise.
+
+## Cleaning
+
+Once we are done using Vulkan we need to make sure all the commands we submited to the Device are done before killing the application.
+To do that you can use the following lines : 
+
+```cpp
+device->waitForAllCommands();
+```
 
 ## Final code
 
-```
-#include "Framework/Framework.h"
-
+```cpp
+#define LAVACAKE_WINDOW_MANAGER_GLFW
+#include <LavaCake/Framework/Framework.h> 
 
 using namespace LavaCake;
 using namespace LavaCake::Geometry;
 using namespace LavaCake::Framework;
-using namespace LavaCake::Core;
-
 
 int main() {
 
-	Window w("LavaCake HelloWorld", 512, 512);
+  glfwInit();
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  GLFWwindow* window = glfwCreateWindow(512, 512, "LavaCake HelloWorld", nullptr, nullptr);
 
-	Device* d = Device::getDevice();
-	d->initDevices(0, 1, window.m_windowParams);
-	SwapChain* s = SwapChain::getSwapChain();
-	s->init();
-	VkExtent2D size = s->size();
-	Queue* queue = d->getGraphicQueue(0);
-	PresentationQueue* presentQueue = d->getPresentQueue();
-	CommandBuffer  commandBuffer;
-	commandBuffer.addSemaphore();
+  GLFWSurfaceInitialisator surfaceInitialisator(window);
 
+  Device* device = Device::getDevice();
+  device->initDevices(0, 1, surfaceInitialisator);
 
-	//We define the stride format we need for the mesh here 
-	//each vertex is a 3D position followed by a RGB color
-	vertexFormat format = vertexFormat({ POS3,COL3 });
+  SwapChain* swapChain = SwapChain::getSwapChain();
+  swapChain->init();
 
-	//we create a indexed triangle mesh with the desired format
-	Mesh_t* triangle = new IndexedMesh<TRIANGLE>(format);
+  CommandBuffer  commandBuffer;
+  std::shared_ptr<Semaphore> semaphore = std::make_shared<Semaphore>();
 
-	//adding 3 vertices
-	triangle->appendVertex({ -0.75f, 0.75f, 0.0f, 1.0f , 0.0f , 0.0f });
-	triangle->appendVertex({ 0.75f,	0.75f , 0.0f, 0.0f , 1.0f	, 0.0f });
-	triangle->appendVertex({ 0.0f , -0.75f, 0.0f, 0.0f , 0.0f	, 1.0f });
+  GraphicQueue graphicQueue = device->getGraphicQueue(0);
+  PresentationQueue presentQueue = device->getPresentQueue();
 
+  vertexFormat format ({ POS3,COL3 });
 
-	// we link the 3 vertices to define a triangle
-	triangle->appendIndex(0);
-	triangle->appendIndex(1);
-	triangle->appendIndex(2);
+  //we create a indexed triangle mesh with the desired format
+  std::shared_ptr<Mesh_t> triangle = std::make_shared<IndexedMesh<TRIANGLE>>(format);
 
+  //adding 3 vertices
+  triangle->appendVertex({ -0.75f, 0.75f, 0.0f, 1.0f , 0.0f , 0.0f });
+  triangle->appendVertex({ 0.75f,	0.75f , 0.0f, 0.0f , 1.0f	, 0.0f });
+  triangle->appendVertex({ 0.0f , -0.75f, 0.0f, 0.0f , 0.0f	, 1.0f });
 
-	//creating an allocating a vertex buffer
-	VertexBuffer* triangle_vertex_buffer = new VertexBuffer({ triangle });
-	triangle_vertex_buffer->allocate(queue, commandBuffer);
+  // we link the 3 vertices to define a triangle
+  triangle->appendIndex(0);
+  triangle->appendIndex(1);
+  triangle->appendIndex(2);
 
-	//load the shaders into shader module	
-	VertexShaderModule* vertexShader = new VertexShaderModule("Data/Shaders/helloworld/shader.vert.spv");
-	FragmentShaderModule* fragmentShader = new FragmentShaderModule("Data/Shaders/helloworld/shader.frag.spv");
+  //creating an allocating a vertex buffer
+  std::shared_ptr<VertexBuffer> triangle_vertex_buffer = std::make_shared<VertexBuffer>(
+    graphicQueue,
+    commandBuffer, 
+    std::vector<std::shared_ptr<Mesh_t>>({ triangle }) 
+  );
 
-	//create a graphic pipeline with a specific view port bounding box and  screen bounding box
-	GraphicPipeline* pipeline = new GraphicPipeline(vec3f({ 0,0,0 }), vec3f({ float(size.width),float(size.height),1.0f }), vec2f({ 0,0 }), vec2f({ float(size.width),float(size.height) }));
-	
-	//add the shader modules to the pipeline
-	pipeline->setVertexModule(vertexShader);
-	pipeline->setFragmentModule(fragmentShader);
+  VertexShaderModule vertexShader("Data/Shaders/helloworld/shader.vert.spv");
+  FragmentShaderModule fragmentShader("Data/Shaders/helloworld/shader.frag.spv");
 
-	//setup the vertices info for the pipeline
-	pipeline->setVerticesInfo(triangle_vertex_buffer->getBindingDescriptions(), triangle_vertex_buffer->getAttributeDescriptions() ,triangle_vertex_buffer->primitiveTopology());
-	
-	//set the vertex buffer to be rendered
-	//the vertex buffer can be change without recompiling the pipeline as long as it is compatible with the informations
-	//provided in the previous line
-	pipeline->setVertices(triangle_vertex_buffer);
+  VkExtent2D size = swapChain->size();
 
-	//describe the subpass in which the pipeline will be rendered
-	SubpassAttachment SA;
-	//we want to show it on screen
-	SA.showOnScreen = true;
-	//it has one color output
-	SA.nbColor = 1;
-	//the color need to be stored after the subpass
-	SA.storeColor = true;
-	//it uses depth
-	SA.useDepth = true;
-	//the color output to show on screen will be the first one
-	SA.showOnScreenIndex = 0;
+  std::shared_ptr<GraphicPipeline> graphicPipeline = std::make_shared<GraphicPipeline>(
+    vec3f({ 0,0,0 }), 
+    vec3f({ float(size.width),float(size.height),1.0f }), 
+    vec2f({ 0,0 }), 
+    vec2f({ float(size.width),float(size.height) })
+  );
 
-	//create the render pass
-	RenderPass* pass = new RenderPass();
-	//add the subpass in it
-	pass->addSubPass({ pipeline }, SA);
-	//compile the render pass
-	pass->compile();
+  graphicPipeline->setVertexModule(vertexShader);
+  graphicPipeline->setFragmentModule(fragmentShader);
+  graphicPipeline->setVertices({ triangle_vertex_buffer });
 
-	//create a framebuffers that match the size of the swapchain images
-	FrameBuffer* frameBuffers = new FrameBuffer(s->size().width, s->size().height);
-	//setup the framebuffer to be the output of the render pass
-	pass->prepareOutputFrameBuffer(*frameBuffers);
+  RenderPass renderPass;
 
-	while (w.running()) {
-		w.updateInput();
-	
-		//acquire a swapchain image  
-		SwapChainImage& image = s->acquireImage();
-		
-		//describe how to use the semaphore provided by the image
-		std::vector<WaitSemaphoreInfo> wait_semaphore_infos = {};
-		wait_semaphore_infos.push_back({
-			image.getSemaphore(),                     // VkSemaphore            Semaphore
-			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT					// VkPipelineStageFlags   WaitingStage
-			});
+  SubpassAttachment SA;
+  SA.showOnScreen = true;
+  SA.nbColor = 1;
+  SA.storeColor = true;
+  SA.showOnScreenIndex = 0;
 
-		//we complete the frame buffer with the swapchaine image
-		pass->setSwapChainImage(*frameBuffers, image);		
+  renderPass.addSubPass({ graphicPipeline }, SA);
+  renderPass.compile();
 
-		//wait for the command buffer to be ready
-		commandBuffer.wait();
-		//reset it's fence
-		commandBuffer.resetFence();
-		//start adding command into it
-		commandBuffer.beginRecord();
-		
-		//draw call for the render pass
-		pass->draw(commandBuffer, *frameBuffers, vec2u({ 0,0 }), vec2u({ size.width, size.height }), { { 0.1f, 0.2f, 0.3f, 1.0f }, { 1.0f, 0 } });
-	
-		//no more gpu call needed here
-		commandBuffer.endRecord();
-		//submit the command buffer to a queue
-		commandBuffer.submit(queue, wait_semaphore_infos, { commandBuffer.getSemaphore(0) });
-		
-		//present the image we just drawn into on screen
-		s->presentImage(presentQueue, image, { commandBuffer.getSemaphore(0) });
-	}
-	d->end();
+  FrameBuffer frameBuffer =  FrameBuffer(size.width, size.height);
+  renderPass.prepareOutputFrameBuffer(graphicQueue, commandBuffer, frameBuffer);
+
+  while (!glfwWindowShouldClose(window)) {
+    glfwPollEvents();
+
+    commandBuffer.wait();
+    commandBuffer.resetFence();
+
+    const SwapChainImage& image = swapChain->acquireImage();
+    std::vector<waitSemaphoreInfo> waitSemaphoreInfos = {};
+    waitSemaphoreInfos.push_back({
+      image.getSemaphore(), 
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT 
+    });
+
+    renderPass.setSwapChainImage(frameBuffer, image);
+    commandBuffer.beginRecord();
+
+    renderPass.draw(
+      commandBuffer, 
+      frameBuffer, 
+      vec2u({ 0,0 }), 
+      vec2u({ size.width, size.height }), 
+      { { 0.1f, 0.2f, 0.3f, 1.0f } }
+    );
+
+    commandBuffer.endRecord();
+    commandBuffer.submit(graphicQueue, waitSemaphoreInfos, { semaphore });
+
+    swapChain->presentImage(presentQueue, image, { semaphore });
+  }
+  device->waitForAllCommands();
 }
-
 ```
