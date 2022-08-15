@@ -12,6 +12,11 @@ Framework
    ErrorCheck
    FrameBuffer
    GraphicPipeline
+   Image
    ImGuiWrapper
+   PushConstant
+   RenderPass
    SurfaceInitialisator
+   ShaderModule
    Textures
+   UniformBuffer

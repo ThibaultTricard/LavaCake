@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uniform Buffer &mdash; LavaCake 1.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Textures" href="Textures.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LavaCake
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HeadlessCompute.html">Headless Compute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Constant.html">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrameBuffer.html">Frame Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Image.html">Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PushConstant.html">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RenderPass.html">Render Pass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SurfaceInitialisator.html">SurfaceInitialisators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ShaderModule.html">Shader Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Textures.html">Textures</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Uniform Buffer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LavaCake</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="Framework.html">Framework</a> &raquo;</li>
+      <li>Uniform Buffer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/UniformBuffer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="uniform-buffer">
+<h1>Uniform Buffer<a class="headerlink" href="#uniform-buffer" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13UniformBufferE">
+<span id="_CPPv3N8LavaCake9Framework13UniformBufferE"></span><span id="_CPPv2N8LavaCake9Framework13UniformBufferE"></span><span id="LavaCake::Framework::UniformBuffer"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_uniform_buffer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UniformBuffer</span></span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13UniformBufferE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>help manage the uniform buffer creation and updating their GPU memory. This class is mainly a dictionary of variable of different type that can be send to the the GPU. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN8LavaCake9Framework13UniformBuffer11addVariableEvRKNSt6stringERK1T">
+<span id="_CPPv3I0EN8LavaCake9Framework13UniformBuffer11addVariableERKNSt6stringERK1T"></span><span id="_CPPv2I0EN8LavaCake9Framework13UniformBuffer11addVariableERKNSt6stringERK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_uniform_buffer_1a1cceceefd94756fe0389b8ad174c63f6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addVariable</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN8LavaCake9Framework13UniformBuffer11addVariableEvRKNSt6stringERK1T" title="LavaCake::Framework::UniformBuffer::addVariable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8LavaCake9Framework13UniformBuffer11addVariableEvRKNSt6stringERK1T" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Add a variable into the dictionary. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – the name of constant. </p></li>
+<li><p><strong>value</strong> – the variable, either a simple data type of a contiguous range of simple data type. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN8LavaCake9Framework13UniformBuffer11setVariableEvRKNSt6stringERK1T">
+<span id="_CPPv3I0EN8LavaCake9Framework13UniformBuffer11setVariableERKNSt6stringERK1T"></span><span id="_CPPv2I0EN8LavaCake9Framework13UniformBuffer11setVariableERKNSt6stringERK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_lava_cake_1_1_framework_1_1_uniform_buffer_1ac35ad9ecdea89bbc85ead6c3f4298e46"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVariable</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN8LavaCake9Framework13UniformBuffer11setVariableEvRKNSt6stringERK1T" title="LavaCake::Framework::UniformBuffer::setVariable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8LavaCake9Framework13UniformBuffer11setVariableEvRKNSt6stringERK1T" title="Permalink to this definition"></a><br /></dt>
+<dd><p>set a variable into the dictionary. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – : the name of constant </p></li>
+<li><p><strong>value</strong> – the variable, either a simple data type of a contiguous range of simple data type. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13UniformBuffer3endEv">
+<span id="_CPPv3N8LavaCake9Framework13UniformBuffer3endEv"></span><span id="_CPPv2N8LavaCake9Framework13UniformBuffer3endEv"></span><span id="LavaCake::Framework::UniformBuffer::end"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_uniform_buffer_1ac218dfe1cc1062d9d9d24d059c33579c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13UniformBuffer3endEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>notify the buffer that no new variable will be added </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework13UniformBuffer6updateER13CommandBuffer">
+<span id="_CPPv3N8LavaCake9Framework13UniformBuffer6updateER13CommandBuffer"></span><span id="_CPPv2N8LavaCake9Framework13UniformBuffer6updateER13CommandBuffer"></span><span id="LavaCake::Framework::UniformBuffer::update__CommandBufferR"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_uniform_buffer_1ae863370d0b87240095eb31ad70ce3fce"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">commandBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework13UniformBuffer6updateER13CommandBuffer" title="Permalink to this definition"></a><br /></dt>
+<dd><p>update the gpu memory of the uniform buffer </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cmdBuff</strong> – the command buffer used for this operation, must be in a recording state </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div></blockquote>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Textures.html" class="btn btn-neutral float-left" title="Textures" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Thibault Tricard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

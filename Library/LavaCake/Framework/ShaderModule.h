@@ -6,6 +6,7 @@
 namespace LavaCake {
   namespace Framework {
 
+
     struct shaderStageParameters {
       VkShaderStageFlagBits        shaderStage;
       VkShaderModule               shaderModule = VK_NULL_HANDLE;
@@ -60,6 +61,7 @@ namespace LavaCake {
       }
 
     public:
+     
       const shaderStageParameters& getStageParameter() const {
         return m_stageParameter;
       }
@@ -109,10 +111,24 @@ namespace LavaCake {
      */
     class VertexShaderModule : public ShaderModule {
     public:
+
+      /**
+      \brief Constructor for the VertexShaderModule 
+      \param path the path of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       VertexShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(path, VK_SHADER_STAGE_VERTEX_BIT, entrypoint, specialization) {
 
       }
+
+      /**
+      \brief Constructor for the VertexShaderModule
+      \param spirv a vector of char encoding the spirv data of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       VertexShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(spirv, VK_SHADER_STAGE_VERTEX_BIT, entrypoint, specialization) {
       }
@@ -124,9 +140,23 @@ namespace LavaCake {
      */
     class TessellationControlShaderModule : public ShaderModule {
     public:
+
+      /**
+      \brief Constructor for the TessellationControlShaderModule
+      \param path the path of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       TessellationControlShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(path, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, entrypoint, specialization) {
       }
+
+      /**
+      \brief Constructor for the TessellationControlShaderModule
+      \param spirv a vector of char encoding the spirv data of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       TessellationControlShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(spirv, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, entrypoint, specialization) {
       }
@@ -138,9 +168,24 @@ namespace LavaCake {
      */
     class TessellationEvaluationShaderModule : public ShaderModule {
     public:
+
+
+      /**
+      \brief Constructor for the TessellationEvaluationShaderModule
+      \param path the path of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       TessellationEvaluationShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(path, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, entrypoint, specialization) {
       }
+
+      /**
+      \brief Constructor for the TessellationEvaluationShaderModule
+      \param spirv a vector of char encoding the spirv data of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       TessellationEvaluationShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(spirv, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, entrypoint, specialization) {
       }
@@ -152,23 +197,51 @@ namespace LavaCake {
      */
     class GeometryShaderModule : public ShaderModule {
     public:
+
+      /**
+      \brief Constructor for the GeometryShaderModule
+      \param path the path of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       GeometryShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(path, VK_SHADER_STAGE_GEOMETRY_BIT, entrypoint, specialization) {
       }
+
+      /**
+      \brief Constructor for the GeometryShaderModule
+      \param spirv a vector of char encoding the spirv data of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       GeometryShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(spirv, VK_SHADER_STAGE_GEOMETRY_BIT, entrypoint, specialization) {
       }
     };
 
     /**
-     Class GeometryShaderModule :
+     Class FragmentShaderModule :
      \brief This class helps manage fragment shader module
      */
     class FragmentShaderModule : public ShaderModule {
     public:
+
+      /**
+      \brief Constructor for the FragmentShaderModule
+      \param path the path of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       FragmentShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(path, VK_SHADER_STAGE_FRAGMENT_BIT, entrypoint, specialization) {
       }
+
+      /**
+      \brief Constructor for the FragmentShaderModule
+      \param spirv a vector of char encoding the spirv data of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       FragmentShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(spirv, VK_SHADER_STAGE_FRAGMENT_BIT, entrypoint, specialization) {
       }
@@ -176,15 +249,28 @@ namespace LavaCake {
     };
 
     /**
-     Class GeometryShaderModule :
+     Class ComputeShaderModule :
      \brief This class helps manage compute shader module
      */
     class ComputeShaderModule : public ShaderModule {
     public:
+
+      /**
+      \brief Constructor for the ComputeShaderModule
+      \param path the path of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       ComputeShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(path, VK_SHADER_STAGE_COMPUTE_BIT, entrypoint, specialization) {
       }
 
+      /**
+      \brief Constructor for the ComputeShaderModule
+      \param spirv a vector of char encoding the spirv data of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       ComputeShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(spirv, VK_SHADER_STAGE_COMPUTE_BIT, entrypoint, specialization) {
       }
@@ -196,10 +282,24 @@ namespace LavaCake {
      */
     class MeshShaderModule : public ShaderModule {
     public:
+
+
+      /**
+      \brief Constructor for the MeshShaderModule
+      \param path the path of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       MeshShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(path, VK_SHADER_STAGE_MESH_BIT_NV, entrypoint, specialization) {
       }
 
+      /**
+      \brief Constructor for the MeshShaderModule
+      \param spirv a vector of char encoding the spirv data of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       MeshShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(spirv, VK_SHADER_STAGE_MESH_BIT_NV, entrypoint, specialization) {
       }
@@ -212,10 +312,23 @@ namespace LavaCake {
      */
     class TaskShaderModule : public ShaderModule {
     public:
+
+      /**
+      \brief Constructor for the TaskShaderModule
+      \param path the path of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       TaskShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(path, VK_SHADER_STAGE_TASK_BIT_NV, entrypoint, specialization) {
       }
 
+      /**
+      \brief Constructor for the TaskShaderModule
+      \param spirv a vector of char encoding the spirv data of the shader
+      \param entrypoint the entry point of the shader
+      \param specialization a VkSpecializationInfo instance
+      */
       TaskShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
         ShaderModule(spirv, VK_SHADER_STAGE_TASK_BIT_NV, entrypoint, specialization) {
       }

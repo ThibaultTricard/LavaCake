@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shader Module &mdash; LavaCake 1.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Textures" href="Textures.html" />
+    <link rel="prev" title="SurfaceInitialisators" href="SurfaceInitialisator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LavaCake
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HeadlessCompute.html">Headless Compute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Constant.html">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrameBuffer.html">Frame Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Image.html">Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PushConstant.html">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RenderPass.html">Render Pass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SurfaceInitialisator.html">SurfaceInitialisators</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Shader Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Textures.html">Textures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UniformBuffer.html">Uniform Buffer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LavaCake</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="Framework.html">Framework</a> &raquo;</li>
+      <li>Shader Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ShaderModule.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="shader-module">
+<h1>Shader Module<a class="headerlink" href="#shader-module" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework18VertexShaderModuleE">
+<span id="_CPPv3N8LavaCake9Framework18VertexShaderModuleE"></span><span id="_CPPv2N8LavaCake9Framework18VertexShaderModuleE"></span><span id="LavaCake::Framework::VertexShaderModule"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_vertex_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VertexShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework18VertexShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This class helps manage vertex shader module. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_vertex_shader_module"><span class="std std-ref">VertexShaderModule</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework18VertexShaderModule18VertexShaderModuleENSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework18VertexShaderModule18VertexShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework18VertexShaderModule18VertexShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::VertexShaderModule::VertexShaderModule__ss.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_vertex_shader_module_1ac70b6e2f9abe71d6beadffca2aceeba7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VertexShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework18VertexShaderModule18VertexShaderModuleENSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_vertex_shader_module"><span class="std std-ref">VertexShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework18VertexShaderModule18VertexShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework18VertexShaderModule18VertexShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework18VertexShaderModule18VertexShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::VertexShaderModule::VertexShaderModule__std::vector:unsigned-c:.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_vertex_shader_module_1a6a0f2777ac8e0677f07bb5b9b7320b5c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VertexShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework18VertexShaderModule18VertexShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_vertex_shader_module"><span class="std std-ref">VertexShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework31TessellationControlShaderModuleE">
+<span id="_CPPv3N8LavaCake9Framework31TessellationControlShaderModuleE"></span><span id="_CPPv2N8LavaCake9Framework31TessellationControlShaderModuleE"></span><span id="LavaCake::Framework::TessellationControlShaderModule"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_tessellation_control_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TessellationControlShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework31TessellationControlShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This class helps manage tessellation control shader module. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_tessellation_control_shader_module"><span class="std std-ref">TessellationControlShaderModule</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework31TessellationControlShaderModule31TessellationControlShaderModuleENSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework31TessellationControlShaderModule31TessellationControlShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework31TessellationControlShaderModule31TessellationControlShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::TessellationControlShaderModule::TessellationControlShaderModule__ss.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_tessellation_control_shader_module_1ab3f2ba7f981c01df7343d425fabe34b0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TessellationControlShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework31TessellationControlShaderModule31TessellationControlShaderModuleENSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_tessellation_control_shader_module"><span class="std std-ref">TessellationControlShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework31TessellationControlShaderModule31TessellationControlShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework31TessellationControlShaderModule31TessellationControlShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework31TessellationControlShaderModule31TessellationControlShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::TessellationControlShaderModule::TessellationControlShaderModule__std::vector:unsigned-c:.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_tessellation_control_shader_module_1a68bd5fc7488592eea5bc7925a2b068f1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TessellationControlShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework31TessellationControlShaderModule31TessellationControlShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_tessellation_control_shader_module"><span class="std std-ref">TessellationControlShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework34TessellationEvaluationShaderModuleE">
+<span id="_CPPv3N8LavaCake9Framework34TessellationEvaluationShaderModuleE"></span><span id="_CPPv2N8LavaCake9Framework34TessellationEvaluationShaderModuleE"></span><span id="LavaCake::Framework::TessellationEvaluationShaderModule"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_tessellation_evaluation_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TessellationEvaluationShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework34TessellationEvaluationShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This class helps manage tessellation evaluation shader module. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_tessellation_evaluation_shader_module"><span class="std std-ref">TessellationEvaluationShaderModule</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework34TessellationEvaluationShaderModule34TessellationEvaluationShaderModuleENSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework34TessellationEvaluationShaderModule34TessellationEvaluationShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework34TessellationEvaluationShaderModule34TessellationEvaluationShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::TessellationEvaluationShaderModule::TessellationEvaluationShaderModule__ss.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_tessellation_evaluation_shader_module_1a142da03ac7e079fa07576aa7a25bb3ba"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TessellationEvaluationShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework34TessellationEvaluationShaderModule34TessellationEvaluationShaderModuleENSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_tessellation_evaluation_shader_module"><span class="std std-ref">TessellationEvaluationShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework34TessellationEvaluationShaderModule34TessellationEvaluationShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework34TessellationEvaluationShaderModule34TessellationEvaluationShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework34TessellationEvaluationShaderModule34TessellationEvaluationShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::TessellationEvaluationShaderModule::TessellationEvaluationShaderModule__std::vector:unsigned-c:.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_tessellation_evaluation_shader_module_1ac48a5fbea05917b3e59689cfbdf6e387"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TessellationEvaluationShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework34TessellationEvaluationShaderModule34TessellationEvaluationShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_tessellation_evaluation_shader_module"><span class="std std-ref">TessellationEvaluationShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework20GeometryShaderModuleE">
+<span id="_CPPv3N8LavaCake9Framework20GeometryShaderModuleE"></span><span id="_CPPv2N8LavaCake9Framework20GeometryShaderModuleE"></span><span id="LavaCake::Framework::GeometryShaderModule"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_geometry_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GeometryShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework20GeometryShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This class helps manage geometry shader module. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_geometry_shader_module"><span class="std std-ref">GeometryShaderModule</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework20GeometryShaderModule20GeometryShaderModuleENSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework20GeometryShaderModule20GeometryShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework20GeometryShaderModule20GeometryShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::GeometryShaderModule::GeometryShaderModule__ss.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_geometry_shader_module_1aebb085e4c3afd90e2502241422d7f2f4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GeometryShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework20GeometryShaderModule20GeometryShaderModuleENSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_geometry_shader_module"><span class="std std-ref">GeometryShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework20GeometryShaderModule20GeometryShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework20GeometryShaderModule20GeometryShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework20GeometryShaderModule20GeometryShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::GeometryShaderModule::GeometryShaderModule__std::vector:unsigned-c:.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_geometry_shader_module_1aa534db4bb66fa3157cad5d1b116cd5a3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GeometryShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework20GeometryShaderModule20GeometryShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_geometry_shader_module"><span class="std std-ref">GeometryShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework20FragmentShaderModuleE">
+<span id="_CPPv3N8LavaCake9Framework20FragmentShaderModuleE"></span><span id="_CPPv2N8LavaCake9Framework20FragmentShaderModuleE"></span><span id="LavaCake::Framework::FragmentShaderModule"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_fragment_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FragmentShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework20FragmentShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This class helps manage fragment shader module. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_fragment_shader_module"><span class="std std-ref">FragmentShaderModule</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework20FragmentShaderModule20FragmentShaderModuleENSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework20FragmentShaderModule20FragmentShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework20FragmentShaderModule20FragmentShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::FragmentShaderModule::FragmentShaderModule__ss.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_fragment_shader_module_1af2accc318ce6f4907cb1ad05a88556ec"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FragmentShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework20FragmentShaderModule20FragmentShaderModuleENSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_fragment_shader_module"><span class="std std-ref">FragmentShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework20FragmentShaderModule20FragmentShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework20FragmentShaderModule20FragmentShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework20FragmentShaderModule20FragmentShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::FragmentShaderModule::FragmentShaderModule__std::vector:unsigned-c:.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_fragment_shader_module_1aa319843fd2d8f2d11acbbd53346e610e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FragmentShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework20FragmentShaderModule20FragmentShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_fragment_shader_module"><span class="std std-ref">FragmentShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework19ComputeShaderModuleE">
+<span id="_CPPv3N8LavaCake9Framework19ComputeShaderModuleE"></span><span id="_CPPv2N8LavaCake9Framework19ComputeShaderModuleE"></span><span id="LavaCake::Framework::ComputeShaderModule"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_compute_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework19ComputeShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This class helps manage compute shader module. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_compute_shader_module"><span class="std std-ref">ComputeShaderModule</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework19ComputeShaderModule19ComputeShaderModuleENSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework19ComputeShaderModule19ComputeShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework19ComputeShaderModule19ComputeShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::ComputeShaderModule::ComputeShaderModule__ss.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_compute_shader_module_1a9d8646348790ae9afa67806bab4eb432"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework19ComputeShaderModule19ComputeShaderModuleENSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_compute_shader_module"><span class="std std-ref">ComputeShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework19ComputeShaderModule19ComputeShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework19ComputeShaderModule19ComputeShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework19ComputeShaderModule19ComputeShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::ComputeShaderModule::ComputeShaderModule__std::vector:unsigned-c:.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_compute_shader_module_1afa2e7401f61a91988545589db3f75138"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework19ComputeShaderModule19ComputeShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_compute_shader_module"><span class="std std-ref">ComputeShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework16MeshShaderModuleE">
+<span id="_CPPv3N8LavaCake9Framework16MeshShaderModuleE"></span><span id="_CPPv2N8LavaCake9Framework16MeshShaderModuleE"></span><span id="LavaCake::Framework::MeshShaderModule"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_mesh_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MeshShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework16MeshShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This class helps manage mesh shader module. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_mesh_shader_module"><span class="std std-ref">MeshShaderModule</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework16MeshShaderModule16MeshShaderModuleENSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework16MeshShaderModule16MeshShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework16MeshShaderModule16MeshShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::MeshShaderModule::MeshShaderModule__ss.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_mesh_shader_module_1a42f7bf161692bb97018da1f76b0ed82b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MeshShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework16MeshShaderModule16MeshShaderModuleENSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_mesh_shader_module"><span class="std std-ref">MeshShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework16MeshShaderModule16MeshShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework16MeshShaderModule16MeshShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework16MeshShaderModule16MeshShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::MeshShaderModule::MeshShaderModule__std::vector:unsigned-c:.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_mesh_shader_module_1a77c3c50b9fa9b9c8c045e3b855ae08d7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MeshShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework16MeshShaderModule16MeshShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_mesh_shader_module"><span class="std std-ref">MeshShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework16TaskShaderModuleE">
+<span id="_CPPv3N8LavaCake9Framework16TaskShaderModuleE"></span><span id="_CPPv2N8LavaCake9Framework16TaskShaderModuleE"></span><span id="LavaCake::Framework::TaskShaderModule"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_task_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TaskShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework16TaskShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This class helps manage mesh shader module. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_task_shader_module"><span class="std std-ref">TaskShaderModule</span></a> : </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework16TaskShaderModule16TaskShaderModuleENSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework16TaskShaderModule16TaskShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework16TaskShaderModule16TaskShaderModuleENSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::TaskShaderModule::TaskShaderModule__ss.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_task_shader_module_1a3419b4be6c3c8156783ed5d842a4fd3f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TaskShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework16TaskShaderModule16TaskShaderModuleENSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_task_shader_module"><span class="std std-ref">TaskShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework16TaskShaderModule16TaskShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake9Framework16TaskShaderModule16TaskShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake9Framework16TaskShaderModule16TaskShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::Framework::TaskShaderModule::TaskShaderModule__std::vector:unsigned-c:.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_task_shader_module_1a5b1f805048b85a0fed8712d01607651c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TaskShaderModule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework16TaskShaderModule16TaskShaderModuleENSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_task_shader_module"><span class="std std-ref">TaskShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing18RayGenShaderModuleE">
+<span id="_CPPv3N8LavaCake10RayTracing18RayGenShaderModuleE"></span><span id="_CPPv2N8LavaCake10RayTracing18RayGenShaderModuleE"></span><span id="LavaCake::RayTracing::RayGenShaderModule"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_ray_gen_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RayGenShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing18RayGenShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing18RayGenShaderModule18RayGenShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing18RayGenShaderModule18RayGenShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing18RayGenShaderModule18RayGenShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::RayGenShaderModule::RayGenShaderModule__ssCR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_ray_gen_shader_module_1a5ba9a3338dae25466774af4aa9bf4633"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RayGenShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing18RayGenShaderModule18RayGenShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_ray_gen_shader_module"><span class="std std-ref">RayGenShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing18RayGenShaderModule18RayGenShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing18RayGenShaderModule18RayGenShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing18RayGenShaderModule18RayGenShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::RayGenShaderModule::RayGenShaderModule__std::vector:unsigned-c:CR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_ray_gen_shader_module_1a81f0ed256d867db08f5c4458063c7a01"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RayGenShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing18RayGenShaderModule18RayGenShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_ray_gen_shader_module"><span class="std std-ref">RayGenShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing18AnyHitShaderModuleE">
+<span id="_CPPv3N8LavaCake10RayTracing18AnyHitShaderModuleE"></span><span id="_CPPv2N8LavaCake10RayTracing18AnyHitShaderModuleE"></span><span id="LavaCake::RayTracing::AnyHitShaderModule"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_any_hit_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AnyHitShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing18AnyHitShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing18AnyHitShaderModule18AnyHitShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing18AnyHitShaderModule18AnyHitShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing18AnyHitShaderModule18AnyHitShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::AnyHitShaderModule::AnyHitShaderModule__ssCR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_any_hit_shader_module_1a9db29fe4fb5e9882215e7fc1e68561c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AnyHitShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing18AnyHitShaderModule18AnyHitShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_any_hit_shader_module"><span class="std std-ref">AnyHitShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing18AnyHitShaderModule18AnyHitShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing18AnyHitShaderModule18AnyHitShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing18AnyHitShaderModule18AnyHitShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::AnyHitShaderModule::AnyHitShaderModule__std::vector:unsigned-c:CR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_any_hit_shader_module_1ad7772246a90d167490a891eb3a694a4a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AnyHitShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing18AnyHitShaderModule18AnyHitShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_any_hit_shader_module"><span class="std std-ref">AnyHitShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing22ClosestHitShaderModuleE">
+<span id="_CPPv3N8LavaCake10RayTracing22ClosestHitShaderModuleE"></span><span id="_CPPv2N8LavaCake10RayTracing22ClosestHitShaderModuleE"></span><span id="LavaCake::RayTracing::ClosestHitShaderModule"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_closest_hit_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClosestHitShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing22ClosestHitShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing22ClosestHitShaderModule22ClosestHitShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing22ClosestHitShaderModule22ClosestHitShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing22ClosestHitShaderModule22ClosestHitShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::ClosestHitShaderModule::ClosestHitShaderModule__ssCR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_closest_hit_shader_module_1a4534fc158cc4aa0ac0ec0f48c4f636ea"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClosestHitShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing22ClosestHitShaderModule22ClosestHitShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_closest_hit_shader_module"><span class="std std-ref">ClosestHitShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing22ClosestHitShaderModule22ClosestHitShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing22ClosestHitShaderModule22ClosestHitShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing22ClosestHitShaderModule22ClosestHitShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::ClosestHitShaderModule::ClosestHitShaderModule__std::vector:unsigned-c:CR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_closest_hit_shader_module_1a9218ba73684f97b22c98bbd1217c8617"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClosestHitShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing22ClosestHitShaderModule22ClosestHitShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_closest_hit_shader_module"><span class="std std-ref">ClosestHitShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing16MissShaderModuleE">
+<span id="_CPPv3N8LavaCake10RayTracing16MissShaderModuleE"></span><span id="_CPPv2N8LavaCake10RayTracing16MissShaderModuleE"></span><span id="LavaCake::RayTracing::MissShaderModule"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_miss_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MissShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing16MissShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing16MissShaderModule16MissShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing16MissShaderModule16MissShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing16MissShaderModule16MissShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::MissShaderModule::MissShaderModule__ssCR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_miss_shader_module_1a96070554b26841f0215e9b9ed38474ed"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MissShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing16MissShaderModule16MissShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_miss_shader_module"><span class="std std-ref">MissShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing16MissShaderModule16MissShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing16MissShaderModule16MissShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing16MissShaderModule16MissShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::MissShaderModule::MissShaderModule__std::vector:unsigned-c:CR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_miss_shader_module_1a917b688607a0d8180ae645e996c02621"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MissShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing16MissShaderModule16MissShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_miss_shader_module"><span class="std std-ref">MissShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing24IntersectionShaderModuleE">
+<span id="_CPPv3N8LavaCake10RayTracing24IntersectionShaderModuleE"></span><span id="_CPPv2N8LavaCake10RayTracing24IntersectionShaderModuleE"></span><span id="LavaCake::RayTracing::IntersectionShaderModule"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_intersection_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntersectionShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing24IntersectionShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing24IntersectionShaderModule24IntersectionShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing24IntersectionShaderModule24IntersectionShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing24IntersectionShaderModule24IntersectionShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::IntersectionShaderModule::IntersectionShaderModule__ssCR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_intersection_shader_module_1a6cab30bbd14ae58a27c0e18cc1a3c4db"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntersectionShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing24IntersectionShaderModule24IntersectionShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_intersection_shader_module"><span class="std std-ref">IntersectionShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing24IntersectionShaderModule24IntersectionShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing24IntersectionShaderModule24IntersectionShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing24IntersectionShaderModule24IntersectionShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::IntersectionShaderModule::IntersectionShaderModule__std::vector:unsigned-c:CR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_intersection_shader_module_1aa8861df02fa261c9c7f2ebe7c18b03c1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntersectionShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing24IntersectionShaderModule24IntersectionShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_intersection_shader_module"><span class="std std-ref">IntersectionShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing20CallableShaderModuleE">
+<span id="_CPPv3N8LavaCake10RayTracing20CallableShaderModuleE"></span><span id="_CPPv2N8LavaCake10RayTracing20CallableShaderModuleE"></span><span id="LavaCake::RayTracing::CallableShaderModule"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_callable_shader_module"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CallableShaderModule</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ShaderModule</span></span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing20CallableShaderModuleE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing20CallableShaderModule20CallableShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing20CallableShaderModule20CallableShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing20CallableShaderModule20CallableShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::CallableShaderModule::CallableShaderModule__ssCR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_callable_shader_module_1a628f11ca210090477d6621eb6e57dc2b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CallableShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing20CallableShaderModule20CallableShaderModuleERKNSt6stringEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_callable_shader_module"><span class="std std-ref">CallableShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake10RayTracing20CallableShaderModule20CallableShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo">
+<span id="_CPPv3N8LavaCake10RayTracing20CallableShaderModule20CallableShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="_CPPv2N8LavaCake10RayTracing20CallableShaderModule20CallableShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo"></span><span id="LavaCake::RayTracing::CallableShaderModule::CallableShaderModule__std::vector:unsigned-c:CR.cCP.VkSpecializationInfoCP"></span><span class="target" id="class_lava_cake_1_1_ray_tracing_1_1_callable_shader_module_1a4040008359dfee84721519a18ec107e2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CallableShaderModule</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spirv</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">entrypoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;main&quot;</span></span>, <span class="n"><span class="pre">VkSpecializationInfo</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">specialization</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake10RayTracing20CallableShaderModule20CallableShaderModuleERKNSt6vectorIhEEPKcPK20VkSpecializationInfo" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_lava_cake_1_1_ray_tracing_1_1_callable_shader_module"><span class="std std-ref">CallableShaderModule</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spirv</strong> – a vector of char encoding the spirv data of the shader </p></li>
+<li><p><strong>entrypoint</strong> – the entry point of the shader </p></li>
+<li><p><strong>specialization</strong> – a VkSpecializationInfo instance </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div></blockquote>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="SurfaceInitialisator.html" class="btn btn-neutral float-left" title="SurfaceInitialisators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Textures.html" class="btn btn-neutral float-right" title="Textures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Thibault Tricard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

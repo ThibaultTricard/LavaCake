@@ -19,8 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Textures" href="Textures.html" />
-    <link rel="prev" title="ImGui Wrapper" href="ImGuiWrapper.html" /> 
+    <link rel="next" title="Shader Module" href="ShaderModule.html" />
+    <link rel="prev" title="Render Pass" href="RenderPass.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,6 +41,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HeadlessCompute.html">Headless Compute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
@@ -51,10 +52,14 @@
 <li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="FrameBuffer.html">Frame Buffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Image.html">Image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PushConstant.html">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RenderPass.html">Render Pass</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">SurfaceInitialisators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#glfw-surface-initialisator">GLFW Surface Initialisator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ShaderModule.html">Shader Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Textures.html">Textures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UniformBuffer.html">Uniform Buffer</a></li>
 </ul>
 </li>
 </ul>
@@ -111,15 +116,7 @@
 </div>
 </dd></dl>
 
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-</div></blockquote>
-</section>
-<section id="glfw-surface-initialisator">
-<h1>GLFW Surface Initialisator<a class="headerlink" href="#glfw-surface-initialisator" title="Permalink to this heading"></a></h1>
-<blockquote>
-<div><dl class="cpp class">
+<dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework24GLFWSurfaceInitialisatorE">
 <span id="_CPPv3N8LavaCake9Framework24GLFWSurfaceInitialisatorE"></span><span id="_CPPv2N8LavaCake9Framework24GLFWSurfaceInitialisatorE"></span><span id="LavaCake::Framework::GLFWSurfaceInitialisator"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_g_l_f_w_surface_initialisator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GLFWSurfaceInitialisator</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">LavaCake</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Framework</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8LavaCake9Framework20SurfaceInitialisatorE" title="LavaCake::Framework::SurfaceInitialisator"><span class="n"><span class="pre">SurfaceInitialisator</span></span></a><a class="headerlink" href="#_CPPv4N8LavaCake9Framework24GLFWSurfaceInitialisatorE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Helps the <a class="reference internal" href="Device.html#class_lava_cake_1_1_framework_1_1_device"><span class="std std-ref">Device</span></a> class initialize the vulkan surface with GLFW. </p>
@@ -160,8 +157,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ImGuiWrapper.html" class="btn btn-neutral float-left" title="ImGui Wrapper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Textures.html" class="btn btn-neutral float-right" title="Textures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="RenderPass.html" class="btn btn-neutral float-left" title="Render Pass" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ShaderModule.html" class="btn btn-neutral float-right" title="Shader Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

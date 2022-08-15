@@ -67,40 +67,48 @@ namespace LavaCake {
 
     public:
 
-      /*
-      * renderPass Constructor for an image with the swapchain format
+      /**
+      \brief RenderPass constructor
       */
       RenderPass();
 
 
-      /*
-      * renderPass Constructor for a specific image format and depth format
+      /**
+      \brief RenderPass constructor
+      \param ImageFormat 
       */
       RenderPass(VkFormat ImageFormat, VkFormat DepthFormat);
 
       /*
-      * add dependencies for the render pass
+      \brief add dependencies for the render pass
       */
-      void addDependencies(uint32_t srcSubpass, uint32_t dstSubpass, VkPipelineStageFlags srcPipe, VkPipelineStageFlags dstPipe, VkAccessFlags srcAccess, VkAccessFlags dstAccess, VkDependencyFlags dependency);
+      void addDependencies(
+        uint32_t srcSubpass, 
+        uint32_t dstSubpass, 
+        VkPipelineStageFlags srcPipe, 
+        VkPipelineStageFlags dstPipe, 
+        VkAccessFlags srcAccess, 
+        VkAccessFlags dstAccess, 
+        VkDependencyFlags dependency);
 
       /*
-      * add a subpass composed of multiple graphics pipeline and setup their attachments
+      \brief add a subpass composed of multiple graphics pipeline and setup their attachments
       */
       void addSubPass(const SubPass& p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
 
       /*
-      * prepare the render pass for drawing
+      \brief Compile the renderpass
       */
       void compile();
 
 
       /*
-      * Draw the render pass using a specific command buffer into a framebuffer
+      \brief Register a draw call in a command buffer
       */
       void draw(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const& clear_values = { { 1.0f, 0 } });
 
       /*
-      *	return the handle of the render pass
+      \return the handle of the render pass
       */
       const VkRenderPass& getHandle() const;
 

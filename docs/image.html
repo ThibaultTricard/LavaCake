@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image &mdash; LavaCake 1.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ImGui Wrapper" href="ImGuiWrapper.html" />
+    <link rel="prev" title="Graphic Pipeline" href="GraphicPipeline.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LavaCake
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HeadlessCompute.html">Headless Compute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Framework.html">Framework</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Buffer.html">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CommandBuffer.html">CommandBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ComputePipeline.html">Compute Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Constant.html">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ErrorCheck.html">Error Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrameBuffer.html">Frame Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphicPipeline.html">Graphic Pipeline</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImGuiWrapper.html">ImGui Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PushConstant.html">Push Constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RenderPass.html">Render Pass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SurfaceInitialisator.html">SurfaceInitialisators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ShaderModule.html">Shader Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Textures.html">Textures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="UniformBuffer.html">Uniform Buffer</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LavaCake</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="Framework.html">Framework</a> &raquo;</li>
+      <li>Image</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Image.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="image">
+<h1>Image<a class="headerlink" href="#image" title="Permalink to this heading"></a></h1>
+<blockquote>
+<div><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework5ImageE">
+<span id="_CPPv3N8LavaCake9Framework5ImageE"></span><span id="_CPPv2N8LavaCake9Framework5ImageE"></span><span id="LavaCake::Framework::Image"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Image</span></span></span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework5ImageE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>This class helps manage Vulkan Images, their memory and their view. </p>
+<p>Class <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_image"><span class="std std-ref">Image</span></a> </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework5Image5ImageE8uint32_t8uint32_t8uint32_t8VkFormat21VkImageAspectFlagBits17VkImageUsageFlags24VkMemoryPropertyFlagBitsb">
+<span id="_CPPv3N8LavaCake9Framework5Image5ImageE8uint32_t8uint32_t8uint32_t8VkFormat21VkImageAspectFlagBits17VkImageUsageFlags24VkMemoryPropertyFlagBitsb"></span><span id="_CPPv2N8LavaCake9Framework5Image5ImageE8uint32_t8uint32_t8uint32_t8VkFormat21VkImageAspectFlagBits17VkImageUsageFlags24VkMemoryPropertyFlagBitsb"></span><span id="LavaCake::Framework::Image::Image__uint32_t.uint32_t.uint32_t.VkFormat.VkImageAspectFlagBits.VkImageUsageFlags.VkMemoryPropertyFlagBits.b"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1a6e0072a799bd3158c0e72ba9e50b53b2"></span><span class="sig-name descname"><span class="n"><span class="pre">Image</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">depth</span></span>, <span class="n"><span class="pre">VkFormat</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span>, <span class="n"><span class="pre">VkImageAspectFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">aspect</span></span>, <span class="n"><span class="pre">VkImageUsageFlags</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">usage</span></span>, <span class="n"><span class="pre">VkMemoryPropertyFlagBits</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">memPropertyFlag</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cubemap</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework5Image5ImageE8uint32_t8uint32_t8uint32_t8VkFormat21VkImageAspectFlagBits17VkImageUsageFlags24VkMemoryPropertyFlagBitsb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Create an image. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>witdh</strong> – the witdth of the image </p></li>
+<li><p><strong>height</strong> – the height of the image </p></li>
+<li><p><strong>depth</strong> – the depth of the image </p></li>
+<li><p><strong>format</strong> – the format of the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_image"><span class="std std-ref">Image</span></a>, see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkFormat.html">here</a> </p></li>
+<li><p><strong>aspect</strong> – the aspect of the image, see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkImageAspectFlagBits.html">here</a> </p></li>
+<li><p><strong>usage</strong> – the usage of the image, see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkImageUsageFlags.html">here</a> </p></li>
+<li><p><strong>memPropertyFlag</strong> – : the memory property of the image, see more <a class="reference external" href="https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkMemoryPropertyFlagBits.html">here</a> </p></li>
+<li><p><strong>cubemap</strong> – [otpional] weither or not the image is a cubemap, false by defalt </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework5Image3mapEv">
+<span id="_CPPv3N8LavaCake9Framework5Image3mapEv"></span><span id="_CPPv2N8LavaCake9Framework5Image3mapEv"></span><span id="LavaCake::Framework::Image::map"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1a8931b9ab819d386422c114b3a97f44c5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">map</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework5Image3mapEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Map the memory of the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_image"><span class="std std-ref">Image</span></a>. </p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>{The image must have been allocated with the memory flag bits set to VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT} </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework5Image5unmapEv">
+<span id="_CPPv3N8LavaCake9Framework5Image5unmapEv"></span><span id="_CPPv2N8LavaCake9Framework5Image5unmapEv"></span><span id="LavaCake::Framework::Image::unmap"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1abe055fa03b1f4b5ed90f7d5b8d427c1b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unmap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework5Image5unmapEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Unmap the memory of the <a class="reference internal" href="#class_lava_cake_1_1_framework_1_1_image"><span class="std std-ref">Image</span></a>. </p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>{The image must have been allocated with the memory flag bits set to VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT} </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework5Image9setLayoutER13CommandBuffer13VkImageLayout20VkPipelineStageFlags23VkImageSubresourceRange">
+<span id="_CPPv3N8LavaCake9Framework5Image9setLayoutER13CommandBuffer13VkImageLayout20VkPipelineStageFlags23VkImageSubresourceRange"></span><span id="_CPPv2N8LavaCake9Framework5Image9setLayoutER13CommandBuffer13VkImageLayout20VkPipelineStageFlags23VkImageSubresourceRange"></span><span id="LavaCake::Framework::Image::setLayout__CommandBufferR.VkImageLayout.VkPipelineStageFlags.VkImageSubresourceRange"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1aeb5176dbf1dde2433fc0d6a1786a80d9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setLayout</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdbuff</span></span>, <span class="n"><span class="pre">VkImageLayout</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newLayout</span></span>, <span class="n"><span class="pre">VkPipelineStageFlags</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dstStage</span></span>, <span class="n"><span class="pre">VkImageSubresourceRange</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subresourceRange</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework5Image9setLayoutER13CommandBuffer13VkImageLayout20VkPipelineStageFlags23VkImageSubresourceRange" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Change the layout of the image. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdBuff</strong> – : the command buffer used for this operation, must be in a recording state </p></li>
+<li><p><strong>newLayout</strong> – the new layout of the image </p></li>
+<li><p><strong>dstStage</strong> – the new stage flag </p></li>
+<li><p><strong>subresourceRange</strong> – the range of the memory that will be affected by the operation </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework5Image11copyToImageER13CommandBufferR5ImageNSt6vectorI11VkImageCopyEE">
+<span id="_CPPv3N8LavaCake9Framework5Image11copyToImageER13CommandBufferR5ImageNSt6vectorI11VkImageCopyEE"></span><span id="_CPPv2N8LavaCake9Framework5Image11copyToImageER13CommandBufferR5ImageNSt6vectorI11VkImageCopyEE"></span><span id="LavaCake::Framework::Image::copyToImage__CommandBufferR.ImageR.std::vector:VkImageCopy:"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1a2266efe4c717b544aab303d8e9c63c6b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyToImage</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span>, <a class="reference internal" href="#_CPPv4N8LavaCake9Framework5ImageE" title="LavaCake::Framework::Image"><span class="n"><span class="pre">Image</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">image</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">VkImageCopy</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">regions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework5Image11copyToImageER13CommandBufferR5ImageNSt6vectorI11VkImageCopyEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Copy the content of the image to another image. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdBuff</strong> – : the command buffer used for this operation, must be in a recording state </p></li>
+<li><p><strong>image</strong> – : the destination image </p></li>
+<li><p><strong>regions</strong> – : The list of regions of the image to be copied to the image </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8LavaCake9Framework5Image12copyToBufferER13CommandBufferR6BufferNSt6vectorI17VkBufferImageCopyEE">
+<span id="_CPPv3N8LavaCake9Framework5Image12copyToBufferER13CommandBufferR6BufferNSt6vectorI17VkBufferImageCopyEE"></span><span id="_CPPv2N8LavaCake9Framework5Image12copyToBufferER13CommandBufferR6BufferNSt6vectorI17VkBufferImageCopyEE"></span><span id="LavaCake::Framework::Image::copyToBuffer__CommandBufferR.BufferR.std::vector:VkBufferImageCopy:"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1a8bda2b17f46150568c4fafb54dc8175b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copyToBuffer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="CommandBuffer.html#_CPPv4N8LavaCake9Framework13CommandBufferE" title="LavaCake::Framework::CommandBuffer"><span class="n"><span class="pre">CommandBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cmdBuff</span></span>, <a class="reference internal" href="Buffer.html#_CPPv4N8LavaCake9Framework6BufferE" title="LavaCake::Framework::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">VkBufferImageCopy</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">regions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8LavaCake9Framework5Image12copyToBufferER13CommandBufferR6BufferNSt6vectorI17VkBufferImageCopyEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Copy the content of the image to a buffer. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdBuff</strong> – : the command buffer used for this operation, must be in a recording state </p></li>
+<li><p><strong>buffer</strong> – : the destination buffer </p></li>
+<li><p><strong>regions</strong> – : The list of regions of the image to be copied to the buffer </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework5Image9getHandleEv">
+<span id="_CPPv3NK8LavaCake9Framework5Image9getHandleEv"></span><span id="_CPPv2NK8LavaCake9Framework5Image9getHandleEv"></span><span id="LavaCake::Framework::Image::getHandleC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1abc59da0a0ca114846fe9aa9bccda8f27"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VkImage</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getHandle</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework5Image9getHandleEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Get the handle of the image. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>VkImage : the handle of the image </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework5Image14getImageMemoryEv">
+<span id="_CPPv3NK8LavaCake9Framework5Image14getImageMemoryEv"></span><span id="_CPPv2NK8LavaCake9Framework5Image14getImageMemoryEv"></span><span id="LavaCake::Framework::Image::getImageMemoryC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1a48549eb153483e7cea5a1f60a56a7abe"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VkDeviceMemory</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getImageMemory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework5Image14getImageMemoryEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Get the handle of the image memory. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>VkDeviceMemory : the image memory of the image </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework5Image12getImageViewEv">
+<span id="_CPPv3NK8LavaCake9Framework5Image12getImageViewEv"></span><span id="_CPPv2NK8LavaCake9Framework5Image12getImageViewEv"></span><span id="LavaCake::Framework::Image::getImageViewC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1a63c5581721cb5fecd68b16ca9c79a1f6"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VkImageView</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">getImageView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework5Image12getImageViewEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Get the handle of the image view. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>VkImageView : the image view of the image </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework5Image9getLayoutEv">
+<span id="_CPPv3NK8LavaCake9Framework5Image9getLayoutEv"></span><span id="_CPPv2NK8LavaCake9Framework5Image9getLayoutEv"></span><span id="LavaCake::Framework::Image::getLayoutC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1a9f10dd5ef69ddb7bf3a58c0719115335"></span><span class="n"><span class="pre">VkImageLayout</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLayout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework5Image9getLayoutEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Get the Layout of the image. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the VkImageLayout of the image </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework5Image5widthEv">
+<span id="_CPPv3NK8LavaCake9Framework5Image5widthEv"></span><span id="_CPPv2NK8LavaCake9Framework5Image5widthEv"></span><span id="LavaCake::Framework::Image::widthC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1a5addc34e7308aa08f3d5695f889a873f"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">width</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework5Image5widthEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Get the witdh of the image. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>uint32_t the width of the image </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework5Image6heightEv">
+<span id="_CPPv3NK8LavaCake9Framework5Image6heightEv"></span><span id="_CPPv2NK8LavaCake9Framework5Image6heightEv"></span><span id="LavaCake::Framework::Image::heightC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1aa6dbde9a7118bf2c71ae2ff4867c783b"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">height</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework5Image6heightEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Get the height of the image. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>uint32_t the height of the image </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8LavaCake9Framework5Image5depthEv">
+<span id="_CPPv3NK8LavaCake9Framework5Image5depthEv"></span><span id="_CPPv2NK8LavaCake9Framework5Image5depthEv"></span><span id="LavaCake::Framework::Image::depthC"></span><span class="target" id="class_lava_cake_1_1_framework_1_1_image_1a8f5aa0280bfea3c51db54e80bd812205"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">depth</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8LavaCake9Framework5Image5depthEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Get the depth of the image. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>uint32_t the depth of the image </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div></blockquote>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="GraphicPipeline.html" class="btn btn-neutral float-left" title="Graphic Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ImGuiWrapper.html" class="btn btn-neutral float-right" title="ImGui Wrapper" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Thibault Tricard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
