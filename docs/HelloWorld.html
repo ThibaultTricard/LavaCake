@@ -43,9 +43,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Hello World</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#creating-a-window">Creating a Window</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#vulkan-initialisation">Vulkan initialisation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#renderering-setup">Renderering setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rendering-setup">Rendering setup</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#creating-a-command-buffer">Creating a command buffer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#creating-a-sempahore">Creating a Sempahore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-semaphore">Creating a Semaphore</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#getting-the-queues">Getting the Queues :</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-a-mesh">Creating a mesh</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-a-vertex-buffer">Creating a Vertex Buffer</a></li>
@@ -55,7 +55,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#preparing-a-frame-buffer">Preparing a frame buffer</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#renderering">Renderering</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rendering">Rendering</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reseting-the-command-buffer">Reseting the command buffer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#getting-the-swap-chain-image">Getting the swap chain image</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#preparing-the-draw-call">Preparing the draw call</a></li>
@@ -64,6 +64,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#cleaning">Cleaning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#final-code">Final code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#results">Results</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
@@ -98,17 +99,17 @@
 <h1>Hello World<a class="headerlink" href="#hello-world" title="Permalink to this heading"></a></h1>
 <section id="creating-a-window">
 <h2>Creating a Window<a class="headerlink" href="#creating-a-window" title="Permalink to this heading"></a></h2>
-<p>LavaCake use glfw3 as a window manager by default.
-to create a init a GLFW Window :</p>
+<p>LavaCake uses glfw3 as a window manager by default.
+To create a init a GLFW Window :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">glfwInit</span><span class="p">();</span><span class="w"></span>
 <span class="n">glfwWindowHint</span><span class="p">(</span><span class="n">GLFW_CLIENT_API</span><span class="p">,</span><span class="w"> </span><span class="n">GLFW_NO_API</span><span class="p">);</span><span class="w"></span>
 <span class="n">GLFWwindow</span><span class="o">*</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glfwCreateWindow</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span><span class="w"> </span><span class="mi">512</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;HelloWorld&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-<p>The window should open itself after that</p>
-<p>To know if your window is still alive call the function glfwWindowShouldClose().
-this function return true when the window is alive, and false when the windows must be killed.</p>
-<p>To refresh the Window call glfwPollEvents()</p>
+<p>The window should open itself after that.</p>
+<p>To know if your window is still alive, call the function glfwWindowShouldClose().
+This function returns true when the window is alive and false when the windows must be killed.</p>
+<p>To refresh the Window, call glfwPollEvents()</p>
 <p>A typical code to render using the LavaCake should look like this :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;LavaCake/Framework/Framework.h&gt;</span><span class="c1"> </span><span class="cp"></span>
 <span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">LavaCake</span><span class="o">::</span><span class="nn">Framework</span><span class="p">;</span><span class="w"></span>
@@ -122,7 +123,7 @@ this function return true when the window is alive, and false when the windows m
 <span class="w">  </span><span class="c1">//Vulkan Initialisation</span>
 
 
-<span class="w">  </span><span class="c1">//Renderering setup</span>
+<span class="w">  </span><span class="c1">//Rendering setup</span>
 
 
 <span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">glfwWindowShouldClose</span><span class="p">(</span><span class="n">window</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -137,63 +138,63 @@ this function return true when the window is alive, and false when the windows m
 </section>
 <section id="vulkan-initialisation">
 <h2>Vulkan initialisation<a class="headerlink" href="#vulkan-initialisation" title="Permalink to this heading"></a></h2>
-<p>To initialise vulkan in LavaCake you need to get a reference to the Device singleton provided by LavaCake and initialise it.<br />This singleton holds references to Physical and Logical Device, Queues, Surface and Instances.</p>
-<p>To initialise the Device you first need to create a GLFWSurfaceInitialisator with the following line :</p>
+<p>To initialize Vulkan in LavaCake, you need to get a reference to the Device singleton provided by LavaCake and initialize it.<br />This singleton holds references to Physical and Logical Devices, Queues, Surface, and Instances.</p>
+<p>To initialize the Device you first need to create a GLFWSurfaceInitialisator with the following Line:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">GLFWSurfaceInitialisator</span><span class="w"> </span><span class="nf">surfaceInitialisator</span><span class="p">(</span><span class="n">window</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>(The GLFWSurfaceInitialisator class inherits from the SurfaceInitialisator,
-if you need to use other windows manages you can create your own surface initialisator )</p>
+if you need to use other windows manages, you can create your surface initialisator )</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Device</span><span class="o">*</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="o">::</span><span class="n">getDevice</span><span class="p">();</span><span class="w"></span>
 <span class="n">device</span><span class="o">-&gt;</span><span class="n">initDevices</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">surfaceInitialisator</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Then we need initialise the get a reference to the Swapchain singleton and initialise it.<br />This singleton holds the rendering parameter such as the output size, the color and depth format etc…<br />This singleton will also provide the swapchain images requiered to draw on the screen.</p>
+<p>Then we need to initialize the get a reference to the Swapchain singleton and initialize it.<br />This singleton holds the rendering parameter such as the output size, the color and depth format, etc…<br />This singleton will also provide the swapchain images required to draw on the screen.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">SwapChain</span><span class="o">*</span><span class="w"> </span><span class="n">swapChain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SwapChain</span><span class="o">::</span><span class="n">getSwapChain</span><span class="p">();</span><span class="w"></span>
 <span class="n">swapChain</span><span class="o">-&gt;</span><span class="n">init</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
-<section id="renderering-setup">
-<h2>Renderering setup<a class="headerlink" href="#renderering-setup" title="Permalink to this heading"></a></h2>
-<p>Now we need to prepare all the resources we will need for the rendering.</p>
+<section id="rendering-setup">
+<h2>Rendering setup<a class="headerlink" href="#rendering-setup" title="Permalink to this heading"></a></h2>
+<p>We need to prepare all the resources we will need for the rendering.</p>
 <section id="creating-a-command-buffer">
 <h3>Creating a command buffer<a class="headerlink" href="#creating-a-command-buffer" title="Permalink to this heading"></a></h3>
-<p>In Lavacake command buffer are wrapped in the CommandBuffer class
-You can create them by simply initialising a CommandBuffer instance :</p>
+<p>In Lavacake, command buffer are wrapped in the CommandBuffer class
+You can create them by simply initializing a CommandBuffer instance :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">CommandBuffer</span><span class="w">  </span><span class="n">commandBuffer</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
-<section id="creating-a-sempahore">
-<h3>Creating a Sempahore<a class="headerlink" href="#creating-a-sempahore" title="Permalink to this heading"></a></h3>
-<p>In LavaCake semmaphore are wraped by the Semaphore class;
-You can create them by simply initialising a shared pointer of a Semaphore instance :</p>
+<section id="creating-a-semaphore">
+<h3>Creating a Semaphore<a class="headerlink" href="#creating-a-semaphore" title="Permalink to this heading"></a></h3>
+<p>In LavaCake, semaphores are wrapped by the Semaphore class;
+You can create them by simply initializing a shared pointer of a Semaphore instance :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Semaphore</span><span class="o">&gt;</span><span class="w"> </span><span class="n">semaphore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">Semaphore</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 <section id="getting-the-queues">
 <h3>Getting the Queues :<a class="headerlink" href="#getting-the-queues" title="Permalink to this heading"></a></h3>
-<p>In LavaCake all the Queues are create and stored by the Device singleton
-You can get a reference to a graphic Queue with the following Line :</p>
+<p>In LavaCake, all the Queues are created and stored by the Device singleton.
+You can get a reference to a graphic Queue with the following Line:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">GraphicQueue</span><span class="w"> </span><span class="n">graphicQueue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d</span><span class="o">-&gt;</span><span class="n">getGraphicQueue</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>with 0 being the index of the of the graphic queue.</p>
-<p>You can get a reference to a Presentation Queue with the following Line :</p>
+<p>You can get a reference to a Presentation Queue with the following Line:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">PresentationQueue</span><span class="w"> </span><span class="n">presentQueue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d</span><span class="o">-&gt;</span><span class="n">getPresentQueue</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 <section id="creating-a-mesh">
 <h3>Creating a mesh<a class="headerlink" href="#creating-a-mesh" title="Permalink to this heading"></a></h3>
-<p>To create a mesh we first need to define the vertex format we will be using.
-In our exemple the vertecies will composed of a 3D position and a color.</p>
+<p>To create a mesh, we first need to define the vertex format we will use.
+In our example, the vertices will be composed of a 3D position and a color.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">vertexFormat</span><span class="w"> </span><span class="nf">format</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="n">POS3</span><span class="p">,</span><span class="n">COL3</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Then we need to initialise a mesh:</p>
+<p>Then we need to initialize a mesh:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mesh_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">triangle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">IndexedMesh</span><span class="o">&lt;</span><span class="n">TRIANGLE</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">format</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
@@ -212,7 +213,7 @@ In our exemple the vertecies will composed of a 3D position and a color.</p>
 </section>
 <section id="creating-a-vertex-buffer">
 <h3>Creating a Vertex Buffer<a class="headerlink" href="#creating-a-vertex-buffer" title="Permalink to this heading"></a></h3>
-<p>you can create a vertex buffer create a shared pointer of a VertexBuffer :</p>
+<p>You can create a vertex buffer create a shared pointer of a VertexBuffer :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//creating an allocating a vertex buffer</span>
 <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">VertexBuffer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">triangle_vertex_buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">VertexBuffer</span><span class="o">&gt;</span><span class="p">(</span><span class="w"></span>
 <span class="w">  </span><span class="n">graphicQueue</span><span class="p">,</span><span class="w"> </span>
@@ -232,11 +233,11 @@ In our exemple the vertecies will composed of a 3D position and a color.</p>
 </section>
 <section id="preparing-a-graphic-pipeline">
 <h3>Preparing a graphic pipeline<a class="headerlink" href="#preparing-a-graphic-pipeline" title="Permalink to this heading"></a></h3>
-<p>First we need to get the size of the swaphchain :</p>
+<p>First, we need to get the size of the swaphchain :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">VkExtent2D</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">swapChain</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Then we can create a graphic pipeline that match the size of the swapchain :</p>
+<p>Then we can create a graphic pipeline that matches the size of the swapchain :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">GraphicPipeline</span><span class="o">&gt;</span><span class="w"> </span><span class="n">graphicPipeline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">GraphicPipeline</span><span class="o">&gt;</span><span class="p">(</span><span class="w"></span>
 <span class="w">  </span><span class="n">vec3f</span><span class="p">({</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="w"> </span><span class="p">}),</span><span class="w"> </span>
 <span class="w">  </span><span class="n">vec3f</span><span class="p">({</span><span class="w"> </span><span class="kt">float</span><span class="p">(</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">),</span><span class="kt">float</span><span class="p">(</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">),</span><span class="mf">1.0f</span><span class="w"> </span><span class="p">}),</span><span class="w"> </span>
@@ -245,7 +246,7 @@ In our exemple the vertecies will composed of a 3D position and a color.</p>
 <span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Finaly we can register the shaders and the vertex buffers into the graphic pipeline :</p>
+<p>Finally we can register the shaders and the vertex buffers into the graphic pipeline :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">graphicPipeline</span><span class="o">-&gt;</span><span class="n">setVertexModule</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">);</span><span class="w"></span>
 <span class="n">graphicPipeline</span><span class="o">-&gt;</span><span class="n">setFragmentModule</span><span class="p">(</span><span class="n">fragmentShader</span><span class="p">);</span><span class="w"></span>
 <span class="n">graphicPipeline</span><span class="o">-&gt;</span><span class="n">setVertices</span><span class="p">({</span><span class="w"> </span><span class="n">triangle_vertex_buffer</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
@@ -259,7 +260,7 @@ In our exemple the vertecies will composed of a 3D position and a color.</p>
 </pre></div>
 </div>
 <p>We now need to add the graphic pipeline we create to the render pass.
-To do that we need to prepare the information needed by the render pass to create the subpass that will wrap the graphic pipeline :</p>
+To do that, we need to prepare the information needed by the render pass to create the subpass that will wrap the graphic pipeline :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">SubpassAttachment</span><span class="w"> </span><span class="n">SA</span><span class="p">;</span><span class="w"></span>
 <span class="n">SA</span><span class="p">.</span><span class="n">nbColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
 <span class="n">SA</span><span class="p">.</span><span class="n">storeColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
@@ -267,12 +268,12 @@ To do that we need to prepare the information needed by the render pass to creat
 <span class="n">SA</span><span class="p">.</span><span class="n">showOnScreenIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
-<p>By creating this structure we describe the attachement requiered such that the subpass can be draw.
+<p>By creating this structure, we describe the attachment required such that the subpass can be drawn.
 Here we describe a subpass that :
 - write in one color attachment
-- store it’s color attachments
-- will display it’s first color attachment on the screen</p>
-<p>Finaly we can add the graphic pipeline and the subpass attachement descripor to the render pass :</p>
+- store its color attachments
+- will display its first color attachment on the screen</p>
+<p>Finally, we can add the graphic pipeline and the subpass attachment descriptor to the render pass :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">renderPass</span><span class="p">.</span><span class="n">addSubPass</span><span class="p">({</span><span class="w"> </span><span class="n">graphicPipeline</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="n">SA</span><span class="p">);</span><span class="w"></span>
 <span class="n">renderPass</span><span class="p">.</span><span class="n">compile</span><span class="p">();</span><span class="w"></span>
 </pre></div>
@@ -280,22 +281,22 @@ Here we describe a subpass that :
 </section>
 <section id="preparing-a-frame-buffer">
 <h3>Preparing a frame buffer<a class="headerlink" href="#preparing-a-frame-buffer" title="Permalink to this heading"></a></h3>
-<p>First we need to create a frame buffer :</p>
+<p>First, we need to create a frame buffer :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">FrameBuffer</span><span class="w"> </span><span class="nf">frameBuffer</span><span class="p">(</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Then we need to prepare it for the renderpass that will use it :</p>
+<p>Then we need to prepare it for the render pass that will use it :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">renderPass</span><span class="p">.</span><span class="n">prepareOutputFrameBuffer</span><span class="p">(</span><span class="n">graphicQueue</span><span class="p">,</span><span class="w"> </span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">frameBuffer</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 </section>
-<section id="renderering">
-<h2>Renderering<a class="headerlink" href="#renderering" title="Permalink to this heading"></a></h2>
+<section id="rendering">
+<h2>Rendering<a class="headerlink" href="#rendering" title="Permalink to this heading"></a></h2>
 <section id="reseting-the-command-buffer">
 <h3>Reseting the command buffer<a class="headerlink" href="#reseting-the-command-buffer" title="Permalink to this heading"></a></h3>
-<p>Before being abble to register command into the commqnd buffer we have to make sure it is in the right state.
-To that we can use the following lines:</p>
+<p>Before registering the command into the command buffer, we have to ensure it is in the right state.
+To do that, we can use the following lines:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span><span class="w"></span>
 <span class="n">commandBuffer</span><span class="p">.</span><span class="n">resetFence</span><span class="p">();</span><span class="w"></span>
 </pre></div>
@@ -303,14 +304,14 @@ To that we can use the following lines:</p>
 </section>
 <section id="getting-the-swap-chain-image">
 <h3>Getting the swap chain image<a class="headerlink" href="#getting-the-swap-chain-image" title="Permalink to this heading"></a></h3>
-<p>To be able to draw on the screen of the image we need to get an image from the swapchain.
-To do that we can use the following line :</p>
+<p>To draw the image on the screen, we need to get an image from the swapchain.
+To do that, we can use the following Line:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="n">SwapChainImage</span><span class="o">&amp;</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">swapChain</span><span class="o">-&gt;</span><span class="n">acquireImage</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This will ask the swapchain to prepare a swapchain image for you to draw in.
-However this image will not be ready right away.</p>
-<p>To make sure it is ready when we need it we need to prepare the device to wait for image.
+However, this image will not be ready right away.</p>
+<p>To make sure it is ready when we need it, we need to prepare the Device to wait for the image.
 We can do it with the following lines :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">waitSemaphoreInfo</span><span class="o">&gt;</span><span class="w"> </span><span class="n">waitSemaphoreInfos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span><span class="w"></span>
 <span class="n">waitSemaphoreInfos</span><span class="p">.</span><span class="n">push_back</span><span class="p">({</span><span class="w"></span>
@@ -319,22 +320,21 @@ We can do it with the following lines :</p>
 <span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
-<p>With this line we prepare a structure that hold the semaphore that will be raise when the image is ready,
-and the stage that need to wait for the semaphore.
+<p>With these lines, we prepare a structure that holds the semaphore that will be raised when the image is ready and the stage that needs to wait for the semaphore.
 Here the pipeline will wait for the image to be ready before trying to write in the color attachment.</p>
-<p>Finaly we want to register the swapchain image into the our frame buffer :</p>
+<p>Finally, we want to register the swapchain image into our frame buffer :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">renderPass</span><span class="p">.</span><span class="n">setSwapChainImage</span><span class="p">(</span><span class="n">frameBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">image</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 <section id="preparing-the-draw-call">
 <h3>Preparing the draw call<a class="headerlink" href="#preparing-the-draw-call" title="Permalink to this heading"></a></h3>
-<p>To draw on the screen we need to regiter a draw call into our command buffer.
-To do that we need to put it in a recording state :</p>
+<p>To draw on the screen, we need to register a draw call into our command buffer.
+To do that, we need to put it in a recording state :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">beginRecord</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Once it is in a recording state we can register a draw call into it :</p>
+<p>Once it is in a recording state, we can register a draw call into it :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">renderPass</span><span class="p">.</span><span class="n">draw</span><span class="p">(</span><span class="w"></span>
 <span class="w">	</span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span>
 <span class="w">	</span><span class="n">frameBuffer</span><span class="p">,</span><span class="w"> </span>
@@ -345,17 +345,17 @@ To do that we need to put it in a recording state :</p>
 </pre></div>
 </div>
 <p>Here we ask the render pass to create a draw call into the command buffer using the frame buffer.
-This draw call will draw in square which diagonal start at the 0,0 coordinates and end at the size.width, size.height coordinates.
+This draw call will draw in a diagonal square starting at the 0,0 coordinates and ending at the size.width, size.height coordinates.
 The last parameters describe the value used to reset the frame buffer.</p>
 <p>We can now put the command out of the recording state :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">endRecord</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Finaly we can submit the command buffer so it can be executed by the device:</p>
+<p>Finally, we can submit the command buffer so it can be executed by the Device:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">submit</span><span class="p">(</span><span class="n">graphicQueue</span><span class="p">,</span><span class="w"> </span><span class="n">waitSemaphoreInfos</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">semaphore</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Here we submit the command buffer to the graphic queue with waitSempahoreInfos we prepared, and with a semaphore to raise when the all the command will be done.</p>
+<p>Here we submit the command buffer to the graphic queue with waitSempahoreInfos we prepared and with a semaphore to raise when all the commands are executed.</p>
 </section>
 <section id="drawing-on-the-screen">
 <h3>Drawing on the screen<a class="headerlink" href="#drawing-on-the-screen" title="Permalink to this heading"></a></h3>
@@ -363,13 +363,13 @@ The last parameters describe the value used to reset the frame buffer.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">swapChain</span><span class="o">-&gt;</span><span class="n">presentImage</span><span class="p">(</span><span class="n">presentQueue</span><span class="p">,</span><span class="w"> </span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">semaphore</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Here we ask the swapchain to present an image on the screen using the presentation queue after the given semaphore as been raise.</p>
+<p>Here we ask the swapchain to present an image on the screen using the presentation queue after the given semaphore has been raised.</p>
 </section>
 </section>
 <section id="cleaning">
 <h2>Cleaning<a class="headerlink" href="#cleaning" title="Permalink to this heading"></a></h2>
-<p>Once we are done using Vulkan we need to make sure all the commands we submited to the Device are done before killing the application.
-To do that you can use the following lines :</p>
+<p>Once we are done using Vulkan, we need to make sure all the commands we submitted to the Device are done before killing the application.
+To do that, you can use the following lines :</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">device</span><span class="o">-&gt;</span><span class="n">waitForAllCommands</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
@@ -488,6 +488,10 @@ To do that you can use the following lines :</p>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this heading"></a></h2>
+<p><img alt="_static/image/HelloWorld.png" src="_static/image/HelloWorld.png" /></p>
 </section>
 </section>
 
