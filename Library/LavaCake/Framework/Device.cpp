@@ -426,31 +426,37 @@ namespace LavaCake {
           }
         }
 
-        requested_queues.push_back({ m_graphicQueues[0].getIndex(), { 1.0f } });
-        for (int i = 1; i < nbGraphicQueue; i++) {
-          for (int j = 0; j < i; j++) {
-            if (m_graphicQueues[i].getIndex() == m_graphicQueues[j].getIndex()) {
-              goto endConcGrapics;
+        if (nbGraphicQueue > 0) {
+          requested_queues.push_back({ m_graphicQueues[0].getIndex(), { 1.0f } });
+          for (int i = 1; i < nbGraphicQueue; i++) {
+            for (int j = 0; j < i; j++) {
+              if (m_graphicQueues[i].getIndex() == m_graphicQueues[j].getIndex()) {
+                goto endConcGrapics;
+              }
             }
+            requested_queues.push_back({ m_graphicQueues[i].getIndex(),{ 1.0f } });
+          endConcGrapics:;
           }
-          requested_queues.push_back({ m_graphicQueues[i].getIndex(),{ 1.0f } });
-        endConcGrapics:;
         }
-
-        for (int i = 1; i < nbComputeQueue; i++) {
-          for (int j = 0; j < nbGraphicQueue; j++) {
-            if (m_computeQueues[i].getIndex() == m_graphicQueues[j].getIndex()) {
-              goto 	endConcCompute;
-            }
+        if (nbComputeQueue > 0) {
+          if (nbGraphicQueue == 0) {
+            requested_queues.push_back({ m_computeQueues[0].getIndex(),{ 1.0f } });
           }
-
-          for (int j = 0; j < i; j++) {
-            if (m_graphicQueues[i].getIndex() == m_computeQueues[j].getIndex()) {
-              break;
+          for (int i = 1; i < nbComputeQueue; i++) {
+            for (int j = 0; j < nbGraphicQueue; j++) {
+              if (m_computeQueues[i].getIndex() == m_graphicQueues[j].getIndex()) {
+                goto 	endConcCompute;
+              }
             }
+
+            for (int j = 0; j < i; j++) {
+              if (m_computeQueues[i].getIndex() == m_computeQueues[j].getIndex()) {
+                goto endConcCompute;
+              }
+            }
+            requested_queues.push_back({ m_computeQueues[i].getIndex(),{ 1.0f } });
+          endConcCompute:;
           }
-          requested_queues.push_back({ m_computeQueues[i].getIndex(),{ 1.0f } });
-        endConcCompute:;
         }
 
         if(!headless){
@@ -646,7 +652,7 @@ namespace LavaCake {
         VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,   // VkStructureType              sType
         nullptr,                                      // const void                 * pNext
         VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,                                   // VkCommandPoolCreateFlags     flags
-        m_graphicQueues[0].getIndex()                                  // uint32_t                     queueFamilyIndex
+        nbGraphicQueue >0 ? m_graphicQueues[0].getIndex() : m_computeQueues[0].getIndex()                               // uint32_t                     queueFamilyIndex
       };
 
       result = vkCreateCommandPool(m_logical, &command_pool_create_info, nullptr, &m_commandPool);
