@@ -58,7 +58,7 @@ GLFWSurfaceInitialisator surfaceInitialisator(window);
 (The GLFWSurfaceInitialisator class inherits from the SurfaceInitialisator, 
 if you need to use other windows manages, you can create your surface initialisator )
 
-
+Then we can intialise the Device with the following lines:
 ```cpp
 Device* device = Device::getDevice();
 device->initDevices(0, 1, surfaceInitialisator);

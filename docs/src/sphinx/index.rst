@@ -57,8 +57,10 @@ The code repository for `Vulkan Cookbook <https://www.packtpub.com/game-developm
 
    Getting Started
    HelloWorld
+   HeadlessCompute
    AutoSPIRV
    Framework
+
 
 
 

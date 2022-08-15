@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Headless Compute &mdash; LavaCake 1.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="AutoSPIRV" href="AutoSPIRV.html" />
+    <link rel="prev" title="Hello World" href="HelloWorld.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LavaCake
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HelloWorld.html">Hello World</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Headless Compute</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#compute-shader">Compute shader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vulkan-initialisation">Vulkan initialisation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-buffers">Creating buffers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preparing-the-compute-pipeline">Preparing the compute pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#executing-the-compute-pipeline">Executing the compute pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reding-back-the-data">Reding back the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#final-code">Final code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Framework.html">Framework</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LavaCake</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Headless Compute</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/HeadlessCompute.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="headless-compute">
+<h1>Headless Compute<a class="headerlink" href="#headless-compute" title="Permalink to this heading"></a></h1>
+<p>In this document, we will see a simple example of how to use LavaCake in headless mode to execute a compute shader.</p>
+<section id="compute-shader">
+<h2>Compute shader<a class="headerlink" href="#compute-shader" title="Permalink to this heading"></a></h2>
+<p>In this example, we will try to use a compute shader to add to buffer together and store the result in a third one.
+To do that, we will use the following compute shader :</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#version 450</span>
+
+<span class="n">layout</span><span class="p">(</span><span class="w"> </span><span class="n">local_size_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="n">in</span><span class="p">;</span><span class="w"></span>
+
+<span class="n">layout</span><span class="p">(</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">r32f</span><span class="p">)</span><span class="w"> </span><span class="n">uniform</span><span class="w"> </span><span class="n">imageBuffer</span><span class="w"> </span><span class="n">A</span><span class="p">;</span><span class="w"></span>
+<span class="n">layout</span><span class="p">(</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">r32f</span><span class="p">)</span><span class="w"> </span><span class="n">uniform</span><span class="w"> </span><span class="n">imageBuffer</span><span class="w"> </span><span class="n">B</span><span class="p">;</span><span class="w"></span>
+<span class="n">layout</span><span class="p">(</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">r32f</span><span class="p">)</span><span class="w"> </span><span class="n">uniform</span><span class="w"> </span><span class="n">imageBuffer</span><span class="w"> </span><span class="n">C</span><span class="p">;</span><span class="w"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">uint</span><span class="w"> </span><span class="n">Lxid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gl_GlobalInvocationID</span><span class="p">.</span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">imageLoad</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="n">Lxid</span><span class="p">)</span><span class="w"> </span><span class="p">).</span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">imageLoad</span><span class="p">(</span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="n">Lxid</span><span class="p">)</span><span class="w"> </span><span class="p">).</span><span class="n">x</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">imageStore</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="kt">int</span><span class="p">(</span><span class="n">Lxid</span><span class="p">),</span><span class="n">vec4</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">));</span><span class="w"> </span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="vulkan-initialisation">
+<h2>Vulkan initialisation<a class="headerlink" href="#vulkan-initialisation" title="Permalink to this heading"></a></h2>
+<p>To initialize Vulkan in LavaCake, you need to get a reference to the Device singleton provided by LavaCake and initialize it.<br />This singleton holds references to Physical and Logical Devices, Queues, Surface, and Instances.</p>
+<p>We can initialize the Device with the following lines:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Device</span><span class="o">*</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="o">::</span><span class="n">getDevice</span><span class="p">();</span><span class="w"></span>
+<span class="n">device</span><span class="o">-&gt;</span><span class="n">initDevices</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This will initialize the Device with 0 graphic queue and 1 compute queue.</p>
+<p>We will need a command buffer to execute the shader on the GPU; we can initialize it as follows:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">CommandBuffer</span><span class="w"> </span><span class="n">commandBuffer</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="creating-buffers">
+<h2>Creating buffers<a class="headerlink" href="#creating-buffers" title="Permalink to this heading"></a></h2>
+<p>First, we need to prepare the data we want to fill them with :</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">dataSize</span><span class="p">);</span><span class="w"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="n">dataSize</span><span class="p">);</span><span class="w"></span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dataSize</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Then we can create the two input buffers as follows :</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Buffer</span><span class="w"> </span><span class="nf">ABuffer</span><span class="p">(</span><span class="n">computeQueue</span><span class="p">,</span><span class="w"> </span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT</span><span class="p">);</span><span class="w"></span>
+<span class="n">Buffer</span><span class="w"> </span><span class="nf">BBuffer</span><span class="p">(</span><span class="n">computeQueue</span><span class="p">,</span><span class="w"> </span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This way, the two buffers are created using the compute queue, with the command buffer, as Texel buffers and initialized with the data we prepared.</p>
+<p>Finally, we can create the result buffer with :</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Buffer</span><span class="w"> </span><span class="nf">CBuffer</span><span class="p">(</span><span class="n">dataSize</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_TRANSFER_SRC_BIT</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This way, we have to create a buffer that has the same size as the two inputs, that is also a texel buffer and can also be read from.</p>
+</section>
+<section id="preparing-the-compute-pipeline">
+<h2>Preparing the compute pipeline<a class="headerlink" href="#preparing-the-compute-pipeline" title="Permalink to this heading"></a></h2>
+<p>We can create a compute pipeline as follows:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="n">ComputePipeline</span><span class="w"> </span><span class="n">sumPipeline</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Then we can load and bind the compute shader to the compute pipeline as follows:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ComputeShaderModule</span><span class="w"> </span><span class="nf">sumShader</span><span class="p">(</span><span class="n">prefix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;Data/Shaders/ArraySum/sum.comp.spv&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="n">sumPipeline</span><span class="p">.</span><span class="n">setComputeModule</span><span class="p">(</span><span class="n">sumShader</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>To bind the buffers to the compute pipeline, we need to create a descriptor set.
+We can create one as follows :</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="w"> </span><span class="o">&lt;</span><span class="n">DescriptorSet</span><span class="o">&gt;</span><span class="w">  </span><span class="n">descriptorSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">DescriptorSet</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Now we can add the buffers as follows:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">descriptorSet</span><span class="o">-&gt;</span><span class="n">addTexelBuffer</span><span class="p">(</span><span class="n">ABuffer</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="n">descriptorSet</span><span class="o">-&gt;</span><span class="n">addTexelBuffer</span><span class="p">(</span><span class="n">BBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="n">descriptorSet</span><span class="o">-&gt;</span><span class="n">addTexelBuffer</span><span class="p">(</span><span class="n">CBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This way describes how these buffers will be bound.
+The ABuffer will be bound at the binding 0 in the compute stage.
+The BBuffer will be bound at the binding 1 in the compute stage.
+The CBuffer will be bound at the binding 2 in the compute stage.</p>
+<p>We can now link the descriptor set to our pipeline as follows:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">sumPipeline</span><span class="p">.</span><span class="n">setDescriptorSet</span><span class="p">(</span><span class="n">descriptorSet</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Finally, we need to compile our pipeline :</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">sumPipeline</span><span class="p">.</span><span class="n">compile</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="executing-the-compute-pipeline">
+<h2>Executing the compute pipeline<a class="headerlink" href="#executing-the-compute-pipeline" title="Permalink to this heading"></a></h2>
+<p>First, we need to put our command buffer in a recording state:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">beginRecord</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Then we can add a compute command in the command buffer:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">sumPipeline</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">dataSize</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>We can now put our command buffer out of its recording state:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">endRecord</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Now we can submit the command buffer to the compute queue :</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">submit</span><span class="p">(</span><span class="n">computeQueue</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="p">{});</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Then we need to wait for the command to be finished:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Finally we need to reset the fence in the command buffer:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">resetFence</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="reding-back-the-data">
+<h2>Reding back the data<a class="headerlink" href="#reding-back-the-data" title="Permalink to this heading"></a></h2>
+<p>To read back the data, we need to prepare a vector to hold our result:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Then we can use the readback function from the CBuffer:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">CBuffer</span><span class="p">.</span><span class="n">readBack</span><span class="p">(</span><span class="n">computeQueue</span><span class="p">,</span><span class="w"> </span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Finally, we can print the result :</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">C</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="final-code">
+<h2>Final code<a class="headerlink" href="#final-code" title="Permalink to this heading"></a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;LavaCake/Framework/Framework.h&gt;</span><span class="cp"></span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">LavaCake</span><span class="o">::</span><span class="nn">Framework</span><span class="p">;</span><span class="w"></span>
+
+<span class="cp">#define dataSize 4096</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">Device</span><span class="o">*</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="o">::</span><span class="n">getDevice</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">d</span><span class="o">-&gt;</span><span class="n">initDevices</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">ComputeQueue</span><span class="w"> </span><span class="n">computeQueue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d</span><span class="o">-&gt;</span><span class="n">getComputeQueue</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">CommandBuffer</span><span class="w"> </span><span class="n">commandBuffer</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">dataSize</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="n">dataSize</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dataSize</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">Buffer</span><span class="w"> </span><span class="n">ABuffer</span><span class="p">(</span><span class="n">computeQueue</span><span class="p">,</span><span class="w"> </span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">Buffer</span><span class="w"> </span><span class="n">BBuffer</span><span class="p">(</span><span class="n">computeQueue</span><span class="p">,</span><span class="w"> </span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">Buffer</span><span class="w"> </span><span class="n">CBuffer</span><span class="p">(</span><span class="n">dataSize</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT</span><span class="o">|</span><span class="w"> </span><span class="n">VK_BUFFER_USAGE_TRANSFER_SRC_BIT</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="w"> </span><span class="o">&lt;</span><span class="n">DescriptorSet</span><span class="o">&gt;</span><span class="w">  </span><span class="n">descriptorSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">DescriptorSet</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">descriptorSet</span><span class="o">-&gt;</span><span class="n">addTexelBuffer</span><span class="p">(</span><span class="n">ABuffer</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">descriptorSet</span><span class="o">-&gt;</span><span class="n">addTexelBuffer</span><span class="p">(</span><span class="n">BBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">descriptorSet</span><span class="o">-&gt;</span><span class="n">addTexelBuffer</span><span class="p">(</span><span class="n">CBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">VK_SHADER_STAGE_COMPUTE_BIT</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">ComputeShaderModule</span><span class="w"> </span><span class="n">sumShader</span><span class="p">(</span><span class="s">&quot;Data/Shaders/ArraySum/sum.comp.spv&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span>
+<span class="w">  </span><span class="n">ComputePipeline</span><span class="w"> </span><span class="n">sumPipeline</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">sumPipeline</span><span class="p">.</span><span class="n">setDescriptorSet</span><span class="p">(</span><span class="n">descriptorSet</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">sumPipeline</span><span class="p">.</span><span class="n">setComputeModule</span><span class="p">(</span><span class="n">sumShader</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">sumPipeline</span><span class="p">.</span><span class="n">compile</span><span class="p">();</span><span class="w"></span>
+
+
+<span class="w">  </span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">beginRecord</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">sumPipeline</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">dataSize</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">endRecord</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">submit</span><span class="p">(</span><span class="n">computeQueue</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="p">{});</span><span class="w"></span>
+<span class="w">  </span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">wait</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">commandBuffer</span><span class="p">.</span><span class="n">resetFence</span><span class="p">();</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">CBuffer</span><span class="p">.</span><span class="n">readBack</span><span class="p">(</span><span class="n">computeQueue</span><span class="p">,</span><span class="w"> </span><span class="n">commandBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">C</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="HelloWorld.html" class="btn btn-neutral float-left" title="Hello World" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="AutoSPIRV.html" class="btn btn-neutral float-right" title="AutoSPIRV" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Thibault Tricard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

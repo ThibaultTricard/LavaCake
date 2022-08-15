@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="AutoSPIRV" href="AutoSPIRV.html" />
+    <link rel="next" title="Headless Compute" href="HeadlessCompute.html" />
     <link rel="prev" title="Getting Started" href="Getting%20Started.html" /> 
 </head>
 
@@ -67,6 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#results">Results</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="HeadlessCompute.html">Headless Compute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AutoSPIRV.html">AutoSPIRV</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Framework.html">Framework</a></li>
 </ul>
@@ -145,6 +146,7 @@ This function returns true when the window is alive and false when the windows m
 </div>
 <p>(The GLFWSurfaceInitialisator class inherits from the SurfaceInitialisator,
 if you need to use other windows manages, you can create your surface initialisator )</p>
+<p>Then we can intialise the Device with the following lines:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Device</span><span class="o">*</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="o">::</span><span class="n">getDevice</span><span class="p">();</span><span class="w"></span>
 <span class="n">device</span><span class="o">-&gt;</span><span class="n">initDevices</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">surfaceInitialisator</span><span class="p">);</span><span class="w"></span>
 </pre></div>
@@ -500,7 +502,7 @@ To do that, you can use the following lines :</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="Getting%20Started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="AutoSPIRV.html" class="btn btn-neutral float-right" title="AutoSPIRV" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="HeadlessCompute.html" class="btn btn-neutral float-right" title="Headless Compute" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
