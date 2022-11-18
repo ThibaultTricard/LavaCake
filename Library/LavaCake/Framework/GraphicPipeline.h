@@ -1,12 +1,12 @@
-#pragma once
 #include "AllHeaders.h"
 #include "Pipeline.h"
 
+#pragma once
 
 namespace LavaCake {
   namespace Framework {
 
-    struct constantRange {
+    /*struct constantRange {
       std::shared_ptr < PushConstant > constant;
       VkPushConstantRange range;
     };
@@ -14,7 +14,7 @@ namespace LavaCake {
     struct vertexBufferConstant {
       std::shared_ptr<VertexBuffer> buffer;
       std::vector<constantRange> constant_ranges;
-    };
+    };*/
 
     /**
     Class GraphicPipeline :
@@ -80,7 +80,7 @@ namespace LavaCake {
       std::vector<shaderStageParameters> getStageParameter();
 
 
-      void compile(VkRenderPass& renderpass, uint16_t nbColorAttachments);
+      void compile(const VkRenderPass& renderpass, uint16_t nbColorAttachments);
 
 
       /*
@@ -96,20 +96,18 @@ namespace LavaCake {
       \brief Set the vertex buffer that will be used by the pipeline
       \param vertexBuffers an array of shared pointers to vertex buffers
       */
-      void setVertices(const std::vector<std::shared_ptr<VertexBuffer>>& vertexBuffers);
+      //void setVertices(const std::vector<std::shared_ptr<VertexBuffer>>& vertexBuffers);
 
 
       /**
       \brief Set the vertex buffer that will be used by the pipeline
       \param vertexBuffer the vertex buffer
       */
-      void setVertices(const std::vector<vertexBufferConstant>& vertexBuffer);
+      //void setVertices(const std::vector<vertexBufferConstant>& vertexBuffer);
 
-      /**
-      \brief Register a the draw call of the pipeline into a command buffer
-      \param cmdBuff the command buffer
-      */
-      void draw(CommandBuffer& cmdBuff);
+      void bindDescriptorSet(CommandBuffer& cmdBuffer, const DescriptorSet& descriptorSet) override;
+
+      void bindPipeline(CommandBuffer& cmdBuff) override;
 
       /**
       \brief Set the cull mode for the pipeline, if not set the pipeline cull the back faces
@@ -127,7 +125,7 @@ namespace LavaCake {
       void setPushContantInfo(const std::vector<VkPushConstantRange>& constantDescriptions);
 
 
-      void setSubpassNumber(uint32_t number);
+      void setSubPassNumber(uint32_t number);
 
       /**
       \brief enable or disable the alpha blending, if not set the alpha blendig is disable
@@ -176,7 +174,7 @@ namespace LavaCake {
       shaderStageParameters                                 m_tesselationEvaluationModule{};
       shaderStageParameters                                 m_geometryModule{};
       shaderStageParameters                                 m_fragmentModule{};
-      shaderStageParameters						            m_meshModule{};
+      shaderStageParameters                                 m_meshModule{};
       shaderStageParameters	                                m_taskModule{};
 
       VkPipelineRasterizationStateCreateInfo                m_rasterizationStateCreateInfo;
@@ -199,11 +197,11 @@ namespace LavaCake {
       VkPipelineVertexInputStateCreateInfo                  m_vertexInfo;
       bool                                                  m_vertexInfoSet =false;
 
-      std::vector<vertexBufferConstant>                     m_vertexBuffers;
+      //std::vector<vertexBufferConstant>                     m_vertexBuffers;
       std::vector<VkPushConstantRange>                      m_constantInfos;
       VkPipelineInputAssemblyStateCreateInfo                m_inputInfo;
 
-      uint32_t                                              m_subpassNumber;
+      uint32_t                                              m_subpassNumber=0;
 
       VkCullModeFlagBits                                    m_cullMode = VK_CULL_MODE_BACK_BIT;
       VkPolygonMode                                         m_polygonMode = VK_POLYGON_MODE_FILL;
@@ -219,5 +217,18 @@ namespace LavaCake {
 
 
     };
+
+
+    void bindVertexBuffer(CommandBuffer& buffer, const Buffer& vertices);
+
+    void bindIndexBuffer(CommandBuffer& buffer, const Buffer& indices, VkIndexType indexType= VK_INDEX_TYPE_UINT32);
+
+    /**
+    \brief Register a the draw call of the pipeline into a command buffer
+    \param cmdBuff the command buffer
+    */
+    void draw(CommandBuffer& cmdBuff, uint32_t vertexCount, uint32_t vertexOffset=0,  uint32_t instanceCount=1, uint32_t instanceOffset=0);
+
+    void drawIndexed(CommandBuffer& cmdBuff, uint32_t indexCount, uint32_t indexOffset=0,  uint32_t instanceCount=1, uint32_t vertexOffset=0, uint32_t instanceOffset=0);
   }
 }

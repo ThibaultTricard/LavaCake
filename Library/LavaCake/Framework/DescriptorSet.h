@@ -1,9 +1,9 @@
+#pragma once
 
 #include "UniformBuffer.h"
 #include "Texture.h"
 #include "Constant.h"
 #include <LavaCake/Raytracing/TopLevelAS.h>
-
 namespace LavaCake {
   namespace Framework {
     struct uniform {
@@ -60,6 +60,9 @@ namespace LavaCake {
       uint32_t								           binding;
       VkShaderStageFlags			             stage;
     };
+
+
+    VkDescriptorSetLayout generateEmptyLayout();
 
     class DescriptorSet {
 
@@ -168,7 +171,7 @@ namespace LavaCake {
         return m_attachments;
       };
 
-      void generateDescriptorLayout() {
+      void compile() {
 
         if (m_gernerated) return;
 
@@ -569,7 +572,6 @@ namespace LavaCake {
         m_descriptorSet = descriptorSets[0];
       }
 
-
       const VkDescriptorSet& getHandle() const {
         return m_descriptorSet;
       }
@@ -581,6 +583,8 @@ namespace LavaCake {
       bool isEmpty() const {
         return m_empty;
       }
+
+      
 
     private:
 
@@ -602,5 +606,9 @@ namespace LavaCake {
       bool                                                            m_empty = true;
       bool                                                            m_gernerated = false;
     };
+
+    
+
+
   }
 }

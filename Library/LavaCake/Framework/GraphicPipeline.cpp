@@ -137,12 +137,11 @@ namespace LavaCake {
       return stage;
     }
 
-    void GraphicPipeline::compile(VkRenderPass& renderpass, uint16_t nbColorAttachments) {
+    void GraphicPipeline::compile(const VkRenderPass& renderpass, uint16_t nbColorAttachments) {
       Device* d = Device::getDevice();
       const VkDevice& logical = d->getLogicalDevice();
-      generateDescriptorLayout();
-
-      if (!Pipeline::CreatePipelineLayout(logical, { m_descriptorSet->getLayout() }, m_constantInfos, m_pipelineLayout)) {
+      
+      if (!Pipeline::CreatePipelineLayout(logical, { m_descriptorSetLayout }, m_constantInfos, m_pipelineLayout)) {
         ErrorCheck::setError("Can't create pipeline layout");
       }
 
@@ -277,7 +276,7 @@ namespace LavaCake {
     }
 
 
-    void GraphicPipeline::setSubpassNumber(uint32_t number) {
+    void GraphicPipeline::setSubPassNumber(uint32_t number) {
       m_subpassNumber = number;
     }
 
@@ -303,11 +302,12 @@ namespace LavaCake {
       };
       m_vertexInfoSet = true;
     }
-
+    
     void GraphicPipeline::setPushContantInfo(const std::vector<VkPushConstantRange>& constantDescriptions) {
       m_constantInfos = constantDescriptions;
     }
 
+    /*
     void GraphicPipeline::setVertices(const std::vector<std::shared_ptr<VertexBuffer>>& buffer) {
       m_vertexBuffers.resize(buffer.size());
       for (size_t i = 0; i < buffer.size(); i++) {
@@ -325,18 +325,33 @@ namespace LavaCake {
       if (!m_vertexInfoSet) {
           setVerticesInfo(vertexBufferConstants[0].buffer->getBindingDescriptions(), vertexBufferConstants[0].buffer->getAttributeDescriptions(), vertexBufferConstants[0].buffer->primitiveTopology());
       }
+    }*/
+
+    void GraphicPipeline::bindPipeline(CommandBuffer& cmdBuff){
+      vkCmdSetViewport(cmdBuff.getHandle(), 0, 1, &m_viewports[0]);
+
+      vkCmdSetScissor(cmdBuff.getHandle(), 0, 1, &m_scissors[0]);
+      if (m_lineWidth != 1.0) {
+        vkCmdSetLineWidth(cmdBuff.getHandle(), m_lineWidth);
+      }
+
+      vkCmdBindPipeline(cmdBuff.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
     }
 
+    void GraphicPipeline::bindDescriptorSet(CommandBuffer& cmdBuffer, const DescriptorSet& descriptorSet){
+      std::vector<VkDescriptorSet> descriptorSets = { descriptorSet.getHandle() };
+      vkCmdBindDescriptorSets(cmdBuffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
+            static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(),
+            0, {});
+    }
+
+    
 
 
-    void GraphicPipeline::draw(CommandBuffer& buffer) {
-      vkCmdSetViewport(buffer.getHandle(), 0, 1, &m_viewports[0]);
+    /*void GraphicPipeline::draw(CommandBuffer& buffer) {
+      
 
-      vkCmdSetScissor(buffer.getHandle(), 0, 1, &m_scissors[0]);
-
-      if (m_lineWidth != 1.0) {
-        vkCmdSetLineWidth(buffer.getHandle(), m_lineWidth);
-      }
+      
 
       for (uint32_t i = 0; i < m_vertexBuffers.size(); i++) {
         if (!m_vertexBuffers[i].buffer->getVertexBuffer() || m_vertexBuffers[i].buffer->getVertexBuffer()->getHandle() == VK_NULL_HANDLE)return;
@@ -346,14 +361,12 @@ namespace LavaCake {
           vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffers[i].buffer->getIndexBuffer()->getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
         }
 
-        std::vector<VkDescriptorSet> descriptorSets = { m_descriptorSet->getHandle() };
+        
         if (!m_descriptorSet->isEmpty()) {
-          vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0,
-            static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(),
-            0, {});
+          
         }
 
-        vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+        
 
         for (auto& constant_range : m_vertexBuffers[i].constant_ranges) {
           if (constant_range.constant) {
@@ -381,10 +394,29 @@ namespace LavaCake {
         }
 
       }
-    }
+    }*/
 
     void GraphicPipeline::setCullMode(VkCullModeFlagBits cullMode) {
       m_cullMode = cullMode;
+    }
+
+
+    void bindVertexBuffer(CommandBuffer& cmdBuffer, const Buffer& vertices){
+      VkDeviceSize size(0);
+      vkCmdBindVertexBuffers(cmdBuffer.getHandle(), 0, static_cast<uint32_t>(1), &vertices.getHandle(), &size);
+    }
+
+    void bindIndexBuffer(CommandBuffer& cmdBuffer, const Buffer& indices, VkIndexType indexType){
+      vkCmdBindIndexBuffer(cmdBuffer.getHandle(), indices.getHandle(), VkDeviceSize(0), indexType);
+    }
+
+
+    void draw(CommandBuffer& cmdBuff, uint32_t vertexCount, uint32_t vertexOffset,  uint32_t instanceCount, uint32_t instanceOffset){
+      vkCmdDraw(cmdBuff.getHandle(), vertexCount, instanceCount, vertexOffset, instanceOffset);
+    }
+
+    void drawIndexed(CommandBuffer& cmdBuff, uint32_t indexCount, uint32_t indexOffset,  uint32_t instanceCount, uint32_t vertexOffset, uint32_t instanceOffset){
+      vkCmdDrawIndexed(cmdBuff.getHandle(), indexCount, instanceCount, indexOffset, 0, instanceOffset);
     }
 
   }

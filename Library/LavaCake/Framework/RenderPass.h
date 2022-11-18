@@ -94,7 +94,7 @@ namespace LavaCake {
       /*
       \brief add a subpass composed of multiple graphics pipeline and setup their attachments
       */
-      void addSubPass(const SubPass& p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
+      uint32_t addSubPass(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
 
       /*
       \brief Compile the renderpass
@@ -103,9 +103,24 @@ namespace LavaCake {
 
 
       /*
+      \brief start the drawing of the RenderPass
+      */
+      void begin(CommandBuffer& cmdBuff, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const& clear_values);
+
+      /*
+      \brief start the drawing of the RenderPass
+      */
+      void nextSubPass(CommandBuffer& cmdBuff);
+
+      /*
+      \brief end the drawing of the RenderPass
+      */
+      void end(CommandBuffer& cmdBuff);
+
+      /*
       \brief Register a draw call in a command buffer
       */
-      void draw(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const& clear_values = { { 1.0f, 0 } });
+      //void draw(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const& clear_values = { { 1.0f, 0 } });
 
       /*
       \return the handle of the render pass
@@ -149,7 +164,7 @@ namespace LavaCake {
       VkFormat																							m_imageFormat = VK_FORMAT_UNDEFINED;
       VkFormat																							m_depthFormat = VK_FORMAT_UNDEFINED;
       std::vector<SubpassParameters>												m_subpassParameters;
-      std::vector < SubPass >																m_subpass;
+      //std::vector < SubPass >																m_subpass;
       std::vector<VkAttachmentReference>										m_depthAttachments;
       std::vector<VkAttachmentDescription>									m_attachmentDescriptions;
       std::vector<VkSubpassDependency>											m_dependencies;

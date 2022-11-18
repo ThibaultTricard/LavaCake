@@ -222,7 +222,7 @@ ${LIBRARY_FRAMEWORK_DIR}/CommandBuffer.cpp
 ${LIBRARY_FRAMEWORK_DIR}/ComputePipeline.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Constant.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Device.cpp
-${LIBRARY_FRAMEWORK_DIR}/DescriptorSet.h
+${LIBRARY_FRAMEWORK_DIR}/DescriptorSet.cpp
 ${LIBRARY_FRAMEWORK_DIR}/ErrorCheck.cpp
 ${LIBRARY_FRAMEWORK_DIR}/GraphicPipeline.cpp
 ${LIBRARY_FRAMEWORK_DIR}/Image.cpp
@@ -260,6 +260,7 @@ ${LIBRARY_RAYTRACING_DIR}/TopLevelAS.cpp
 
 source_group( "Library\\RayTracing\\Header" FILES ${LIBRARY_RAYTRACING_HEADER} )
 source_group( "Library\\RayTracing\\Source" FILES ${LIBRARY_RAYTRACING_SOURCE} )
+
 
 
 set(LIBRARY_GEOMETRY_DIR "Library/LavaCake/Geometry")

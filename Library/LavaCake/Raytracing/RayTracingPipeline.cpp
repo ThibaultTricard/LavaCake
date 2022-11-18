@@ -167,13 +167,10 @@ namespace LavaCake {
 				Framework::Device* d = Framework::Device::getDevice();
 				VkDevice logical = d->getLogicalDevice();
 
-				generateDescriptorLayout();
-
-				std::vector<VkDescriptorSetLayout> layouts= { m_descriptorSet->getLayout() };
-				if (!m_descriptorSet->isEmpty()) {
-					if (!CreatePipelineLayout(logical, layouts, {}, m_pipelineLayout)) {
+				std::vector<VkDescriptorSetLayout> layouts= { m_descriptorSetLayout };
+				
+				if (!CreatePipelineLayout(logical, layouts, {}, m_pipelineLayout)) {
 						Framework::ErrorCheck::setError("Can't create compute pipeline layout");
-					}
 				}
 
 				VkRayTracingPipelineCreateInfoKHR rayPipelineInfo{};
@@ -211,10 +208,7 @@ namespace LavaCake {
 			void RayTracingPipeline::trace(Framework::CommandBuffer& cmdbuff) {
 				vkCmdBindPipeline(cmdbuff.getHandle(), VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, m_pipeline);
 
-				std::vector<VkDescriptorSet> descriptorSets = { m_descriptorSet->getHandle() };
-				if (!m_descriptorSet->isEmpty()) {
-					vkCmdBindDescriptorSets(cmdbuff.getHandle(), VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, m_pipelineLayout, 0, (uint32_t)descriptorSets.size(), descriptorSets.data(), 0, 0);
-				}
+				
 				VkStridedDeviceAddressRegionKHR callableShaderSbtEntry{};
                 
 				vkCmdTraceRaysKHR(
@@ -228,6 +222,16 @@ namespace LavaCake {
 					1);
 			}
 
+			void RayTracingPipeline::bindPipeline( Framework::CommandBuffer& cmdBuff){
+				vkCmdBindPipeline(cmdBuff.getHandle(), VK_PIPELINE_BIND_POINT_RAY_TRACING_NV, m_pipeline);
+			}
+
+			void RayTracingPipeline::bindDescriptorSet( Framework::CommandBuffer& cmdBuffer, const  Framework::DescriptorSet& descriptorSet){
+				std::vector<VkDescriptorSet> descriptorSets = { descriptorSet.getHandle() };
+				vkCmdBindDescriptorSets(cmdBuffer.getHandle(), VK_PIPELINE_BIND_POINT_RAY_TRACING_NV, m_pipelineLayout, 0,
+							static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(),
+							0, {});
+			}
 
 			void RayTracingPipeline::setMaxRecursion(uint16_t recursion) {
 				m_maxRecursion = recursion;

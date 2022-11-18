@@ -183,14 +183,14 @@ namespace LavaCake {
       m_pipeline->setFragmentModule(*m_fragmentShader);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
 
-      VkPushConstantRange constantInfo = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant->size()};
-      m_pipeline->setPushContantInfo({ constantInfo });
+      m_pushConstantRange = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant->size()};
+      m_pipeline->setPushContantInfo({ m_pushConstantRange });
 
-      m_pipeline->setVertices({ {m_vertexBuffer, {{m_pushConstant, constantInfo}}} });
 
       m_descritporSet = std::make_shared< DescriptorSet >();
       m_descritporSet->addTextureBuffer(*m_fontBuffer, VK_SHADER_STAGE_FRAGMENT_BIT, 0);
-      m_pipeline->setDescriptorSet(m_descritporSet);
+      m_descritporSet->compile();
+      m_pipeline->setDescriptorLayout(m_descritporSet->getLayout());
       m_pipeline->setCullMode(VK_CULL_MODE_NONE);
       m_pipeline->setAlphaBlending(true);
 
@@ -231,9 +231,9 @@ namespace LavaCake {
 
       if (draw_data->CmdListsCount != 0) {
         m_vertexBuffer = std::make_shared<Framework::VertexBuffer>(queue, cmdBuff, std::vector<std::shared_ptr<Geometry::Mesh_t>>( { mesh }));
-        VkPushConstantRange constantInfo = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant->size()};
-        m_pipeline->setVertices({ {m_vertexBuffer, {{m_pushConstant, constantInfo}}} });
-
+        m_pushConstantRange = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant->size()};
+        //m_pipeline->setVertices({ {m_vertexBuffer, {{m_pushConstant, constantInfo}}} });
+        m_pipeline->setPushContantInfo({m_pushConstantRange});
         vec2f scale = vec2f({ 2.0f / draw_data->DisplaySize.x , 2.0f / draw_data->DisplaySize.y });
         vec2f translate = vec2f({ -1.0f - draw_data->DisplayPos.x * scale[0] , -1.0f - draw_data->DisplayPos.y * scale[1] });
         m_pushConstant->setVariable("uScale", scale);
@@ -259,16 +259,15 @@ namespace LavaCake {
       m_pipeline->setFragmentModule(*m_fragmentShader);
       m_pipeline->setVerticesInfo(m_vertexBuffer->getBindingDescriptions(), m_vertexBuffer->getAttributeDescriptions(), m_vertexBuffer->primitiveTopology());
 
-      m_pipeline->setDescriptorSet(m_descritporSet);
+      m_pipeline->setDescriptorLayout(m_descritporSet->getLayout());
       m_pipeline->setCullMode(VK_CULL_MODE_NONE);
       m_pipeline->setAlphaBlending(true);
 
 
-      VkPushConstantRange constantInfo = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant->size()};
-      m_pipeline->setPushContantInfo({ constantInfo });
+      m_pushConstantRange = {VK_SHADER_STAGE_VERTEX_BIT, 0, m_pushConstant->size()};
+      m_pipeline->setPushContantInfo({ m_pushConstantRange });
 
 
-      m_pipeline->setVertices({ { m_vertexBuffer, { {m_pushConstant, constantInfo} } } });
     }
 
 

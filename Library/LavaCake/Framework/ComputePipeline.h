@@ -31,6 +31,10 @@ namespace LavaCake {
       void compile();
 
 
+      void bindPipeline(CommandBuffer& cmdBuff) override;
+
+      void bindDescriptorSet(CommandBuffer& cmdBuffer, const DescriptorSet& descriptorSet) override;
+
       /**
       \brief Register the execution of the pipeline in  a command buffer
       \param cmdBuff the command buffer in witch the compute pipieline will be registered

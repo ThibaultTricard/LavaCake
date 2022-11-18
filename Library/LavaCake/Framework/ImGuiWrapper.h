@@ -33,6 +33,19 @@ namespace LavaCake {
        */
       void prepareGui(const Queue& queue, CommandBuffer& cmdBuff);
 
+
+      void drawGui(CommandBuffer& cmdBuff){
+        m_pipeline->bindPipeline(cmdBuff);
+        m_pipeline->bindDescriptorSet(cmdBuff,*m_descritporSet);
+
+        bindVertexBuffer(cmdBuff, *m_vertexBuffer->getVertexBuffer());
+        bindIndexBuffer(cmdBuff, *m_vertexBuffer->getIndexBuffer());
+
+        m_pushConstant->push(cmdBuff, m_pipeline->getPipelineLayout(), m_pushConstantRange);
+
+        drawIndexed(cmdBuff, m_vertexBuffer->getIndicesNumber());
+      };
+
       /**
        \brief resize the gui
        \param windowSize: the new size of the window
@@ -55,6 +68,7 @@ namespace LavaCake {
 
       std::shared_ptr < GraphicPipeline >    m_pipeline;
       std::shared_ptr < PushConstant >       m_pushConstant;
+      VkPushConstantRange                    m_pushConstantRange;
       std::shared_ptr < VertexBuffer >       m_vertexBuffer;
       std::shared_ptr < Image >              m_fontBuffer;
 

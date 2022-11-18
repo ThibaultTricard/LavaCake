@@ -6,8 +6,7 @@ namespace LavaCake {
     void ComputePipeline::compile() {
       Device* d = Device::getDevice();
       VkDevice logical = d->getLogicalDevice();
-      generateDescriptorLayout();
-      if (!CreatePipelineLayout(logical, { m_descriptorSet->getLayout() }, {}, m_pipelineLayout)) {
+      if (!CreatePipelineLayout(logical, { m_descriptorSetLayout }, {}, m_pipelineLayout)) {
         ErrorCheck::setError("Can't create compute pipeline layout");
       }
 
@@ -35,18 +34,18 @@ namespace LavaCake {
       m_computeModule = module.getStageParameter();
     }
 
-    void ComputePipeline::compute(CommandBuffer& buffer, uint32_t dimX, uint32_t dimY, uint32_t dimZ) {
-
-      if (!m_descriptorSet->isEmpty()) {
-        vkCmdBindDescriptorSets(buffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, m_pipelineLayout, 0,
-          static_cast<uint32_t>(1), &m_descriptorSet->getHandle(),
+    void ComputePipeline::bindDescriptorSet(CommandBuffer& cmdBuffer, const DescriptorSet& descriptorSet){
+      vkCmdBindDescriptorSets(cmdBuffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, m_pipelineLayout, 0,
+          static_cast<uint32_t>(1), &descriptorSet.getHandle(),
           0, {});
-      }
+    }
 
-      vkCmdBindPipeline(buffer.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, m_pipeline);
+    void ComputePipeline::bindPipeline(CommandBuffer& cmdBuff){
+      vkCmdBindPipeline(cmdBuff.getHandle(), VK_PIPELINE_BIND_POINT_COMPUTE, m_pipeline);
+    }
 
-      vkCmdDispatch(buffer.getHandle(), dimX, dimY, dimZ);
-
+    void ComputePipeline::compute(CommandBuffer& cmdBuff, uint32_t dimX, uint32_t dimY, uint32_t dimZ) {
+      vkCmdDispatch(cmdBuff.getHandle(), dimX, dimY, dimZ);
     }
 
 

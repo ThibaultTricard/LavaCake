@@ -56,12 +56,5 @@ namespace LavaCake {
       return false;
     }
 
-    void Pipeline::generateDescriptorLayout() {
-      if (!m_descriptorSet) {
-        m_descriptorSet = std::make_shared < DescriptorSet >();
-        ErrorCheck::setError("No Descripor was provided for this pipeline, a default one will be used instead", 1);
-      }
-      m_descriptorSet->generateDescriptorLayout();
-    }
   }
 }

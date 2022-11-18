@@ -171,7 +171,6 @@ namespace LavaCake {
         }
         params.InputAttachments = inputAttachments;
 
-
       }
 
       m_subpassParameters.push_back(params);
@@ -190,13 +189,14 @@ namespace LavaCake {
     }
 
 
-    void RenderPass::addSubPass(const SubPass& p, SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
-      for (size_t i = 0; i < p.size(); i++) {
-        p[i]->setSubpassNumber(static_cast<uint32_t>(m_subpass.size()));
-      }
-      m_subpass.push_back(p);
+    uint32_t RenderPass::addSubPass(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
+      //for (size_t i = 0; i < p.size(); i++) {
+      //  p[i]->setSubpassNumber(static_cast<uint32_t>(m_subpass.size()));
+      //}
+      //m_subpass.push_back(p);
 
       addAttatchments(AttachementDescription, input_number);
+      return 0;
     }
 
     void RenderPass::compile() {
@@ -207,13 +207,13 @@ namespace LavaCake {
         ErrorCheck::setError("Can't compile RenderPass");
       }
 
-      for (uint32_t i = 0; i < m_subpass.size(); i++) {
+      /*for (uint32_t i = 0; i < m_subpass.size(); i++) {
         for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
           m_subpass[i][j]->compile(m_renderPass, (uint16_t)m_subpassParameters[i].ColorAttachments.size());
         }
-      }
+      }*/
 
-      std::vector<std::shared_ptr<Image>> tempInputAttachements = std::vector<std::shared_ptr<Image>>(m_attachmentype.size());
+      /*std::vector<std::shared_ptr<Image>> tempInputAttachements = std::vector<std::shared_ptr<Image>>(m_attachmentype.size());
 
       for (size_t i = 0; i < m_subpassAttachements.size(); i++) {
         tempInputAttachements[i] = nullptr;
@@ -241,12 +241,10 @@ namespace LavaCake {
         if (tempInputAttachements[i] != nullptr) {
           m_inputAttachements.push_back(tempInputAttachements[i]);
         }
-      }
+      }*/
 
     }
-
-    void RenderPass::draw(CommandBuffer& commandBuffer, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const& clear_values) {
-
+    void RenderPass::begin(CommandBuffer& cmdBuff, FrameBuffer& frameBuffer, vec2u viewportMin, vec2u viewportMax, std::vector<VkClearValue> const& clear_values){
       VkRenderPassBeginInfo renderPassBeginInfo = {
         VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,																																														 // VkStructureType        sType
         nullptr,																																																														 // const void           * pNext
@@ -257,21 +255,16 @@ namespace LavaCake {
         clear_values.data()																																																									 // const VkClearValue   * pClearValues
       };
 
-      vkCmdBeginRenderPass(commandBuffer.getHandle(), &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-      for (uint32_t i = 0; i < m_subpass.size(); i++) {
-
-        if (i > 0) {
-          vkCmdNextSubpass(commandBuffer.getHandle(), VK_SUBPASS_CONTENTS_INLINE);
-        }
-
-        for (uint32_t j = 0; j < m_subpass[i].size(); j++) {
-          m_subpass[i][j]->draw(commandBuffer);
-        }
-      }
-
-      vkCmdEndRenderPass(commandBuffer.getHandle());
+      vkCmdBeginRenderPass(cmdBuff.getHandle(), &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+    }
+    
+    void RenderPass::nextSubPass(CommandBuffer& cmdBuff){
+      vkCmdNextSubpass(cmdBuff.getHandle(), VK_SUBPASS_CONTENTS_INLINE);
     }
 
+    void RenderPass::end(CommandBuffer& cmdBuff){
+      vkCmdEndRenderPass(cmdBuff.getHandle());
+    }
 
     const VkRenderPass& RenderPass::getHandle() const {
       return m_renderPass;

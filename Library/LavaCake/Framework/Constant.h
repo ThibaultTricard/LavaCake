@@ -7,6 +7,7 @@
 #include "ErrorCheck.h"
 #include "Device.h"
 #include "ByteDictionary.h"
+#include "CommandBuffer.h"
 
 namespace LavaCake {
   namespace Framework {
@@ -76,7 +77,7 @@ namespace LavaCake {
         m_variables.setVariableRange(name, std::span{ value });
       }
 
-      void push(VkCommandBuffer buffer, VkPipelineLayout layout, VkPushConstantRange range);
+      void push(const CommandBuffer& buffer, const VkPipelineLayout& layout, const VkPushConstantRange& range);
 
       uint32_t size();
 
