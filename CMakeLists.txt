@@ -14,7 +14,7 @@ endif()
 # Environment setup                                           #
 ###############################################################
 
-find_package(Vulkan REQUIRED)
+find_package(Vulkan)
 
 if( CMAKE_BUILD_TYPE STREQUAL "" )
 	set( CMAKE_BUILD_TYPE "debug" )

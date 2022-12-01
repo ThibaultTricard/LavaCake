@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 #include "AllHeaders.h"
-#include "Math/basics.h"
+#include "../Math/basics.h"
 
 namespace LavaCake {
   namespace Helpers {

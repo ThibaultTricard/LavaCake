@@ -186,7 +186,7 @@ namespace LavaCake {
         int nbGraphicQueue,
         SurfaceInitialisator& window,
         VkPhysicalDeviceFeatures* desiredDeviceFeatures = nullptr){
-        initDevices(nbComputeQueue, nbGraphicQueue, window, false);
+        initDevices(nbComputeQueue, nbGraphicQueue, window, false, desiredDeviceFeatures);
       }
 
       /**
@@ -201,7 +201,7 @@ namespace LavaCake {
         int nbGraphicQueue,
         VkPhysicalDeviceFeatures* desiredDeviceFeatures = nullptr){
         HeadlessInitialisator headless;
-        initDevices(nbComputeQueue, nbGraphicQueue, headless, true);
+        initDevices(nbComputeQueue, nbGraphicQueue, headless, true, desiredDeviceFeatures);
       }
 
       /**
