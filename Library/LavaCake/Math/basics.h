@@ -28,6 +28,10 @@ namespace LavaCake {
   using mat3 = std::array<float, 9>;
   using mat4 = std::array<float, 16>;
 
+  using mat2d = std::array<double, 4>;
+  using mat3d = std::array<double, 9>;
+  using mat4d = std::array<double, 16>;
+
 
   template<typename T, unsigned long N>
   std::array<T, N> operator*(const std::array<T, N>& b, const T a) {
@@ -131,6 +135,12 @@ namespace LavaCake {
   vec3f operator* (vec3f const& left,
                    mat4 const& right) ;
 
+  vec2f operator* (vec2f const& left,
+                   mat2 const& right) ;
+  
+  vec2d operator* (vec2d const& left,
+                   mat2d const& right);
+
   vec4f operator* (mat4 const& left,
                    vec4f const& right);
 
@@ -140,9 +150,23 @@ namespace LavaCake {
   mat4 operator* (mat4 const& left,
                   mat4 const& right) ;
 
+  mat2 operator* (mat2 const& left,
+                  mat2 const& right) ;
+
+  mat2d operator* (mat2d const& left,
+                   mat2d const& right) ;
+
+  mat2 inverse(const mat2& m) ;
+
   mat4 inverse(mat4& m) ;
 
   mat4 inverse(const mat4& m) ;
+
+  mat2d inverse(const mat2d& m) ;
+
+  mat2d transpose(const mat2d& m);
+
+  mat2 transpose(const mat2& m);
 
   mat4 Identity() ;
 

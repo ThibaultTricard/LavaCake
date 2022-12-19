@@ -59,6 +59,24 @@ vec4f operator* (mat4 const& left, vec4f const& right) {
   });
 }
 
+
+vec2f operator* (vec2f const& left,
+                  mat2 const& right) {
+return vec2f({
+  left[0] * right[0] + left[1] * right[1],
+  left[0] * right[2] + left[1] * right[3],
+});
+
+}
+  
+vec2d operator* (vec2d const& left,
+                  mat2d const& right){
+  return vec2d({
+    left[0] * right[0] + left[1] * right[1],
+    left[0] * right[2] + left[1] * right[3],
+  });
+}
+
 bool operator== (vec3f const& left,
                  vec3f const& right) {
   if ((std::abs(left[0] - right[0]) > 0.00001f) ||
@@ -96,6 +114,25 @@ mat4 operator* (mat4 const& left,
   });
 }
 
+
+
+mat2d transpose(const mat2d& m){
+  return mat2d({
+    m[0],
+    m[2],
+    m[1],
+    m[3]
+  });
+}
+
+mat2 transpose(const mat2& m){
+  return mat2({
+    m[0],
+    m[2],
+    m[1],
+    m[3]
+  });
+}
 
 mat4 inverse(mat4& m) {
   float inv[16], det;
@@ -361,6 +398,30 @@ mat4 inverse(const mat4& m) {
   
 }
 
+
+mat2 inverse(const mat2& m){
+  mat2 inv;
+  inv[0] = m[3];
+  inv[1] = -m[1];
+  inv[2] = -m[2];
+  inv[3] = m[0];
+
+  float det = m[0]*m[3] - m[1]*m[2];
+
+  return inv/det;
+}
+
+mat2d inverse(const mat2d& m){
+  mat2d inv;
+  inv[0] = m[3];
+  inv[1] = -m[1];
+  inv[2] = -m[2];
+  inv[3] = m[0];
+
+  double det = m[0]*m[3] - m[1]*m[2];
+
+  return inv/det;
+}
 
 mat4 Identity() {
   mat4 I = mat4({
