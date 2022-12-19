@@ -19,6 +19,17 @@ vec3f cross(vec3f const& left,
     left[0] * right[1] - left[1] * right[0]
   });
 }
+
+vec3d cross(vec3d const& left,
+            vec3d const& right) {
+  return  vec3d({
+    left[1] * right[2] - left[2] * right[1],
+    left[2] * right[0] - left[0] * right[2],
+    left[0] * right[1] - left[1] * right[0]
+  });
+}
+
+
 vec3f Cross(vec3f const& left,
             vec3f const& right) {
   return  cross(left, right);

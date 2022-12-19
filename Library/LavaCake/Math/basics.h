@@ -105,9 +105,9 @@ namespace LavaCake {
 
   template<typename T, unsigned long N>
   std::array<T, N> normalize(std::array<T, N> const vector) {
-    float length = dot(vector,vector);
+    T length = dot(vector,vector);
     if (length >0)
-      return vector/sqrtf(length);
+      return vector/T(sqrt(length));
     return vector;
   }
 
@@ -118,6 +118,9 @@ namespace LavaCake {
 
   vec3f cross(vec3f const& left,
               vec3f const& right) ;
+
+  vec3d cross(vec3d const& left,
+              vec3d const& right) ;
 
   vec3f Cross(vec3f const& left,
               vec3f const& right) ;
