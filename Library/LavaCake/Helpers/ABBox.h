@@ -19,10 +19,10 @@ namespace LavaCake {
        \brief default constructor
       */
       ABBox(){
-        m_min = std::array<T, N>({});
-        m_min.fill((T)(INFINITY));
-        m_max = std::array<T, N>({});
-        m_max.fill((T)(-INFINITY));
+        m_min = vec<T, N>();
+        m_min.data.fill((T)(INFINITY));
+        m_max = vec<T, N>();
+        m_max.data.fill((T)(-INFINITY));
         m_diagDirty = true;
       };
       
@@ -31,7 +31,7 @@ namespace LavaCake {
        \param min the min point of the bounding box
        \param max the max point of the bounding box
        */
-      ABBox(std::array<T,N>& min,std::array<T,N>& max){
+      ABBox(vec<T,N>& min,vec<T,N>& max){
         m_min = min;
         m_max = max;
         m_diagDirty = true;
@@ -42,7 +42,7 @@ namespace LavaCake {
        \param min the min point of the bounding box
        \param max the max point of the bounding box
        */
-      ABBox(const std::array<T,N>& min,const std::array<T,N>& max){
+      ABBox(const vec<T,N>& min,const vec<T,N>& max){
         m_min = min;
         m_max = max;
         m_diagDirty = true;
@@ -52,7 +52,7 @@ namespace LavaCake {
        \brief get the min point of the bounding box
        \return a std array representing the min point of the bouding box
       */
-      std::array<T, N> A(){
+      vec<T, N> A(){
         return m_min;
       }
       
@@ -60,7 +60,7 @@ namespace LavaCake {
        \brief get the max point of the bounding box
        \return a std array representing the max point of the bouding box
        */
-      std::array<T, N> B(){
+      vec<T, N> B(){
         return m_max;
       }
       
@@ -68,7 +68,7 @@ namespace LavaCake {
        \brief compute the bounding box diagonal
        \return a std array representing the diagonal of the bounding box
        */
-      std::array<T, N> diag(){
+      vec<T, N> diag(){
         if (m_diagDirty) {
           m_diag = m_max - m_min;
         }
@@ -96,9 +96,9 @@ namespace LavaCake {
        \brief enlarge the bounding box so the point passed is contained
        \param  point : a N-dimensional point
        */
-      void addPoint(const std::array<T, N>& point) {
-        std::array<T, N> newMin({});
-        std::array<T, N> newMax({});
+      void addPoint(const vec<T, N>& point) {
+        vec<T, N> newMin;
+        vec<T, N> newMax;
         for (uint8_t u = 0; u < N; u++) {
           if (point[u] < m_min[u]) {
             newMin[u] = point[u];
@@ -123,10 +123,10 @@ namespace LavaCake {
     private:
       
       
-      std::array<T,N> m_min;
-      std::array<T,N> m_max;
+      vec<T,N> m_min;
+      vec<T,N> m_max;
 
-      std::array<T, N> m_diag;
+      vec<T, N> m_diag;
       bool             m_diagDirty =true;
       
     };

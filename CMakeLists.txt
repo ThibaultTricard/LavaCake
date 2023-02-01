@@ -15,6 +15,9 @@ endif()
 ###############################################################
 
 find_package(Vulkan)
+message("${Vulkan_INCLUDE_DIRS}")
+message("${Vulkan_VERSION}")
+message("======================")
 
 if( CMAKE_BUILD_TYPE STREQUAL "" )
 	set( CMAKE_BUILD_TYPE "debug" )

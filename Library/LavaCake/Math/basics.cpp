@@ -6,11 +6,6 @@ float Deg2Rad(float value) {
   return value * 0.01745329251994329576923690768489f;
 }
 
-float Dot(vec3f const& left,
-          vec3f const& right) {
-  return dot(left,right);
-}
-
 vec3f cross(vec3f const& left,
             vec3f const& right) {
   return  vec3f({
@@ -30,115 +25,11 @@ vec3d cross(vec3d const& left,
 }
 
 
-vec3f Cross(vec3f const& left,
-            vec3f const& right) {
-  return  cross(left, right);
-}
-
-vec3f Normalize(vec3f const& vector) {
-  return normalize(vector);
-}
-
-
-vec3f operator* (vec3f const& left,
-                 mat4 const& right) {
-  return vec3f({
-    left[0] * right[0] + left[1] * right[1] + left[2] * right[2],
-    left[0] * right[4] + left[1] * right[5] + left[2] * right[6],
-    left[0] * right[8] + left[1] * right[9] + left[2] * right[10]
-  });
-}
-
-
-vec4f operator* (mat4 const& left, vec4f const& right) {
-  return vec4f({ 
-    left[0] * right[0] + left[4] * right[1] + left[8]  * right[2] + left[12] * right[3],
-    left[1] * right[0] + left[5] * right[1] + left[9]  * right[2] + left[13] * right[3],
-    left[2] * right[0] + left[6] * right[1] + left[10] * right[2] + left[14] * right[3],
-    left[3] * right[0] + left[7] * right[1] + left[11] * right[2] + left[15] * right[3] 
-  });
-}
-
-
-vec2f operator* (vec2f const& left,
-                  mat2 const& right) {
-return vec2f({
-  left[0] * right[0] + left[1] * right[1],
-  left[0] * right[2] + left[1] * right[3],
-});
-
-}
-  
-vec2d operator* (vec2d const& left,
-                  mat2d const& right){
-  return vec2d({
-    left[0] * right[0] + left[1] * right[1],
-    left[0] * right[2] + left[1] * right[3],
-  });
-}
-
-bool operator== (vec3f const& left,
-                 vec3f const& right) {
-  if ((std::abs(left[0] - right[0]) > 0.00001f) ||
-      (std::abs(left[1] - right[1]) > 0.00001f) ||
-      (std::abs(left[2] - right[2]) > 0.00001f)) {
-    return false;
-  }
-  else {
-    return true;
-  }
-}
-
-mat4 operator* (mat4 const& left,
-                mat4 const& right) {
-  return mat4({
-    left[0] * right[0] + left[4] * right[1] + left[8] * right[2] + left[12] * right[3],
-    left[1] * right[0] + left[5] * right[1] + left[9] * right[2] + left[13] * right[3],
-    left[2] * right[0] + left[6] * right[1] + left[10] * right[2] + left[14] * right[3],
-    left[3] * right[0] + left[7] * right[1] + left[11] * right[2] + left[15] * right[3],
-    
-    left[0] * right[4] + left[4] * right[5] + left[8] * right[6] + left[12] * right[7],
-    left[1] * right[4] + left[5] * right[5] + left[9] * right[6] + left[13] * right[7],
-    left[2] * right[4] + left[6] * right[5] + left[10] * right[6] + left[14] * right[7],
-    left[3] * right[4] + left[7] * right[5] + left[11] * right[6] + left[15] * right[7],
-    
-    left[0] * right[8] + left[4] * right[9] + left[8] * right[10] + left[12] * right[11],
-    left[1] * right[8] + left[5] * right[9] + left[9] * right[10] + left[13] * right[11],
-    left[2] * right[8] + left[6] * right[9] + left[10] * right[10] + left[14] * right[11],
-    left[3] * right[8] + left[7] * right[9] + left[11] * right[10] + left[15] * right[11],
-    
-    left[0] * right[12] + left[4] * right[13] + left[8] * right[14] + left[12] * right[15],
-    left[1] * right[12] + left[5] * right[13] + left[9] * right[14] + left[13] * right[15],
-    left[2] * right[12] + left[6] * right[13] + left[10] * right[14] + left[14] * right[15],
-    left[3] * right[12] + left[7] * right[13] + left[11] * right[14] + left[15] * right[15]
-  });
-}
-
-
-
-mat2d transpose(const mat2d& m){
-  return mat2d({
-    m[0],
-    m[2],
-    m[1],
-    m[3]
-  });
-}
-
-mat2 transpose(const mat2& m){
-  return mat2({
-    m[0],
-    m[2],
-    m[1],
-    m[3]
-  });
-}
-
-mat4 inverse(mat4& m) {
+/*mat4f inverse(mat4f& m) {
   float inv[16], det;
   int i;
   
-  mat4 invM = mat4();
+  mat4f invM = mat4f();
   
   inv[0] = m[5] * m[10] * m[15] -
   m[5] * m[11] * m[14] -
@@ -266,11 +157,11 @@ mat4 inverse(mat4& m) {
   
 }
 
-mat4 inverse(const mat4& m) {
+mat4f inverse(const mat4f& m) {
   float inv[16], det;
   int i;
   
-  mat4 invM = mat4();
+  mat4f invM = mat4f();
   
   inv[0] = m[5] * m[10] * m[15] -
   m[5] * m[11] * m[14] -
@@ -399,8 +290,8 @@ mat4 inverse(const mat4& m) {
 }
 
 
-mat2 inverse(const mat2& m){
-  mat2 inv;
+mat2f inverse(const mat2f& m){
+  mat2f inv;
   inv[0] = m[3];
   inv[1] = -m[1];
   inv[2] = -m[2];
@@ -421,22 +312,22 @@ mat2d inverse(const mat2d& m){
   double det = m[0]*m[3] - m[1]*m[2];
 
   return inv/det;
-}
+}*/
 
-mat4 Identity() {
-  mat4 I = mat4({
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    0,0,0,1
+mat4f Identity() {
+  mat4f I = mat4f({
+    1.0f,0.0f,0.0f,0.0f,
+    0.0f,1.0f,0.0f,0.0f,
+    0.0f,0.0f,1.0f,0.0f,
+    0.0f,0.0f,0.0f,1.0f
   });
   return I;
 }
 
-mat4 PrepareTranslationMatrix(float x,
+mat4f PrepareTranslationMatrix(float x,
                               float y,
                               float z) {
-  mat4 translation_matrix = mat4({
+  mat4f translation_matrix = mat4f({
     1.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f, 0.0f,
     0.0f, 0.0f, 1.0f, 0.0f,
@@ -445,7 +336,7 @@ mat4 PrepareTranslationMatrix(float x,
   return translation_matrix;
 }
 
-mat4 PrepareRotationMatrix(float           angle,
+mat4f PrepareRotationMatrix(float           angle,
                            vec3f const & axis,
                            float           normalize_axis) {
   float x;
@@ -453,7 +344,7 @@ mat4 PrepareRotationMatrix(float           angle,
   float z;
   
   if (normalize_axis) {
-    vec3f normalized = Normalize(axis);
+    vec3f normalized = normalize(axis);
     x = normalized[0];
     y = normalized[1];
     z = normalized[2];
@@ -468,7 +359,7 @@ mat4 PrepareRotationMatrix(float           angle,
   const float _1_c = 1.0f - c;
   const float s = sin(Deg2Rad(angle));
   
-  mat4 rotation_matrix = mat4({
+  mat4f rotation_matrix = mat4f({
     x * x * _1_c + c,
     y * x * _1_c - z * s,
     z * x * _1_c + y * s,
@@ -492,10 +383,10 @@ mat4 PrepareRotationMatrix(float           angle,
   return rotation_matrix;
 }
 
-mat4 PrepareScalingMatrix(float x,
+mat4f PrepareScalingMatrix(float x,
                           float y,
                           float z) {
-  mat4 scaling_matrix = mat4({
+  mat4f scaling_matrix = mat4f({
     x, 0.0f, 0.0f, 0.0f,
     0.0f,    y, 0.0f, 0.0f,
     0.0f, 0.0f,    z, 0.0f,
@@ -504,13 +395,13 @@ mat4 PrepareScalingMatrix(float x,
   return scaling_matrix;
 }
 
-mat4 PreparePerspectiveProjectionMatrix(float aspect_ratio,
+mat4f PreparePerspectiveProjectionMatrix(float aspect_ratio,
                                         float field_of_view,
                                         float near_plane,
                                         float far_plane) {
   float f = 1.0f / tan(Deg2Rad(0.5f * field_of_view));
   
-  mat4 perspective_projection_matrix = mat4({
+  mat4f perspective_projection_matrix = mat4f({
     f / aspect_ratio,
     0.0f,
     0.0f,
@@ -534,13 +425,13 @@ mat4 PreparePerspectiveProjectionMatrix(float aspect_ratio,
   return perspective_projection_matrix;
 }
 
-mat4 PrepareOrthographicProjectionMatrix(float left_plane,
+mat4f PrepareOrthographicProjectionMatrix(float left_plane,
                                          float right_plane,
                                          float bottom_plane,
                                          float top_plane,
                                          float near_plane,
                                          float far_plane) {
-  mat4 orthographic_projection_matrix = mat4({
+  mat4f orthographic_projection_matrix = mat4f({
     2.0f / (right_plane - left_plane),
     0.0f,
     0.0f,

@@ -4,121 +4,315 @@
 #include <array>
 #include <tuple>
 
+
+
+
+
+
 namespace LavaCake {
 
-  using vec2f = std::array<float, 2>;
-  using vec2d = std::array<double, 2>;
-  using vec2i = std::array<int, 2>;
-  using vec2u = std::array<unsigned int, 2>;
-  using vec2b = std::array<bool, 2>;
+  template<typename T, unsigned long size>
+  struct vec{
+    std::array<T, size> data;
 
-  using vec3f = std::array<float, 3>;
-  using vec3d = std::array<double, 3>;
-  using vec3i = std::array<int, 3>;
-  using vec3u = std::array<unsigned int, 3>;
-  using vec3b = std::array<bool, 3>;
-
-  using vec4f = std::array<float, 4>;
-  using vec4d = std::array<double, 4>;
-  using vec4i = std::array<int, 4>;
-  using vec4u = std::array<unsigned int, 4>;
-  using vec4b = std::array<bool, 4>;
-
-  using mat2 = std::array<float, 4>;
-  using mat3 = std::array<float, 9>;
-  using mat4 = std::array<float, 16>;
-
-  using mat2d = std::array<double, 4>;
-  using mat3d = std::array<double, 9>;
-  using mat4d = std::array<double, 16>;
-
-
-  template<typename T, unsigned long N>
-  std::array<T, N> operator*(const std::array<T, N>& b, const T a) {
-    std::array<T, N> d = std::array<T, N>();
-    for (unsigned char i = 0; i < N; i++) {
-      d[i] = b[i] * a;
+    vec(){
+      data.fill(T(0));
     }
-    return std::array<T, N>(d);
-  }
 
-  template<typename T, unsigned long N>
-  std::array<T, N> operator*(const T a, const std::array<T, N>& b) {
-    std::array<T, N> d = std::array<T, N>();
-    for (unsigned char i = 0; i < N; i++) {
-      d[i] = b[i] * a;
+    vec(const std::array<T, size>& v){
+      data = std::array<T, size>(v);
     }
-    return std::array<T, N>(d);
-  }
 
-  template<typename T, unsigned long N>
-  std::array<T, N> operator*(const std::array<T, N>& a, const std::array<T, N>& b) {
-    std::array<T, N> d = std::array<T, N>();
-    for (unsigned char i = 0; i < N; i++) {
-      d[i] = b[i] * a[i];
+    vec(const T v[size]){
+      for (size_t i = 0; i < size; i++)
+      {
+        data[i] = v[i];
+      }
     }
-    return std::array<T, N>(d);
-  }
 
-  template<typename T, unsigned long N>
-  std::array<T, N> operator/(const std::array<T, N>& a, const std::array<T, N>& b) {
-    std::array<T, N> d = std::array<T, N>();
-    for (unsigned char i = 0; i < N; i++) {
-      d[i] = a[i] / b[i];
+    const T& operator[](const int index) const{
+      return data[index];
     }
-    return std::array<T, N>(d);
-  }
 
-  template<typename T, unsigned long N>
-  std::array<T, N> operator/(const std::array<T, N>& b, const T a) {
-    std::array<T, N> d = std::array<T, N>();
-    for (unsigned char i = 0; i < N; i++) {
-      d[i] = b[i] / a;
+    T& operator[](const int index){
+      return data[index];
     }
-    return std::array<T, N>(d);
-  }
 
-
-  template<typename T, unsigned long N>
-  std::array<T, N> operator-(const std::array<T, N> a, const std::array<T, N> b) {
-    std::array<T, N> d = std::array<T, N>();
-    for (unsigned char i = 0; i < N; i++) {
-      d[i] = a[i] - b[i];
+    template<unsigned long N>
+    vec<T,N> operator[](const std::array<int,N>& indices){
+      vec<T,N> res;
+      for(unsigned i =0; i < N; i++){
+        res[i] = data[indices[i]];
+      }
+      return res;
     }
-    return std::array<T, N>(d);
-  }
 
-  template<typename T, unsigned long N>
-  std::array<T, N> operator+(const std::array<T, N> a, const std::array<T, N> b) {
-    std::array<T, N> d = std::array<T, N>();
-    for (unsigned char i = 0; i < N; i++) {
-      d[i] = a[i] + b[i];
+    template<unsigned long N>
+    vec<T,N> operator[](const vec<int,N>& indices){
+      vec<T,N> res;
+      for(unsigned i =0; i < N; i++){
+        res[i] = data[indices[i]];
+      }
+      return res;
     }
-    return std::array<T, N>(d);
-  }
 
-  template<typename T, unsigned long N>
-  T dot(std::array<T, N> const & left,
-        std::array<T, N> const & right ){
-    T sum = static_cast<T>(0);
-    for(unsigned long u = 0; u< N ; u++){
-      sum +=  left[u] * right[u];
-    }
-    return sum;
+    
   };
 
-  template<typename T, unsigned long N>
-  std::array<T, N> normalize(std::array<T, N> const vector) {
-    T length = dot(vector,vector);
-    if (length >0)
-      return vector/T(sqrt(length));
-    return vector;
+  template<typename T, unsigned long ColumnSize, unsigned long RowSize>
+  struct mat{
+    std::array<vec<T, ColumnSize>,RowSize> data;
+    
+
+    mat(){
+      for(int j = 0; j <RowSize; j ++){
+        data[j].data.fill(T(0));
+      }
+    }
+
+    mat(const std::array<vec<T, ColumnSize>,RowSize>& m){
+      data = std::array<vec<T, ColumnSize>,RowSize>(m);
+    }
+
+    mat(const std::array<T,ColumnSize*RowSize> m){
+      for(int i = 0; i <ColumnSize; i ++){
+        for(int j = 0; j <RowSize; j ++){
+          data[j][i] = m[j*ColumnSize+i];
+        };
+      };
+    }
+
+    mat(const T m[ColumnSize*RowSize]){
+      for(int i = 0; i <ColumnSize; i ++){
+        for(int j = 0; j <RowSize; j ++){
+          data[j][i] = m[j*ColumnSize+i];
+        };
+      };
+    }
+
+    const vec<T, ColumnSize>& operator[](int const index) const{
+      return data[index];
+    }
+
+    vec<T, ColumnSize>& operator[](int const index){
+      return data[index];
+    }
+
+  };
+  
+  using mat2f = mat<float,2,2>;
+  using mat3f = mat<float,3,3>;
+  using mat4f = mat<float,4,4>;
+
+  using mat2d = mat<double,2,2>;
+  using mat3d = mat<double,3,3>;
+  using mat4d = mat<double,4,4>;
+  
+
+  using vec2f = vec<float, 2>;
+  using vec2d = vec<double, 2>;
+  using vec2i = vec<int, 2>;
+  using vec2u = vec<unsigned int, 2>;
+  using vec2b = vec<bool, 2>;
+
+  using vec3f = vec<float, 3>;
+  using vec3d = vec<double, 3>;
+  using vec3i = vec<int, 3>;
+  using vec3u = vec<unsigned int, 3>;
+  using vec3b = vec<bool, 3>;
+
+  using vec4f = vec<float, 4>;
+  using vec4d = vec<double, 4>;
+  using vec4i = vec<int, 4>;
+  using vec4u = vec<unsigned int, 4>;
+  using vec4b = vec<bool, 4>;
+
+}
+  
+
+template<typename T, unsigned long N,unsigned long M>
+LavaCake::mat<T, M,N> transpose (const LavaCake::mat<T, N,M>& matrix){
+  LavaCake::mat<T, M,N> res;
+  for(unsigned long i = 0; i < N; i++){
+    for(unsigned long j = 0; j < M; j++){
+      res[i][j] = matrix[j][i];
+    }
   }
+  return res;
+}
+
+template<typename T, unsigned long N>
+LavaCake::vec<T, N> operator*(const LavaCake::vec<T, N>& b, const T a) {
+  LavaCake::vec<T, N> d = LavaCake::vec<T, N>();
+  for (unsigned char i = 0; i < N; i++) {
+    d[i] = b[i] * a;
+  }
+  return LavaCake::vec<T, N>(d);
+}
+
+template<typename T, unsigned long N>
+LavaCake::vec<T, N> operator*(const T a, const LavaCake::vec<T, N>& b) {
+  LavaCake::vec<T, N> d = LavaCake::vec<T, N>();
+  for (unsigned char i = 0; i < N; i++) {
+    d[i] = b[i] * a;
+  }
+  return LavaCake::vec<T, N>(d);
+}
+
+template<typename T, unsigned long N>
+LavaCake::vec<T, N> operator*(const LavaCake::vec<T, N>& a, const LavaCake::vec<T, N>& b) {
+  LavaCake::vec<T, N> d = LavaCake::vec<T, N>();
+  for (unsigned char i = 0; i < N; i++) {
+    d[i] = b[i] * a[i];
+  }
+  return LavaCake::vec<T, N>(d);
+}
+
+template<typename T, unsigned long N>
+LavaCake::vec<T, N> operator/(const LavaCake::vec<T, N>& a, const LavaCake::vec<T, N>& b) {
+  LavaCake::vec<T, N> d = LavaCake::vec<T, N>();
+  for (unsigned char i = 0; i < N; i++) {
+    d[i] = a[i] / b[i];
+  }
+  return LavaCake::vec<T, N>(d);
+}
+
+template<typename T, unsigned long N>
+LavaCake::vec<T, N> operator/(const LavaCake::vec<T, N>& b, const T a) {
+  LavaCake::vec<T, N> d = LavaCake::vec<T, N>();
+  for (unsigned char i = 0; i < N; i++) {
+    d[i] = b[i] / a;
+  }
+  return LavaCake::vec<T, N>(d);
+}
+
+
+template<typename T, unsigned long N>
+LavaCake::vec<T, N> operator-(const LavaCake::vec<T, N> a, const LavaCake::vec<T, N> b) {
+  LavaCake::vec<T, N> d = LavaCake::vec<T, N>();
+  for (unsigned char i = 0; i < N; i++) {
+    d[i] = a[i] - b[i];
+  }
+  return LavaCake::vec<T, N>(d);
+}
+
+template<typename T, unsigned long N>
+LavaCake::vec<T, N> operator+(const LavaCake::vec<T, N> a, const LavaCake::vec<T, N> b) {
+  LavaCake::vec<T, N> d = LavaCake::vec<T, N>();
+  for (unsigned char i = 0; i < N; i++) {
+    d[i] = a[i] + b[i];
+  }
+  return LavaCake::vec<T, N>(d);
+}
+
+template<typename T, unsigned long N>
+T dot(LavaCake::vec<T, N> const & left,
+      LavaCake::vec<T, N> const & right ){
+  T sum = static_cast<T>(0);
+  for(unsigned long u = 0; u< N ; u++){
+    sum +=  left[u] * right[u];
+  }
+  return sum;
+};
+
+template<typename T, unsigned long N>
+LavaCake::vec<T, N> normalize(LavaCake::vec<T, N> const vector) {
+  T length = dot(vector,vector);
+  if (length >0)
+    return vector/T(sqrt(length));
+  return vector;
+}
+
+
+template<typename T, unsigned long N1,unsigned long M1N2, unsigned long M2>
+LavaCake::mat<T, N1,M2> operator*(LavaCake::mat<T, N1,M1N2> left, LavaCake::mat<T, M1N2,M2> right){
+  LavaCake::mat<T, N1,M2> res;
+  for(unsigned long i = 0; i < N1; i++){
+    for(unsigned long j = 0; j < M2; j++){
+      for(unsigned long k = 0; k < M1N2; k++){
+        res[j][i] += left[k][i] * right[j][k];
+      }
+    }
+  }
+  return res;
+}
+
+template<typename T, unsigned long N1,unsigned long vecSize>
+LavaCake::vec<T, vecSize> operator*(
+  const LavaCake::mat<T, N1,vecSize>& left,
+  const LavaCake::vec<T, vecSize>& right){
+  auto tmp =left * LavaCake::mat<T,vecSize,1>(right.data);
+
+  
+
+  return tmp[0];
+}
+
+
+
+template<typename T, unsigned long N,unsigned long M>
+LavaCake::mat<T, N,M> operator-(const LavaCake::mat<T, N,M>& matrix){
+  LavaCake::mat<T, N,M> res;
+  for(unsigned long i = 0; i < N; i++){
+    for(unsigned long j = 0; j < M; j++){
+      res[j][i] = -matrix[j][i];
+    }
+  }
+  return res;
+}
+
+template<typename T, unsigned long N,unsigned long M>
+LavaCake::mat<T, N,M> operator-(const LavaCake::mat<T, N,M>& left, const LavaCake::mat<T, N,M>& right){
+  LavaCake::mat<T, N,M> res;
+  for(unsigned long i = 0; i < N; i++){
+    for(unsigned long j = 0; j < M; j++){
+      res[j][i] = left[j][i]-right[j][i];
+    }
+  }
+  return res;
+}
+
+template<typename T, unsigned long N,unsigned long M>
+LavaCake::mat<T, N,M> operator+(const LavaCake::mat<T, N,M>& left, const LavaCake::mat<T, N,M>& right){
+  LavaCake::mat<T, N,M> res;
+  for(unsigned long i = 0; i < N; i++){
+    for(unsigned long j = 0; j < M; j++){
+      res[j][i] = left[j][i]+right[j][i];
+    }
+  }
+  return res;
+}
+ 
+
+template<typename T, unsigned long N,unsigned long M>
+LavaCake::mat<T, N,M> operator*(const T& left, const LavaCake::mat<T, N,M>& right){
+  LavaCake::mat<T, N,M> res;
+  for(unsigned long i = 0; i < N; i++){
+    for(unsigned long j = 0; j < M; j++){
+      res[j][i] = left*right[j][i];
+    }
+  }
+  return res;
+}
+
+template<typename T, unsigned long N,unsigned long M>
+LavaCake::mat<T, N,M> operator*(const  LavaCake::mat<T, N,M>& left, const T& right){
+  LavaCake::mat<T, N,M> res;
+  for(unsigned long i = 0; i < N; i++){
+    for(unsigned long j = 0; j < M; j++){
+      res[j][i] = left[j][i]*right;
+    }
+  }
+  return res;
+}
+
+namespace LavaCake {
+  
+
+  
 
   float Deg2Rad(float value);
 
-  float Dot(vec3f const& left,
-            vec3f const& right) ;
 
   vec3f cross(vec3f const& left,
               vec3f const& right) ;
@@ -126,67 +320,37 @@ namespace LavaCake {
   vec3d cross(vec3d const& left,
               vec3d const& right) ;
 
-  vec3f Cross(vec3f const& left,
-              vec3f const& right) ;
-
-  vec3f Normalize(vec3f const& vector) ;
-
-
-  vec3f operator* (vec3f const& left,
-                   mat4 const& right) ;
-
-  vec2f operator* (vec2f const& left,
-                   mat2 const& right) ;
-  
-  vec2d operator* (vec2d const& left,
-                   mat2d const& right);
-
-  vec4f operator* (mat4 const& left,
-                   vec4f const& right);
-
-  bool operator== (vec3f const& left,
+  /*bool operator== (vec3f const& left,
                    vec3f const& right) ;
 
-  mat4 operator* (mat4 const& left,
-                  mat4 const& right) ;
+  mat2f inverse(const mat2f& m) ;
 
-  mat2 operator* (mat2 const& left,
-                  mat2 const& right) ;
+  mat4f inverse(mat4f& m) ;
 
-  mat2d operator* (mat2d const& left,
-                   mat2d const& right) ;
+  mat4f inverse(const mat4f& m) ;
 
-  mat2 inverse(const mat2& m) ;
+  mat2d inverse(const mat2d& m) ;*/
 
-  mat4 inverse(mat4& m) ;
 
-  mat4 inverse(const mat4& m) ;
+  mat4f Identity() ;
 
-  mat2d inverse(const mat2d& m) ;
-
-  mat2d transpose(const mat2d& m);
-
-  mat2 transpose(const mat2& m);
-
-  mat4 Identity() ;
-
-  mat4 PrepareTranslationMatrix(float x,
+  mat4f PrepareTranslationMatrix(float x,
                                 float y,
                                 float z) ;
-  mat4 PrepareRotationMatrix(float           angle,
+  mat4f PrepareRotationMatrix(float           angle,
                              vec3f const & axis,
                              float           normalize_axis = 0.0f) ;
 
-  mat4 PrepareScalingMatrix(float x,
+  mat4f PrepareScalingMatrix(float x,
                             float y,
                             float z) ;
 
-  mat4 PreparePerspectiveProjectionMatrix(float aspect_ratio,
+  mat4f PreparePerspectiveProjectionMatrix(float aspect_ratio,
                                           float field_of_view,
                                           float near_plane,
                                           float far_plane) ;
 
-  mat4 PrepareOrthographicProjectionMatrix(float left_plane,
+  mat4f PrepareOrthographicProjectionMatrix(float left_plane,
                                            float right_plane,
                                            float bottom_plane,
                                            float top_plane,
