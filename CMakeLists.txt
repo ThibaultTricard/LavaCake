@@ -287,6 +287,7 @@ set(LIBRARY_MATH_DIR "Library/LavaCake/Math")
 
 set(LIBRARY_MATH_HEADER
   ${LIBRARY_MATH_DIR}/basics.h
+  ${LIBRARY_MATH_DIR}/quaternion.h
   )
   
 set(LIBRARY_MATH_SOURCE

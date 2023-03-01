@@ -197,6 +197,15 @@ LavaCake::vec<T, N> operator-(const LavaCake::vec<T, N> a, const LavaCake::vec<T
 }
 
 template<typename T, unsigned long N>
+LavaCake::vec<T, N> operator-(const LavaCake::vec<T, N> v) {
+  LavaCake::vec<T, N> res = LavaCake::vec<T, N>();
+  for (unsigned char i = 0; i < N; i++) {
+    res[i] = -v[i];
+  }
+  return LavaCake::vec<T, N>(res);
+}
+
+template<typename T, unsigned long N>
 LavaCake::vec<T, N> operator+(const LavaCake::vec<T, N> a, const LavaCake::vec<T, N> b) {
   LavaCake::vec<T, N> d = LavaCake::vec<T, N>();
   for (unsigned char i = 0; i < N; i++) {
