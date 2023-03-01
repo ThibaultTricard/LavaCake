@@ -88,10 +88,14 @@ namespace LavaCake {
         VK_MAKE_VERSION(1, 2, 0)                          // uint32_t                  apiVersion
       };
 
+      VkInstanceCreateFlags flag = 0;
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+      flag = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif
       VkInstanceCreateInfo instance_create_info = {
         VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,             // VkStructureType           sType
         nullptr,                                            // const void              * pNext
-        0,                                                  // VkInstanceCreateFlags     flags
+        flag,                                               // VkInstanceCreateFlags     flags
         &application_info,                                  // const VkApplicationInfo * pApplicationInfo
         static_cast<uint32_t>(validationLayers.size()),     // uint32_t                  enabledLayerCount
         validationLayers.data(),                            // const char * const      * ppEnabledLayerNames
@@ -263,12 +267,16 @@ namespace LavaCake {
           VK_KHR_XLIB_SURFACE_EXTENSION_NAME
 
 #elif defined VK_USE_PLATFORM_MACOS_MVK
-          VK_MVK_MACOS_SURFACE_EXTENSION_NAME
+          VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
         );
         instance_extensions.emplace_back(
           VK_EXT_METAL_SURFACE_EXTENSION_NAME
+        );
+        instance_extensions.emplace_back(        
+          VK_MVK_MACOS_SURFACE_EXTENSION_NAME
 #endif
         );
+
       }
       if (!CreateVulkanInstance(instance_extensions, "LavaCake", m_instance)) {
         ErrorCheck::setError("Could not create the vulkan instance");
@@ -328,6 +336,11 @@ namespace LavaCake {
       if(!headless){
         device_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
       }
+
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+      //device_extensions.emplace_back(VK_KHR_portability_subset);
+#endif
+
       std::vector<char const*> device_extensions_optional;
 
 
