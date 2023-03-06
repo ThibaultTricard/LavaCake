@@ -303,13 +303,6 @@ LavaCake::vec<T,3> operator*(LavaCake::vec<T,3>v, const LavaCake::quaternion<T>&
 
 
 template<typename T>
-LavaCake::quaternion<T> inverse(const LavaCake::quaternion<T>& q){
-    T sqrnorme = (q.qw*q.qw + q.qx.i * q.qx.i + q.qy.j * q.qy.j + q.qz.k * q.qz.k);
-    return LavaCake::quaternion<T>(-q.qx,-q.qy,-q.qz,q.qw) * (T(1)/sqrnorme);
-}
-
-
-template<typename T>
 T dot(
     const LavaCake::quaternion<T>& q1, 
     const LavaCake::quaternion<T>& q2
@@ -334,7 +327,7 @@ LavaCake::quaternion<T> weightedSum(
         auto z = (w1 - w2)*(w1 - w2) + T(4.0)*dq1q2*dq1q2;
         auto q = (w1 - w2 + z) * q1 + T(2.0)*w2*dq1q2 * q2;
 
-        auto q = q  * (T(1)/sqrt(dot(q,q)));
+        q = q  * (T(1)/sqrt(dot(q,q)));
         return q;
     }
     else{
@@ -343,13 +336,13 @@ LavaCake::quaternion<T> weightedSum(
         if(w1 >w2){
             auto q = (w1 - w2 + z) * q1;
 
-            auto q = q  * (T(1)/sqrt(dot(q,q)));
+            q = q  * (T(1)/sqrt(dot(q,q)));
             return q;
         }
         else {
             auto q = (w2 - w1 + z) * q2;
 
-            auto q = q  * (T(1)/sqrt(dot(q,q)));
+            q = q  * (T(1)/sqrt(dot(q,q)));
             return q;
         }
     }
