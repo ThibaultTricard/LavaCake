@@ -1,5 +1,5 @@
 #include "basics.h"
-
+#pragma once
 
 namespace LavaCake {
     template<typename T>
