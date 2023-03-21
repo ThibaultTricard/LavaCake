@@ -290,15 +290,17 @@ LavaCake::quaternion<T> inverse(const LavaCake::quaternion<T>& q){
 }
 
 template<typename T>
-LavaCake::vec<T,3> operator*(const LavaCake::quaternion<T>& q,LavaCake::vec<T,3>v){
+LavaCake::quaternion<T> operator*(const LavaCake::quaternion<T>& q,LavaCake::vec<T,3>v){
     auto tmp = q*LavaCake::quaternion<T>({v[0]},{v[1]},{v[2]},T(0.0));
-    return LavaCake::vec<T,3>({tmp.qx.i,tmp.qy.j, tmp.qz.k});
+    return tmp;
+    //return LavaCake::vec<T,3>({tmp.qx.i,tmp.qy.j, tmp.qz.k});
 }
 
 template<typename T>
-LavaCake::vec<T,3> operator*(LavaCake::vec<T,3>v, const LavaCake::quaternion<T>& q){
+LavaCake::quaternion<T> operator*(LavaCake::vec<T,3>v, const LavaCake::quaternion<T>& q){
     auto tmp = LavaCake::quaternion<T>({v[0]},{v[1]},{v[2]},T(0.0))*q;
-    return LavaCake::vec<T,3>({tmp.qx.i,tmp.qy.j, tmp.qz.k});
+    return tmp;
+    //return LavaCake::vec<T,3>({tmp.qx.i,tmp.qy.j, tmp.qz.k});
 }
 
 

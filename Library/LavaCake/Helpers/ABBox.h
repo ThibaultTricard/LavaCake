@@ -112,7 +112,7 @@ namespace LavaCake {
             m_diagDirty = true;
           }
           else {
-            newMax[u] = m_min[u];
+            newMax[u] = m_max[u];
           }
         }
         m_min = newMin;
@@ -127,7 +127,7 @@ namespace LavaCake {
       vec<T,N> m_max;
 
       vec<T, N> m_diag;
-      bool             m_diagDirty =true;
+      bool      m_diagDirty =true;
       
     };
   }
