@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.5)
 project("LavaCake")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -45,10 +45,10 @@ else()
 		set( CMAKE_CXX_FLAGS_DEBUG           "${CMAKE_CXX_FLAGS_DEBUG} /MTd" )
 		set( PLATFORM_LIBRARY                "" )
 	elseif( VK_USE_PLATFORM STREQUAL "XCB" )
-		add_definitions( -std=c++11 )
+		add_definitions( -std=c++20 )
 		set( PLATFORM_LIBRARY dl xcb )
 	elseif( VK_USE_PLATFORM STREQUAL "XLIB" )
-		add_definitions( -std=c++11 )
+		add_definitions( -std=c++20 )
 		set( PLATFORM_LIBRARY dl X11 )
 	endif()
 

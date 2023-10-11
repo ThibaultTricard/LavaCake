@@ -328,10 +328,10 @@ mat4f PrepareTranslationMatrix(float x,
                               float y,
                               float z) {
   mat4f translation_matrix = mat4f({
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    x,    y,    z, 1.0f
+    1.0f, 0.0f, 0.0f, x,
+    0.0f, 1.0f, 0.0f, y,
+    0.0f, 0.0f, 1.0f, z,
+    0.0f,  0.0f,   0.0f, 1.0f
   });
   return translation_matrix;
 }

@@ -18,12 +18,12 @@ namespace LavaCake {
 			float* bitangent_data) {
 			// Gram-Schmidt orthogonalize
 			vec3f const normal = vec3f({ normal_data[0], normal_data[1], normal_data[2] });
-			vec3f const tangent = Normalize(face_tangent - normal * Dot(normal, face_tangent));
+			vec3f const tangent = normalize(face_tangent - normal * dot(normal, face_tangent));
 
 			// Calculate handedness
-			float handedness = (Dot(Cross(normal, tangent), face_bitangent) < 0.0f) ? -1.0f : 1.0f;
+			float handedness = (dot(cross(normal, tangent), face_bitangent) < 0.0f) ? -1.0f : 1.0f;
 
-			vec3f const bitangent = handedness * Cross(normal, tangent);
+			vec3f const bitangent = handedness * cross(normal, tangent);
 
 			tangent_data[0] = tangent[0];
 			tangent_data[1] = tangent[1];
