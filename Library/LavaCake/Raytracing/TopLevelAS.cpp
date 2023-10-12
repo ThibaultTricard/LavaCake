@@ -1,4 +1,4 @@
-#include "TopLevelAS.h"
+#include <LavaCake/Raytracing/TopLevelAS.h>
 
 namespace LavaCake {
   namespace RayTracing {
@@ -23,7 +23,7 @@ namespace LavaCake {
         VkDevice logical = d->getLogicalDevice();
         VkPhysicalDevice phyDevice = d->getPhysicalDevice();
         m_instancesBuffers = std::vector<std::shared_ptr<Framework::Buffer>>(m_AccelerationStructureInstances.size());
-        std::vector<VkAccelerationStructureGeometryKHR> accelerationStructureGeometry;
+        std::vector<VkDeviceOrHostAddressConstKHR> instanceDataDeviceAddresses;
         uint32_t primitive_count = 0;
         for (int i = 0; i < m_AccelerationStructureInstances.size(); i++) {
           // Buffer for instance data
@@ -37,8 +37,9 @@ namespace LavaCake {
 
           VkDeviceOrHostAddressConstKHR instanceDataDeviceAddress{};
           instanceDataDeviceAddress.deviceAddress = m_instancesBuffers[i]->getBufferDeviceAddress();
+          instanceDataDeviceAddresses.push_back(instanceDataDeviceAddress);
 
-          VkAccelerationStructureGeometryKHR asg{};
+          /*VkAccelerationStructureGeometryKHR asg{};
           asg.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
           asg.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
           asg.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
@@ -46,19 +47,29 @@ namespace LavaCake {
           asg.geometry.instances.arrayOfPointers = VK_FALSE;
           asg.geometry.instances.data = instanceDataDeviceAddress;
 
-          accelerationStructureGeometry.push_back(asg);
+          accelerationStructureGeometry.push_back(asg);*/
 
-          primitive_count += m_instances[i].bottomLevelAS->getPrimitiveNumber();
+          //primitive_count += m_instances[i].bottomLevelAS->getPrimitiveNumber();
           m_primitive_count.push_back(m_instances[i].bottomLevelAS->getPrimitiveNumber());
         }
+
+        VkAccelerationStructureGeometryKHR accelerationStructureGeometry;
+        accelerationStructureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
+        accelerationStructureGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
+        accelerationStructureGeometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
+        accelerationStructureGeometry.pNext = NULL;
+        accelerationStructureGeometry.geometry.instances.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
+        accelerationStructureGeometry.geometry.instances.arrayOfPointers = true;
+        accelerationStructureGeometry.geometry.instances.data = instanceDataDeviceAddresses[0];
+        accelerationStructureGeometry.geometry.instances.pNext = NULL;
 
         // Get size info
         VkAccelerationStructureBuildGeometryInfoKHR accelerationStructureBuildGeometryInfo{};
         accelerationStructureBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
         accelerationStructureBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
         accelerationStructureBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
-        accelerationStructureBuildGeometryInfo.geometryCount = (uint32_t)accelerationStructureGeometry.size();
-        accelerationStructureBuildGeometryInfo.pGeometries = accelerationStructureGeometry.data();
+        accelerationStructureBuildGeometryInfo.geometryCount = 1;
+        accelerationStructureBuildGeometryInfo.pGeometries = &accelerationStructureGeometry;
 
         VkAccelerationStructureBuildSizesInfoKHR accelerationStructureBuildSizesInfo{};
 
@@ -85,8 +96,8 @@ namespace LavaCake {
         m_accelerationBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
         m_accelerationBuildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
         m_accelerationBuildGeometryInfo.dstAccelerationStructure = m_accelerationStructure;
-        m_accelerationBuildGeometryInfo.geometryCount = (uint32_t)accelerationStructureGeometry.size();
-        m_accelerationBuildGeometryInfo.pGeometries = accelerationStructureGeometry.data();
+        m_accelerationBuildGeometryInfo.geometryCount = 1;
+        m_accelerationBuildGeometryInfo.pGeometries = &accelerationStructureGeometry;
         m_accelerationBuildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(logical, &scratchBufferDeviceAddressInfo);
 
         VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "AllHeaders.h"
-#include "ErrorCheck.h"
+#include <LavaCake/Framework/ErrorCheck.h>
 #include "Tools.h"
 
 namespace LavaCake {

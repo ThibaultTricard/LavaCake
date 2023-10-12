@@ -24,7 +24,9 @@ namespace LavaCake {
 		private:
 
 			uint32_t m_primCount = 0;
+			uint32_t max_primCount = 0;
 			uint32_t m_numTriangle = 0;
+			
 
 			std::shared_ptr<Framework::Buffer> m_ASBuffer;
 			VkAccelerationStructureKHR m_accelerationStructure{};

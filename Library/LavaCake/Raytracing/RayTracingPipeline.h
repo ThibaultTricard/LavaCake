@@ -1,5 +1,5 @@
 #pragma once
-#include "RayTracingShaderModule.h"
+#include <LavaCake/Raytracing/RayTracingShaderModule.h>
 #include <LavaCake/Framework/CommandBuffer.h>
 #include <LavaCake/Framework/Pipeline.h>
 #include <LavaCake/Framework/ErrorCheck.h>
@@ -14,33 +14,30 @@ namespace LavaCake {
     class RayTracingPipeline : public Framework::Pipeline {
     public:
 
-			RayTracingPipeline(vec2u viewPortSize) : Pipeline() {
-				m_width = viewPortSize[0];
-				m_height = viewPortSize[1];
-			};
+		RayTracingPipeline() : Pipeline() {};
 
 
-			void addRayGenModule(const RayGenShaderModule& module);
+		void addRayGenModule(const RayGenShaderModule& module);
 
-			void addMissModule(const MissShaderModule& module);
+		void addMissModule(const MissShaderModule& module);
 
-			void startHitGroup();
+		void startHitGroup();
 
-			void setClosestHitModule(const ClosestHitShaderModule& module);
+		void setClosestHitModule(const ClosestHitShaderModule& module);
 
-			void setAnyHitModule(const AnyHitShaderModule& module);
+		void setAnyHitModule(const AnyHitShaderModule& module);
 
-			void setIntersectionModule(const IntersectionShaderModule& module);
+		void setIntersectionModule(const IntersectionShaderModule& module);
 
-			void endHitGroup();
+		void endHitGroup();
 
-			void compile(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff);
+		void compile(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff);
 
-			void trace(Framework::CommandBuffer& cmdbuff);
+		void trace(Framework::CommandBuffer& cmdbuff, uint32_t dimX, uint32_t dimY = 1.0, uint32_t dimZ = 1.0);
 
-			void setMaxRecursion(uint16_t recursion = 1);
+		void setMaxRecursion(uint16_t recursion = 1);
 
-			void bindDescriptorSet( Framework::CommandBuffer& cmdBuffer, const  Framework::DescriptorSet& descriptorSet) override;
+		void bindDescriptorSet( Framework::CommandBuffer& cmdBuffer, const  Framework::DescriptorSet& descriptorSet) override;
 
       void bindPipeline( Framework::CommandBuffer& cmdBuff) override;
 
@@ -57,10 +54,6 @@ namespace LavaCake {
 			uint32_t m_currentGroupIndex = 0;
 
 			std::vector<VkPipelineShaderStageCreateInfo> m_shaderStages;
-			
-
-			uint32_t m_width;
-			uint32_t m_height;
 
 			uint16_t m_maxRecursion = 1;
     };

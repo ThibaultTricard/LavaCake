@@ -1,9 +1,8 @@
 #pragma once
-#include "AllHeaders.h"
-#include "Queue.h"
-#include "Device.h"
+#include <LavaCake/Framework/Queue.h>
+#include <LavaCake/Framework/Device.h>
 #include <LavaCake/Geometry/mesh.h>
-#include "Buffer.h"
+#include <LavaCake/Framework/Buffer.h>
 
 namespace LavaCake {
   namespace Framework {

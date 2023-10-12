@@ -1,4 +1,4 @@
-#include "ShaderBindingTable.h"
+#include <LavaCake/Raytracing/ShaderBindingTable.h>
 
 namespace LavaCake {
   namespace RayTracing {

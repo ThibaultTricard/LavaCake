@@ -1,6 +1,5 @@
 #pragma once
-#include "AllHeaders.h"
-#include "BottomLevelAS.h"
+#include <LavaCake/Raytracing/BottomLevelAS.h>
 
 
 
@@ -45,6 +44,8 @@ namespace LavaCake {
       std::shared_ptr < Framework::Buffer> m_ASBuffer = nullptr;
       std::shared_ptr < Framework::Buffer> m_scratchBuffer;
       std::vector<std::shared_ptr<Framework::Buffer>> m_instancesBuffers;
+
+      std::vector<Framework::Buffer> m_instancesBuffer;
 		};
 	}
 }

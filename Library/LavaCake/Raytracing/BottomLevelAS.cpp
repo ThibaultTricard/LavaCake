@@ -1,4 +1,4 @@
-#include "BottomLevelAS.h"
+#include <LavaCake/Raytracing/BottomLevelAS.h>
 
 namespace LavaCake {
 	namespace RayTracing {
@@ -39,6 +39,7 @@ namespace LavaCake {
 
 				if (vertexBuffer->isIndexed()) {
 					m_primCount += (uint32_t)vertexBuffer->getIndicesNumber() / 3;
+					
 				}
 				else {
 					m_primCount += (uint32_t)vertexBuffer->getVerticiesNumber() / 3;

@@ -1,4 +1,4 @@
-#include "RayTracingPipeline.h"
+#include <LavaCake/Raytracing/RayTracingPipeline.h>
 
 namespace LavaCake {
 	namespace RayTracing {
@@ -205,7 +205,7 @@ namespace LavaCake {
 
 			}
 
-			void RayTracingPipeline::trace(Framework::CommandBuffer& cmdbuff) {
+			void RayTracingPipeline::trace(Framework::CommandBuffer& cmdbuff, uint32_t dimX, uint32_t dimY, uint32_t dimZ) {
 				vkCmdBindPipeline(cmdbuff.getHandle(), VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, m_pipeline);
 
 				
@@ -217,9 +217,9 @@ namespace LavaCake {
 					&m_ShaderBindingTable.missShaderBindingTable(),
 					&m_ShaderBindingTable.hitShaderBindingTable(),
 					&callableShaderSbtEntry,
-					m_width,
-					m_height,
-					1);
+					dimX,
+					dimY,
+					dimZ);
 			}
 
 			void RayTracingPipeline::bindPipeline( Framework::CommandBuffer& cmdBuff){
