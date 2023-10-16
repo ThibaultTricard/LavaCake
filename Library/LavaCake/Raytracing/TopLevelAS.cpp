@@ -24,8 +24,18 @@ namespace LavaCake {
         VkPhysicalDevice phyDevice = d->getPhysicalDevice();
         m_instancesBuffers = std::vector<std::shared_ptr<Framework::Buffer>>(m_AccelerationStructureInstances.size());
         std::vector<VkDeviceOrHostAddressConstKHR> instanceDataDeviceAddresses;
-        uint32_t primitive_count = 0;
-        for (int i = 0; i < m_AccelerationStructureInstances.size(); i++) {
+        uint32_t primitive_count = m_AccelerationStructureInstances.size();
+        auto instancesBuffer = std::make_shared<Framework::Buffer>(queue,
+          cmdBuff,
+          m_AccelerationStructureInstances,
+          VkBufferUsageFlagBits(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR),
+          VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+
+        VkDeviceOrHostAddressConstKHR instanceDataDeviceAddress{};
+        instanceDataDeviceAddress.deviceAddress = instancesBuffer->getBufferDeviceAddress();
+        
+
+        /*for (int i = 0; i < m_AccelerationStructureInstances.size(); i++) {
           // Buffer for instance data
           std::vector<VkAccelerationStructureInstanceKHR> instance = { m_AccelerationStructureInstances[i] };
 
@@ -39,7 +49,7 @@ namespace LavaCake {
           instanceDataDeviceAddress.deviceAddress = m_instancesBuffers[i]->getBufferDeviceAddress();
           instanceDataDeviceAddresses.push_back(instanceDataDeviceAddress);
 
-          /*VkAccelerationStructureGeometryKHR asg{};
+          VkAccelerationStructureGeometryKHR asg{};
           asg.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
           asg.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
           asg.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
@@ -47,21 +57,19 @@ namespace LavaCake {
           asg.geometry.instances.arrayOfPointers = VK_FALSE;
           asg.geometry.instances.data = instanceDataDeviceAddress;
 
-          accelerationStructureGeometry.push_back(asg);*/
+          accelerationStructureGeometry.push_back(asg);
 
           //primitive_count += m_instances[i].bottomLevelAS->getPrimitiveNumber();
           m_primitive_count.push_back(m_instances[i].bottomLevelAS->getPrimitiveNumber());
-        }
+        }*/
 
-        VkAccelerationStructureGeometryKHR accelerationStructureGeometry;
+        VkAccelerationStructureGeometryKHR accelerationStructureGeometry{};
         accelerationStructureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
         accelerationStructureGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
         accelerationStructureGeometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
-        accelerationStructureGeometry.pNext = NULL;
         accelerationStructureGeometry.geometry.instances.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
-        accelerationStructureGeometry.geometry.instances.arrayOfPointers = true;
-        accelerationStructureGeometry.geometry.instances.data = instanceDataDeviceAddresses[0];
-        accelerationStructureGeometry.geometry.instances.pNext = NULL;
+        accelerationStructureGeometry.geometry.instances.arrayOfPointers = VK_FALSE;
+        accelerationStructureGeometry.geometry.instances.data = instanceDataDeviceAddress;
 
         // Get size info
         VkAccelerationStructureBuildGeometryInfoKHR accelerationStructureBuildGeometryInfo{};
@@ -78,7 +86,7 @@ namespace LavaCake {
           logical,
           VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
           &accelerationStructureBuildGeometryInfo,
-          &primitive_count,
+          &accelerationStructureBuildGeometryInfo.geometryCount,
           &accelerationStructureBuildSizesInfo);
 
         createAccelerationStructure( VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, accelerationStructureBuildSizesInfo);

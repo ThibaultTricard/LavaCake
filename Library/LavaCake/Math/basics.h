@@ -366,4 +366,6 @@ namespace LavaCake {
                                            float near_plane,
                                            float far_plane) ;
 
+  mat4f inverse(const mat4f& m);
+
 }
