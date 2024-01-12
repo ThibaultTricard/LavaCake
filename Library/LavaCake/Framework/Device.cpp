@@ -254,6 +254,12 @@ namespace LavaCake {
       std::vector<char const*> instance_extensions;
       instance_extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+        instance_extensions.emplace_back(
+          VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+        );  
+#endif
+
       if(!headless){
         instance_extensions.emplace_back(VK_KHR_SURFACE_EXTENSION_NAME);
         instance_extensions.emplace_back(
@@ -267,9 +273,6 @@ namespace LavaCake {
           VK_KHR_XLIB_SURFACE_EXTENSION_NAME
 
 #elif defined VK_USE_PLATFORM_MACOS_MVK
-          VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
-        );
-        instance_extensions.emplace_back(
           VK_EXT_METAL_SURFACE_EXTENSION_NAME
         );
         instance_extensions.emplace_back(        
