@@ -291,7 +291,7 @@ namespace LavaCake {
       \param specialization a VkSpecializationInfo instance
       */
       MeshShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
-        ShaderModule(path, VK_SHADER_STAGE_MESH_BIT_NV, entrypoint, specialization) {
+        ShaderModule(path, VK_SHADER_STAGE_MESH_BIT_EXT, entrypoint, specialization) {
       }
 
       /**
@@ -301,7 +301,7 @@ namespace LavaCake {
       \param specialization a VkSpecializationInfo instance
       */
       MeshShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
-        ShaderModule(spirv, VK_SHADER_STAGE_MESH_BIT_NV, entrypoint, specialization) {
+        ShaderModule(spirv, VK_SHADER_STAGE_MESH_BIT_EXT, entrypoint, specialization) {
       }
     };
 
@@ -320,7 +320,7 @@ namespace LavaCake {
       \param specialization a VkSpecializationInfo instance
       */
       TaskShaderModule(std::string path, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
-        ShaderModule(path, VK_SHADER_STAGE_TASK_BIT_NV, entrypoint, specialization) {
+        ShaderModule(path, VK_SHADER_STAGE_TASK_BIT_EXT, entrypoint, specialization) {
       }
 
       /**
@@ -330,7 +330,7 @@ namespace LavaCake {
       \param specialization a VkSpecializationInfo instance
       */
       TaskShaderModule(std::vector<unsigned char>	spirv, char const* entrypoint = "main", VkSpecializationInfo const* specialization = nullptr) :
-        ShaderModule(spirv, VK_SHADER_STAGE_TASK_BIT_NV, entrypoint, specialization) {
+        ShaderModule(spirv, VK_SHADER_STAGE_TASK_BIT_EXT, entrypoint, specialization) {
       }
     };
 

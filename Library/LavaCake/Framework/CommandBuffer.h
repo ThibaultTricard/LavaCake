@@ -123,8 +123,7 @@ namespace LavaCake {
 
         result = vkCreateFence(logical, &fence_create_info, nullptr, &m_fence);
         if (VK_SUCCESS != result) {
-          //TODO : Raise error using error check
-          //std::cout << "Could not create a fence." << std::endl;
+          ErrorCheck::setError("Could not create a fence.");
         }
       };
 

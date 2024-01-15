@@ -309,7 +309,7 @@ namespace LavaCake {
 
       int attachementIndex = 0;
 
-
+      commandBuffer.resetFence();
       commandBuffer.beginRecord();
       for (size_t i = 0; i < m_attachmentype.size(); i++) {
 

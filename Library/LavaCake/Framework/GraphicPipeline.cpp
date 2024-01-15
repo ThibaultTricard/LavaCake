@@ -245,6 +245,7 @@ namespace LavaCake {
 
       Pipeline::SpecifyPipelineShaderStages(getStageParameter(), m_shaderStageCreateInfos);
 
+      
       m_pipelineCreateInfo = {
         VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,            // VkStructureType                                sType
         nullptr,                                                    // const void                                   * pNext
@@ -307,25 +308,6 @@ namespace LavaCake {
       m_constantInfos = constantDescriptions;
     }
 
-    /*
-    void GraphicPipeline::setVertices(const std::vector<std::shared_ptr<VertexBuffer>>& buffer) {
-      m_vertexBuffers.resize(buffer.size());
-      for (size_t i = 0; i < buffer.size(); i++) {
-        m_vertexBuffers[i].buffer = buffer[i];
-      }
-
-      if (!m_vertexInfoSet) {
-          setVerticesInfo(buffer[0]->getBindingDescriptions(), buffer[0]->getAttributeDescriptions(), buffer[0]->primitiveTopology());
-      }
-    }
-
-
-    void GraphicPipeline::setVertices(const std::vector<vertexBufferConstant>& vertexBufferConstants) {
-      m_vertexBuffers = vertexBufferConstants;
-      if (!m_vertexInfoSet) {
-          setVerticesInfo(vertexBufferConstants[0].buffer->getBindingDescriptions(), vertexBufferConstants[0].buffer->getAttributeDescriptions(), vertexBufferConstants[0].buffer->primitiveTopology());
-      }
-    }*/
 
     void GraphicPipeline::bindPipeline(CommandBuffer& cmdBuff){
       vkCmdSetViewport(cmdBuff.getHandle(), 0, 1, &m_viewports[0]);
@@ -346,55 +328,6 @@ namespace LavaCake {
     }
 
     
-
-
-    /*void GraphicPipeline::draw(CommandBuffer& buffer) {
-      
-
-      
-
-      for (uint32_t i = 0; i < m_vertexBuffers.size(); i++) {
-        if (!m_vertexBuffers[i].buffer->getVertexBuffer() || m_vertexBuffers[i].buffer->getVertexBuffer()->getHandle() == VK_NULL_HANDLE)return;
-        VkDeviceSize size(0);
-        vkCmdBindVertexBuffers(buffer.getHandle(), 0, static_cast<uint32_t>(1), &m_vertexBuffers[i].buffer->getVertexBuffer()->getHandle(), &size);
-        if (m_vertexBuffers[i].buffer->isIndexed()) {
-          vkCmdBindIndexBuffer(buffer.getHandle(), m_vertexBuffers[i].buffer->getIndexBuffer()->getHandle(), VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
-        }
-
-        
-        if (!m_descriptorSet->isEmpty()) {
-          
-        }
-
-        
-
-        for (auto& constant_range : m_vertexBuffers[i].constant_ranges) {
-          if (constant_range.constant) {
-            constant_range.constant->push(buffer.getHandle(), m_pipelineLayout, constant_range.range);
-          }
-        }
-
-        if (m_type == pipelineType::Graphic) {
-          if (m_vertexBuffers[i].buffer->isIndexed()) {
-            uint32_t count = (uint32_t)m_vertexBuffers[i].buffer->getIndicesNumber();
-            vkCmdDrawIndexed(buffer.getHandle(), count, 1, 0, 0, 0);
-          }
-          else {
-
-            uint32_t count = (uint32_t)m_vertexBuffers[i].buffer->getVerticiesNumber();
-
-            vkCmdDraw(buffer.getHandle(), count, 1, 0, 0);
-          }
-        }
-        else if (m_type == pipelineType::MeshTask) {
-          vkCmdDrawMeshTasksNV(
-            buffer.getHandle(),
-            m_taskCount,
-            0);
-        }
-
-      }
-    }*/
 
     void GraphicPipeline::setCullMode(VkCullModeFlagBits cullMode) {
       m_cullMode = cullMode;
@@ -417,6 +350,10 @@ namespace LavaCake {
 
     void drawIndexed(CommandBuffer& cmdBuff, uint32_t indexCount, uint32_t indexOffset,  uint32_t instanceCount, uint32_t vertexOffset, uint32_t instanceOffset){
       vkCmdDrawIndexed(cmdBuff.getHandle(), indexCount, instanceCount, indexOffset, 0, instanceOffset);
+    }
+
+    void drawMeshTasks(CommandBuffer& cmdBuff, uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ){
+      vkCmdDrawMeshTasksEXT(cmdBuff.getHandle(),groupCountX,groupCountY,groupCountZ);
     }
 
   }

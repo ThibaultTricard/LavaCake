@@ -11,7 +11,7 @@ namespace LavaCake {
     };
 #else
     const std::vector<const char*> validationLayers = {
-      "VK_LAYER_KHRONOS_validation"
+      //"VK_LAYER_KHRONOS_validation"
     };
 #endif
 
@@ -27,7 +27,9 @@ namespace LavaCake {
     };
 
     const std::vector<const char*> meshShaderExtension = {
-      VK_NV_MESH_SHADER_EXTENSION_NAME
+      VK_EXT_MESH_SHADER_EXTENSION_NAME,
+      VK_KHR_SPIRV_1_4_EXTENSION_NAME,
+      VK_EXT_SHADER_SUBGROUP_BALLOT_EXTENSION_NAME
     };
 
 
@@ -84,8 +86,8 @@ namespace LavaCake {
         application_name,                                   // const char              * pApplicationName
         VK_MAKE_VERSION(1, 0, 0),                         // uint32_t                  applicationVersion
         "LavaCake",                                       // const char              * pEngineName
-        VK_MAKE_VERSION(1, 2, 0),                         // uint32_t                  engineVersion
-        VK_MAKE_VERSION(1, 2, 0)                          // uint32_t                  apiVersion
+        VK_MAKE_VERSION(1, 4, 0),                         // uint32_t                  engineVersion
+        VK_MAKE_VERSION(1, 3, 0)                          // uint32_t                  apiVersion
       };
 
       VkInstanceCreateFlags flag = 0;
@@ -252,7 +254,6 @@ namespace LavaCake {
 
 
       std::vector<char const*> instance_extensions;
-      instance_extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 
 #ifdef VK_USE_PLATFORM_MACOS_MVK
         instance_extensions.emplace_back(
@@ -340,9 +341,6 @@ namespace LavaCake {
         device_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
       }
 
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-      //device_extensions.emplace_back(VK_KHR_portability_subset);
-#endif
 
       std::vector<char const*> device_extensions_optional;
 
@@ -493,6 +491,7 @@ namespace LavaCake {
           desired_device_features = new VkPhysicalDeviceFeatures();
         }
 
+
         for (auto& info : requested_queues) {
           queue_create_infos.push_back({
             VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,       // VkStructureType                  sType
@@ -541,6 +540,7 @@ namespace LavaCake {
               for (auto rte : raytracingExtension) {
                 if (e == rte) {
                   raytracingAvailable = false;
+                  ErrorCheck::setError("Raytracing extensions not found on this device", 1);
                   break;
                 }
               }
@@ -549,7 +549,7 @@ namespace LavaCake {
               for (auto rte : meshShaderExtension) {
                 if (e == rte) {
                   meshShaderAvailable = false;
-                  //ErrorCheck::setError("Raytracing extensions not found on this device", 1);
+                  ErrorCheck::setError("MeshShading extensions not found on this device", 1);
                   break;
                 }
               }
@@ -559,7 +559,7 @@ namespace LavaCake {
           VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddresFeatures{};
           VkPhysicalDeviceRayTracingPipelineFeaturesKHR enabledRayTracingPipelineFeatures{};
           VkPhysicalDeviceAccelerationStructureFeaturesKHR enabledAccelerationStructureFeatures{};
-          VkPhysicalDeviceMeshShaderFeaturesNV enabledMeshShaderFeatures{};
+          VkPhysicalDeviceMeshShaderFeaturesEXT enabledMeshShaderFeatures{};
 
           void* pNextChain = nullptr;
 
@@ -581,10 +581,13 @@ namespace LavaCake {
           }
 
           if (meshShaderAvailable) {
-            enabledMeshShaderFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
+            enabledMeshShaderFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
             enabledMeshShaderFeatures.pNext = pNextChain;
             enabledMeshShaderFeatures.taskShader = VK_TRUE;
             enabledMeshShaderFeatures.meshShader = VK_TRUE;
+            enabledMeshShaderFeatures.primitiveFragmentShadingRateMeshShader = VK_TRUE;
+            enabledMeshShaderFeatures.multiviewMeshShader = VK_TRUE;
+            enabledMeshShaderFeatures.meshShaderQueries = VK_TRUE;
 
             pNextChain = &enabledMeshShaderFeatures;
           }

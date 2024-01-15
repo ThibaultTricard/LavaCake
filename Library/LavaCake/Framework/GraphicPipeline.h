@@ -151,14 +151,6 @@ namespace LavaCake {
         m_polygonMode = mode;
       }
 
-      /**
-      \brief set the number of task launch by this pipeline if not set the number of task be 0.
-      this function can be ignored if the pipeline does not use task shader
-      \param count the number of task
-      */
-      void setTaskCount(uint32_t count) {
-        m_taskCount = count;
-      }
 
       ~GraphicPipeline() override = default;
 
@@ -203,13 +195,11 @@ namespace LavaCake {
 
       uint32_t                                              m_subpassNumber=0;
 
-      VkCullModeFlagBits                                    m_cullMode = VK_CULL_MODE_BACK_BIT;
+      VkCullModeFlagBits                                    m_cullMode = VK_CULL_MODE_NONE;
       VkPolygonMode                                         m_polygonMode = VK_POLYGON_MODE_FILL;
 
       VkBool32                                              m_alphablending = VK_FALSE;
       float                                                 m_lineWidth = 1.0f;
-
-      uint32_t                                              m_taskCount = 0;
 
       bool                                                  m_compiled = false;
       pipelineType                                          m_type = Undefined;
@@ -230,5 +220,7 @@ namespace LavaCake {
     void draw(CommandBuffer& cmdBuff, uint32_t vertexCount, uint32_t vertexOffset=0,  uint32_t instanceCount=1, uint32_t instanceOffset=0);
 
     void drawIndexed(CommandBuffer& cmdBuff, uint32_t indexCount, uint32_t indexOffset=0,  uint32_t instanceCount=1, uint32_t vertexOffset=0, uint32_t instanceOffset=0);
+
+    void drawMeshTasks(CommandBuffer& cmdBuff, uint32_t groupCountX, uint32_t groupCountY=1, uint32_t groupCountZ=1);
   }
 }

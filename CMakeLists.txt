@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required (VERSION 3.20)
 project("LavaCake")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -14,10 +14,8 @@ endif()
 # Environment setup                                           #
 ###############################################################
 
-find_package(Vulkan)
-message("${Vulkan_INCLUDE_DIRS}")
-message("${Vulkan_VERSION}")
-message("======================")
+
+
 
 if( CMAKE_BUILD_TYPE STREQUAL "" )
 	set( CMAKE_BUILD_TYPE "debug" )
@@ -108,6 +106,13 @@ add_subdirectory(Helpers)
 
 # External files
 find_package(Vulkan)
+
+message("${VULKAN_HEADER_FILES}")
+message("${Vulkan_INCLUDE_DIRS}")
+message("${Vulkan_INCLUDE_DIR}")
+message("${Vulkan_VERSION}")
+message("${FIND_VERSION_MAX_MINOR}")
+message("======================") 
 
 set(EXTERNAL_HEADER_FILES
 ./External/stb_image.h
