@@ -62,7 +62,7 @@ endif()
 ###############################################################
 # External Library                                            #
 ###############################################################
-
+add_compile_options(-v)
 
 set(LAVACAKE_WINDOW_MANAGER "GLFW" CACHE STRING "lib used by Lavacake for window management")
 
@@ -218,6 +218,7 @@ ${LIBRARY_FRAMEWORK_DIR}/Pipeline.h
 ${LIBRARY_FRAMEWORK_DIR}/Queue.h
 ${LIBRARY_FRAMEWORK_DIR}/RenderPass.h
 ${LIBRARY_FRAMEWORK_DIR}/ShaderModule.h
+${LIBRARY_FRAMEWORK_DIR}/SubPass.h
 ${LIBRARY_FRAMEWORK_DIR}/SwapChain.h
 ${LIBRARY_FRAMEWORK_DIR}/Texture.h
 ${LIBRARY_FRAMEWORK_DIR}/UniformBuffer.h

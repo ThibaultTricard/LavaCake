@@ -2,38 +2,10 @@
 #include "AllHeaders.h"
 #include "GraphicPipeline.h"
 #include "SwapChain.h"
+#include "SubPass.h"
 
 namespace LavaCake {
   namespace Framework {
-
-    enum RenderPassFlag {
-      SHOW_ON_SCREEN = 1,
-      USE_COLOR = 2,
-      USE_DEPTH = 4,
-      OP_STORE_COLOR = 8,
-      OP_STORE_DEPTH = 16,
-      ADD_INPUT = 32
-    };
-
-    struct SubpassAttachment {
-      uint16_t nbColor = 0;
-      bool storeColor = false;
-
-      bool useDepth = false;
-      bool storeDepth = false;
-
-      bool addInput = false;
-
-      bool showOnScreen = false;
-      uint16_t showOnScreenIndex = 0;
-    };
-
-
-    inline RenderPassFlag operator|(RenderPassFlag a, RenderPassFlag b)
-    {
-      return static_cast<RenderPassFlag>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
-    }
-
 
     enum RenderPassAttachmentType {
       RENDERPASS_UNDEFINED_ATTACHMENT = 0,
@@ -52,10 +24,10 @@ namespace LavaCake {
 
     RenderPassAttachmentType toAttachmentType(VkFormat format);
 
+
     class RenderPass {
 
-      using SubPass = std::vector< std::shared_ptr<GraphicPipeline> >;
-
+      
       struct SubpassParameters {
         VkPipelineBindPoint                  PipelineType;
         std::vector<VkAttachmentReference>   InputAttachments;
@@ -94,7 +66,7 @@ namespace LavaCake {
       /*
       \brief add a subpass composed of multiple graphics pipeline and setup their attachments
       */
-      uint32_t addSubPass(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
+      uint32_t addSubPass(SubPassAttachments& AttachementDescription, std::vector<uint32_t> input_number = {});
 
       /*
       \brief Compile the renderpass
@@ -146,7 +118,7 @@ namespace LavaCake {
       /*
       * add an attachment for a subpass
       */
-      void addAttatchments(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number = {});
+      void addAttatchments(SubPassAttachments& AttachementDescription, std::vector<uint32_t> input_number = {});
 
       void SpecifySubpassDescriptions(std::vector<SubpassParameters> const& subpass_parameters,
         std::vector<VkSubpassDescription>& subpass_descriptions);
@@ -161,15 +133,14 @@ namespace LavaCake {
         VkRenderPass& render_pass);
 
       VkRenderPass															            m_renderPass = VK_NULL_HANDLE;
-      VkFormat																							m_imageFormat = VK_FORMAT_UNDEFINED;
-      VkFormat																							m_depthFormat = VK_FORMAT_UNDEFINED;
       std::vector<SubpassParameters>												m_subpassParameters;
-      //std::vector < SubPass >																m_subpass;
+      
+      //std::vector<SubPass>                                  m_subPasses;
       std::vector<VkAttachmentReference>										m_depthAttachments;
       std::vector<VkAttachmentDescription>									m_attachmentDescriptions;
       std::vector<VkSubpassDependency>											m_dependencies;
 
-      std::vector<RenderPassAttachmentType>									m_attachmentype;
+      std::vector<Attachment*>									            m_attachments;
 
       std::vector<std::shared_ptr<Image>>										m_inputAttachements;
 

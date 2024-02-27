@@ -1,5 +1,7 @@
 #include "AllHeaders.h"
 #include "Pipeline.h"
+#include "SubPass.h"
+
 
 #pragma once
 
@@ -80,7 +82,7 @@ namespace LavaCake {
       std::vector<shaderStageParameters> getStageParameter();
 
 
-      void compile(const VkRenderPass& renderpass, uint16_t nbColorAttachments);
+      void compile(const VkRenderPass& renderpass, SubPassAttachments& subpass);
 
 
       /*

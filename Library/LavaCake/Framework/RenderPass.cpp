@@ -61,92 +61,49 @@ namespace LavaCake {
 
 
     RenderPass::RenderPass() {
-      SwapChain* s = SwapChain::getSwapChain();
-      m_imageFormat = s->imageFormat();
-      m_depthFormat = s->depthFormat();
     }
 
     RenderPass::RenderPass(VkFormat ImageFormat, VkFormat DepthFormat) {
-
-      RenderPassAttachmentType it = toAttachmentType(ImageFormat);
-      if (it & RenderPassAttachmentType::RENDERPASS_COLOR_ATTACHMENT) {
-        m_imageFormat = ImageFormat;
-      }
-      else {
-        ErrorCheck::setError("Image format not recognized", 1);
-      }
-      RenderPassAttachmentType dt = toAttachmentType(DepthFormat);
-      if (dt & RenderPassAttachmentType::RENDERPASS_DEPTH_ATTACHMENT || dt & RenderPassAttachmentType::RENDERPASS_STENCIL_ATTACHMENT) {
-        m_depthFormat = DepthFormat;
-      }
-      else {
-        ErrorCheck::setError("Depth format not recognized", 1);
-      }
     }
 
 
-    void RenderPass::addAttatchments(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
+    void RenderPass::addAttatchments(SubPassAttachments& AttachementDescription, std::vector<uint32_t> input_number) {
       uint32_t imageAttachementindex;
       bool drawOnScreen = false;
-      if (AttachementDescription.showOnScreen)
+      if (AttachementDescription.m_hasASwapChainImage)
         drawOnScreen = true;
 
       SubpassParameters params = {};
 
-      if (AttachementDescription.nbColor > 0) {
+      if (AttachementDescription.m_nbColorAttachment > 0) {
         params.ColorAttachments = {};
-        for (uint16_t c = 0; c < AttachementDescription.nbColor; c++) {
+        
+        if (AttachementDescription.m_hasASwapChainImage) {
+          m_khr_attachement = static_cast<int>(m_attachments.size()) + AttachementDescription.m_swapChainImageIndex;
+        }
+        
+        for (uint16_t c = 0; c < AttachementDescription.m_nbColorAttachment; c++) {
           imageAttachementindex = static_cast<uint32_t>(m_attachmentDescriptions.size());
-          m_attachmentDescriptions.push_back(
-            {
-              0,																																																					// VkAttachmentDescriptionFlags     flags
-              m_imageFormat,																																															// VkFormat                         format
-              VK_SAMPLE_COUNT_1_BIT,																																											// VkSampleCountFlagBits            samples
-              VK_ATTACHMENT_LOAD_OP_CLEAR,																																								// VkAttachmentLoadOp               loadOp
-              AttachementDescription.storeColor ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE,					// VkAttachmentStoreOp              storeOp
-              VK_ATTACHMENT_LOAD_OP_DONT_CARE,																																						// VkAttachmentLoadOp               stencilLoadOp
-              VK_ATTACHMENT_STORE_OP_DONT_CARE,																																						// VkAttachmentStoreOp              stencilStoreOp
-              VK_IMAGE_LAYOUT_UNDEFINED,																																									// VkImageLayout                    initialLayout
-              (c == AttachementDescription.nbColor - 1 - AttachementDescription.showOnScreenIndex && drawOnScreen) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL                   // VkImageLayout                    finalLayout
-            });
+          m_attachmentDescriptions.push_back(AttachementDescription.m_attachments[c].m_attachmentDescription);
 
-          m_attachmentype.push_back(RENDERPASS_COLOR_ATTACHMENT);
-          params.ColorAttachments.push_back(
-            {
-              imageAttachementindex,
-              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-            }
-          );
+          m_attachments.push_back(&AttachementDescription.m_attachments[c]);
         }
 
-        if (drawOnScreen) {
-          m_khr_attachement = static_cast<int>(m_attachmentype.size()) - 1 - AttachementDescription.showOnScreenIndex;
-        }
+        
 
 
-        /*params.ColorAttachments =
+        params.ColorAttachments =
         {
           {
             imageAttachementindex,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
           }
-        };*/
+        };
       }
 
-      if (AttachementDescription.useDepth) {
-        m_attachmentDescriptions.push_back({
-          0,																																																									// VkAttachmentDescriptionFlags     flags
-          m_depthFormat,																																																			// VkFormat                         format
-          VK_SAMPLE_COUNT_1_BIT,																																															// VkSampleCountFlagBits            samples
-          VK_ATTACHMENT_LOAD_OP_CLEAR,																																												// VkAttachmentLoadOp               loadOp
-          AttachementDescription.storeDepth ? VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE ,								// VkAttachmentStoreOp              storeOp
-          VK_ATTACHMENT_LOAD_OP_DONT_CARE,																																										// VkAttachmentLoadOp               stencilLoadOp
-          VK_ATTACHMENT_STORE_OP_DONT_CARE,																																										// VkAttachmentStoreOp              stencilStoreOp
-          VK_IMAGE_LAYOUT_UNDEFINED,																																													// VkImageLayout                    initialLayout
-          VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL																																			// VkImageLayout                    finalLayout
-          });
-        RenderPassAttachmentType dt = toAttachmentType(m_depthFormat);
-        m_attachmentype.push_back(dt);
+      if (AttachementDescription.m_useDepth) {
+        m_attachmentDescriptions.push_back(AttachementDescription.m_depthAttachments.m_attachmentDescription);
+        m_attachments.push_back(&AttachementDescription.m_depthAttachments);
         m_depthAttachments.push_back({
             uint32_t(m_attachmentDescriptions.size() - 1),														// uint32_t                             attachment
             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL								// VkImageLayout                        layout
@@ -156,8 +113,10 @@ namespace LavaCake {
         params.DepthStencilAttachment = &m_depthAttachments[m_depthAttachments.size() - 1];
 
       }
+      
+      
       m_subpassAttachements.push_back(input_number);
-      if (AttachementDescription.addInput) {
+      /*if (AttachementDescription.addInput) {
         std::vector<VkAttachmentReference>   inputAttachments = {};
         for (size_t i = 0; i < input_number.size(); i++) {
           inputAttachments.push_back({ input_number[i], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
@@ -171,7 +130,7 @@ namespace LavaCake {
         }
         params.InputAttachments = inputAttachments;
 
-      }
+      }*/
 
       m_subpassParameters.push_back(params);
     }
@@ -189,7 +148,7 @@ namespace LavaCake {
     }
 
 
-    uint32_t RenderPass::addSubPass(SubpassAttachment AttachementDescription, std::vector<uint32_t> input_number) {
+    uint32_t RenderPass::addSubPass(SubPassAttachments& AttachementDescription, std::vector<uint32_t> input_number) {
       //for (size_t i = 0; i < p.size(); i++) {
       //  p[i]->setSubpassNumber(static_cast<uint32_t>(m_subpass.size()));
       //}
@@ -305,66 +264,23 @@ namespace LavaCake {
       VkImageLayout layout;
       VkFormat format;
 
-      frameBuffer.m_images = std::vector<std::shared_ptr<Image>>(m_attachmentype.size());
+      frameBuffer.m_images = std::vector<std::shared_ptr<Image>>(m_attachments.size());
 
       int attachementIndex = 0;
 
       commandBuffer.resetFence();
       commandBuffer.beginRecord();
-      for (size_t i = 0; i < m_attachmentype.size(); i++) {
+      for (size_t i = 0; i < m_attachments.size(); i++) {
+        format = m_attachments[i]->m_format;
+        usage = m_attachments[i]->m_usage;
+        aspect = m_attachments[i]->m_aspect;
+        layout = m_attachments[i]->m_layout;
 
-
-        if (m_attachmentype[i] & RENDERPASS_COLOR_ATTACHMENT) {
-          format = m_imageFormat;
-          usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) | static_cast<uint32_t>(VK_IMAGE_USAGE_SAMPLED_BIT));
-          aspect = VK_IMAGE_ASPECT_COLOR_BIT;
-          layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        }
-        else if (m_attachmentype[i] == RENDERPASS_INPUT_ATTACHMENT) {
-          // comment : because of  continue, the following 4 values are never read (else case next turn overwrite them before use)
-          format = m_imageFormat;
-          usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT) | static_cast<uint32_t>(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT));
-          aspect = VK_IMAGE_ASPECT_COLOR_BIT;
-          layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-
-          frameBuffer.m_images[i] = m_inputAttachements[attachementIndex];
-          //frameBuffer.m_imageViews[i] = m_inputAttachements[attachementIndex]->getImageView();
-
-          attachementIndex++;
-          continue;
-        }
-        else if (m_attachmentype[i] & RENDERPASS_DEPTH_ATTACHMENT || m_attachmentype[i] & RENDERPASS_STENCIL_ATTACHMENT) {
-          format = m_depthFormat;
-          usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) | static_cast<uint32_t>(VK_IMAGE_USAGE_SAMPLED_BIT));
-
-          if (m_attachmentype[i] & RENDERPASS_DEPTH_ATTACHMENT && m_attachmentype[i] & RENDERPASS_STENCIL_ATTACHMENT) {
-            aspect = VkImageAspectFlagBits(VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
-          }
-          else if (m_attachmentype[i] & RENDERPASS_DEPTH_ATTACHMENT) {
-            aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
-          }
-          else {
-            aspect = VK_IMAGE_ASPECT_STENCIL_BIT;
-          }
-
-          layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
-
-
-        }
-        else {
-          format = VK_FORMAT_UNDEFINED;
-          usage = static_cast<VkImageUsageFlagBits>(static_cast<uint32_t>(VK_IMAGE_USAGE_FLAG_BITS_MAX_ENUM) | static_cast<uint32_t>(VK_IMAGE_USAGE_SAMPLED_BIT));
-          aspect = VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM;
-          layout = VK_IMAGE_LAYOUT_UNDEFINED;
-        }
-        //frameBuffer.m_layouts.push_back(layout);
 
         if (static_cast<int>(i) == m_khr_attachement) {
           frameBuffer.m_swapChainImageIndex = static_cast<uint32_t>(i);
           continue;
         }
-
 
         frameBuffer.m_images[i] = std::make_shared< Image >((uint32_t)frameBuffer.m_width, (uint32_t)frameBuffer.m_height, 1, format, aspect, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
 

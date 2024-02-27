@@ -1,5 +1,6 @@
 #include "GraphicPipeline.h"
 
+
 namespace LavaCake {
   namespace Framework {
 
@@ -41,6 +42,49 @@ namespace LavaCake {
         m_viewports.data(),																				// const VkViewport                   * pViewports
         1,																												// uint32_t                             scissorCount
         m_scissors.data()																					// const VkRect2D                     * pScissors
+      };
+      
+      
+      m_depthStencilStateCreateInfo = {
+        VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,   // VkStructureType                            sType
+        nullptr,                                                      // const void                               * pNext
+        0,                                                            // VkPipelineDepthStencilStateCreateFlags     flags
+        true,                                                          // VkBool32                                   depthTestEnable
+        true,                                                          // VkBool32                                   depthWriteEnable
+        VK_COMPARE_OP_LESS_OR_EQUAL,                                  // VkCompareOp                                depthCompareOp
+        false,                                                        // VkBool32                                   depthBoundsTestEnable
+        false,                                                        // VkBool32                                   stencilTestEnable
+        {},                                                            // VkStencilOpState                           front
+        {},                                                            // VkStencilOpState                           back
+        0.0f,                                                          // float                                      minDepthBounds
+        1.0f                                                          // float                                      maxDepthBounds
+      };
+      
+      m_multisampleStateCreateInfo = {
+        VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO, // VkStructureType                          sType
+        nullptr,                                                  // const void                             * pNext
+        0,                                                        // VkPipelineMultisampleStateCreateFlags    flags
+        VK_SAMPLE_COUNT_1_BIT,                                    // VkSampleCountFlagBits                    rasterizationSamples
+        false,                                                    // VkBool32                                 sampleShadingEnable
+        0.0f,                                                      // float                                    minSampleShading
+        nullptr,                                                  // const VkSampleMask                     * pSampleMask
+        false,                                                    // VkBool32                                 alphaToCoverageEnable
+        false                                                      // VkBool32                                 alphaToOneEnable
+      };
+
+      m_depthStencilStateCreateInfo = {
+        VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,   // VkStructureType                            sType
+        nullptr,                                                      // const void                               * pNext
+        0,                                                            // VkPipelineDepthStencilStateCreateFlags     flags
+        true,                                                          // VkBool32                                   depthTestEnable
+        true,                                                          // VkBool32                                   depthWriteEnable
+        VK_COMPARE_OP_LESS_OR_EQUAL,                                  // VkCompareOp                                depthCompareOp
+        false,                                                        // VkBool32                                   depthBoundsTestEnable
+        false,                                                        // VkBool32                                   stencilTestEnable
+        {},                                                            // VkStencilOpState                           front
+        {},                                                            // VkStencilOpState                           back
+        0.0f,                                                          // float                                      minDepthBounds
+        1.0f                                                          // float                                      maxDepthBounds
       };
 
     };
@@ -137,7 +181,7 @@ namespace LavaCake {
       return stage;
     }
 
-    void GraphicPipeline::compile(const VkRenderPass& renderpass, uint16_t nbColorAttachments) {
+    void GraphicPipeline::compile(const VkRenderPass& renderpass, SubPassAttachments& subPass) {
       Device* d = Device::getDevice();
       const VkDevice& logical = d->getLogicalDevice();
       
@@ -162,49 +206,12 @@ namespace LavaCake {
         m_lineWidth																									// float                                      lineWidth
       };
 
-      m_multisampleStateCreateInfo = {
-        VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO, // VkStructureType                          sType
-        nullptr,                                                  // const void                             * pNext
-        0,                                                        // VkPipelineMultisampleStateCreateFlags    flags
-        VK_SAMPLE_COUNT_1_BIT,                                    // VkSampleCountFlagBits                    rasterizationSamples
-        false,																										// VkBool32                                 sampleShadingEnable
-        0.0f,																											// float                                    minSampleShading
-        nullptr,																								  // const VkSampleMask                     * pSampleMask
-        false,																										// VkBool32                                 alphaToCoverageEnable
-        false																											// VkBool32                                 alphaToOneEnable
-      };
-
-      m_depthStencilStateCreateInfo = {
-        VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,   // VkStructureType                            sType
-        nullptr,                                                      // const void                               * pNext
-        0,                                                            // VkPipelineDepthStencilStateCreateFlags     flags
-        true,																													// VkBool32                                   depthTestEnable
-        true,																													// VkBool32                                   depthWriteEnable
-        VK_COMPARE_OP_LESS_OR_EQUAL,                                  // VkCompareOp                                depthCompareOp
-        false,																												// VkBool32                                   depthBoundsTestEnable
-        false,																												// VkBool32                                   stencilTestEnable
-        {},																														// VkStencilOpState                           front
-        {},																														// VkStencilOpState                           back
-        0.0f,																													// float                                      minDepthBounds
-        1.0f																													// float                                      maxDepthBounds
-      };
+      
 
       m_attachmentBlendStates = {};
-      for (uint16_t c = 0; c < nbColorAttachments; c++) {
+      for (uint16_t c = 0; c < subPass.m_attachments.size(); c++) {
         m_attachmentBlendStates.push_back(
-          {
-            m_alphablending,																// VkBool32                 blendEnable
-            VK_BLEND_FACTOR_SRC_ALPHA,											// VkBlendFactor            srcColorBlendFactor
-            VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,            // VkBlendFactor            dstColorBlendFactor
-            VK_BLEND_OP_ADD,																// VkBlendOp                colorBlendOp
-            VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,						// VkBlendFactor            srcAlphaBlendFactor
-            VK_BLEND_FACTOR_ZERO,														// VkBlendFactor            dstAlphaBlendFactor
-            VK_BLEND_OP_ADD,																// VkBlendOp                alphaBlendOp
-            VK_COLOR_COMPONENT_R_BIT |											// VkColorComponentFlags    colorWriteMask
-            VK_COLOR_COMPONENT_G_BIT |
-            VK_COLOR_COMPONENT_B_BIT |
-            VK_COLOR_COMPONENT_A_BIT
-          }
+          subPass.m_attachments[c].m_blendState
         );
 
       }

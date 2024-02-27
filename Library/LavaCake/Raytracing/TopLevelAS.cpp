@@ -24,7 +24,7 @@ namespace LavaCake {
         VkPhysicalDevice phyDevice = d->getPhysicalDevice();
         m_instancesBuffers = std::vector<std::shared_ptr<Framework::Buffer>>(m_AccelerationStructureInstances.size());
         std::vector<VkDeviceOrHostAddressConstKHR> instanceDataDeviceAddresses;
-        uint32_t primitive_count = m_AccelerationStructureInstances.size();
+        uint32_t primitive_count = uint32_t(m_AccelerationStructureInstances.size());
         auto instancesBuffer = std::make_shared<Framework::Buffer>(queue,
           cmdBuff,
           m_AccelerationStructureInstances,

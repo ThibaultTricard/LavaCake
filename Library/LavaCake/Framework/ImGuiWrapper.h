@@ -43,7 +43,7 @@ namespace LavaCake {
 
         m_pushConstant->push(cmdBuff, m_pipeline->getPipelineLayout(), m_pushConstantRange);
 
-        drawIndexed(cmdBuff, m_vertexBuffer->getIndicesNumber());
+        drawIndexed(cmdBuff, static_cast<uint32_t>(m_vertexBuffer->getIndicesNumber()));
       };
 
       /**
