@@ -26,6 +26,11 @@ namespace LavaCake {
       */
       FrameBuffer(uint32_t width, uint32_t height);
 
+
+      const std::shared_ptr<Image> getImage(uint8_t i) const{
+        return m_images[i];
+      }
+
       /**
         \brief get the image layout of one layer of the FrameBuffer
         \param i: the index of the layer
