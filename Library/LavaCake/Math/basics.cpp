@@ -414,12 +414,12 @@ mat4f PreparePerspectiveProjectionMatrix(float aspect_ratio,
     
     0.0f,
     0.0f,
-    - (far_plane + near_plane)/  ( far_plane - near_plane),
-    - 2.0f * (far_plane * near_plane)/  ( far_plane - near_plane) ,
+    (far_plane)/  ( far_plane - near_plane),
+    -(far_plane * near_plane)/  ( far_plane - near_plane) ,
     
     0.0f,
     0.0f,
-    -1.0f,
+    1.0f,
     0.0f
   });
 
