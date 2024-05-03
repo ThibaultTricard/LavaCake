@@ -124,7 +124,8 @@ namespace LavaCake {
       }
 
       void init(
-        VkImageUsageFlags													swapchain_image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+        VkImageUsageFlags													swapchain_image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        VkPresentModeKHR                          desired_present_mode = VK_PRESENT_MODE_IMMEDIATE_KHR
       );
 
       void resize();

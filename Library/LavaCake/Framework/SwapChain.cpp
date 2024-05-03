@@ -5,7 +5,8 @@ namespace LavaCake {
     //SwapChain* SwapChain::m_swapChain;
 
     void SwapChain::init(
-      VkImageUsageFlags													swapchain_image_usage
+      VkImageUsageFlags													swapchain_image_usage,
+      VkPresentModeKHR                          desired_present_mode
     ) {
       Device* d = Device::getDevice();
       VkDevice logical = d->getLogicalDevice();
@@ -19,7 +20,6 @@ namespace LavaCake {
         ErrorCheck::setError("Waiting on a device failed.");
       }
 
-      VkPresentModeKHR desired_present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
       VkPresentModeKHR present_mode;
       //========================Select Presentation Mode
 
