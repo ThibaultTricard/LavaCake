@@ -87,18 +87,15 @@ namespace LavaCake {
           m_attachmentDescriptions.push_back(AttachementDescription.m_attachments[c].m_attachmentDescription);
 
           m_attachments.push_back(&AttachementDescription.m_attachments[c]);
+
+          params.ColorAttachments.push_back(
+            {
+              imageAttachementindex,
+              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+            }
+          );
         }
 
-        
-
-
-        params.ColorAttachments =
-        {
-          {
-            imageAttachementindex,
-            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-          }
-        };
       }
 
       if (AttachementDescription.m_useDepth) {
