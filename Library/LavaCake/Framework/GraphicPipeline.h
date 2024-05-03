@@ -188,12 +188,12 @@ namespace LavaCake {
 
       std::vector<VkViewport>                               m_viewports;
       std::vector<VkRect2D>                                 m_scissors;
-      VkPipelineVertexInputStateCreateInfo                  m_vertexInfo;
+      VkPipelineVertexInputStateCreateInfo                  m_vertexInfo = {};
       bool                                                  m_vertexInfoSet =false;
 
       //std::vector<vertexBufferConstant>                     m_vertexBuffers;
-      std::vector<VkPushConstantRange>                      m_constantInfos;
-      VkPipelineInputAssemblyStateCreateInfo                m_inputInfo;
+      std::vector<VkPushConstantRange>                      m_constantInfos = {};
+      VkPipelineInputAssemblyStateCreateInfo                m_inputInfo  = {};
 
       uint32_t                                              m_subpassNumber=0;
 
