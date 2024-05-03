@@ -5,13 +5,13 @@
 namespace LavaCake {
   namespace Framework {
 
-#ifdef _WIN32
+#ifdef ENABLE_KHRONOS_VALIDATION
     const std::vector<const char*> validationLayers = {
       "VK_LAYER_KHRONOS_validation"
     };
 #else
     const std::vector<const char*> validationLayers = {
-      //"VK_LAYER_KHRONOS_validation"
+      
     };
 #endif
 
@@ -585,9 +585,9 @@ namespace LavaCake {
             enabledMeshShaderFeatures.pNext = pNextChain;
             enabledMeshShaderFeatures.taskShader = VK_TRUE;
             enabledMeshShaderFeatures.meshShader = VK_TRUE;
-            enabledMeshShaderFeatures.primitiveFragmentShadingRateMeshShader = VK_TRUE;
-            enabledMeshShaderFeatures.multiviewMeshShader = VK_TRUE;
-            enabledMeshShaderFeatures.meshShaderQueries = VK_TRUE;
+            enabledMeshShaderFeatures.primitiveFragmentShadingRateMeshShader = VK_FALSE;
+            enabledMeshShaderFeatures.multiviewMeshShader = VK_FALSE;
+            enabledMeshShaderFeatures.meshShaderQueries = VK_FALSE;
 
             pNextChain = &enabledMeshShaderFeatures;
           }
