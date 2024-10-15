@@ -4,6 +4,7 @@
 #include "Device.h"
 #include "ErrorCheck.h"
 #include <cassert>
+#include <utility>
 
 namespace LavaCake {
   namespace Framework {
