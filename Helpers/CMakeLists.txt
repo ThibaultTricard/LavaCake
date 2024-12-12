@@ -20,7 +20,6 @@ macro(addSlangShader input output)
 	set(STAGE_NAME_SLANG ${STAGE_NAME_SLANG} ${variadic_args})
 	list(LENGTH variadic_args lenStageName)
 	set(STAGE_NUMBER_SLANG ${STAGE_NUMBER_SLANG} ${lenStageName})
-	message(${lenStageName})
 	message(STATUS "Added new rule to convert ${input} to ${output}")
 endmacro()
 
@@ -88,8 +87,6 @@ macro(AutoSPIRV TARGET_NAME)
 	#SLANG SHADERS
 	list(LENGTH INPUT_SHADER_SLANG len1)
 	list(LENGTH STAGE_NAME_SLANG len2)
-
-	message("${STAGE_NUMBER_SLANG}")
 	#message(${len2})
 	set(count 0)
 	if(${len1} GREATER_EQUAL 1)
