@@ -61,23 +61,23 @@ namespace LavaCake {
 
   template<typename T, unsigned long ColumnSize, unsigned long RowSize>
   struct mat{
-    std::array<vec<T, ColumnSize>,RowSize> data;
+    std::array< vec<T, RowSize>, ColumnSize> data;
     
 
     mat(){
-      for(int j = 0; j <RowSize; j ++){
+      for(int j = 0; j <ColumnSize; j ++){
         data[j].data.fill(T(0));
       }
     }
 
-    mat(const std::array<vec<T, ColumnSize>,RowSize>& m){
-      data = std::array<vec<T, ColumnSize>,RowSize>(m);
+    mat(const std::array< vec<T, RowSize>, ColumnSize>& m){
+      data = std::array< vec<T, RowSize>, ColumnSize>(m);
     }
 
     mat(const std::array<T,ColumnSize*RowSize> m){
       for(int i = 0; i <ColumnSize; i ++){
         for(int j = 0; j <RowSize; j ++){
-          data[j][i] = m[j*ColumnSize+i];
+          data[i][j] = m[i*RowSize+j];
         };
       };
     }
@@ -85,16 +85,16 @@ namespace LavaCake {
     mat(const T m[ColumnSize*RowSize]){
       for(int i = 0; i <ColumnSize; i ++){
         for(int j = 0; j <RowSize; j ++){
-          data[j][i] = m[j*ColumnSize+i];
+          data[i][j] = m[i*RowSize+j];
         };
       };
     }
 
-    const vec<T, ColumnSize>& operator[](int const index) const{
+    const vec<T, RowSize>& operator[](int const index) const{
       return data[index];
     }
 
-    vec<T, ColumnSize>& operator[](int const index){
+    vec<T, RowSize>& operator[](int const index){
       return data[index];
     }
 
@@ -135,7 +135,7 @@ LavaCake::mat<T, M,N> transpose (const LavaCake::mat<T, N,M>& matrix){
   LavaCake::mat<T, M,N> res;
   for(unsigned long i = 0; i < N; i++){
     for(unsigned long j = 0; j < M; j++){
-      res[i][j] = matrix[j][i];
+      res[j][i] = matrix[i][j];
     }
   }
   return res;
@@ -233,13 +233,13 @@ LavaCake::vec<T, N> normalize(LavaCake::vec<T, N> const vector) {
 }
 
 
-template<typename T, unsigned long N1,unsigned long M1N2, unsigned long M2>
-LavaCake::mat<T, N1,M2> operator*(LavaCake::mat<T, N1,M1N2> left, LavaCake::mat<T, M1N2,M2> right){
+template<typename T, unsigned long N1,unsigned long N2M1, unsigned long M2>
+LavaCake::mat<T, N1,M2> operator*(LavaCake::mat<T, N1, N2M1> left, LavaCake::mat<T, N2M1 ,M2> right){
   LavaCake::mat<T, N1,M2> res;
   for(unsigned long i = 0; i < N1; i++){
     for(unsigned long j = 0; j < M2; j++){
-      for(unsigned long k = 0; k < M1N2; k++){
-        res[j][i] += left[k][i] * right[j][k];
+      for(unsigned long k = 0; k < N2M1; k++){
+        res[i][j] += left[i][k] * right[k][j];
       }
     }
   }
@@ -250,7 +250,8 @@ template<typename T, unsigned long N1,unsigned long vecSize>
 LavaCake::vec<T, vecSize> operator*(
   const LavaCake::mat<T, N1,vecSize>& left,
   const LavaCake::vec<T, vecSize>& right){
-  auto tmp =left * LavaCake::mat<T,vecSize,1>(right.data);
+    auto vectmp = LavaCake::mat<T,vecSize,1>(right.data);
+    auto tmp =transpose(left * vectmp);
 
   
 
@@ -315,6 +316,45 @@ LavaCake::mat<T, N,M> operator*(const  LavaCake::mat<T, N,M>& left, const T& rig
   return res;
 }
 
+template<typename T, unsigned long N>
+LavaCake::mat<T, N,N> inverse(LavaCake::mat<T, N,N> const& m) {
+    LavaCake::mat<T, N,N> matrix(m);
+    LavaCake::mat<T, N,N> inverseM;
+    // Initialize the inverse matrix to the identity matrix
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            inverseM[i][j] = (i == j) ? 1.0 : 0.0;
+        }
+    }
+
+    // Perform Gaussian elimination
+    for (int i = 0; i < N; ++i) {
+        // Find the pivot element
+        double pivot = matrix[i][i];
+        if (std::abs(pivot) < 1e-10) {
+            return  LavaCake::mat<T, N,N>();
+        }
+
+        // Normalize the pivot row
+        for (int j = 0; j < N; ++j) {
+            matrix[i][j] /= pivot;
+            inverseM[i][j] /= pivot;
+        }
+
+        // Eliminate other rows
+        for (int k = 0; k < N; ++k) {
+            if (k == i) continue;
+            double factor = matrix[k][i];
+            for (int j = 0; j < N; ++j) {
+                matrix[k][j] -= factor * matrix[i][j];
+                inverseM[k][j] -= factor * inverseM[i][j];
+            }
+        }
+    }
+
+    return inverseM;
+}
+
 namespace LavaCake {
   
 
@@ -366,6 +406,6 @@ namespace LavaCake {
                                            float near_plane,
                                            float far_plane) ;
 
-  mat4f inverse(const mat4f& m);
+  //mat4f inverse(const mat4f& m);
 
 }
