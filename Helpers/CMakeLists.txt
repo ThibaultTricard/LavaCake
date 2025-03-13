@@ -136,11 +136,11 @@ macro(AutoSPIRV TARGET_NAME)
 			set(SHADERS_DEP ${SHADERS_DEP} ${OUTPUT_FILE})
 		endforeach()
 		add_custom_target(
-			${TARGET_NAME}_SHADERS
+			${TARGET_NAME}_SHADERS_SLANG
 			DEPENDS ${SHADERS_DEP}
 		)
 		set_source_files_properties(${SHADERS_DEP} PROPERTIES GENERATED TRUE)
-		add_dependencies(${TARGET_NAME} ${TARGET_NAME}_SHADERS)
-		set_property( TARGET ${TARGET_NAME}_SHADERS PROPERTY FOLDER "AutoSPIRV" )
+		add_dependencies(${TARGET_NAME} ${TARGET_NAME}_SHADERS_SLANG)
+		set_property( TARGET ${TARGET_NAME}_SHADERS_SLANG PROPERTY FOLDER "AutoSPIRV" )
 	endif()
 endmacro()
