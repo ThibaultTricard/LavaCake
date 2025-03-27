@@ -352,9 +352,10 @@ namespace LavaCake {
 			int original_index = 0;
 			int texture_index = 0;
 			int normal_index = 0;
+			int material_index = 0;
 		};
 
-		std::vector<TriangleIndexedMesh> LoadSceneFromObjFile(std::string filename, bool load_normal = true, bool load_UV =true){
+		std::vector<TriangleIndexedMesh> LoadSceneFromObjFile(std::string filename, std::string mtlBasePAth = "", bool load_normal = true, bool load_UV =true, bool load_MaterialId= true){
 
 
 			std::vector<TriangleIndexedMesh> res;
@@ -365,7 +366,7 @@ namespace LavaCake {
 			std::string                      error;
 
 
-			bool result = tinyobj::LoadObj(&attribs, &shapes, &materials, &error, filename.data());
+			bool result = tinyobj::LoadObj(&attribs, &shapes, &materials, &error, filename.data(), mtlBasePAth.data());
 			if (!result) {
 				std::cout << "Could not open the '" << filename << "' file.";
 				if (0 < error.size()) {
@@ -382,6 +383,7 @@ namespace LavaCake {
 			uint32_t strideSize = 3;
 			uint32_t normalOffset = 3;
 			uint32_t UVoffset =  load_normal ? 6 : 3;
+			uint32_t matOffset = 0;
 			if (load_normal) {
 				description.push_back(NORM3);
 				strideSize +=3;
@@ -391,25 +393,28 @@ namespace LavaCake {
 				strideSize +=2;
 			}
 
-
-
+			if (load_MaterialId) {
+				description.push_back(F1);
+				matOffset = strideSize;
+				strideSize +=1;
+			}
 
 			for (auto shape : shapes){
 				std::vector<std::vector<vertices_tmp_t>> indirection(attribs.vertices.size());
 				TriangleIndexedMesh mesh(description);
 
-				//std::cout<<shape.mesh.num_face_vertices.size()<< " " << shape.mesh.indices.size() / 3  << std::endl;
 				uint32_t vertex_count = 0;
 				int debug_counter = 0;
 
-				for(auto index : shape.mesh.indices){
-					
+				for(int i = 0; i < shape.mesh.indices.size(); i ++){
+					auto index = shape.mesh.indices[i];
 					if(indirection[index.vertex_index].size() == 0){
 						vertices_tmp_t v = {
 							vertex_count,
 							index.vertex_index,
 							index.texcoord_index,
-							index.normal_index
+							index.normal_index,
+							shape.mesh.material_ids[i/3]
 						};
 						indirection[index.vertex_index].push_back(v);
 
@@ -432,6 +437,11 @@ namespace LavaCake {
 								vertex[UVoffset+1] = attribs.texcoords[v.texture_index*2+1] ;
 							}
 						}
+						if(load_MaterialId){
+							if(v.material_index != -1){
+								vertex[matOffset] = float(v.material_index);
+							}
+						}
 
 						mesh.appendVertex(vertex);
 						mesh.appendIndex(v.final_index);
@@ -443,7 +453,7 @@ namespace LavaCake {
 						bool found = false;
 						for(uint32_t u = 0; u < indirection[index.vertex_index].size(); u++){
 							v = indirection[index.vertex_index][u];
-							if(v.original_index == index.vertex_index && v.normal_index == index.normal_index && v.texture_index == index.texcoord_index){
+							if(v.original_index == index.vertex_index && v.normal_index == index.normal_index && v.texture_index == index.texcoord_index && v.material_index == shape.mesh.material_ids[i/3]){
 								found = true;
 								break;
 							}
@@ -457,7 +467,8 @@ namespace LavaCake {
 								vertex_count,
 								index.vertex_index,
 								index.texcoord_index,
-								index.normal_index
+								index.normal_index,
+								shape.mesh.material_ids[i/3]
 							};
 							indirection[index.vertex_index].push_back(v);
 
@@ -469,9 +480,9 @@ namespace LavaCake {
 
 							if(load_normal){
 								if(v.normal_index != -1){
-									vertex[normalOffset] = attribs.normals[v.normal_index*3] ;
-									vertex[normalOffset+1] = attribs.normals[v.normal_index*3+1] ;
-									vertex[normalOffset+2] = attribs.normals[v.normal_index*3+2] ;
+									vertex[normalOffset] = attribs.normals[v.normal_index*3];
+									vertex[normalOffset+1] = attribs.normals[v.normal_index*3+1];
+									vertex[normalOffset+2] = attribs.normals[v.normal_index*3+2];
 								}
 							}
 						
@@ -482,6 +493,11 @@ namespace LavaCake {
 								}
 							}
 
+							if(load_MaterialId){
+								if(v.material_index != -1){
+									vertex[matOffset] = float(v.material_index);
+								}
+							}
 
 							mesh.appendVertex(vertex);
 							mesh.appendIndex(v.final_index);
@@ -497,7 +513,7 @@ namespace LavaCake {
 		}
 
 
-	
+
   }
 
 
