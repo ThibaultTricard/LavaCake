@@ -135,29 +135,8 @@ mat4f PreparePerspectiveProjectionMatrix(float aspect_ratio,
     0.0f
   });
 
-  mat4f corrective_mat({
-    1.0f,
-    0.0f,
-    0.0f,
-    0.0f,
-    
-    0.0f,
-    1.0f,
-    0.0f,
-    0.0f,
-    
-    0.0f,
-    0.0f,
-    1.0f/2.0f,
-    1.0f/2.0f,
-    
-    0.0f,
-    0.0f,
-    0.0f,
-    1.0f
-  });
 
-  return perspective_projection_matrix * corrective_mat;
+  return perspective_projection_matrix;
 }
 
 mat4f PrepareOrthographicProjectionMatrix(float left_plane,
