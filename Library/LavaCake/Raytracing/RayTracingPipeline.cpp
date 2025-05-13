@@ -73,7 +73,7 @@ namespace LavaCake {
 				m_currentGroupIndex++;
 			}
 
-			void RayTracingPipeline::startHitGroup() {
+			void RayTracingPipeline::startHitGroup(VkRayTracingShaderGroupTypeKHR type) {
 				if (m_isHitGroupOpen)
 				{
 					Framework::ErrorCheck::setError("Hit group already open");
@@ -83,7 +83,7 @@ namespace LavaCake {
 				VkRayTracingShaderGroupCreateInfoKHR groupInfo;
 				groupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
 				groupInfo.pNext = nullptr;
-				groupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
+				groupInfo.type = type;
 				groupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 				groupInfo.closestHitShader = VK_SHADER_UNUSED_KHR;
 				groupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
@@ -133,7 +133,7 @@ namespace LavaCake {
 			}
 
 			void RayTracingPipeline::setIntersectionModule(const IntersectionShaderModule& module) {
-				if (m_isHitGroupOpen) {
+				if (!m_isHitGroupOpen) {
 					Framework::ErrorCheck::setError("No open hitgroup");
 					return;
 				}

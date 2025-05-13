@@ -21,7 +21,7 @@ namespace LavaCake {
 
 		void addMissModule(const MissShaderModule& module);
 
-		void startHitGroup();
+		void startHitGroup(VkRayTracingShaderGroupTypeKHR type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR);
 
 		void setClosestHitModule(const ClosestHitShaderModule& module);
 
@@ -39,7 +39,7 @@ namespace LavaCake {
 
 		void bindDescriptorSet( Framework::CommandBuffer& cmdBuffer, const  Framework::DescriptorSet& descriptorSet) override;
 
-      void bindPipeline( Framework::CommandBuffer& cmdBuff) override;
+      	void bindPipeline( Framework::CommandBuffer& cmdBuff) override;
 
     private:
 

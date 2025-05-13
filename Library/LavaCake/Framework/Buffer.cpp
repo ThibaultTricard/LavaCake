@@ -235,5 +235,39 @@ namespace LavaCake {
         VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
     }
 
+    Buffer createAabbBuffer(
+      const Queue& queue,
+      CommandBuffer& cmdBuff,
+      LavaCake::Helpers::ABBox<3>& aabb) {
+
+      VkAabbPositionsKHR vkaabb;
+      vkaabb.minX =aabb.A()[0];
+      vkaabb.minY =aabb.A()[1];
+      vkaabb.minZ =aabb.A()[2];
+      vkaabb.maxX =aabb.B()[0];
+      vkaabb.maxY =aabb.B()[1];
+      vkaabb.maxZ =aabb.B()[2];
+
+      return Buffer(
+        queue,
+        cmdBuff,
+        std::vector<VkAabbPositionsKHR>{ vkaabb },
+        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
+    }
+
+
+    Buffer createAabbBuffer(
+      const Queue& queue,
+      CommandBuffer& cmdBuff,
+      std::vector<VkAabbPositionsKHR>& vkaabbs) {
+
+
+
+      return Buffer(
+        queue,
+        cmdBuff,
+        vkaabbs,
+        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
+    }
   }
 }

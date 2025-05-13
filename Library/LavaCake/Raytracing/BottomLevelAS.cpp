@@ -49,6 +49,25 @@ namespace LavaCake {
 			}
 
 
+			void BottomLevelAccelerationStructure::addAabbBuffer(uint64_t aabbBufferDeviceAdressse,int primitiveCount, bool opaque){
+				
+
+				VkAccelerationStructureGeometryKHR geometry = {};
+					geometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR,
+					geometry.geometryType = VK_GEOMETRY_TYPE_AABBS_KHR,
+					geometry.geometry.aabbs = {
+						VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR,
+						nullptr,
+						aabbBufferDeviceAdressse,
+						sizeof(VkAabbPositionsKHR),
+					};
+					if(opaque){
+						geometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
+					}
+				m_primCount+=primitiveCount;
+				m_geometry.push_back(geometry);
+			}
+
 			void BottomLevelAccelerationStructure::allocate(const  Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate) {
 
 				Framework::Device* d = Framework::Device::getDevice();
@@ -61,13 +80,6 @@ namespace LavaCake {
 				accelerationStructureBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
 				accelerationStructureBuildGeometryInfo.geometryCount = (uint32_t)m_geometry.size();
 				accelerationStructureBuildGeometryInfo.pGeometries = m_geometry.data();
-
-
-				uint32_t vertexNumber = 0;
-				for (size_t i = 0; i < m_geometry.size(); i++) {
-					vertexNumber += m_geometry[i].geometry.triangles.maxVertex;
-				}
-
 
 
 				VkAccelerationStructureBuildSizesInfoKHR accelerationStructureBuildSizesInfo{};
@@ -90,7 +102,6 @@ namespace LavaCake {
 				vkCreateAccelerationStructureKHR(device, &accelerationStructureCreateInfo, nullptr, &m_accelerationStructure);
 
 
-				
 				m_scratchBuffer = std::make_shared<Framework::Buffer>(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 				VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};

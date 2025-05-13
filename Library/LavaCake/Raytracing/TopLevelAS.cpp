@@ -35,34 +35,6 @@ namespace LavaCake {
         instanceDataDeviceAddress.deviceAddress = instancesBuffer->getBufferDeviceAddress();
         
 
-        /*for (int i = 0; i < m_AccelerationStructureInstances.size(); i++) {
-          // Buffer for instance data
-          std::vector<VkAccelerationStructureInstanceKHR> instance = { m_AccelerationStructureInstances[i] };
-
-          m_instancesBuffers[i] = std::make_shared<Framework::Buffer>(queue,
-            cmdBuff,
-            instance,
-            VkBufferUsageFlagBits(VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR),
-            VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
-
-          VkDeviceOrHostAddressConstKHR instanceDataDeviceAddress{};
-          instanceDataDeviceAddress.deviceAddress = m_instancesBuffers[i]->getBufferDeviceAddress();
-          instanceDataDeviceAddresses.push_back(instanceDataDeviceAddress);
-
-          VkAccelerationStructureGeometryKHR asg{};
-          asg.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
-          asg.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
-          asg.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
-          asg.geometry.instances.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
-          asg.geometry.instances.arrayOfPointers = VK_FALSE;
-          asg.geometry.instances.data = instanceDataDeviceAddress;
-
-          accelerationStructureGeometry.push_back(asg);
-
-          //primitive_count += m_instances[i].bottomLevelAS->getPrimitiveNumber();
-          m_primitive_count.push_back(m_instances[i].bottomLevelAS->getPrimitiveNumber());
-        }*/
-
         VkAccelerationStructureGeometryKHR accelerationStructureGeometry{};
         accelerationStructureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
         accelerationStructureGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;

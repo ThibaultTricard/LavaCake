@@ -1,6 +1,7 @@
 #pragma once
 #include <LavaCake/Framework/VertexBuffer.h>
 #include <LavaCake/Framework/ErrorCheck.h>
+#include <LavaCake/Helpers/ABBox.h>
 
 namespace LavaCake {
 	namespace RayTracing {
@@ -12,6 +13,8 @@ namespace LavaCake {
 			BottomLevelAccelerationStructure() {};
 
 			void addVertexBuffer(std::shared_ptr<Framework::VertexBuffer> vertexBuffer, std::shared_ptr < Framework::Buffer> transformBuffer, bool opaque = true);
+
+			void addAabbBuffer(uint64_t aabbBufferDeviceAdressse, int primitiveCount = 1, bool opaque = true);
 
 			void allocate(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
 

@@ -3,7 +3,7 @@
 #include "CommandBuffer.h"
 #include "Queue.h"
 #include "Image.h"
-
+#include <LavaCake/Helpers/ABBox.h>
 #include <span>
 
 namespace LavaCake {
@@ -447,6 +447,17 @@ namespace LavaCake {
       CommandBuffer& cmdBuff,
       VkTransformMatrixKHR& transform);
 
+    Buffer createAabbBuffer(
+     const Queue& queue,
+      CommandBuffer& cmdBuff,
+      LavaCake::Helpers::ABBox<3>& aabb);
+
+    Buffer createAabbBuffer(
+      const Queue& queue,
+      CommandBuffer& cmdBuff,
+      std::vector<VkAabbPositionsKHR>& vkaabbs);
 
   }
+
+  
 }
