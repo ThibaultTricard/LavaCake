@@ -18,11 +18,30 @@ namespace LavaCake {
 
 			void allocate(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, bool allowUpdate = false);
 
+			void update(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff);
+
 			const VkAccelerationStructureKHR& getHandle() const;
 
 			uint64_t getDeviceAddress() const;
 
 			uint32_t getPrimitiveNumber() const;
+
+			
+			std::shared_ptr < Framework::Buffer> getScratchBuffer(){
+				return m_scratchBuffer;
+			};
+
+			std::vector<VkAccelerationStructureGeometryKHR>& getGeometry(){
+				return m_geometry;
+			}
+
+			uint32_t getPrimCount(){
+				return m_primCount;
+			}
+
+			VkAccelerationStructureDeviceAddressInfoKHR& getAccelerationDeviceAddressInfo(){
+				return m_accelerationDeviceAddressInfo;
+			}
 
 		private:
 
@@ -30,7 +49,6 @@ namespace LavaCake {
 			uint32_t max_primCount = 0;
 			uint32_t m_numTriangle = 0;
 			
-
 			std::shared_ptr<Framework::Buffer> m_ASBuffer;
 			VkAccelerationStructureKHR m_accelerationStructure{};
 			uint64_t m_deviceAddress;
@@ -40,5 +58,7 @@ namespace LavaCake {
 
 		};
 
+
+		void updateBLAS(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, std::vector<BottomLevelAccelerationStructure>& blas);
 	}
 }

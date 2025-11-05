@@ -455,7 +455,9 @@ namespace LavaCake {
     Buffer createAabbBuffer(
       const Queue& queue,
       CommandBuffer& cmdBuff,
-      std::vector<VkAabbPositionsKHR>& vkaabbs);
+      std::vector<VkAabbPositionsKHR>& vkaabbs,
+      VkBufferUsageFlagBits additionalUsage = VkBufferUsageFlagBits(0x00000000)
+    );
 
   }
 

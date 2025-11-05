@@ -28,7 +28,6 @@
 // LinkedIn: https://www.linkedin.com/in/pawel-lapinski-84522329
 //
 // Vulkan Functions
-
 #ifndef VULKAN_FUNCTIONS
 #define VULKAN_FUNCTIONS
 

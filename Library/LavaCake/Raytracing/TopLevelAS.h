@@ -16,7 +16,11 @@ namespace LavaCake {
         return m_accelerationStructure;
       }
 
+
+
       void createAccelerationStructure(VkAccelerationStructureTypeKHR type, VkAccelerationStructureBuildSizesInfoKHR buildSizeInfo);
+
+      void update(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff);
 
 		private : 
 
@@ -43,9 +47,13 @@ namespace LavaCake {
       VkAccelerationStructureBuildGeometryInfoKHR m_accelerationBuildGeometryInfo = {};
       std::shared_ptr < Framework::Buffer> m_ASBuffer = nullptr;
       std::shared_ptr < Framework::Buffer> m_scratchBuffer;
-      std::vector<std::shared_ptr<Framework::Buffer>> m_instancesBuffers;
+      Framework::Buffer m_instancesBuffer;
 
-      std::vector<Framework::Buffer> m_instancesBuffer;
+      VkAccelerationStructureGeometryKHR m_accelerationStructureGeometry;
+      std::vector<VkAccelerationStructureBuildRangeInfoKHR*> m_accelerationBuildStructureRangeInfos;
+      VkDeviceOrHostAddressConstKHR m_instanceDataDeviceAddress{};
+      VkBufferDeviceAddressInfoKHR m_scratchBufferDeviceAddressInfo{};
+
 		};
 	}
 }

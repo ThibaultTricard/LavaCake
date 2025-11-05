@@ -133,7 +133,7 @@ namespace LavaCake {
       \param waitingTime (optional) the maximum waiting time allowed to this function in nanoseconds
       \param force (optional) if set to true, will wait even if it was not submited
       */
-      void wait(uint32_t waitingTime = UINT32_MAX, bool force = false) {
+      void wait(uint64_t waitingTime = UINT64_MAX, bool force = false) {
         if (m_submitted || force) {
           Device* d = Device::getDevice();
           VkDevice logical = d->getLogicalDevice();

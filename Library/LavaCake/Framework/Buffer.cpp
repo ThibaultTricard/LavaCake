@@ -259,15 +259,15 @@ namespace LavaCake {
     Buffer createAabbBuffer(
       const Queue& queue,
       CommandBuffer& cmdBuff,
-      std::vector<VkAabbPositionsKHR>& vkaabbs) {
-
+      std::vector<VkAabbPositionsKHR>& vkaabbs,
+      VkBufferUsageFlagBits additionalUsage) {
 
 
       return Buffer(
         queue,
         cmdBuff,
         vkaabbs,
-        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR);
+        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR |additionalUsage);
     }
   }
 }

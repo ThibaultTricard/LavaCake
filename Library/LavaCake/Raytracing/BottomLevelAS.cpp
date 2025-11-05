@@ -112,7 +112,82 @@ namespace LavaCake {
 				accelerationBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
 				accelerationBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
 				accelerationBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+				if(allowUpdate)
+					accelerationBuildGeometryInfo.flags = accelerationBuildGeometryInfo.flags | VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR;
+
 				accelerationBuildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
+		
+				accelerationBuildGeometryInfo.dstAccelerationStructure = m_accelerationStructure;
+				accelerationBuildGeometryInfo.geometryCount = (uint32_t)m_geometry.size();
+				accelerationBuildGeometryInfo.pGeometries = m_geometry.data();
+				accelerationBuildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(device, &scratchBufferDeviceAddressInfo);
+
+				VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};
+				accelerationStructureBuildRangeInfo.primitiveCount = m_primCount;
+				accelerationStructureBuildRangeInfo.primitiveOffset = 0;
+				accelerationStructureBuildRangeInfo.firstVertex = 0;
+				accelerationStructureBuildRangeInfo.transformOffset = 0;
+				std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos = { &accelerationStructureBuildRangeInfo };
+
+				VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{};
+				accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+				VkPhysicalDeviceFeatures2 deviceFeatures2{};
+				deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+				deviceFeatures2.pNext = &accelerationStructureFeatures;
+				vkGetPhysicalDeviceFeatures2(phyDevice, &deviceFeatures2);
+
+				if (accelerationStructureFeatures.accelerationStructureHostCommands)
+				{
+					// Implementation supports building acceleration structure building on host
+					vkBuildAccelerationStructuresKHR(
+						device,
+						VK_NULL_HANDLE,
+						1,
+						&accelerationBuildGeometryInfo,
+						accelerationBuildStructureRangeInfos.data());
+				}
+				else
+				{
+					// Acceleration structure needs to be build on the device
+					cmdBuff.resetFence();
+					cmdBuff.beginRecord();
+					vkCmdBuildAccelerationStructuresKHR(
+						cmdBuff.getHandle(),
+						1,
+						&accelerationBuildGeometryInfo,
+						accelerationBuildStructureRangeInfos.data());
+					cmdBuff.endRecord();
+
+					cmdBuff.submit(queue, {}, {});
+
+					cmdBuff.wait(UINT64_MAX);
+					cmdBuff.resetFence();
+				}
+
+				m_accelerationDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+				m_accelerationDeviceAddressInfo.accelerationStructure = m_accelerationStructure;
+				m_accelerationDeviceAddressInfo.pNext = nullptr;
+				m_deviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &m_accelerationDeviceAddressInfo);
+
+			}
+
+
+			void BottomLevelAccelerationStructure::update(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff){
+
+				Framework::Device* d = Framework::Device::getDevice();
+				VkDevice device = d->getLogicalDevice();
+				VkPhysicalDevice phyDevice = d->getPhysicalDevice();
+
+				VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};
+				scratchBufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+				scratchBufferDeviceAddressInfo.buffer = m_scratchBuffer->getHandle();
+
+				VkAccelerationStructureBuildGeometryInfoKHR accelerationBuildGeometryInfo{};
+				accelerationBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+				accelerationBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+				accelerationBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR | VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR;
+				accelerationBuildGeometryInfo.mode =  VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR;
+				accelerationBuildGeometryInfo.srcAccelerationStructure = m_accelerationStructure;
 				accelerationBuildGeometryInfo.dstAccelerationStructure = m_accelerationStructure;
 				accelerationBuildGeometryInfo.geometryCount = (uint32_t)m_geometry.size();
 				accelerationBuildGeometryInfo.pGeometries = m_geometry.data();
@@ -164,9 +239,7 @@ namespace LavaCake {
 				m_accelerationDeviceAddressInfo.accelerationStructure = m_accelerationStructure;
 				m_accelerationDeviceAddressInfo.pNext = nullptr;
 				m_deviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &m_accelerationDeviceAddressInfo);
-
 			}
-
 
 			const VkAccelerationStructureKHR& BottomLevelAccelerationStructure::getHandle() const {
 				return m_accelerationStructure;
@@ -179,6 +252,84 @@ namespace LavaCake {
 			uint32_t BottomLevelAccelerationStructure::getPrimitiveNumber() const {
 				return (uint32_t)m_geometry.size();
 			}
+
+
+
+		void updateBLAS(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff, std::vector<BottomLevelAccelerationStructure>& blas){
+
+			Framework::Device* d = Framework::Device::getDevice();
+			VkDevice device = d->getLogicalDevice();
+			VkPhysicalDevice phyDevice = d->getPhysicalDevice();
+
+			std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos(blas.size());
+			std::vector<VkBufferDeviceAddressInfoKHR> scratchBufferDeviceAddressInfo(blas.size());
+			std::vector<VkAccelerationStructureBuildGeometryInfoKHR> accelerationBuildGeometryInfo(blas.size());
+			for ( int i = 0; i < blas.size(); i++){
+				scratchBufferDeviceAddressInfo[i].sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+				scratchBufferDeviceAddressInfo[i].buffer =  blas[i].getScratchBuffer()->getHandle();
+
+				
+				accelerationBuildGeometryInfo[i].sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
+				accelerationBuildGeometryInfo[i].type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+				accelerationBuildGeometryInfo[i].flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR | VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR;
+				accelerationBuildGeometryInfo[i].mode =  VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR;
+				accelerationBuildGeometryInfo[i].srcAccelerationStructure = blas[i].getHandle();
+				accelerationBuildGeometryInfo[i].dstAccelerationStructure = blas[i].getHandle();
+				accelerationBuildGeometryInfo[i].geometryCount = (uint32_t)blas[i].getGeometry().size();
+				accelerationBuildGeometryInfo[i].pGeometries = blas[i].getGeometry().data();
+				accelerationBuildGeometryInfo[i].scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(device, &scratchBufferDeviceAddressInfo[i]);
+
+
+				accelerationBuildStructureRangeInfos[i] = new VkAccelerationStructureBuildRangeInfoKHR();
+				accelerationBuildStructureRangeInfos[i]->primitiveCount = blas[i].getPrimCount();
+				accelerationBuildStructureRangeInfos[i]->primitiveOffset = 0;
+				accelerationBuildStructureRangeInfos[i]->firstVertex = 0;
+				accelerationBuildStructureRangeInfos[i]->transformOffset = 0;
+			
+			}
+
+			VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{};
+			accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+			VkPhysicalDeviceFeatures2 deviceFeatures2{};
+			deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+			deviceFeatures2.pNext = &accelerationStructureFeatures;
+			vkGetPhysicalDeviceFeatures2(phyDevice, &deviceFeatures2);
+
+			if (accelerationStructureFeatures.accelerationStructureHostCommands)
+			{
+				// Implementation supports building acceleration structure building on host
+				vkBuildAccelerationStructuresKHR(
+					device,
+					VK_NULL_HANDLE,
+					accelerationBuildGeometryInfo.size(),
+					accelerationBuildGeometryInfo.data(),
+					accelerationBuildStructureRangeInfos.data());
+			}
+			else
+			{
+				// Acceleration structure needs to be build on the device
+				cmdBuff.resetFence();
+				cmdBuff.beginRecord();
+				vkCmdBuildAccelerationStructuresKHR(
+					cmdBuff.getHandle(),
+					accelerationBuildGeometryInfo.size(),
+					accelerationBuildGeometryInfo.data(),
+					accelerationBuildStructureRangeInfos.data());
+				cmdBuff.endRecord();
+
+				cmdBuff.submit(queue, {}, {});
+				
+				cmdBuff.wait(UINT64_MAX);	
+				cmdBuff.resetFence();
+			}
+			for ( int i = 0; i < blas.size(); i++){
+				delete accelerationBuildStructureRangeInfos[i];
+			}
+			//m_accelerationDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+			//m_accelerationDeviceAddressInfo.accelerationStructure = m_accelerationStructure;
+			//m_accelerationDeviceAddressInfo.pNext = nullptr;
+			//m_deviceAddress = vkGetAccelerationStructureDeviceAddressKHR(device, &m_accelerationDeviceAddressInfo);
+		}
 
 	}
 }
