@@ -46,6 +46,8 @@ namespace LavaCake {
 		private:
 
 			uint32_t m_primCount = 0;
+
+			std::vector<uint32_t>  m_primPerGeometry;
 			uint32_t max_primCount = 0;
 			uint32_t m_numTriangle = 0;
 			

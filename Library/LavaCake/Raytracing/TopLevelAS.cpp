@@ -66,6 +66,10 @@ namespace LavaCake {
 
         createAccelerationStructure( VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, accelerationStructureBuildSizesInfo);
 
+        auto scratch_size = accelerationStructureBuildSizesInfo.buildScratchSize;
+        if(allowUpdate){
+          scratch_size = std::max( accelerationStructureBuildSizesInfo.updateScratchSize, accelerationStructureBuildSizesInfo.buildScratchSize);
+        }
         // Create a small scratch buffer used during build of the top level acceleration structure
         m_scratchBuffer = std::make_shared<Framework::Buffer>(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 

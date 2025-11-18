@@ -39,13 +39,13 @@ namespace LavaCake {
 				accelerationStructureGeometry.geometry.triangles.transformData = transformBufferDeviceAddress;
 
 				if (vertexBuffer->isIndexed()) {
-					m_primCount += (uint32_t)vertexBuffer->getIndicesNumber() / 3;
+					m_primPerGeometry.emplace_back( (uint32_t)vertexBuffer->getIndicesNumber() / 3);
 					
 				}
 				else {
-					m_primCount += (uint32_t)vertexBuffer->getVerticiesNumber() / 3;
+					m_primPerGeometry.emplace_back( (uint32_t)vertexBuffer->getVerticiesNumber() / 3);
 				}
-
+				m_primCount+=m_primPerGeometry[m_primPerGeometry.size()-1];
 				m_geometry.push_back(accelerationStructureGeometry);
 			}
 
@@ -66,6 +66,7 @@ namespace LavaCake {
 						geometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
 					}
 				m_primCount+=primitiveCount;
+				m_primPerGeometry.emplace_back(primitiveCount);
 				m_geometry.push_back(geometry);
 			}
 
@@ -80,6 +81,10 @@ namespace LavaCake {
 				accelerationStructureBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
 				accelerationStructureBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
 				accelerationStructureBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+
+				if(allowUpdate)
+					accelerationStructureBuildGeometryInfo.flags = accelerationStructureBuildGeometryInfo.flags | VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR;
+
 				accelerationStructureBuildGeometryInfo.geometryCount = (uint32_t)m_geometry.size();
 				accelerationStructureBuildGeometryInfo.pGeometries = m_geometry.data();
 
@@ -90,7 +95,7 @@ namespace LavaCake {
 					device,
 					VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
 					&accelerationStructureBuildGeometryInfo,
-					&m_primCount,
+					m_primPerGeometry.data(),
 					&accelerationStructureBuildSizesInfo);
 
 				m_ASBuffer = std::make_shared<Framework::Buffer>(accelerationStructureBuildSizesInfo.accelerationStructureSize, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -105,9 +110,9 @@ namespace LavaCake {
 
 
 				auto scratch_size = accelerationStructureBuildSizesInfo.buildScratchSize;
-				/*if(allowUpdate){
-					scratch_size += accelerationStructureBuildSizesInfo.updateScratchSize;
-				}*/
+				if(allowUpdate){
+					scratch_size = std::max( accelerationStructureBuildSizesInfo.updateScratchSize, accelerationStructureBuildSizesInfo.buildScratchSize);
+				}
 				m_scratchBuffer = std::make_shared<Framework::Buffer>(scratch_size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 				VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};
