@@ -33,6 +33,7 @@ namespace LavaCake {
         
         
         m_accelerationStructureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
+        m_accelerationStructureGeometry.pNext = nullptr;
         m_accelerationStructureGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
         m_accelerationStructureGeometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
         m_accelerationStructureGeometry.geometry.instances.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
@@ -41,6 +42,7 @@ namespace LavaCake {
 
         // Get size info
         VkAccelerationStructureBuildGeometryInfoKHR accelerationStructureBuildGeometryInfo{};
+        accelerationStructureBuildGeometryInfo.pNext = nullptr;
         accelerationStructureBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
         accelerationStructureBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
         if(allowUpdate){

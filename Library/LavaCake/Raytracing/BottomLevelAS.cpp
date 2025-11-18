@@ -19,6 +19,7 @@ namespace LavaCake {
 
 				VkAccelerationStructureGeometryKHR accelerationStructureGeometry{};
 				accelerationStructureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
+				accelerationStructureGeometry.pNext = nullptr;
 				accelerationStructureGeometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
 				accelerationStructureGeometry.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
 				accelerationStructureGeometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR;
@@ -75,6 +76,7 @@ namespace LavaCake {
 				VkPhysicalDevice phyDevice = d->getPhysicalDevice();
 
 				VkAccelerationStructureBuildGeometryInfoKHR accelerationStructureBuildGeometryInfo{};
+				accelerationStructureBuildGeometryInfo.pNext =nullptr;
 				accelerationStructureBuildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
 				accelerationStructureBuildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
 				accelerationStructureBuildGeometryInfo.flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
@@ -102,7 +104,11 @@ namespace LavaCake {
 				vkCreateAccelerationStructureKHR(device, &accelerationStructureCreateInfo, nullptr, &m_accelerationStructure);
 
 
-				m_scratchBuffer = std::make_shared<Framework::Buffer>(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+				auto scratch_size = accelerationStructureBuildSizesInfo.buildScratchSize;
+				/*if(allowUpdate){
+					scratch_size += accelerationStructureBuildSizesInfo.updateScratchSize;
+				}*/
+				m_scratchBuffer = std::make_shared<Framework::Buffer>(scratch_size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 				VkBufferDeviceAddressInfoKHR scratchBufferDeviceAddressInfo{};
 				scratchBufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
