@@ -39,6 +39,10 @@ namespace LavaCake {
 				return m_primCount;
 			}
 
+			const std::vector<uint32_t>& getPrimPerGeometry() const { 
+				return m_primPerGeometry; 
+			}
+
 			VkAccelerationStructureDeviceAddressInfoKHR& getAccelerationDeviceAddressInfo(){
 				return m_accelerationDeviceAddressInfo;
 			}

@@ -133,12 +133,20 @@ namespace LavaCake {
 				accelerationBuildGeometryInfo.pGeometries = m_geometry.data();
 				accelerationBuildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(device, &scratchBufferDeviceAddressInfo);
 
-				VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};
-				accelerationStructureBuildRangeInfo.primitiveCount = m_primCount;
-				accelerationStructureBuildRangeInfo.primitiveOffset = 0;
-				accelerationStructureBuildRangeInfo.firstVertex = 0;
-				accelerationStructureBuildRangeInfo.transformOffset = 0;
-				std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos = { &accelerationStructureBuildRangeInfo };
+
+				std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfosRef;
+				std::vector<VkAccelerationStructureBuildRangeInfoKHR> accelerationBuildStructureRangeInfos;
+				for(int i = 0; i < m_geometry.size(); i ++){
+					VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};
+					accelerationStructureBuildRangeInfo.primitiveCount = m_primCount;
+					accelerationStructureBuildRangeInfo.primitiveOffset = 0;
+					accelerationStructureBuildRangeInfo.firstVertex = 0;
+					accelerationStructureBuildRangeInfo.transformOffset = 0;
+
+					accelerationBuildStructureRangeInfos.push_back(accelerationStructureBuildRangeInfo);
+					accelerationBuildStructureRangeInfosRef.push_back(&accelerationBuildStructureRangeInfos[i]);
+				}
+				
 
 				VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{};
 				accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
@@ -155,7 +163,7 @@ namespace LavaCake {
 						VK_NULL_HANDLE,
 						1,
 						&accelerationBuildGeometryInfo,
-						accelerationBuildStructureRangeInfos.data());
+						accelerationBuildStructureRangeInfosRef.data());
 				}
 				else
 				{
@@ -166,7 +174,7 @@ namespace LavaCake {
 						cmdBuff.getHandle(),
 						1,
 						&accelerationBuildGeometryInfo,
-						accelerationBuildStructureRangeInfos.data());
+						accelerationBuildStructureRangeInfosRef.data());
 					cmdBuff.endRecord();
 
 					cmdBuff.submit(queue, {}, {});
@@ -204,12 +212,21 @@ namespace LavaCake {
 				accelerationBuildGeometryInfo.pGeometries = m_geometry.data();
 				accelerationBuildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(device, &scratchBufferDeviceAddressInfo);
 
-				VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};
-				accelerationStructureBuildRangeInfo.primitiveCount = m_primCount;
-				accelerationStructureBuildRangeInfo.primitiveOffset = 0;
-				accelerationStructureBuildRangeInfo.firstVertex = 0;
-				accelerationStructureBuildRangeInfo.transformOffset = 0;
-				std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos = { &accelerationStructureBuildRangeInfo };
+
+				std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfosRef;
+				std::vector<VkAccelerationStructureBuildRangeInfoKHR> accelerationBuildStructureRangeInfos;
+				for(int i = 0; i < m_geometry.size(); i ++){
+					VkAccelerationStructureBuildRangeInfoKHR accelerationStructureBuildRangeInfo{};
+					accelerationStructureBuildRangeInfo.primitiveCount = m_primCount;
+					accelerationStructureBuildRangeInfo.primitiveOffset = 0;
+					accelerationStructureBuildRangeInfo.firstVertex = 0;
+					accelerationStructureBuildRangeInfo.transformOffset = 0;
+
+					accelerationBuildStructureRangeInfos.push_back(accelerationStructureBuildRangeInfo);
+					accelerationBuildStructureRangeInfosRef.push_back(&accelerationBuildStructureRangeInfos[i]);
+				}
+				
+
 
 				VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures{};
 				accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
@@ -226,18 +243,19 @@ namespace LavaCake {
 						VK_NULL_HANDLE,
 						1,
 						&accelerationBuildGeometryInfo,
-						accelerationBuildStructureRangeInfos.data());
+						accelerationBuildStructureRangeInfosRef.data());
 				}
 				else
 				{
 					// Acceleration structure needs to be build on the device
 					cmdBuff.resetFence();
 					cmdBuff.beginRecord();
+					
 					vkCmdBuildAccelerationStructuresKHR(
 						cmdBuff.getHandle(),
 						1,
 						&accelerationBuildGeometryInfo,
-						accelerationBuildStructureRangeInfos.data());
+						accelerationBuildStructureRangeInfosRef.data());
 					cmdBuff.endRecord();
 
 					cmdBuff.submit(queue, {}, {});
@@ -275,6 +293,7 @@ namespace LavaCake {
 			std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos(blas.size());
 			std::vector<VkBufferDeviceAddressInfoKHR> scratchBufferDeviceAddressInfo(blas.size());
 			std::vector<VkAccelerationStructureBuildGeometryInfoKHR> accelerationBuildGeometryInfo(blas.size());
+			int ascount = 0;
 			for ( int i = 0; i < blas.size(); i++){
 				scratchBufferDeviceAddressInfo[i].sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
 				scratchBufferDeviceAddressInfo[i].buffer =  blas[i].getScratchBuffer()->getHandle();
@@ -290,12 +309,14 @@ namespace LavaCake {
 				accelerationBuildGeometryInfo[i].pGeometries = blas[i].getGeometry().data();
 				accelerationBuildGeometryInfo[i].scratchData.deviceAddress = vkGetBufferDeviceAddressKHR(device, &scratchBufferDeviceAddressInfo[i]);
 
-
-				accelerationBuildStructureRangeInfos[i] = new VkAccelerationStructureBuildRangeInfoKHR();
-				accelerationBuildStructureRangeInfos[i]->primitiveCount = blas[i].getPrimCount();
-				accelerationBuildStructureRangeInfos[i]->primitiveOffset = 0;
-				accelerationBuildStructureRangeInfos[i]->firstVertex = 0;
-				accelerationBuildStructureRangeInfos[i]->transformOffset = 0;
+				for(int j = 0; j < blas[i].getGeometry().size(); j ++){
+					accelerationBuildStructureRangeInfos[ascount] = new VkAccelerationStructureBuildRangeInfoKHR();
+					accelerationBuildStructureRangeInfos[ascount]->primitiveCount = blas[i].getPrimCount();
+					accelerationBuildStructureRangeInfos[ascount]->primitiveOffset = 0;
+					accelerationBuildStructureRangeInfos[ascount]->firstVertex = 0;
+					accelerationBuildStructureRangeInfos[ascount]->transformOffset = 0;
+					ascount++;
+				}
 			
 			}
 
