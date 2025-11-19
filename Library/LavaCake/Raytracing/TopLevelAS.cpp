@@ -56,12 +56,13 @@ namespace LavaCake {
 
         VkAccelerationStructureBuildSizesInfoKHR accelerationStructureBuildSizesInfo{};
 
+        uint32_t maxInstanceCount = (uint32_t)m_instances.size();
         accelerationStructureBuildSizesInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
         vkGetAccelerationStructureBuildSizesKHR(
           logical,
           VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
           &accelerationStructureBuildGeometryInfo,
-          &accelerationStructureBuildGeometryInfo.geometryCount,
+          &maxInstanceCount,
           &accelerationStructureBuildSizesInfo);
 
         createAccelerationStructure( VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, accelerationStructureBuildSizesInfo);
@@ -71,7 +72,7 @@ namespace LavaCake {
           scratch_size = std::max( accelerationStructureBuildSizesInfo.updateScratchSize, accelerationStructureBuildSizesInfo.buildScratchSize);
         }
         // Create a small scratch buffer used during build of the top level acceleration structure
-        m_scratchBuffer = std::make_shared<Framework::Buffer>(accelerationStructureBuildSizesInfo.buildScratchSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        m_scratchBuffer = std::make_shared<Framework::Buffer>(scratch_size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
         m_scratchBufferDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
         m_scratchBufferDeviceAddressInfo.buffer = m_scratchBuffer->getHandle();
