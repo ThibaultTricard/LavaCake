@@ -20,6 +20,8 @@ namespace LavaCake {
 
 			void update(const Framework::Queue& queue, Framework::CommandBuffer& cmdBuff);
 
+			void addVertexBuffer( const Framework::VertexBuffer& vertexBuffer, const Framework::Buffer& transformBuffer , bool opaque );
+
 			const VkAccelerationStructureKHR& getHandle() const;
 
 			uint64_t getDeviceAddress() const;

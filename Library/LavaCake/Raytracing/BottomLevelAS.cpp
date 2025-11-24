@@ -49,6 +49,52 @@ namespace LavaCake {
 				m_geometry.push_back(accelerationStructureGeometry);
 			}
 
+			void BottomLevelAccelerationStructure::addVertexBuffer(
+				const Framework::VertexBuffer& vertexBuffer, 
+				const Framework::Buffer& transformBuffer , bool opaque ) {
+
+				VkDeviceOrHostAddressConstKHR vertexBufferDeviceAddress{};
+				VkDeviceOrHostAddressConstKHR indexBufferDeviceAddress{};
+				VkDeviceOrHostAddressConstKHR transformBufferDeviceAddress{};
+
+				vertexBufferDeviceAddress.deviceAddress = vertexBuffer.getVertexBuffer()->getBufferDeviceAddress();
+				if (vertexBuffer.isIndexed()) {
+					indexBufferDeviceAddress.deviceAddress = vertexBuffer.getIndexBuffer()->getBufferDeviceAddress();
+				}
+				transformBufferDeviceAddress.deviceAddress = transformBuffer.getBufferDeviceAddress();
+
+				VkAccelerationStructureGeometryKHR accelerationStructureGeometry{};
+				accelerationStructureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
+				accelerationStructureGeometry.pNext = nullptr;
+				accelerationStructureGeometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
+				accelerationStructureGeometry.geometryType = VK_GEOMETRY_TYPE_TRIANGLES_KHR;
+				accelerationStructureGeometry.geometry.triangles.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR;
+				accelerationStructureGeometry.geometry.triangles.vertexFormat = VK_FORMAT_R32G32B32_SFLOAT;
+				accelerationStructureGeometry.geometry.triangles.vertexData = vertexBufferDeviceAddress;
+				accelerationStructureGeometry.geometry.triangles.maxVertex = (uint32_t)vertexBuffer.getVerticiesNumber();
+				accelerationStructureGeometry.geometry.triangles.vertexStride = vertexBuffer.getByteStrideSize();
+				if (vertexBuffer.isIndexed()) {
+					accelerationStructureGeometry.geometry.triangles.indexType = VK_INDEX_TYPE_UINT32;
+					accelerationStructureGeometry.geometry.triangles.indexData = indexBufferDeviceAddress;
+				}
+				else {
+					accelerationStructureGeometry.geometry.triangles.indexType = VK_INDEX_TYPE_NONE_KHR;
+				}
+				accelerationStructureGeometry.geometry.triangles.transformData.deviceAddress = 0;
+				accelerationStructureGeometry.geometry.triangles.transformData.hostAddress = nullptr;
+				accelerationStructureGeometry.geometry.triangles.transformData = transformBufferDeviceAddress;
+
+				if (vertexBuffer.isIndexed()) {
+					m_primPerGeometry.emplace_back( (uint32_t)vertexBuffer.getIndicesNumber() / 3);
+					
+				}
+				else {
+					m_primPerGeometry.emplace_back( (uint32_t)vertexBuffer.getVerticiesNumber() / 3);
+				}
+				m_primCount+=m_primPerGeometry[m_primPerGeometry.size()-1];
+				m_geometry.push_back(accelerationStructureGeometry);
+			}
+
 
 			void BottomLevelAccelerationStructure::addAabbBuffer(uint64_t aabbBufferDeviceAdressse,int primitiveCount, bool opaque){
 				
