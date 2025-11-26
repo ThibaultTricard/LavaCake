@@ -12,7 +12,7 @@ namespace LavaCake {
         instance.instanceCustomIndex = instanceID;
         instance.mask = 0xFF;
         instance.instanceShaderBindingTableRecordOffset = hitGroupOffset;
-        instance.flags = VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
+        instance.flags = VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR;
         instance.accelerationStructureReference = bottomLevelAS->getDeviceAddress();
         m_AccelerationStructureInstances.push_back(instance);
 
@@ -35,7 +35,7 @@ namespace LavaCake {
         m_accelerationStructureGeometry.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR;
         m_accelerationStructureGeometry.pNext = nullptr;
         m_accelerationStructureGeometry.geometryType = VK_GEOMETRY_TYPE_INSTANCES_KHR;
-        m_accelerationStructureGeometry.flags = VK_GEOMETRY_OPAQUE_BIT_KHR;
+        m_accelerationStructureGeometry.flags = VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR;
         m_accelerationStructureGeometry.geometry.instances.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
         m_accelerationStructureGeometry.geometry.instances.arrayOfPointers = VK_FALSE;
         m_accelerationStructureGeometry.geometry.instances.data = m_instanceDataDeviceAddress;

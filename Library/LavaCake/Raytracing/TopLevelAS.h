@@ -49,7 +49,7 @@ namespace LavaCake {
       std::shared_ptr < Framework::Buffer> m_scratchBuffer;
       Framework::Buffer m_instancesBuffer;
 
-      VkAccelerationStructureGeometryKHR m_accelerationStructureGeometry;
+      VkAccelerationStructureGeometryKHR m_accelerationStructureGeometry{};
       std::vector<VkAccelerationStructureBuildRangeInfoKHR*> m_accelerationBuildStructureRangeInfos;
       VkDeviceOrHostAddressConstKHR m_instanceDataDeviceAddress{};
       VkBufferDeviceAddressInfoKHR m_scratchBufferDeviceAddressInfo{};
