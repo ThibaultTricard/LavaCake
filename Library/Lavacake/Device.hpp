@@ -1,0 +1,594 @@
+#pragma once
+
+#define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
+#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan_extension_inspection.hpp>
+#include <GLFW/glfw3.h>
+#include <iostream>
+#include <optional>
+#include <set>
+#include <map>
+
+#define VMA_IMPLEMENTATION
+#include <vk_mem_alloc.h>
+
+VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
+
+
+uint32_t api_version = VK_API_VERSION_1_3;
+
+namespace LavaCake {
+
+    // ---------------------------------------------------------------
+    // Debug Callback
+    // ---------------------------------------------------------------
+    VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+        VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+        VkDebugUtilsMessageTypeFlagsEXT type,
+        const VkDebugUtilsMessengerCallbackDataEXT* callbackData,
+        void* userData)
+    {
+        std::cerr << "Validation: " << callbackData->pMessage << std::endl;
+        return VK_FALSE;
+    }
+
+    // ---------------------------------------------------------------
+    // Device scoring: pick the most powerful GPU
+    // ---------------------------------------------------------------
+    int scoreDevice(vk::PhysicalDevice device)
+    {
+        auto props = device.getProperties();
+        auto memProps = device.getMemoryProperties();
+
+        int score = 0;
+
+        // 1) Most important: discrete > integrated > others
+        if      (props.deviceType == vk::PhysicalDeviceType::eDiscreteGpu)   score += 100000;
+        else if (props.deviceType == vk::PhysicalDeviceType::eIntegratedGpu) score += 10000;
+        else if (props.deviceType == vk::PhysicalDeviceType::eVirtualGpu)    score += 1000;
+        else if (props.deviceType == vk::PhysicalDeviceType::eCpu)           score += 100;
+
+        // 2) More VRAM = more points
+        // Sum all heaps for simplicity (not all are device-local)
+        for (const auto& heap : memProps.memoryHeaps) {
+            score += static_cast<int>(heap.size / (1024 * 1024));
+        }
+
+        return score;
+    }
+
+    /**
+    \brief helps manage Vulkan device related task
+    */
+    class Device {
+    public:
+
+        /**
+        * \brief Return the Vulkan instance
+        * \return the vk::Instance used by the application
+        */
+        const vk::Instance& getInstance() const {
+            return m_instance;
+        };
+
+        /**
+        * \brief Return the Device
+        * \return the vk::Device used by the application
+        */
+        const vk::Device& getDevice() const{
+            return m_device;
+        }
+
+
+        /**
+        * \brief Return the Physical Device
+        * \return the vk::PhysicalDevice used by the application
+        */
+        const vk::PhysicalDevice& getPhysicalDevice() const{
+            return m_physicalDevice;
+        }
+
+
+
+        /**
+        * \brief Return the Command pool
+        * \return the vk::CommandPool used by the application
+        */
+        const vk::CommandPool& getCommandPool() const{
+            return m_commandPool;
+        }
+
+        /**
+        * \brief Return the Vulkan surface
+        * \return the vk::SurfaceKHR used by the application
+        */
+        const vk::SurfaceKHR& getSurface() const{
+            return m_presentationSurface;
+        }
+
+        /**
+        * \brief Return the Presentation Queue used to draw on the screen
+        * \return a reference to the vk::Queue used by the application
+        */
+        const vk::Queue& getPresentQueue() const{
+            return m_presentQueue;
+        }
+
+        /**
+        * \brief Return a specific Graphic Queue
+        * \param i the index of the wanted queue
+        * \return a reference to a vk::Queue
+        */
+        const vk::Queue& getGraphicQueue(int i) const{
+            return m_graphicQueues[i];
+        }
+
+        /**
+        * \brief Return a specific Compute Queue
+        * \param i the index of the wanted queue
+        * \return a reference to a vk::Queue
+        */
+        const vk::Queue& getComputeQueue(int i)const{
+            return m_computeQueues[i];
+        }
+
+        /**
+        * \brief Return the first Queue available 
+        * a graphic queue if it exists,
+        * a compute queue if it exists,
+        * a present queue else
+        * \return a reference to a vk::Queue
+        */
+        const vk::Queue& getAnyQueue()const{
+            if(m_graphicQueues.size() > 0) return m_graphicQueues[0];
+            if(m_computeQueues.size() > 0) return m_computeQueues[0];
+            return m_presentQueue;
+        }
+
+
+        /**
+        * \brief Return the Vulkan Memory Allocator
+        * \return the Vulkan Memory Allocatoused by the application
+        */
+        const VmaAllocator& getAllocator() const {
+            return m_allocator;
+        };
+
+
+        /**
+        * \brief Initialise the device with a surface
+        * \param window the window to use for the surface creation
+        * \param nbComputeQueue the number of compute queue requiered by the application
+        * \param nbGraphicQueue the number of graphic queue requiered by the application
+        */
+        Device(
+            GLFWwindow* window = nullptr,
+            int nbGraphicQueue = 1,
+            int nbComputeQueue = 0
+            ) : Device(nbGraphicQueue,nbComputeQueue,true,window){
+
+            }
+        
+        /**
+        * \brief Initialise the device without a surface
+        * \param nbComputeQueue the number of compute queue requiered by the application
+        * \param nbGraphicQueue the number of graphic queue requiered by the application
+        */
+        Device(
+            int nbGraphicQueue = 0,
+            int nbComputeQueue = 1
+            ) : Device(nbGraphicQueue,nbComputeQueue,false,nullptr){
+
+            }
+
+        /**
+        * \brief Make sure every command send to the device are finished
+        */
+        void waitForAllCommands(){
+            
+        }
+
+        /**
+        * \brief Allocates and returns a Command Buffer 
+        * the command buffer is the reponsability of the calling function,
+        * it will not be destroyed by the device
+        * \return a vk::CommandBuffer
+        */
+
+        vk::CommandBuffer allocateCommandBuffer() const{
+            vk::CommandBufferAllocateInfo allocInfo{};
+            allocInfo.commandPool = m_commandPool;
+            allocInfo.level = vk::CommandBufferLevel::ePrimary;
+            allocInfo.commandBufferCount = 1;
+            return m_device.allocateCommandBuffers(allocInfo)[0];
+        }
+
+        /**
+        * \brief Allocates and returns a multiple Command Buffer 
+        * the command buffer are the reponsability of the calling function,
+        * they will not be destroyed by the device
+        * \param number the number of command buffer to allocate
+        * \return a std::vector of vk::CommandBuffer
+        */
+        std::vector<vk::CommandBuffer> allocateCommandBuffers(uint32_t number){
+            vk::CommandBufferAllocateInfo allocInfo{};
+            allocInfo.commandPool = m_commandPool;
+            allocInfo.level = vk::CommandBufferLevel::ePrimary;
+            allocInfo.commandBufferCount = number;
+            return m_device.allocateCommandBuffers(allocInfo);
+        }
+
+
+        /**
+         * \brief Destroy the device
+         */
+        ~Device() {
+            vmaDestroyAllocator(m_allocator);
+            m_device.destroyCommandPool(m_commandPool);
+            m_device.destroySwapchainKHR(m_swapchain);
+            m_device.destroy();
+            if(m_hasSurface)  m_instance.destroySurfaceKHR(m_presentationSurface);
+            m_instance.destroyDebugUtilsMessengerEXT(m_debugMessenger);
+            m_instance.destroy();
+        }
+
+    private:
+        vk::PhysicalDevice                                    m_physicalDevice;
+        vk::Device                                            m_device;
+        vk::Instance                                          m_instance;
+        vk::SurfaceKHR                                        m_presentationSurface;
+        vk::SwapchainKHR                                      m_swapchain;
+        vk::CommandPool                                       m_commandPool;
+        vk::DebugUtilsMessengerEXT                            m_debugMessenger;
+        std::vector<vk::Queue>	                              m_graphicQueues;
+        std::vector<vk::Queue>                                m_computeQueues;
+        vk::Queue                                             m_presentQueue;
+
+        bool                                                  m_hasSurface;
+
+        VmaAllocator                                          m_allocator;
+
+
+
+
+
+        
+        /**
+        * \brief Initialise the device
+        * \param nbComputeQueue the number of compute queue requiered by the application
+        * \param nbGraphicQueue the number of graphic queue requiered by the application
+        * \param createSurface true if the device needs to create a surface
+        * \param window the window to use for the surface creation
+        * \return a reference to a ComputeQueue
+        */
+        Device(
+            int nbGraphicQueue,
+            int nbComputeQueue,
+            bool createSurface,
+            GLFWwindow* window
+            ){
+
+            try
+            {
+                // -----------------------------------------------------------
+                // 2) Create Vulkan Instance
+                // -----------------------------------------------------------
+                VULKAN_HPP_DEFAULT_DISPATCHER.init(vkGetInstanceProcAddr);
+
+                std::vector<const char*> layers = { "VK_LAYER_KHRONOS_validation" };
+
+                uint32_t glfwExtCount = 0;
+                const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtCount);
+                std::vector<const char*> instanceExtensions(glfwExtensions, glfwExtensions + glfwExtCount);
+                instanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+                auto instanceExtensionProps = vk::enumerateInstanceExtensionProperties();
+            
+
+                for (const vk::ExtensionProperties& ext : instanceExtensionProps) {
+                    if (vk::isDeprecatedExtension(ext.extensionName)) continue;
+                    if (vk::isPromotedExtension(ext.extensionName)) continue;
+                    if (vk::isObsoletedExtension(ext.extensionName)) continue;
+                    instanceExtensions.push_back(ext.extensionName);
+                }
+
+
+
+                vk::ApplicationInfo appInfo{
+                    "Vulkan Full Example",
+                    VK_MAKE_VERSION(1,0,0),
+                    "Lavacake",
+                    VK_MAKE_VERSION(2,0,0),
+                    api_version
+                };
+
+                vk::InstanceCreateInfo instanceInfo{};
+                instanceInfo.pApplicationInfo = &appInfo;
+                instanceInfo.enabledLayerCount = layers.size();
+                instanceInfo.ppEnabledLayerNames = layers.data();
+                instanceInfo.enabledExtensionCount = instanceExtensions.size();
+                instanceInfo.ppEnabledExtensionNames = instanceExtensions.data();
+
+                
+                m_instance = vk::createInstance(instanceInfo);
+                VULKAN_HPP_DEFAULT_DISPATCHER.init(m_instance);
+
+                // -----------------------------------------------------------
+                // 3) Create Debug Messenger
+                // -----------------------------------------------------------
+                vk::DebugUtilsMessengerCreateInfoEXT debugInfo{};
+                debugInfo.messageSeverity =
+                    vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+                    vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+                    vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
+
+                debugInfo.messageType =
+                    vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+                    vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+                    vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
+
+                debugInfo.pfnUserCallback = debugCallback;
+
+                m_debugMessenger =
+                    m_instance.createDebugUtilsMessengerEXT(debugInfo);
+
+                // -----------------------------------------------------------
+                // 4) Create Window Surface
+                // -----------------------------------------------------------
+                if(createSurface){
+                    VkSurfaceKHR rawSurface;
+                    glfwCreateWindowSurface(static_cast<VkInstance>(m_instance), window, nullptr, &rawSurface);
+                    m_presentationSurface = vk::SurfaceKHR (rawSurface);
+                }
+
+                // -----------------------------------------------------------
+                // 5) Enumerate and select the best physical device
+                // -----------------------------------------------------------
+                auto devices = m_instance.enumeratePhysicalDevices();
+                if (devices.empty()) throw std::runtime_error("No Vulkan devices found.");
+
+                m_physicalDevice = VK_NULL_HANDLE;
+                int bestScore = -1;
+
+                for (auto& dev : devices)
+                {
+                    int score = scoreDevice(dev);
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        m_physicalDevice = dev;
+                    }
+                }
+
+                auto props = m_physicalDevice.getProperties();
+                std::cout << "Selected GPU: " << props.deviceName << "\n";
+
+                // -----------------------------------------------------------
+                // 6) Find Graphics + Present Queue Families
+                // -----------------------------------------------------------
+                auto queueFamilies = m_physicalDevice.getQueueFamilyProperties();
+
+                std::optional<uint32_t> graphicsFamily;
+                std::optional<uint32_t> presentFamily;
+                std::optional<uint32_t> computeFamily;
+
+                for (uint32_t i = 0; i < queueFamilies.size(); i++)
+                {
+                    if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics)
+                        graphicsFamily = i;
+
+                    if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute)
+                        computeFamily = i;
+
+                    if (createSurface && m_physicalDevice.getSurfaceSupportKHR(i, m_presentationSurface))
+                        presentFamily = i;
+
+                    if ((graphicsFamily || nbGraphicQueue ==0 ) && (presentFamily || !createSurface) && (computeFamily || nbComputeQueue == 0)) 
+                        break;
+                }
+
+                /*TODO 
+                * refaire ce check
+                */
+                //if (!graphicsFamily || !presentFamily)
+                //    throw std::runtime_error("Could not find required queue families.");
+
+                // -----------------------------------------------------------
+                // 7) Enable ALL available device extensions
+                // -----------------------------------------------------------
+                auto availableExts = m_physicalDevice.enumerateDeviceExtensionProperties();
+                std::vector<const char*> deviceExtensions;
+
+                for (auto& ext : availableExts){
+                    if (vk::isDeprecatedExtension(ext.extensionName)) continue;
+                    if (vk::isPromotedExtension(ext.extensionName)) continue;
+                    if (vk::isObsoletedExtension(ext.extensionName)) continue;
+                    if (std::string(ext.extensionName) == "VK_AMD_shader_fragment_mask") continue;
+                    if (std::string(ext.extensionName) == "VK_NV_shading_rate_image") continue;
+                    
+                    if (std::string(ext.extensionName) == "VK_EXT_descriptor_buffer") continue;
+                    deviceExtensions.push_back(ext.extensionName);
+                }
+
+                // -----------------------------------------------------------
+                // 8) Create Logical Device
+                // -----------------------------------------------------------
+                float queuePriority = 1.0f;
+
+                std::vector<vk::DeviceQueueCreateInfo> queueInfos;
+
+                
+                
+                bool gaphicQueueCreated = false;
+                bool computeQueueCreated = false;
+
+                //Graphique Queues
+                if(nbGraphicQueue > 0){
+                    gaphicQueueCreated = true;
+                    uint32_t nbQueue = nbGraphicQueue;
+                    if(graphicsFamily.value() == computeFamily.value()){
+                        computeQueueCreated = true;
+                        nbQueue = nbQueue< nbComputeQueue? nbComputeQueue: nbQueue;
+                    }
+                    vk::DeviceQueueCreateInfo gqinfo{};
+                    gqinfo.queueFamilyIndex = graphicsFamily.value();
+                    gqinfo.queueCount = nbQueue;
+                    gqinfo.pQueuePriorities = &queuePriority;
+                    queueInfos.push_back(gqinfo);
+                }
+
+                //Compute Queues
+                if(nbComputeQueue > 0 && !computeQueueCreated){
+                    computeQueueCreated = true;
+                    vk::DeviceQueueCreateInfo cqinfo{};
+                    cqinfo.queueFamilyIndex = computeFamily.value();
+                    cqinfo.queueCount = nbComputeQueue;
+                    cqinfo.pQueuePriorities = &queuePriority;
+                    queueInfos.push_back(cqinfo);
+                }
+
+                //Present Queues
+                if(createSurface){
+                    
+                    if( gaphicQueueCreated && graphicsFamily.value() == presentFamily.value()){
+                        //present queue has allready been created
+                    }
+                    else if( computeQueueCreated && computeFamily.value() == presentFamily.value()){
+                        //present queue has allready been created
+                    }
+                    else {
+                        vk::DeviceQueueCreateInfo pqinfo{};
+                        pqinfo.queueFamilyIndex = presentFamily.value();
+                        pqinfo.queueCount = 1;
+                        pqinfo.pQueuePriorities = &queuePriority;
+                        queueInfos.push_back(pqinfo);
+                    }
+                    
+                }
+
+                vk::PhysicalDeviceFeatures features{};
+
+                vk::DeviceCreateInfo devInfo{};
+                devInfo.queueCreateInfoCount = queueInfos.size();
+                devInfo.pQueueCreateInfos = queueInfos.data();
+                devInfo.pEnabledFeatures = &features;
+                devInfo.enabledExtensionCount = deviceExtensions.size();
+                devInfo.ppEnabledExtensionNames = deviceExtensions.data();
+
+                m_device = m_physicalDevice.createDevice(devInfo);
+                VULKAN_HPP_DEFAULT_DISPATCHER.init(m_device);
+
+                if(nbGraphicQueue > 0){
+                    for(int i = 0; i< nbGraphicQueue; i++){
+                        m_graphicQueues.push_back(m_device.getQueue(graphicsFamily.value(), i));
+                    }
+                }
+                if(nbComputeQueue > 0){
+                    for(int i = 0; i< nbComputeQueue; i++){
+                        m_computeQueues.push_back(m_device.getQueue(computeFamily.value(), i));
+                    }
+                }
+                
+                if(createSurface){
+                    vk::Queue presentQueue  = m_device.getQueue(presentFamily.value(), 0);
+                }
+
+
+                // -----------------------------------------------------------
+                // 9) Create Swapchain
+                // -----------------------------------------------------------
+                if(createSurface){
+                    auto surfaceCaps = m_physicalDevice.getSurfaceCapabilitiesKHR(m_presentationSurface);
+                    auto formats = m_physicalDevice.getSurfaceFormatsKHR(m_presentationSurface);
+                    auto presentModes = m_physicalDevice.getSurfacePresentModesKHR(m_presentationSurface);
+
+                    vk::SurfaceFormatKHR surfaceFormat = formats[0];
+                    vk::PresentModeKHR presentMode = vk::PresentModeKHR::eFifo;
+
+                    vk::Extent2D extent = surfaceCaps.currentExtent;
+
+                    uint32_t imageCount = surfaceCaps.minImageCount + 1;
+                    if (surfaceCaps.maxImageCount > 0 && imageCount > surfaceCaps.maxImageCount)
+                        imageCount = surfaceCaps.maxImageCount;
+
+                    vk::SwapchainCreateInfoKHR swapInfo{};
+                    swapInfo.surface = m_presentationSurface;
+                    swapInfo.minImageCount = imageCount;
+                    swapInfo.imageFormat = surfaceFormat.format;
+                    swapInfo.imageColorSpace = surfaceFormat.colorSpace;
+                    swapInfo.imageExtent = extent;
+                    swapInfo.imageArrayLayers = 1;
+                    swapInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+
+                    uint32_t indices[] = {
+                        graphicsFamily.value(),
+                        presentFamily.value()
+                    };
+
+                    if (graphicsFamily != presentFamily)
+                    {
+                        swapInfo.imageSharingMode = vk::SharingMode::eConcurrent;
+                        swapInfo.queueFamilyIndexCount = 2;
+                        swapInfo.pQueueFamilyIndices = indices;
+                    }
+                    else
+                    {
+                        swapInfo.imageSharingMode = vk::SharingMode::eExclusive;
+                    }
+
+                    swapInfo.preTransform = surfaceCaps.currentTransform;
+                    swapInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
+                    swapInfo.presentMode = presentMode;
+                    swapInfo.clipped = VK_TRUE;
+
+                    m_swapchain = m_device.createSwapchainKHR(swapInfo);
+
+                    auto swapImages = m_device.getSwapchainImagesKHR(m_swapchain);
+
+                    std::cout << "Swapchain created with " << swapImages.size() << " images.\n";
+                }  
+
+                // -----------------------------------------------------------
+                // 10) Command Pool
+                // -----------------------------------------------------------
+                vk::CommandPoolCreateInfo poolInfo{};
+                poolInfo.queueFamilyIndex = graphicsFamily.value();
+                poolInfo.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+
+                m_commandPool = m_device.createCommandPool(poolInfo);
+
+                if(createSurface){
+                    m_hasSurface = true;
+                }
+
+
+                // -----------------------------------------------------------
+                // 11) VMA
+                // -----------------------------------------------------------
+
+                VmaAllocatorCreateInfo allocatorInfo{};
+                allocatorInfo.instance = m_instance;
+                allocatorInfo.physicalDevice = m_physicalDevice;
+                allocatorInfo.device = m_device;
+                allocatorInfo.vulkanApiVersion = api_version;
+
+                // Optional flags (enable only if extensions are enabled)
+                allocatorInfo.flags = 0;
+                // allocatorInfo.flags |= VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+
+                if (vmaCreateAllocator(&allocatorInfo, &m_allocator) != VK_SUCCESS) {
+                    throw std::runtime_error("Failed to create VMA allocator");
+                }
+
+                std::cout << "VMA allocator created.\n";
+
+
+            }
+            catch (std::exception& e)
+            {
+                std::cerr << "ERROR: " << e.what() << "\n";
+            }
+        }
+
+    };
+}
