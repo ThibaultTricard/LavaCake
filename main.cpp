@@ -34,11 +34,9 @@ int main()
         in.push_back(i);
     }
 
-    //LavaCake::Buffer buffer(device,in,vk::BufferUsageFlagBits::eStorageBuffer, VmaAllocationCreateFlagBits(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT));
+    LavaCake::Buffer bufferIn(device,in, vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferSrc,  vk::AllocationCreateFlagBits::eCreateDedicatedMemory);
 
-    LavaCake::Buffer bufferIn(device,in, vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferSrc,  VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT);
-
-    LavaCake::Buffer bufferOut(device,in.size()* sizeof(float),vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferDst, VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT);
+    LavaCake::Buffer bufferOut(device,in.size()* sizeof(float),vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferDst, vk::AllocationCreateFlagBits::eCreateDedicatedMemory | vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
 
     vk::CommandBufferBeginInfo beginInfo{};
     beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;

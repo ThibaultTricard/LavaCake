@@ -204,7 +204,7 @@ namespace LavaCake {
         }
 
         /**
-        * \brief Allocates and returns a multiple Command Buffer 
+        * \brief Allocates and returns multiple Command Buffers 
         * the command buffer are the reponsability of the calling function,
         * they will not be destroyed by the device
         * \param number the number of command buffer to allocate
@@ -218,6 +218,21 @@ namespace LavaCake {
             return m_device.allocateCommandBuffers(allocInfo);
         }
 
+        /**
+        * \brief Frees a Command Buffer 
+        * \param cmd the command buffer to free
+        */
+        void freeCommandBuffer(vk::CommandBuffer cmd) const{
+            m_device.freeCommandBuffers(m_commandPool, cmd);
+        }
+
+        /**
+        * \brief Frees multiple Command Buffer 
+        * \param cmd the vector of command buffer to free
+        */
+        void freeCommandBuffers(std::vector<vk::CommandBuffer> cmd) const{
+            m_device.freeCommandBuffers(m_commandPool, cmd);
+        }
 
         /**
          * \brief Destroy the device

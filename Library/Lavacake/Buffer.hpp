@@ -1,5 +1,6 @@
 #pragma once
 #include "./Device.hpp"
+#include "./VMAFlags.hpp"
 #include <span>
 
 namespace LavaCake {
@@ -50,7 +51,7 @@ namespace LavaCake {
          * \param usage the buffer usage
          * \param memoryFlags the memory requirements
          */
-        Buffer(const LavaCake::Device& device, VkDeviceSize size, vk::BufferUsageFlags usage,  VmaAllocationCreateFlags memoryFlags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT){
+        Buffer(const LavaCake::Device& device, VkDeviceSize size, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags= vk::AllocationCreateFlagBits::eCreateDedicatedMemory){
            init(device,size,usage,memoryFlags);
         }
 
@@ -63,9 +64,9 @@ namespace LavaCake {
          * \param memoryFlags the memory requirements
          */
         template <typename T>
-        Buffer(const LavaCake::Device& device, const std::vector<T>& data, vk::BufferUsageFlags usage, VmaAllocationCreateFlags memoryFlags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT) {
+        Buffer(const LavaCake::Device& device, const std::vector<T>& data, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags = vk::AllocationCreateFlagBits::eCreateDedicatedMemory) {
             vk::DeviceSize bufferSize = data.size()*sizeof(T);
-            if(memoryFlags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT){
+            if(memoryFlags & vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite){
                 init(device,bufferSize,usage,memoryFlags);
                 map();
                 memcpy(m_data, &data[0], m_size);
@@ -73,7 +74,7 @@ namespace LavaCake {
             }else{
 
                 init(device,bufferSize,usage | vk::BufferUsageFlagBits::eTransferDst,memoryFlags);
-                Buffer staging(device, data.size()*sizeof(T) , usage | vk::BufferUsageFlagBits::eTransferSrc, memoryFlags | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT);
+                Buffer staging(device, data.size()*sizeof(T) , usage | vk::BufferUsageFlagBits::eTransferSrc, memoryFlags | vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
                
                 void* staggingMemory = staging.map();
                 // Copy data
@@ -97,6 +98,8 @@ namespace LavaCake {
                 auto queue = device.getAnyQueue();
                 queue.submit(submitInfo);
                 queue.waitIdle();
+
+                device.freeCommandBuffer( cmd);
             }
         }
 
@@ -184,7 +187,7 @@ namespace LavaCake {
          * \param memoryFlags the memory requirements
          */
 
-        void init(const LavaCake::Device& device, VkDeviceSize size, vk::BufferUsageFlags usage,  VmaAllocationCreateFlags memoryFlags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT){
+        void init(const LavaCake::Device& device, VkDeviceSize size, vk::BufferUsageFlags usage,  vk::AllocationCreateFlags memoryFlags){
             m_size = size;
             vk::BufferCreateInfo bufferInfo{};
             bufferInfo.size = size;
@@ -193,7 +196,7 @@ namespace LavaCake {
 
             VmaAllocationCreateInfo allocInfo{};
             allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
-            allocInfo.flags = memoryFlags;
+            allocInfo.flags = (VmaAllocationCreateFlags)memoryFlags;
 
             VkBuffer buffer;
 
