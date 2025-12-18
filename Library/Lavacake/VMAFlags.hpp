@@ -16,7 +16,7 @@ namespace vk{
         eCreateUserDataCopyString                                   = VMA_ALLOCATION_CREATE_USER_DATA_COPY_STRING_BIT,
         eCreateUpperAddress                                         = VMA_ALLOCATION_CREATE_UPPER_ADDRESS_BIT,
         eCreateDontBind                                             = VMA_ALLOCATION_CREATE_DONT_BIND_BIT,
-        CreateWithinBudget                                          = VMA_ALLOCATION_CREATE_WITHIN_BUDGET_BIT,
+        eCreateWithinBudget                                         = VMA_ALLOCATION_CREATE_WITHIN_BUDGET_BIT,
         eCreateCanAlias                                             = VMA_ALLOCATION_CREATE_CAN_ALIAS_BIT,
         eCreateHostAccessSequentialWrite                            = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT ,
         eCreateHostAccessRandom                                     = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT,
@@ -32,11 +32,11 @@ namespace vk{
     };
 
 
-    // here to allow the usage of AllocationCreateFlagBits similarly as vk flags
+    // here to allow the usage of AllocationCreateFlagBits similarly to vk flags
     using AllocationCreateFlags = Flags<AllocationCreateFlagBits>;
 
 
-    // allow bitwise opperation on AllocationCreateFlagBits
+    // allow bitwise operation on AllocationCreateFlagBits
     template <>
     struct FlagTraits<AllocationCreateFlagBits>
     {
