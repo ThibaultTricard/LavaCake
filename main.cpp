@@ -1,7 +1,7 @@
 #include "Library/Lavacake/Device.hpp"
 #include "Library/Lavacake/Buffer.hpp"
 
-
+#include "Library/Lavacake/ShaderModule.hpp"
 
 // ---------------------------------------------------------------
 // Main
@@ -63,6 +63,12 @@ int main()
     }
 
     std::cout<<std::endl;
+
+
+    auto computeModule = LavaCake::createShaderModuleFromGLSL(device,"../test.comp", vk::ShaderStageFlagBits::eCompute);
+    
+
+
     // -----------------------------------------------------------
     // MAIN LOOP
     // -----------------------------------------------------------

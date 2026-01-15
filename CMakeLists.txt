@@ -18,10 +18,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(VulkanMemoryAllocator)
 
-add_executable(VulkanHPP_FullExample main.cpp)
+find_package(glslang  CONFIG REQUIRED)
+find_package(SPIRV-Tools CONFIG REQUIRED)
 
-target_include_directories(VulkanHPP_FullExample PRIVATE ${Vulkan_INCLUDE_DIRS})
+add_executable(testing main.cpp)
 
-target_compile_definitions(VulkanHPP_FullExample PRIVATE VMA_VULKAN_HPP)
+target_include_directories(testing PRIVATE ${Vulkan_INCLUDE_DIRS} ${vmahpp_SOURCE_DIR})
 
-target_link_libraries(VulkanHPP_FullExample PRIVATE Vulkan::Vulkan glfw VulkanMemoryAllocator)
+target_compile_definitions(testing PRIVATE VMA_VULKAN_HPP)
+
+target_link_libraries(testing PRIVATE Vulkan::Vulkan glfw VulkanMemoryAllocator glslang SPIRV-Tools SPIRV-Tools-opt glslang::OSDependent glslang::SPIRV glslang::glslang)
