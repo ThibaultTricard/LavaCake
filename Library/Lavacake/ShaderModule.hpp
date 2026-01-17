@@ -1,272 +1,292 @@
 
 #pragma once
-#include <glslang/Public/ShaderLang.h>
-#include <glslang/Public/ResourceLimits.h>
-#include <glslang/Include/ResourceLimits.h>
-#include <glslang/SPIRV/GlslangToSpv.h>
+#include "Device.hpp"
 
+#include <shaderc/shaderc.hpp>
 #include <vector>
 #include <string>
 #include <stdexcept>
 
 #include <filesystem>
 #include <fstream>
+#include <string>
+#include <sstream>
+
 
 namespace LavaCake {
-
-
-	const TBuiltInResource DEFAULT_BUILT_IN_RESOURCE_LIMIT = {
-
-			/* .MaxLights = */ 32,
-			/* .MaxClipPlanes = */ 6,
-			/* .MaxTextureUnits = */ 32,
-			/* .MaxTextureCoords = */ 32,
-			/* .MaxVertexAttribs = */ 64,
-			/* .MaxVertexUniformComponents = */ 4096,
-			/* .MaxVaryingFloats = */ 64,
-			/* .MaxVertexTextureImageUnits = */ 32,
-			/* .MaxCombinedTextureImageUnits = */ 80,
-			/* .MaxTextureImageUnits = */ 32,
-			/* .MaxFragmentUniformComponents = */ 4096,
-			/* .MaxDrawBuffers = */ 32,
-			/* .MaxVertexUniformVectors = */ 128,
-			/* .MaxVaryingVectors = */ 8,
-			/* .MaxFragmentUniformVectors = */ 16,
-			/* .MaxVertexOutputVectors = */ 16,
-			/* .MaxFragmentInputVectors = */ 15,
-			/* .MinProgramTexelOffset = */ -8,
-			/* .MaxProgramTexelOffset = */ 7,
-			/* .MaxClipDistances = */ 8,
-			/* .MaxComputeWorkGroupCountX = */ 65535,
-			/* .MaxComputeWorkGroupCountY = */ 65535,
-			/* .MaxComputeWorkGroupCountZ = */ 65535,
-			/* .MaxComputeWorkGroupSizeX = */ 1024,
-			/* .MaxComputeWorkGroupSizeY = */ 1024,
-			/* .MaxComputeWorkGroupSizeZ = */ 64,
-			/* .MaxComputeUniformComponents = */ 1024,
-			/* .MaxComputeTextureImageUnits = */ 16,
-			/* .MaxComputeImageUniforms = */ 8,
-			/* .MaxComputeAtomicCounters = */ 8,
-			/* .MaxComputeAtomicCounterBuffers = */ 1,
-			/* .MaxVaryingComponents = */ 60,
-			/* .MaxVertexOutputComponents = */ 64,
-			/* .MaxGeometryInputComponents = */ 64,
-			/* .MaxGeometryOutputComponents = */ 128,
-			/* .MaxFragmentInputComponents = */ 128,
-			/* .MaxImageUnits = */ 8,
-			/* .MaxCombinedImageUnitsAndFragmentOutputs = */ 8,
-			/* .MaxCombinedShaderOutputResources = */ 8,
-			/* .MaxImageSamples = */ 0,
-			/* .MaxVertexImageUniforms = */ 0,
-			/* .MaxTessControlImageUniforms = */ 0,
-			/* .MaxTessEvaluationImageUniforms = */ 0,
-			/* .MaxGeometryImageUniforms = */ 0,
-			/* .MaxFragmentImageUniforms = */ 8,
-			/* .MaxCombinedImageUniforms = */ 8,
-			/* .MaxGeometryTextureImageUnits = */ 16,
-			/* .MaxGeometryOutputVertices = */ 256,
-			/* .MaxGeometryTotalOutputComponents = */ 1024,
-			/* .MaxGeometryUniformComponents = */ 1024,
-			/* .MaxGeometryVaryingComponents = */ 64,
-			/* .MaxTessControlInputComponents = */ 128,
-			/* .MaxTessControlOutputComponents = */ 128,
-			/* .MaxTessControlTextureImageUnits = */ 16,
-			/* .MaxTessControlUniformComponents = */ 1024,
-			/* .MaxTessControlTotalOutputComponents = */ 4096,
-			/* .MaxTessEvaluationInputComponents = */ 128,
-			/* .MaxTessEvaluationOutputComponents = */ 128,
-			/* .MaxTessEvaluationTextureImageUnits = */ 16,
-			/* .MaxTessEvaluationUniformComponents = */ 1024,
-			/* .MaxTessPatchComponents = */ 120,
-			/* .MaxPatchVertices = */ 32,
-			/* .MaxTessGenLevel = */ 64,
-			/* .MaxViewports = */ 16,
-			/* .MaxVertexAtomicCounters = */ 0,
-			/* .MaxTessControlAtomicCounters = */ 0,
-			/* .MaxTessEvaluationAtomicCounters = */ 0,
-			/* .MaxGeometryAtomicCounters = */ 0,
-			/* .MaxFragmentAtomicCounters = */ 8,
-			/* .MaxCombinedAtomicCounters = */ 8,
-			/* .MaxAtomicCounterBindings = */ 1,
-			/* .MaxVertexAtomicCounterBuffers = */ 0,
-			/* .MaxTessControlAtomicCounterBuffers = */ 0,
-			/* .MaxTessEvaluationAtomicCounterBuffers = */ 0,
-			/* .MaxGeometryAtomicCounterBuffers = */ 0,
-			/* .MaxFragmentAtomicCounterBuffers = */ 1,
-			/* .MaxCombinedAtomicCounterBuffers = */ 1,
-			/* .MaxAtomicCounterBufferSize = */ 16384,
-			/* .MaxTransformFeedbackBuffers = */ 4,
-			/* .MaxTransformFeedbackInterleavedComponents = */ 64,
-			/* .MaxCullDistances = */ 8,
-			/* .MaxCombinedClipAndCullDistances = */ 8,
-			/* .MaxSamples = */ 4,
-			/* .maxMeshOutputVerticesNV = */ 256,
-			/* .maxMeshOutputPrimitivesNV = */ 512,
-			/* .maxMeshWorkGroupSizeX_NV = */ 32,
-			/* .maxMeshWorkGroupSizeY_NV = */ 1,
-			/* .maxMeshWorkGroupSizeZ_NV = */ 1,
-			/* .maxTaskWorkGroupSizeX_NV = */ 32,
-			/* .maxTaskWorkGroupSizeY_NV = */ 1,
-			/* .maxTaskWorkGroupSizeZ_NV = */ 1,
-			/* .maxMeshViewCountNV = */ 4,
-			/* maxMeshOutputVerticesEXT;*/256,
-			/* maxMeshOutputPrimitivesEXT;*/512,
-			/* maxMeshWorkGroupSizeX_EXT;*/32,
-			/* maxMeshWorkGroupSizeY_EXT;*/1,
-			/* maxMeshWorkGroupSizeZ_EXT;*/32,
-			/* maxTaskWorkGroupSizeX_EXT;*/1,
-			/* maxTaskWorkGroupSizeY_EXT;*/1,
-			/* maxTaskWorkGroupSizeZ_EXT;*/1,
-			/* maxMeshViewCountEXT;*/1,
-			/* .maxDualSourceDrawBuffersEXT = */1,
-			/* .limits = */
-            {
-                    /* .nonInductiveForLoops = */ 1,
-                    /* .whileLoops = */ 1,
-                    /* .doWhileLoops = */ 1,
-                    /* .generalUniformIndexing = */ 1,
-                    /* .generalAttributeMatrixVectorIndexing = */ 1,
-                    /* .generalVaryingIndexing = */ 1,
-                    /* .generalSamplerIndexing = */ 1,
-                    /* .generalVariableIndexing = */ 1,
-                    /* .generalConstantMatrixVectorIndexing = */ 1,
-			}};
-    
-    struct GlslangInitializer {
-        GlslangInitializer()  { glslang::InitializeProcess(); }
-        ~GlslangInitializer() { glslang::FinalizeProcess(); }
+    enum class ShadingLanguage{
+        eSPIRV,
+        eGLSL,
     };
 
-    static GlslangInitializer initializer;
+    class ShaderModule{
+    public :
+        ShaderModule() = default;
+        
+        /*
+        * we delete const copy and const = operator to avoid gpu pointer duplication 
+        */
+        ShaderModule(const ShaderModule& module) = delete;
+        ShaderModule& operator=(const ShaderModule&) = delete;
 
-    // Create one global or in main()
-    static GlslangInitializer glslangInit;
+        /**
+         * \brief copie constructeur, copie a ShaderModule and make sure the pointer toward gpu memory are not duplicated
+         */
+        ShaderModule(ShaderModule&& m) noexcept:
+            m_shaderModule(std::exchange(m.m_shaderModule, {})),
+            m_stage(std::exchange(m.m_stage, vk::ShaderStageFlagBits::eAll)),
+            m_filePath(std::exchange(m.m_filePath, "")),
+            m_lang(std::exchange(m.m_lang, ShadingLanguage::eSPIRV)),
+            m_optimize(std::exchange(m.m_optimize, false)),
+            m_macroDefinitions(std::exchange(m.m_macroDefinitions, {})),
+            m_device(std::exchange(m.m_device, nullptr))
+        {}
 
-
-    EShLanguage toEShLanguage(vk::ShaderStageFlagBits stage)
-    {
-        switch (stage)
+        /**
+         * \brief copie operator, copie a ShaderModule and make sure the pointer toward gpu memory are not duplicated
+         */
+        ShaderModule& operator=(ShaderModule&& m) noexcept
         {
-        case vk::ShaderStageFlagBits::eVertex:
-            return EShLangVertex;
-        case vk::ShaderStageFlagBits::eFragment:
-            return EShLangFragment;
-        case vk::ShaderStageFlagBits::eCompute:
-            return EShLangCompute;
-        case vk::ShaderStageFlagBits::eGeometry:
-            return EShLangGeometry;
-        case vk::ShaderStageFlagBits::eTessellationControl:
-            return EShLangTessControl;
-        case vk::ShaderStageFlagBits::eTessellationEvaluation:
-            return EShLangTessEvaluation;
-
-        // Mesh shading
-        case vk::ShaderStageFlagBits::eTaskEXT:
-            return EShLangTask;
-
-        case vk::ShaderStageFlagBits::eMeshEXT:
-            return EShLangMesh;
-
-        // Ray tracing
-        case vk::ShaderStageFlagBits::eRaygenKHR:
-            return EShLangRayGen;
-        case vk::ShaderStageFlagBits::eAnyHitKHR:
-            return EShLangAnyHit;
-        case vk::ShaderStageFlagBits::eClosestHitKHR:
-            return EShLangClosestHit;
-        case vk::ShaderStageFlagBits::eMissKHR:
-            return EShLangMiss;
-        case vk::ShaderStageFlagBits::eIntersectionKHR:
-            return EShLangIntersect;
-        case vk::ShaderStageFlagBits::eCallableKHR:
-            return EShLangCallable;
-
-        default:
-            throw std::runtime_error("Unsupported shader stage");
+            if (this != &m)
+            {
+            m_shaderModule =std::exchange(m.m_shaderModule, {});
+            m_stage =std::exchange(m.m_stage, vk::ShaderStageFlagBits::eAll);
+            m_filePath=std::exchange(m.m_filePath, "");
+            m_lang=std::exchange(m.m_lang, ShadingLanguage::eSPIRV);
+            m_optimize=std::exchange(m.m_optimize, false);
+            m_macroDefinitions=std::exchange(m.m_macroDefinitions, {});
+            m_device=std::exchange(m.m_device, nullptr);
+            }
+            return *this;
         }
-    }
+
+        /**
+         * \brief Create a Shader Module from a shader file
+         * \param device the device on which the buffer will be created
+         * \param filepath the path of the shader
+         * \param lang the shading language
+         * \param stage the shading stage,
+         * \param optimize does the shader need to be optimized
+         * \param macroDefinitions 
+         */
+        ShaderModule(
+            const LavaCake::Device& device,
+            const std::string& filepath,
+            const ShadingLanguage lang,
+            const vk::ShaderStageFlagBits stage,
+            bool optimize = true,
+            const std::vector<std::string>& macroDefinitions = {}){
+                
+                m_filePath = filepath;
+                m_lang = lang;
+                m_stage = stage;
+                m_optimize= optimize;
+                m_macroDefinitions = macroDefinitions;
+
+                m_device = &device;
+
+                std::string source = readFile(filepath);
+                std::vector<uint32_t> spvcode;
+                switch (lang){
+                    case ShadingLanguage::eSPIRV:
+                        spvcode = std::vector<uint32_t>(source.length() * sizeof(char));
+                        std::memcpy(spvcode.data(), source.data(), source.length() * sizeof(char));
+                        m_shaderModule = createShaderModule(spvcode);
+                        break;
+                    case ShadingLanguage::eGLSL:
+                        m_shaderModule = compileShaderFromGLSLFile(source);
+                        break;
+                        
+                }
+            }
+
+        /**
+         * \brief getter for the shaderModule handle
+         * \return vk::ShaderModule
+         */
+        const vk::ShaderModule getShaderModule() const{
+            return m_shaderModule;
+        }
 
 
-    std::vector<uint32_t> compileGLSLtoSPIRV(
-    const std::string& source,
-    vk::ShaderStageFlagBits stage,
-    const std::string& filename)
-    {
-        std::vector<uint32_t> spirv;
+        ~ShaderModule(){
+            if (m_shaderModule) {
+                m_device->getDevice().destroyShaderModule(m_shaderModule);
+            }
+        }
+
+    private :
     
-        EShLanguage language = toEShLanguage(stage);
+    vk::ShaderModule                m_shaderModule;
+    vk::ShaderStageFlagBits         m_stage;
+    std::string                     m_filePath;
+    ShadingLanguage                 m_lang;
+    bool                            m_optimize;
+    std::vector<std::string>        m_macroDefinitions;
 
-        const char* strings[] = { source.c_str() };
+    const LavaCake::Device*         m_device;
 
-        glslang::TShader shader(language);
-        shader.setStrings(strings, 1);
-        shader.setEntryPoint("main");
-        shader.setSourceEntryPoint("main");
-
-    
-        shader.setEnvInput(
-            glslang::EShSourceGlsl,
-            language,
-            glslang::EShClientVulkan,
-            130);
-
-        shader.setEnvClient(
-            glslang::EShClientVulkan,
-            glslang::EShTargetVulkan_1_3);
-
-        shader.setEnvTarget(
-            glslang::EShTargetSpv,
-            glslang::EShTargetSpv_1_6);
-
-        if (!shader.parse(
-            &DEFAULT_BUILT_IN_RESOURCE_LIMIT,
-            460,
-            false,
-            EShMessages(EShMsgVulkanRules | EShMsgSpvRules)))
+    shaderc_shader_kind getShaderKind(const vk::ShaderStageFlagBits stage ) {
+        switch ( stage )
         {
-            throw std::runtime_error(
-                std::string("GLSL parse error in ") + filename + ":\n" +
-                shader.getInfoLog());
+            case vk::ShaderStageFlagBits::eVertex: return shaderc_vertex_shader;
+            case vk::ShaderStageFlagBits::eTessellationControl: return shaderc_tess_control_shader;
+            case vk::ShaderStageFlagBits::eTessellationEvaluation: return shaderc_tess_evaluation_shader;
+            case vk::ShaderStageFlagBits::eGeometry: return shaderc_geometry_shader;
+            case vk::ShaderStageFlagBits::eFragment: return shaderc_fragment_shader;
+            case vk::ShaderStageFlagBits::eCompute: return shaderc_compute_shader;
+            case vk::ShaderStageFlagBits::eRaygenKHR: return shaderc_raygen_shader;
+            case vk::ShaderStageFlagBits::eAnyHitKHR: return shaderc_anyhit_shader;
+            case vk::ShaderStageFlagBits::eClosestHitKHR: return shaderc_closesthit_shader;
+            case vk::ShaderStageFlagBits::eMissKHR: return shaderc_miss_shader;
+            case vk::ShaderStageFlagBits::eIntersectionKHR: return shaderc_intersection_shader;
+            case vk::ShaderStageFlagBits::eCallableKHR: return shaderc_callable_shader;
+            case vk::ShaderStageFlagBits::eTaskEXT: return shaderc_task_shader;
+            case vk::ShaderStageFlagBits::eMeshEXT: return shaderc_mesh_shader;
+            default: assert( false && "Unknown shader stage" ); throw std::runtime_error("Unknown shader type");
+        }
+                
         }
         
-        glslang::TProgram program;
-        program.addShader(&shader);
+        // Apply macro definitions to compile options
+        void applyMacroDefinitions(
+            shaderc::CompileOptions& options,
+            const std::vector<std::string>& macroDefinitions
+        ) {
+            for (const auto& macro : macroDefinitions) {
+                size_t equalPos = macro.find('=');
+                if (equalPos != std::string::npos) {
+                    // Macro with value: DEFINE=VALUE
+                    std::string name = macro.substr(0, equalPos);
+                    std::string value = macro.substr(equalPos + 1);
+                    options.AddMacroDefinition(name, value);
+                } else {
+                    // Macro without value: DEFINE
+                    options.AddMacroDefinition(macro, "1");
+                }
+            }
+        }
+
+
+        // Read file contents
+        std::string readFile(const std::string& filepath){
+            std::ifstream file(filepath);
+            
+            if (!file.is_open()) {
+                throw std::runtime_error("Failed to open shader file: " + filepath);
+            }
+            
+            std::stringstream buffer;
+            buffer << file.rdbuf();
+            return buffer.str();
+        }
+        
+        // Create shader module from SPIR-V code
+        vk::ShaderModule createShaderModule(
+            const std::vector<uint32_t>& spirvCode
+        ){
+            
+            vk::ShaderModuleCreateInfo createInfo{};
+            createInfo.codeSize = spirvCode.size() * sizeof(uint32_t);
+            createInfo.pCode = spirvCode.data();
+            
+            
+            try {
+                return m_device->getDevice().createShaderModule(createInfo);
+                std::cout<<"loaded"<< std::endl;
+            } catch (vk::SystemError& err) {
+                throw std::runtime_error(
+                    "Failed to create shader module: " + std::string(err.what())
+                );
+            }
+        }
+
        
-        if (!program.link(EShMsgDefault))
-            throw std::runtime_error(program.getInfoLog());
-
         
-        glslang::SpvOptions options{};
-        options.generateDebugInfo = true;
-        
-        glslang::GlslangToSpv(
-            *program.getIntermediate(language),
-            spirv,
-            &options);
-        
-        /**/
-        
-        return spirv;
-    }
 
-    vk::ShaderModule createShaderModuleFromGLSL(
-        LavaCake::Device& device,
-        const std::string& filename,
-        vk::ShaderStageFlagBits stage)
-        {
-            auto size = std::filesystem::file_size(filename);
-            std::string content(size, '\0');
-            std::ifstream in(filename);
-            in.read(&content[0], size);
-
-            auto spirv = compileGLSLtoSPIRV(content, stage, filename);
-
-            return device.getDevice().createShaderModule(
-                vk::ShaderModuleCreateInfo{
-                    {},
-                    spirv.size() * sizeof(uint32_t),
-                    spirv.data()
-                });
+        // Get SPIR-V binary from GLSL source (without creating module)
+        std::vector<uint32_t> compileToSPIRV(
+            const std::string& source
+        ){
+            shaderc::Compiler compiler;
+            shaderc::CompileOptions options;
+            
+            // Set optimization level
+            if (m_optimize) {
+                options.SetOptimizationLevel(shaderc_optimization_level_performance);
+            } else {
+                options.SetOptimizationLevel(shaderc_optimization_level_zero);
+                options.SetGenerateDebugInfo();
+            }
+            
+            // Set target environment to Vulkan 1.3 to support all extensions
+            options.SetTargetEnvironment(shaderc_target_env_vulkan, 
+                                        shaderc_env_version_vulkan_1_3);
+            options.SetTargetSpirv(shaderc_spirv_version_1_6);
+            
+            // Apply macro definitions
+            applyMacroDefinitions(options, m_macroDefinitions);
+            
+            // Enable common extensions for RTX and mesh shading
+            // These are typically enabled automatically when used in shader code
+            // but can be explicitly enabled if needed
+            
+            // Compile shader
+            shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(
+                source,
+                getShaderKind(m_stage),
+                m_filePath.c_str(),
+                options
+            );
+            
+            // Check compilation status
+            if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
+                throw std::runtime_error(
+                    "Shader compilation failed for " + m_filePath + ":\n" +
+                    result.GetErrorMessage()
+                );
+            }
+            
+            // Get warnings if any
+            if (result.GetNumWarnings() > 0) {
+                std::cerr << "Shader compilation warnings for " << m_filePath << ":\n"
+                        << result.GetErrorMessage() << std::endl;
+            }
+            
+            // Return SPIR-V binary
+            return std::vector<uint32_t>(result.cbegin(), result.cend());
         }
+
+        
+        // Compile GLSL file to SPIR-V and create shader module
+        vk::ShaderModule compileShaderFromGLSLFile(const std::string& source){
+            auto spirvCode = compileToSPIRV(source);
+            
+            return createShaderModule(spirvCode);
+        }
+
+        // Get file extension for shader type (for auto-detection)
+        std::string getShaderExtension(vk::ShaderStageFlagBits stage){
+            switch (stage) {
+                case vk::ShaderStageFlagBits::eVertex:                  return ".vert";
+                case vk::ShaderStageFlagBits::eFragment:                return ".frag";
+                case vk::ShaderStageFlagBits::eGeometry:                return ".geom";
+                case vk::ShaderStageFlagBits::eTessellationControl:     return ".tesc";
+                case vk::ShaderStageFlagBits::eTessellationEvaluation:  return ".tese";
+                case vk::ShaderStageFlagBits::eCompute:                 return ".comp";
+                case vk::ShaderStageFlagBits::eTaskEXT:                 return ".task";
+                case vk::ShaderStageFlagBits::eMeshEXT:                 return ".mesh";
+                case vk::ShaderStageFlagBits::eRaygenKHR:               return ".rgen";
+                case vk::ShaderStageFlagBits::eAnyHitKHR:               return ".rahit";
+                case vk::ShaderStageFlagBits::eClosestHitKHR:           return ".rchit";
+                case vk::ShaderStageFlagBits::eMissKHR:                 return ".rmiss";
+                case vk::ShaderStageFlagBits::eIntersectionKHR:         return ".rint";
+                case vk::ShaderStageFlagBits::eCallableKHR:             return ".rcall";
+                default:                          return ".glsl";
+            }
+        }
+        
     
+    
+    };
 }
