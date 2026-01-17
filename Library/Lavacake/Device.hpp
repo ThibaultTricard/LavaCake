@@ -22,13 +22,14 @@ namespace LavaCake {
     // ---------------------------------------------------------------
     // Debug Callback
     // ---------------------------------------------------------------
+
     VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-        VkDebugUtilsMessageSeverityFlagBitsEXT severity,
-        VkDebugUtilsMessageTypeFlagsEXT type,
-        const VkDebugUtilsMessengerCallbackDataEXT* callbackData,
+        vk::DebugUtilsMessageSeverityFlagBitsEXT severity,
+        vk::DebugUtilsMessageTypeFlagsEXT type,
+        const vk::DebugUtilsMessengerCallbackDataEXT* data,
         void* userData)
     {
-        std::cerr << "Validation: " << callbackData->pMessage << std::endl;
+        std::cerr << "Validation: " << data->pMessage << std::endl;
         return VK_FALSE;
     }
 
@@ -297,6 +298,10 @@ namespace LavaCake {
                 std::vector<const char*> instanceExtensions(glfwExtensions, glfwExtensions + glfwExtCount);
                 instanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
+                #ifdef __APPLE__
+                    instanceExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+                #endif
+
                 auto instanceExtensionProps = vk::enumerateInstanceExtensionProperties();
             
 
@@ -324,6 +329,10 @@ namespace LavaCake {
                 instanceInfo.enabledExtensionCount = instanceExtensions.size();
                 instanceInfo.ppEnabledExtensionNames = instanceExtensions.data();
 
+                #ifdef __APPLE__
+                instanceInfo.flags |=
+                    vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+                #endif
                 
                 m_instance = vk::createInstance(instanceInfo);
                 VULKAN_HPP_DEFAULT_DISPATCHER.init(m_instance);
@@ -387,13 +396,30 @@ namespace LavaCake {
                 std::optional<uint32_t> presentFamily;
                 std::optional<uint32_t> computeFamily;
 
+                bool graphicsFamilyTooSmall = false;
+                bool computeFamilyTooSmall = false;
+
                 for (uint32_t i = 0; i < queueFamilies.size(); i++)
                 {
-                    if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics)
-                        graphicsFamily = i;
+                    if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics){
+                        if(queueFamilies[i].queueCount >= nbGraphicQueue){
+                            graphicsFamily = i;
+                            graphicsFamilyTooSmall = false;
+                        }
+                        else{
+                            graphicsFamilyTooSmall = true;
+                        }
+                    }
 
-                    if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute)
-                        computeFamily = i;
+                    if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute){
+                        if(queueFamilies[i].queueCount >= nbComputeQueue){
+                            computeFamily = i;
+                            computeFamilyTooSmall = false;
+                        }
+                        else{
+                            computeFamilyTooSmall = true;
+                        }
+                    }
 
                     if (createSurface && m_physicalDevice.getSurfaceSupportKHR(i, m_presentationSurface))
                         presentFamily = i;
@@ -401,7 +427,15 @@ namespace LavaCake {
                     if ((graphicsFamily || nbGraphicQueue ==0 ) && (presentFamily || !createSurface) && (computeFamily || nbComputeQueue == 0)) 
                         break;
                 }
+                
 
+                if(graphicsFamilyTooSmall){
+                    throw std::invalid_argument( "The requested number of graphics queue is higher than the number available on this device" );
+                }
+
+                if(computeFamilyTooSmall){
+                    throw std::invalid_argument( "The requested number of compute queue is higher than the number available on this device" );
+                }
                 /*TODO 
                 * refaire ce check
                 */
