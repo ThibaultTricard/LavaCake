@@ -17,7 +17,7 @@ namespace LavaCake {
         Buffer& operator=(const Buffer&) = delete;
 
         /**
-         * \brief copie constructeur, copie a buffer and make sure the poiter toward gpu memory are not duplicated
+         * \brief copie constructeur, copie a buffer and make sure the pointer toward gpu memory are not duplicated
          */
         Buffer(Buffer&& b) noexcept
             : m_buffer(std::exchange(b.m_buffer, VK_NULL_HANDLE)),
@@ -28,7 +28,7 @@ namespace LavaCake {
         {}
 
         /**
-         * \brief copie operator, copie a buffer and make sure the poiter toward gpu memory are not duplicated
+         * \brief copie operator, copie a buffer and make sure the pointer toward gpu memory are not duplicated
          */
         Buffer& operator=(Buffer&& b) noexcept
         {
