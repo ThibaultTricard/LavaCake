@@ -18,6 +18,10 @@ namespace LavaCake {
                 LavaCake::ShadingLanguage lang = ShadingLanguage::eSPIRV;
                 bool optimize = false;
                 std::vector<std::string> macro;
+                std::string entryPoint = "main";
+                // Specialization constants
+                std::vector<vk::SpecializationMapEntry> specializationEntries;
+                std::vector<uint8_t> specializationData;
             };
 
             LavaCake::Device m_device;
@@ -26,9 +30,7 @@ namespace LavaCake {
             // Shader
             ShaderModuleCreateInfo m_shaderModuleCreateInfo;
             LavaCake::ShaderModule m_shaderModule;
-            std::string m_entryPoint = "main";
-
-            bool m_isShaderSet = false;
+            
             
             // Descriptor set layouts and push constants
             std::vector<vk::DescriptorSetLayout> m_descriptorLayouts;
@@ -37,9 +39,7 @@ namespace LavaCake {
             // Pipeline cache
             vk::PipelineCache cache = nullptr;
             
-            // Specialization constants
-            std::vector<vk::SpecializationMapEntry> m_specializationEntries;
-            std::vector<uint8_t> m_specializationData;
+            
 
         public:
             Builder(LavaCake::Device& dev) : m_device(dev){
@@ -48,11 +48,11 @@ namespace LavaCake {
             
             // Shader configuration
             Builder& setShaderFromFile(const std::string& filepath, const LavaCake::ShadingLanguage language= ShadingLanguage::eGLSL , const std::string& entry = "main") {
-                if(!m_isShaderSet){
-                    m_shaderModuleCreateInfo.filepath = filepath;
-                    m_shaderModuleCreateInfo.lang = language;
+                m_shaderModuleCreateInfo.filepath = filepath;
+                m_shaderModuleCreateInfo.lang = language;
 
-                }
+                m_shaderModuleCreateInfo.entryPoint = entry;
+                
                 return *this;
             }
 
@@ -103,15 +103,15 @@ namespace LavaCake {
             Builder& addSpecializationConstant(uint32_t constantID, const T& value) {
                 vk::SpecializationMapEntry entry{};
                 entry.constantID = constantID;
-                entry.offset = static_cast<uint32_t>(m_specializationData.size());
+                entry.offset = static_cast<uint32_t>(m_shaderModuleCreateInfo.specializationData.size());
                 entry.size = sizeof(T);
                 
-                m_specializationEntries.push_back(entry);
+                m_shaderModuleCreateInfo.specializationEntries.push_back(entry);
                 
                 // Add data
                 const uint8_t* dataPtr = reinterpret_cast<const uint8_t*>(&value);
-                m_specializationData.insert(
-                    m_specializationData.end(),
+                m_shaderModuleCreateInfo.specializationData.insert(
+                    m_shaderModuleCreateInfo.specializationData.end(),
                     dataPtr,
                     dataPtr + sizeof(T)
                 );
@@ -135,18 +135,18 @@ namespace LavaCake {
                 
                 // 2. Create shader stage with specialization constants
                 vk::SpecializationInfo specializationInfo{};
-                if (!m_specializationEntries.empty()) {
-                    specializationInfo.mapEntryCount = static_cast<uint32_t>(m_specializationEntries.size());
-                    specializationInfo.pMapEntries = m_specializationEntries.data();
-                    specializationInfo.dataSize = m_specializationData.size();
-                    specializationInfo.pData = m_specializationData.data();
+                if (!m_shaderModuleCreateInfo.specializationEntries.empty()) {
+                    specializationInfo.mapEntryCount = static_cast<uint32_t>(m_shaderModuleCreateInfo.specializationEntries.size());
+                    specializationInfo.pMapEntries = m_shaderModuleCreateInfo.specializationEntries.data();
+                    specializationInfo.dataSize = m_shaderModuleCreateInfo.specializationData.size();
+                    specializationInfo.pData = m_shaderModuleCreateInfo.specializationData.data();
                 }
                 
                 vk::PipelineShaderStageCreateInfo shaderStage{};
                 shaderStage.stage = vk::ShaderStageFlagBits::eCompute;
                 shaderStage.module = m_shaderModule.getShaderModule();
-                shaderStage.pName = m_entryPoint.c_str();
-                if (!m_specializationEntries.empty()) {
+                shaderStage.pName = m_shaderModuleCreateInfo.entryPoint.c_str();
+                if (!m_shaderModuleCreateInfo.specializationEntries.empty()) {
                     shaderStage.pSpecializationInfo = &specializationInfo;
                 }
                 

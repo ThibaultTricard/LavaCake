@@ -166,7 +166,7 @@ namespace LavaCake {
             if(m_mapped){
                 unmap();
             }
-            //vmaDestroyBuffer(m_device.getAllocator(), m_buffer, m_allocation);
+            vmaDestroyBuffer(m_device.getAllocator(), m_buffer, m_allocation);
         }
 
         vk::Buffer getBuffer() const{

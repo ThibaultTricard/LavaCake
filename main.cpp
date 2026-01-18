@@ -6,6 +6,8 @@
 #include "Library/LavaCake/DescriptorSet.hpp"
 #include "Library/LavaCake/DescriptorPool.hpp"
 
+#include "Library/LavaCake/GraphicPipeline.hpp"
+
 #include <cassert>
 #define assertm(exp, msg) assert((void(msg), exp))
 
@@ -22,9 +24,7 @@ int main()
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     GLFWwindow* window = glfwCreateWindow(1280, 720, "Vulkan-Hpp Full Example", nullptr, nullptr);*/
 
-
     LavaCake::Device device(1,1);
-
 
     vk::CommandBuffer cmdBuffer = device.allocateCommandBuffer();
 
@@ -32,7 +32,6 @@ int main()
     std::vector<float> b;
 
     int size = 1024;
-
     for(int i = 0; i < size; i++){
         a.push_back(i);
         b.push_back(i*2);
@@ -41,7 +40,6 @@ int main()
     LavaCake::Buffer A(device, a, vk::BufferUsageFlagBits::eStorageBuffer ,  vk::AllocationCreateFlagBits::eCreateDedicatedMemory);
     LavaCake::Buffer B(device, b, vk::BufferUsageFlagBits::eStorageBuffer ,  vk::AllocationCreateFlagBits::eCreateDedicatedMemory);
     LavaCake::Buffer C(device, a.size()* sizeof(float), vk::BufferUsageFlagBits::eStorageBuffer , vk::AllocationCreateFlagBits::eCreateDedicatedMemory | vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
-
 
     auto pool = LavaCake::DescriptorPool::Builder(device)
                 .setMaxSets(1)
@@ -56,11 +54,10 @@ int main()
     vk::DescriptorSet descriptorSet = pool.allocate(layout);
 
     LavaCake::DescriptorSetUpdater(device, descriptorSet)
-                        .bindStorageBuffer(0, A.getBuffer())
-                        .bindStorageBuffer(1, B.getBuffer())
-                        .bindStorageBuffer(2, C.getBuffer())
+                        .bindStorageBuffer(0, A)
+                        .bindStorageBuffer(1, B)
+                        .bindStorageBuffer(2, C)
                         .update();
-
 
     auto pipeline  = LavaCake::ComputePipeline::Builder(device)
                             .setShaderFromFile("../test.comp",LavaCake::ShadingLanguage::eGLSL)
@@ -88,7 +85,6 @@ int main()
     void* data = C.map();
     std::vector<float> c(size);
     memcpy(c.data(), data, size*sizeof(float));
-
     for(int i = 0; i < size; i++){
         assertm(a[i] + b[i] == c[i], "a + b != c");
         std::cout<<c[i]<<", ";
