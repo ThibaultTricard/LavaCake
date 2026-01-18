@@ -24,7 +24,8 @@ namespace LavaCake {
             m_allocation(std::exchange(b.m_allocation, {})),
             m_size(std::exchange(b.m_size, 0)),
             m_data(std::exchange(b.m_data, nullptr)),
-            m_mapped(std::exchange(b.m_mapped, false))
+            m_mapped(std::exchange(b.m_mapped, false)),
+            m_device(b.m_device)
         {}
 
         /**
@@ -39,6 +40,7 @@ namespace LavaCake {
             m_size=std::exchange(b.m_size, 0);
             m_data=std::exchange(b.m_data, nullptr);
             m_mapped=std::exchange(b.m_mapped, false);
+            m_device = b.m_device;
             }
             return *this;
         }
@@ -143,7 +145,7 @@ namespace LavaCake {
             if(m_mapped){
                 return m_data;
             }else{
-                vmaMapMemory(m_device->getAllocator(), m_allocation, &m_data); 
+                vmaMapMemory(m_device.getAllocator(), m_allocation, &m_data); 
                 m_mapped = true;
                 return m_data;
             }
@@ -154,7 +156,7 @@ namespace LavaCake {
          */
         void unmap(){
             if(m_mapped){
-                vmaUnmapMemory(m_device->getAllocator(), m_allocation); 
+                vmaUnmapMemory(m_device.getAllocator(), m_allocation); 
                 m_mapped = false;
             }
         }
@@ -164,7 +166,14 @@ namespace LavaCake {
             if(m_mapped){
                 unmap();
             }
-            vmaDestroyBuffer(m_device->getAllocator(), m_buffer, m_allocation);
+            //vmaDestroyBuffer(m_device.getAllocator(), m_buffer, m_allocation);
+        }
+
+        vk::Buffer getBuffer() const{
+            return m_buffer;
+        }
+        operator vk::Buffer() const{
+            return m_buffer;
         }
 
         private :
@@ -175,7 +184,7 @@ namespace LavaCake {
         void*                           m_data;
         bool                            m_mapped = false;
 
-        const LavaCake::Device* m_device;
+        LavaCake::Device                m_device = LavaCake::Device();
 
 
         /**
@@ -215,7 +224,7 @@ namespace LavaCake {
 
             std::cout << "VMA buffer allocated.\n";
 
-            m_device = &device;
+            m_device = device;
         }
     };
     

@@ -1,8 +1,13 @@
-#include "Library/Lavacake/Device.hpp"
-#include "Library/Lavacake/Buffer.hpp"
-#include "Library/Lavacake/ShaderModule.hpp"
+#include "Library/LavaCake/Device.hpp"
+#include "Library/LavaCake/Buffer.hpp"
+#include "Library/LavaCake/ShaderModule.hpp"
 
+#include "Library/LavaCake/ComputePipeline.hpp"
+#include "Library/LavaCake/DescriptorSet.hpp"
+#include "Library/LavaCake/DescriptorPool.hpp"
 
+#include <cassert>
+#define assertm(exp, msg) assert((void(msg), exp))
 
 // ---------------------------------------------------------------
 // Main
@@ -17,33 +22,58 @@ int main()
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     GLFWwindow* window = glfwCreateWindow(1280, 720, "Vulkan-Hpp Full Example", nullptr, nullptr);*/
 
-    // -----------------------------------------------------------
-    // 1) Create Device
-    // -----------------------------------------------------------
 
     LavaCake::Device device(1,1);
 
-    // ---------------------------------------------------------
-    // 2) Allocate a command buffer
-    // ---------------------------------------------------------
+
     vk::CommandBuffer cmdBuffer = device.allocateCommandBuffer();
 
+    std::vector<float> a;
+    std::vector<float> b;
 
-    std::vector<float> in;
+    int size = 1024;
 
-    for(int i = 0; i < 1000; i++){
-        in.push_back(i);
+    for(int i = 0; i < size; i++){
+        a.push_back(i);
+        b.push_back(i*2);
     }
 
-    LavaCake::Buffer bufferIn(device,in, vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferSrc,  vk::AllocationCreateFlagBits::eCreateDedicatedMemory);
+    LavaCake::Buffer A(device, a, vk::BufferUsageFlagBits::eStorageBuffer ,  vk::AllocationCreateFlagBits::eCreateDedicatedMemory);
+    LavaCake::Buffer B(device, b, vk::BufferUsageFlagBits::eStorageBuffer ,  vk::AllocationCreateFlagBits::eCreateDedicatedMemory);
+    LavaCake::Buffer C(device, a.size()* sizeof(float), vk::BufferUsageFlagBits::eStorageBuffer , vk::AllocationCreateFlagBits::eCreateDedicatedMemory | vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
 
-    LavaCake::Buffer bufferOut(device,in.size()* sizeof(float),vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferDst, vk::AllocationCreateFlagBits::eCreateDedicatedMemory | vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
+
+    auto pool = LavaCake::DescriptorPool::Builder(device)
+                .setMaxSets(1)
+                .addStorageBuffers(3)
+                .build();
+
+    auto layout = LavaCake::DescriptorSetLayout::Builder(device)
+                            .addStorageBuffer(0,vk::ShaderStageFlagBits::eCompute)
+                            .addStorageBuffer(1,vk::ShaderStageFlagBits::eCompute)
+                            .addStorageBuffer(2,vk::ShaderStageFlagBits::eCompute).build();
+
+    vk::DescriptorSet descriptorSet = pool.allocate(layout);
+
+    LavaCake::DescriptorSetUpdater(device, descriptorSet)
+                        .bindStorageBuffer(0, A.getBuffer())
+                        .bindStorageBuffer(1, B.getBuffer())
+                        .bindStorageBuffer(2, C.getBuffer())
+                        .update();
+
+
+    auto pipeline  = LavaCake::ComputePipeline::Builder(device)
+                            .setShaderFromFile("../test.comp",LavaCake::ShadingLanguage::eGLSL)
+                            .addDescriptorSetLayout(layout)
+                            .build();
 
     vk::CommandBufferBeginInfo beginInfo{};
     beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
     cmdBuffer.begin(beginInfo);
 
-    bufferIn.copyToBuffer(cmdBuffer,bufferOut);
+    pipeline.bind(cmdBuffer);
+    pipeline.bindDescriptorSets(cmdBuffer, {descriptorSet});
+    pipeline.dispatch(cmdBuffer, size);
 
     cmdBuffer.end();
 
@@ -54,24 +84,18 @@ int main()
     auto queue = device.getAnyQueue();
     queue.submit(submitInfo);
     queue.waitIdle();
+    
+    void* data = C.map();
+    std::vector<float> c(size);
+    memcpy(c.data(), data, size*sizeof(float));
 
-    void* data = bufferOut.map();
-    std::vector<float> out(1000);
-    memcpy(out.data(), data, 1000*sizeof(float));
-
-    for(int i = 0; i < 1000; i++){
-        std::cout<<out[i]<<", ";
+    for(int i = 0; i < size; i++){
+        assertm(a[i] + b[i] == c[i], "a + b != c");
+        std::cout<<c[i]<<", ";
     }
 
     std::cout<<std::endl;
-
-
-    //auto computeModule = LavaCake::compileShaderFromGLSLFile(device,"../test.comp", vk::ShaderStageFlagBits::eCompute);
-    auto computeModule = LavaCake::ShaderModule(device, "../test.comp", LavaCake::ShadingLanguage::eGLSL, vk::ShaderStageFlagBits::eCompute);
-
-    
-
-
+                            
     // -----------------------------------------------------------
     // MAIN LOOP
     // -----------------------------------------------------------

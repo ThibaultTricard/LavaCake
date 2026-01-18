@@ -39,7 +39,7 @@ namespace LavaCake {
             m_lang(std::exchange(m.m_lang, ShadingLanguage::eSPIRV)),
             m_optimize(std::exchange(m.m_optimize, false)),
             m_macroDefinitions(std::exchange(m.m_macroDefinitions, {})),
-            m_device(std::exchange(m.m_device, nullptr))
+            m_device(m.m_device)
         {}
 
         /**
@@ -55,8 +55,9 @@ namespace LavaCake {
             m_lang=std::exchange(m.m_lang, ShadingLanguage::eSPIRV);
             m_optimize=std::exchange(m.m_optimize, false);
             m_macroDefinitions=std::exchange(m.m_macroDefinitions, {});
-            m_device=std::exchange(m.m_device, nullptr);
+            m_device = m.m_device;
             }
+            
             return *this;
         }
 
@@ -70,7 +71,7 @@ namespace LavaCake {
          * \param macroDefinitions 
          */
         ShaderModule(
-            const LavaCake::Device& device,
+            LavaCake::Device& device,
             const std::string& filepath,
             const ShadingLanguage lang,
             const vk::ShaderStageFlagBits stage,
@@ -83,7 +84,7 @@ namespace LavaCake {
                 m_optimize= optimize;
                 m_macroDefinitions = macroDefinitions;
 
-                m_device = &device;
+                m_device = device;
 
                 std::string source = readFile(filepath);
                 std::vector<uint32_t> spvcode;
@@ -111,7 +112,7 @@ namespace LavaCake {
 
         ~ShaderModule(){
             if (m_shaderModule) {
-                m_device->getDevice().destroyShaderModule(m_shaderModule);
+                m_device.getDevice().destroyShaderModule(m_shaderModule);
             }
         }
 
@@ -124,7 +125,7 @@ namespace LavaCake {
     bool                            m_optimize;
     std::vector<std::string>        m_macroDefinitions;
 
-    const LavaCake::Device*         m_device;
+    LavaCake::Device                m_device;
 
     shaderc_shader_kind getShaderKind(const vk::ShaderStageFlagBits stage ) {
         switch ( stage )
@@ -192,7 +193,7 @@ namespace LavaCake {
             
             
             try {
-                return m_device->getDevice().createShaderModule(createInfo);
+                return m_device.getDevice().createShaderModule(createInfo);
                 std::cout<<"loaded"<< std::endl;
             } catch (vk::SystemError& err) {
                 throw std::runtime_error(

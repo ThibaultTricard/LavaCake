@@ -1,16 +1,20 @@
 #version 450
 
-layout( local_size_x = 32) in;
+layout( local_size_x = 1) in;
 
-layout( set = 0, binding = 0 , r32f) uniform imageBuffer A;
-layout( set = 0, binding = 1 , r32f) uniform imageBuffer B;
-layout( set = 0, binding = 2 , r32f) uniform imageBuffer C;
+layout(std430, set = 0, binding = 0 )  buffer A{
+    float _a[];
+};
+layout(std430, set = 0, binding = 1 )  buffer B{
+    float _b[];
+};
+layout(std430, set = 0, binding = 2 )  buffer C{
+    float _c[];
+};
 
 void main() {
 	uint Lxid = gl_GlobalInvocationID.x;
-    float a = imageLoad(A, int(Lxid) ).x;
-    float b = imageLoad(B, int(Lxid) ).x;
-    float c = a + b;
-
-    imageStore(C,int(Lxid),vec4(c,0,0,0)); 
+    float a = _a[Lxid];
+    float b = _b[Lxid];
+    _c[Lxid] = a+b;
 }

@@ -64,6 +64,72 @@ namespace LavaCake {
     class Device {
     public:
 
+        Device(){};
+
+        Device(const Device& d){
+            m_physicalDevice = d.m_physicalDevice;
+            m_device = d.m_device;
+            m_instance = d.m_instance ;
+            m_presentationSurface = d.m_presentationSurface;
+            m_swapchain = d.m_swapchain;
+            m_commandPool = d.m_commandPool;
+            m_debugMessenger = d.m_debugMessenger;
+            m_graphicQueues = d.m_graphicQueues;
+            m_computeQueues = d.m_computeQueues;
+            m_presentQueue = d.m_presentQueue;
+            m_hasSurface = d.m_hasSurface;
+            m_allocator = d.m_allocator;
+        };
+
+        Device& operator=(const Device& d) {
+            m_physicalDevice = d.m_physicalDevice;
+            m_device = d.m_device;
+            m_instance = d.m_instance ;
+            m_presentationSurface = d.m_presentationSurface;
+            m_swapchain = d.m_swapchain;
+            m_commandPool = d.m_commandPool;
+            m_debugMessenger = d.m_debugMessenger;
+            m_graphicQueues = d.m_graphicQueues;
+            m_computeQueues = d.m_computeQueues;
+            m_presentQueue = d.m_presentQueue;
+            m_hasSurface = d.m_hasSurface;
+            m_allocator = d.m_allocator;
+            return *this;
+        };
+
+        Device(Device&& d) noexcept{
+            m_physicalDevice = d.m_physicalDevice;
+            m_device = d.m_device;
+            m_instance = d.m_instance ;
+            m_presentationSurface = d.m_presentationSurface;
+            m_swapchain = d.m_swapchain;
+            m_commandPool = d.m_commandPool;
+            m_debugMessenger = d.m_debugMessenger;
+            m_graphicQueues = d.m_graphicQueues;
+            m_computeQueues = d.m_computeQueues;
+            m_presentQueue = d.m_presentQueue;
+            m_hasSurface = d.m_hasSurface;
+            m_allocator = d.m_allocator;
+        }
+
+        Device& operator=(Device&& d) noexcept
+        {
+            m_physicalDevice = d.m_physicalDevice;
+            m_device = d.m_device;
+            m_instance = d.m_instance ;
+            m_presentationSurface = d.m_presentationSurface;
+            m_swapchain = d.m_swapchain;
+            m_commandPool = d.m_commandPool;
+            m_debugMessenger = d.m_debugMessenger;
+            m_graphicQueues = d.m_graphicQueues;
+            m_computeQueues = d.m_computeQueues;
+            m_presentQueue = d.m_presentQueue;
+            m_hasSurface = d.m_hasSurface;
+            m_allocator = d.m_allocator;
+            return *this;
+        }
+
+        
         /**
         * \brief Return the Vulkan instance
         * \return the vk::Instance used by the application
@@ -163,8 +229,8 @@ namespace LavaCake {
         * \param nbGraphicQueue the number of graphic queue requiered by the application
         */
         Device(
-            GLFWwindow* window = nullptr,
-            int nbGraphicQueue = 1,
+            GLFWwindow* window ,
+            int nbGraphicQueue,
             int nbComputeQueue = 0
             ) : Device(nbGraphicQueue,nbComputeQueue,true,window){
 
@@ -176,7 +242,7 @@ namespace LavaCake {
         * \param nbGraphicQueue the number of graphic queue requiered by the application
         */
         Device(
-            int nbGraphicQueue = 0,
+            int nbGraphicQueue,
             int nbComputeQueue = 1
             ) : Device(nbGraphicQueue,nbComputeQueue,false,nullptr){
 
@@ -238,7 +304,7 @@ namespace LavaCake {
         /**
          * \brief Destroy the device
          */
-        ~Device() {
+        void releaseDevice() {
             vmaDestroyAllocator(m_allocator);
             m_device.destroyCommandPool(m_commandPool);
             m_device.destroySwapchainKHR(m_swapchain);
