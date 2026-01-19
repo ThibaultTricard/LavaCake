@@ -21,6 +21,11 @@ namespace LavaCake {
             vk::RenderPass m_renderPass;
             uint32_t m_subpass = 0;
             
+            // DYNAMIC RENDERING: No render pass needed!
+            std::vector<vk::Format> m_colorAttachmentFormats;
+            vk::Format m_depthAttachmentFormat = vk::Format::eUndefined;
+            vk::Format m_stencilAttachmentFormat = vk::Format::eUndefined;
+            bool m_useDynamicRendering = false;  // Track which mode to use
 
             struct ShaderModuleCreateInfo{
                 // to create the shader module
@@ -117,6 +122,14 @@ namespace LavaCake {
             vk::PipelineCache m_cache = nullptr;
 
         public:
+
+            // Constructor for dynamic rendering (modern - NO RENDER PASS!)
+            Builder(const LavaCake::Device& dev)
+                : m_device(dev), m_useDynamicRendering(true) {
+                m_colorBlendAttachments.push_back(getDefaultColorBlendAttachment());
+            }
+
+
             Builder(const LavaCake::Device& dev, const vk::RenderPass& rp, uint32_t sp = 0)
                 : m_device(dev), m_renderPass(rp), m_subpass(sp) {
                 // Default color blend attachment (no blending)
@@ -145,7 +158,48 @@ namespace LavaCake {
                 }
                 last->filepath =path;
                 last->entryPoint = entry;
+                last->lang = language;
             
+                return *this;
+            }
+
+            // DYNAMIC RENDERING: Set color attachment formats
+            Builder& addColorAttachmentFormat(vk::Format format) {
+                m_colorAttachmentFormats.push_back(format);
+                
+                // Ensure we have enough blend attachments
+                if (m_colorBlendAttachments.size() < m_colorAttachmentFormats.size()) {
+                    m_colorBlendAttachments.push_back(getDefaultColorBlendAttachment());
+                }
+                
+                return *this;
+            }
+
+            Builder& setColorAttachmentFormats(const std::vector<vk::Format>& formats) {
+                m_colorAttachmentFormats = formats;
+                
+                // Adjust color blend attachments to match
+                while (m_colorBlendAttachments.size() < formats.size()) {
+                    m_colorBlendAttachments.push_back(getDefaultColorBlendAttachment());
+                }
+                
+                return *this;
+            }
+
+            // DYNAMIC RENDERING: Set depth/stencil formats
+            Builder& setDepthAttachmentFormat(vk::Format format) {
+                m_depthAttachmentFormat = format;
+                return *this;
+            }
+
+            Builder& setStencilAttachmentFormat(vk::Format format) {
+                m_stencilAttachmentFormat = format;
+                return *this;
+            }
+
+            Builder& setDepthStencilFormat(vk::Format format) {
+                m_depthAttachmentFormat = format;
+                m_stencilAttachmentFormat = format;
                 return *this;
             }
             
@@ -406,8 +460,24 @@ namespace LavaCake {
                 pipelineInfo.pColorBlendState = &colorBlending;
                 pipelineInfo.pDynamicState = &dynamicState;
                 pipelineInfo.layout = graphicsPipeline.getLayout();
-                pipelineInfo.renderPass = m_renderPass;
-                pipelineInfo.subpass = m_subpass;
+                
+                vk::PipelineRenderingCreateInfo renderingCreateInfo{};
+
+                if (m_useDynamicRendering) {
+                    // Modern: Use dynamic rendering
+                    renderingCreateInfo.colorAttachmentCount = static_cast<uint32_t>(m_colorAttachmentFormats.size());
+                    renderingCreateInfo.pColorAttachmentFormats = m_colorAttachmentFormats.data();
+                    renderingCreateInfo.depthAttachmentFormat = m_depthAttachmentFormat;
+                    renderingCreateInfo.stencilAttachmentFormat = m_stencilAttachmentFormat;
+                    
+                    pipelineInfo.pNext = &renderingCreateInfo;
+                    pipelineInfo.renderPass = nullptr;  // No render pass!
+                    pipelineInfo.subpass = 0;
+                } else {
+                    // Legacy: Use render pass
+                    pipelineInfo.renderPass = m_renderPass;
+                    pipelineInfo.subpass = m_subpass;
+                }
                 
                 auto result = m_device.getDevice().createGraphicsPipeline(m_cache, pipelineInfo);
                 if (result.result != vk::Result::eSuccess) {

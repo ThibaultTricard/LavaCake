@@ -7,6 +7,7 @@
 #include "Library/LavaCake/DescriptorPool.hpp"
 
 #include "Library/LavaCake/GraphicPipeline.hpp"
+#include "Library/LavaCake/DynamicRendering.hpp"
 
 #include <cassert>
 #define assertm(exp, msg) assert((void(msg), exp))
@@ -17,12 +18,6 @@
 int main()
 {
    
-    // -----------------------------------------------------------
-    // 1) Initialize GLFW
-    // -----------------------------------------------------------
-    /*glfwInit();
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Vulkan-Hpp Full Example", nullptr, nullptr);*/
 
     LavaCake::Device device(1,1);
 
@@ -92,23 +87,6 @@ int main()
 
     std::cout<<std::endl;
                             
-    // -----------------------------------------------------------
-    // MAIN LOOP
-    // -----------------------------------------------------------
-    /*while (!glfwWindowShouldClose(window))
-    {
-        glfwPollEvents();
-    }*/
-
-    // -----------------------------------------------------------
-    // Cleanup
-    // -----------------------------------------------------------
-    
-
-    //glfwDestroyWindow(window);
-    //glfwTerminate();
-    
-    
 
     return EXIT_SUCCESS;
 }

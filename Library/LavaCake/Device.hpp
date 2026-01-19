@@ -15,6 +15,8 @@
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 
+#include "SwapChainImage.hpp"
+
 uint32_t api_version = VK_API_VERSION_1_3;
 
 namespace LavaCake {
@@ -84,6 +86,8 @@ namespace LavaCake {
             m_instance = d.m_instance ;
             m_presentationSurface = d.m_presentationSurface;
             m_swapchain = d.m_swapchain;
+            m_swapchainImages = d.m_swapchainImages;
+            m_swapchainFormat = d.m_swapchainFormat;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -99,6 +103,8 @@ namespace LavaCake {
             m_instance = d.m_instance ;
             m_presentationSurface = d.m_presentationSurface;
             m_swapchain = d.m_swapchain;
+            m_swapchainImages = d.m_swapchainImages;
+            m_swapchainFormat = d.m_swapchainFormat;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -115,6 +121,8 @@ namespace LavaCake {
             m_instance = d.m_instance ;
             m_presentationSurface = d.m_presentationSurface;
             m_swapchain = d.m_swapchain;
+            m_swapchainImages = d.m_swapchainImages;
+            m_swapchainFormat = d.m_swapchainFormat;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -131,6 +139,8 @@ namespace LavaCake {
             m_instance = d.m_instance ;
             m_presentationSurface = d.m_presentationSurface;
             m_swapchain = d.m_swapchain;
+            m_swapchainImages = d.m_swapchainImages;
+            m_swapchainFormat = d.m_swapchainFormat;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -313,15 +323,52 @@ namespace LavaCake {
             m_device.freeCommandBuffers(m_commandPool, cmd);
         }
 
+
+
+        LavaCake::SwapChainImage& aquireSwapChainImage(vk::Semaphore isAvailableSemaphore){
+            uint32_t imageIndex;
+
+            vk::Result result = m_device.acquireNextImageKHR(
+                m_swapchain,
+                UINT64_MAX,
+                isAvailableSemaphore,
+                nullptr,
+                &imageIndex
+            );
+
+            return m_swapchainImages[imageIndex];
+        }
+
+        vk::Format getSwapchainFormat(){
+            return m_swapchainFormat;
+        }
+
+        vk::Result presentImage(LavaCake::SwapChainImage image, std::vector<vk::Semaphore>semaphores){
+            uint32_t index = image.getIndex();
+            vk::PresentInfoKHR present{};
+            present.waitSemaphoreCount = semaphores.size();
+            present.pWaitSemaphores = semaphores.data();
+            present.swapchainCount = 1;
+            present.pSwapchains = &m_swapchain;
+            present.pImageIndices = &index;
+
+            return getPresentQueue().presentKHR(present);
+        }
+
         /**
          * \brief Destroy the device
          */
         void releaseDevice() {
             vmaDestroyAllocator(m_allocator);
             m_device.destroyCommandPool(m_commandPool);
-            m_device.destroySwapchainKHR(m_swapchain);
+            if(m_hasSurface)  {
+                m_device.destroySwapchainKHR(m_swapchain);
+                //for(auto v : m_swapchainImagesView) m_device.destroyImageView(v);
+            }
             m_device.destroy();
-            if(m_hasSurface)  m_instance.destroySurfaceKHR(m_presentationSurface);
+            if(m_hasSurface)  {
+                m_instance.destroySurfaceKHR(m_presentationSurface);
+            }
             m_instance.destroyDebugUtilsMessengerEXT(m_debugMessenger);
             m_instance.destroy();
         }
@@ -331,7 +378,11 @@ namespace LavaCake {
         vk::Device                                            m_device;
         vk::Instance                                          m_instance;
         vk::SurfaceKHR                                        m_presentationSurface;
+
         vk::SwapchainKHR                                      m_swapchain;
+        std::vector<LavaCake::SwapChainImage>                 m_swapchainImages;
+        vk::Format                                            m_swapchainFormat;
+
         vk::CommandPool                                       m_commandPool;
         vk::DebugUtilsMessengerEXT                            m_debugMessenger;
         std::vector<vk::Queue>	                              m_graphicQueues;
@@ -602,6 +653,12 @@ namespace LavaCake {
                 devInfo.enabledExtensionCount = deviceExtensions.size();
                 devInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
+
+                vk::PhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures{};
+                dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
+
+                devInfo.pNext = &dynamicRenderingFeatures;
+
                 m_device = m_physicalDevice.createDevice(devInfo);
                 VULKAN_HPP_DEFAULT_DISPATCHER.init(m_device);
 
@@ -617,7 +674,7 @@ namespace LavaCake {
                 }
                 
                 if(createSurface){
-                    vk::Queue presentQueue  = m_device.getQueue(presentFamily.value(), 0);
+                    m_presentQueue  = m_device.getQueue(presentFamily.value(), 0);
                 }
 
 
@@ -668,11 +725,21 @@ namespace LavaCake {
                     swapInfo.presentMode = presentMode;
                     swapInfo.clipped = VK_TRUE;
 
+                    m_swapchainFormat = surfaceFormat.format;
+
                     m_swapchain = m_device.createSwapchainKHR(swapInfo);
 
-                    auto swapImages = m_device.getSwapchainImagesKHR(m_swapchain);
+                    auto images = m_device.getSwapchainImagesKHR(m_swapchain);
+                    m_swapchainImages.reserve(images.size());
 
-                    std::cout << "Swapchain created with " << swapImages.size() << " images.\n";
+                    for(uint32_t i = 0; i< images.size(); i ++){ 
+                        SwapChainImage swapChainImage(m_device, images[i], i ,m_swapchainFormat);
+                        m_swapchainImages.push_back(swapChainImage);
+                    }
+                    
+                   
+
+                    std::cout << "Swapchain created with " << m_swapchainImages.size() << " images.\n";
                 }  
 
                 // -----------------------------------------------------------

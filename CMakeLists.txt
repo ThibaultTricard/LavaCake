@@ -149,18 +149,14 @@ if(NOT SHADERC_FOUND)
      message(STATUS "  Include dir: ${SHADERC_INCLUDE_DIRS}")
 endif()
 
-add_executable(testing main.cpp)
 
-target_include_directories(testing PRIVATE ${Vulkan_INCLUDE_DIRS} ${vmahpp_SOURCE_DIR} ${SHADERC_INCLUDE_DIRS})
+add_executable(computeTest computeTest.cpp)
+target_include_directories(computeTest PRIVATE ${Vulkan_INCLUDE_DIRS} ${vmahpp_SOURCE_DIR} ${SHADERC_INCLUDE_DIRS})
+target_compile_definitions(computeTest PRIVATE VMA_VULKAN_HPP)
+target_link_libraries(computeTest PRIVATE Vulkan::Vulkan glfw VulkanMemoryAllocator ${SHADERC_LIB})
 
-target_compile_definitions(testing PRIVATE VMA_VULKAN_HPP)
 
-target_link_libraries(testing PRIVATE 
-Vulkan::Vulkan 
-glfw 
-VulkanMemoryAllocator 
-
-${SHADERC_LIB}
-
-)
-
+add_executable(helloWorld helloWorld.cpp)
+target_include_directories(helloWorld PRIVATE ${Vulkan_INCLUDE_DIRS} ${vmahpp_SOURCE_DIR} ${SHADERC_INCLUDE_DIRS})
+target_compile_definitions(helloWorld PRIVATE VMA_VULKAN_HPP)
+target_link_libraries(helloWorld PRIVATE Vulkan::Vulkan glfw VulkanMemoryAllocator ${SHADERC_LIB})
