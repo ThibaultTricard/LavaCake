@@ -23,6 +23,7 @@ namespace LavaCake {
     // Debug Callback
     // ---------------------------------------------------------------
 
+#ifdef __APPLE__
     VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
         vk::DebugUtilsMessageSeverityFlagBitsEXT severity,
         vk::DebugUtilsMessageTypeFlagsEXT type,
@@ -32,6 +33,17 @@ namespace LavaCake {
         std::cerr << "Validation: " << data->pMessage << std::endl;
         return VK_FALSE;
     }
+#else
+    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT messageType,
+    const VkDebugUtilsMessengerCallbackDataEXT* data,
+    void* pUserData)
+{
+         std::cerr << "Validation: " << data->pMessage << std::endl;
+        return VK_FALSE;
+}
+#endif
 
     // ---------------------------------------------------------------
     // Device scoring: pick the most powerful GPU
