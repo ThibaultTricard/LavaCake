@@ -340,6 +340,32 @@ namespace LavaCake{
             return *this;
         }
         
+        DescriptorSetUpdater& bindUniformBufferArray(uint32_t binding,
+                                            const std::vector<LavaCake::Buffer>& buffers,
+                                            uint32_t arrayElement = 0) {
+            m_bufferArrays.emplace_back();
+            auto& bufferArray = m_bufferArrays.back();
+            
+            for (const auto& buffer : buffers) {
+                bufferArray.push_back({buffer.getBuffer(), 0, VK_WHOLE_SIZE});
+            }
+            
+            vk::WriteDescriptorSet write{};
+            write.dstSet = m_descriptorSet;
+            write.dstBinding = binding;
+            write.dstArrayElement = arrayElement;
+            write.descriptorType = vk::DescriptorType::eUniformBuffer; // ← Different type
+            write.descriptorCount = static_cast<uint32_t>(bufferArray.size());
+            
+            UpdatePointerInfos updateInfos;
+            updateInfos.type = bindType::eBufferArray;
+            updateInfos.listIndex = m_bufferArrays.size()-1;
+            m_updatePointerInfos.push_back(updateInfos);
+            
+            m_writes.push_back(write);
+            return *this;
+        }
+
         // Bind buffer array (for bindless)
         DescriptorSetUpdater& bindStorageBufferArray(uint32_t binding,
                                                     const std::vector<LavaCake::Buffer>& buffers,
@@ -347,6 +373,9 @@ namespace LavaCake{
             m_bufferArrays.emplace_back();
             auto& bufferArray = m_bufferArrays.back();
             
+            for (const auto& buffer : buffers) {
+                bufferArray.push_back({buffer.getBuffer(), 0, VK_WHOLE_SIZE});
+            }
             
             vk::WriteDescriptorSet write{};
             write.dstSet = m_descriptorSet;
