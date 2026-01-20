@@ -1,5 +1,6 @@
 #include "Library/LavaCake/Device.hpp"
 #include "Library/LavaCake/Buffer.hpp"
+#include "Library/LavaCake/Image.hpp"
 #include "Library/LavaCake/ShaderModule.hpp"
 
 #include "Library/LavaCake/ComputePipeline.hpp"
