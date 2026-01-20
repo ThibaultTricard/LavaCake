@@ -38,7 +38,9 @@ int main()
                             .build();
 
     
-                            
+    vk::SemaphoreCreateInfo semInfo = {};
+    vk::Semaphore SwapChainSemaphore;
+    vk::Semaphore renderFinishedSemaphore;
     // -----------------------------------------------------------
     // MAIN LOOP
     // -----------------------------------------------------------
@@ -50,13 +52,12 @@ int main()
         beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
         cmdBuffer.begin(beginInfo);
                         
-        vk::SemaphoreCreateInfo semInfo = {};
-        auto SwapChainSemaphore = device.getDevice().createSemaphore(semInfo);
+        SwapChainSemaphore = device.getDevice().createSemaphore(semInfo);
         auto colorImage = device.aquireSwapChainImage(SwapChainSemaphore);
         vk::PipelineStageFlags waitingStage = vk::PipelineStageFlagBits::eFragmentShader;
         
 
-        colorImage.prepareForAttachement(cmdBuffer);
+        colorImage.prepareForAttachementBarrier(cmdBuffer);
 
         auto rendering = LavaCake::DynamicRenderingContext::Builder()
                 .setRenderArea(1280, 720)
@@ -65,19 +66,17 @@ int main()
 
         rendering.setDefaultViewportScissor(cmdBuffer);
         
-        
 
         pipeline.bind(cmdBuffer);
         pipeline.draw(cmdBuffer,3);
 
         rendering.end(cmdBuffer);
 
-        colorImage.prepareForPresent(cmdBuffer);
+        colorImage.prepareForPresentBarrier(cmdBuffer);
         cmdBuffer.end();
+        
 
-
-        auto renderFinishedSemaphore = device.getDevice().createSemaphore(semInfo);
-
+        renderFinishedSemaphore = device.getDevice().createSemaphore(semInfo);
         vk::SubmitInfo submitInfo{};
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &cmdBuffer;
@@ -93,6 +92,9 @@ int main()
         queue.submit(submitInfo);
         device.presentImage(colorImage,{renderFinishedSemaphore});
         queue.waitIdle();
+
+        device.getDevice().destroySemaphore(SwapChainSemaphore);
+        device.getDevice().destroySemaphore(renderFinishedSemaphore);
     }
 
     // -----------------------------------------------------------
