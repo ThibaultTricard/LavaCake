@@ -25,7 +25,7 @@ namespace LavaCake{
             m_imageView = device.createImageView(viewInfo);
         }
 
-        void prepareForAttachement(vk::CommandBuffer& cmdBuffer){
+        void prepareForAttachementBarrier(vk::CommandBuffer& cmdBuffer){
             vk::ImageMemoryBarrier barrier{};
             barrier.oldLayout = vk::ImageLayout::eUndefined;
             barrier.newLayout = vk::ImageLayout::eColorAttachmentOptimal;
@@ -52,7 +52,7 @@ namespace LavaCake{
             );
         }
 
-        void prepareForPresent(vk::CommandBuffer& cmdBuffer){
+        void prepareForPresentBarrier(vk::CommandBuffer& cmdBuffer){
             vk::ImageMemoryBarrier barrier{};
             barrier.oldLayout = vk::ImageLayout::eColorAttachmentOptimal;
             barrier.newLayout = vk::ImageLayout::ePresentSrcKHR;
