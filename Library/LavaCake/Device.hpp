@@ -458,6 +458,8 @@ namespace LavaCake {
                 instanceInfo.enabledExtensionCount = instanceExtensions.size();
                 instanceInfo.ppEnabledExtensionNames = instanceExtensions.data();
 
+                
+
                 #ifdef __APPLE__
                 instanceInfo.flags |=
                     vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
@@ -578,13 +580,14 @@ namespace LavaCake {
                 std::vector<const char*> deviceExtensions;
 
                 for (auto& ext : availableExts){
-                    if (vk::isDeprecatedExtension(ext.extensionName)) continue;
-                    if (vk::isPromotedExtension(ext.extensionName)) continue;
-                    if (vk::isObsoletedExtension(ext.extensionName)) continue;
+                    if (vk::isDeprecatedExtension(ext.extensionName)) { continue;}
+                    if (vk::isPromotedExtension(ext.extensionName)) { continue;}
+                    if (vk::isObsoletedExtension(ext.extensionName)) { continue;}
                     if (std::string(ext.extensionName) == "VK_AMD_shader_fragment_mask") continue;
                     if (std::string(ext.extensionName) == "VK_NV_shading_rate_image") continue;
                     
                     if (std::string(ext.extensionName) == "VK_EXT_descriptor_buffer") continue;
+                    
                     deviceExtensions.push_back(ext.extensionName);
                 }
 
@@ -652,7 +655,6 @@ namespace LavaCake {
                 devInfo.pEnabledFeatures = &features;
                 devInfo.enabledExtensionCount = deviceExtensions.size();
                 devInfo.ppEnabledExtensionNames = deviceExtensions.data();
-
 
                 vk::PhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures{};
                 dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
