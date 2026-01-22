@@ -1,0 +1,4 @@
+# Basic Examples
+add_lavacake_example(01_clear_screen 01_clear_screen.cpp)
+add_lavacake_example(02_colored_triangle 02_colored_triangle.cpp)
+#add_lavacake_example(03_indexed_quad 03_indexed_quad.cpp)

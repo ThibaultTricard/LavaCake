@@ -204,13 +204,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/LavaCakeConfig.cmake
 )
 
 
-add_executable(computeTest computeTest.cpp)
-target_link_libraries(computeTest PRIVATE LavaCake::LavaCake glfw VulkanMemoryAllocator ${SHADERC_LIB})
-target_include_directories(computeTest PRIVATE ${SHADERC_INCLUDE_DIRS})
 
 
-add_executable(helloWorld helloWorld.cpp)
-target_link_libraries(helloWorld PRIVATE LavaCake::LavaCake glfw VulkanMemoryAllocator ${SHADERC_LIB})
-target_include_directories(helloWorld PRIVATE ${SHADERC_INCLUDE_DIRS})
-
-
+# Add examples subdirectory
+ add_subdirectory(examples)

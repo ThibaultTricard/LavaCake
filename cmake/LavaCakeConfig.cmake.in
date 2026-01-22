@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(Vulkan REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/LavaCakeTargets.cmake")
+
+check_required_components(LavaCake)
