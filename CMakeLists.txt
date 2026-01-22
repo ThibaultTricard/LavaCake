@@ -150,13 +150,67 @@ if(NOT SHADERC_FOUND)
 endif()
 
 
+# === LavaCake Library ===
+file(GLOB_RECURSE LAVACAKE_HEADERS "Library/LavaCake/*.hpp" "Library/LavaCake/*.h")
+add_library(LavaCake INTERFACE)
+target_include_directories(LavaCake INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Library>
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(LavaCake INTERFACE
+    $<BUILD_INTERFACE:${Vulkan_INCLUDE_DIRS}>
+    $<BUILD_INTERFACE:${vmahpp_SOURCE_DIR}>
+)
+# Note: shaderc includes are not added to the interface as they're in the build directory
+# Users will need to have their own shaderc installation
+target_compile_definitions(LavaCake INTERFACE VMA_VULKAN_HPP)
+target_link_libraries(LavaCake INTERFACE Vulkan::Vulkan)
+
+# Create an alias for consistent usage
+add_library(LavaCake::LavaCake ALIAS LavaCake)
+
+
+
+
+# === Installation ===
+include(GNUInstallDirs)
+
+install(TARGETS LavaCake
+    EXPORT LavaCakeTargets
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(DIRECTORY Library/LavaCake
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h"
+)
+
+install(EXPORT LavaCakeTargets
+    FILE LavaCakeTargets.cmake
+    NAMESPACE LavaCake::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/LavaCake
+)
+
+# Create and install package config file
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/LavaCakeConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/LavaCakeConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/LavaCake
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/LavaCakeConfig.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/LavaCake
+)
+
+
 add_executable(computeTest computeTest.cpp)
-target_include_directories(computeTest PRIVATE ${Vulkan_INCLUDE_DIRS} ${vmahpp_SOURCE_DIR} ${SHADERC_INCLUDE_DIRS})
-target_compile_definitions(computeTest PRIVATE VMA_VULKAN_HPP)
-target_link_libraries(computeTest PRIVATE Vulkan::Vulkan glfw VulkanMemoryAllocator ${SHADERC_LIB})
+target_link_libraries(computeTest PRIVATE LavaCake::LavaCake glfw VulkanMemoryAllocator ${SHADERC_LIB})
+target_include_directories(computeTest PRIVATE ${SHADERC_INCLUDE_DIRS})
 
 
 add_executable(helloWorld helloWorld.cpp)
-target_include_directories(helloWorld PRIVATE ${Vulkan_INCLUDE_DIRS} ${vmahpp_SOURCE_DIR} ${SHADERC_INCLUDE_DIRS})
-target_compile_definitions(helloWorld PRIVATE VMA_VULKAN_HPP)
-target_link_libraries(helloWorld PRIVATE Vulkan::Vulkan glfw VulkanMemoryAllocator ${SHADERC_LIB})
+target_link_libraries(helloWorld PRIVATE LavaCake::LavaCake glfw VulkanMemoryAllocator ${SHADERC_LIB})
+target_include_directories(helloWorld PRIVATE ${SHADERC_INCLUDE_DIRS})
+
+

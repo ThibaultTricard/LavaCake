@@ -1,13 +1,8 @@
-#include "Library/LavaCake/Device.hpp"
-#include "Library/LavaCake/Buffer.hpp"
-#include "Library/LavaCake/ShaderModule.hpp"
+#include <LavaCake/Device.hpp>
+#include <LavaCake/Buffer.hpp>
 
-#include "Library/LavaCake/ComputePipeline.hpp"
-#include "Library/LavaCake/DescriptorSet.hpp"
-#include "Library/LavaCake/DescriptorPool.hpp"
-
-#include "Library/LavaCake/GraphicPipeline.hpp"
-#include "Library/LavaCake/DynamicRendering.hpp"
+#include <LavaCake/ComputePipeline.hpp>
+#include <LavaCake/DescriptorPool.hpp>
 
 #include <cassert>
 #define assertm(exp, msg) assert((void(msg), exp))
