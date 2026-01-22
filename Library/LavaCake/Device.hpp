@@ -114,6 +114,7 @@ namespace LavaCake {
             m_swapchain = d.m_swapchain;
             m_swapchainImages = d.m_swapchainImages;
             m_swapchainFormat = d.m_swapchainFormat;
+            m_swapchainExtent = d.m_swapchainExtent;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -136,6 +137,7 @@ namespace LavaCake {
             m_swapchain = d.m_swapchain;
             m_swapchainImages = d.m_swapchainImages;
             m_swapchainFormat = d.m_swapchainFormat;
+            m_swapchainExtent = d.m_swapchainExtent;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -158,6 +160,7 @@ namespace LavaCake {
             m_swapchain = d.m_swapchain;
             m_swapchainImages = d.m_swapchainImages;
             m_swapchainFormat = d.m_swapchainFormat;
+            m_swapchainExtent = d.m_swapchainExtent;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -181,6 +184,7 @@ namespace LavaCake {
             m_swapchain = d.m_swapchain;
             m_swapchainImages = d.m_swapchainImages;
             m_swapchainFormat = d.m_swapchainFormat;
+            m_swapchainExtent = d.m_swapchainExtent;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -393,6 +397,14 @@ namespace LavaCake {
         }
 
         /**
+         * \brief Returns the swapchain Extent
+         * \return the vk::Extent2D of the swapchain
+         */
+        vk::Extent2D getSwapchainExtent(){
+            return m_swapchainExtent;
+        }
+
+        /**
          * \brief Presents a swapchain image to the screen
          * \param image the SwapChainImage to present
          * \param semaphores the semaphores to wait on before presenting
@@ -437,6 +449,7 @@ namespace LavaCake {
         vk::SwapchainKHR                                      m_swapchain;
         std::vector<LavaCake::SwapChainImage>                 m_swapchainImages;
         vk::Format                                            m_swapchainFormat;
+        vk::Extent2D                                          m_swapchainExtent;
 
         vk::CommandPool                                       m_commandPool;
         vk::DebugUtilsMessengerEXT                            m_debugMessenger;
@@ -571,7 +584,7 @@ namespace LavaCake {
                 }
 
                 auto props = m_physicalDevice.getProperties();
-                std::cout << "Selected GPU: " << props.deviceName << "\n";
+                //std::cout << "Selected GPU: " << props.deviceName << "\n";
 
                 // -----------------------------------------------------------
                 // 6) Find Graphics + Present Queue Families
@@ -749,7 +762,7 @@ namespace LavaCake {
                     vk::SurfaceFormatKHR surfaceFormat = formats[0];
                     vk::PresentModeKHR presentMode = vk::PresentModeKHR::eFifo;
 
-                    vk::Extent2D extent = surfaceCaps.currentExtent;
+                    m_swapchainExtent = surfaceCaps.currentExtent;
 
                     uint32_t imageCount = surfaceCaps.minImageCount + 1;
                     if (surfaceCaps.maxImageCount > 0 && imageCount > surfaceCaps.maxImageCount)
@@ -760,7 +773,7 @@ namespace LavaCake {
                     swapInfo.minImageCount = imageCount;
                     swapInfo.imageFormat = surfaceFormat.format;
                     swapInfo.imageColorSpace = surfaceFormat.colorSpace;
-                    swapInfo.imageExtent = extent;
+                    swapInfo.imageExtent = m_swapchainExtent;
                     swapInfo.imageArrayLayers = 1;
                     swapInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
 
@@ -799,7 +812,7 @@ namespace LavaCake {
                     
                    
 
-                    std::cout << "Swapchain created with " << m_swapchainImages.size() << " images.\n";
+                    //std::cout << "Swapchain created with " << m_swapchainImages.size() << " images.\n";
                 }  
 
                 // -----------------------------------------------------------
@@ -834,7 +847,7 @@ namespace LavaCake {
                     throw std::runtime_error("Failed to create VMA allocator");
                 }
 
-                std::cout << "VMA allocator created.\n";
+                //std::cout << "VMA allocator created.\n";
 
 
             }

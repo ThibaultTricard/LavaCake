@@ -235,7 +235,7 @@ namespace LavaCake {
 
             m_buffer = vk::Buffer(buffer);
 
-            std::cout << "VMA buffer allocated.\n";
+            //std::cout << "VMA buffer allocated.\n";
 
             m_device = device;
         }
