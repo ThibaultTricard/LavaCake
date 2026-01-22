@@ -14,11 +14,17 @@
 
 
 namespace LavaCake {
+    /**
+     * \brief Enumeration of supported shading languages
+     */
     enum class ShadingLanguage{
-        eSPIRV,
-        eGLSL,
+        eSPIRV,  ///< SPIR-V binary format
+        eGLSL,   ///< GLSL source code
     };
 
+    /**
+     * \brief Manages Vulkan shader modules with support for GLSL and SPIR-V
+     */
     class ShaderModule{
     public :
         ShaderModule() = default;
@@ -117,7 +123,7 @@ namespace LavaCake {
         }
 
     private :
-    
+
     vk::ShaderModule                m_shaderModule;
     vk::ShaderStageFlagBits         m_stage;
     std::string                     m_filePath;
@@ -127,6 +133,11 @@ namespace LavaCake {
 
     LavaCake::Device                m_device;
 
+    /**
+     * \brief Convert Vulkan shader stage to shaderc shader kind
+     * \param stage the Vulkan shader stage
+     * \return the corresponding shaderc shader kind
+     */
     shaderc_shader_kind getShaderKind(const vk::ShaderStageFlagBits stage ) {
         switch ( stage )
         {
@@ -146,10 +157,15 @@ namespace LavaCake {
             case vk::ShaderStageFlagBits::eMeshEXT: return shaderc_mesh_shader;
             default: assert( false && "Unknown shader stage" ); throw std::runtime_error("Unknown shader type");
         }
-                
+
+
         }
-        
-        // Apply macro definitions to compile options
+
+        /**
+         * \brief Apply macro definitions to shader compile options
+         * \param options the shaderc compile options to modify
+         * \param macroDefinitions the vector of macro definitions
+         */
         void applyMacroDefinitions(
             shaderc::CompileOptions& options,
             const std::vector<std::string>& macroDefinitions
@@ -168,8 +184,11 @@ namespace LavaCake {
             }
         }
 
-
-        // Read file contents
+        /**
+         * \brief Read the contents of a file
+         * \param filepath the path to the file
+         * \return the file contents as a string
+         */
         std::string readFile(const std::string& filepath){
             std::ifstream file(filepath);
             
@@ -181,8 +200,12 @@ namespace LavaCake {
             buffer << file.rdbuf();
             return buffer.str();
         }
-        
-        // Create shader module from SPIR-V code
+
+        /**
+         * \brief Create a Vulkan shader module from SPIR-V code
+         * \param spirvCode the SPIR-V binary code
+         * \return the created vk::ShaderModule
+         */
         vk::ShaderModule createShaderModule(
             const std::vector<uint32_t>& spirvCode
         ){
@@ -202,10 +225,11 @@ namespace LavaCake {
             }
         }
 
-       
-        
-
-        // Get SPIR-V binary from GLSL source (without creating module)
+        /**
+         * \brief Compile GLSL source code to SPIR-V binary
+         * \param source the GLSL source code
+         * \return the SPIR-V binary as a vector of uint32_t
+         */
         std::vector<uint32_t> compileToSPIRV(
             const std::string& source
         ){
@@ -258,15 +282,22 @@ namespace LavaCake {
             return std::vector<uint32_t>(result.cbegin(), result.cend());
         }
 
-        
-        // Compile GLSL file to SPIR-V and create shader module
+        /**
+         * \brief Compile GLSL source to SPIR-V and create a shader module
+         * \param source the GLSL source code
+         * \return the created vk::ShaderModule
+         */
         vk::ShaderModule compileShaderFromGLSLFile(const std::string& source){
             auto spirvCode = compileToSPIRV(source);
             
             return createShaderModule(spirvCode);
         }
 
-        // Get file extension for shader type (for auto-detection)
+        /**
+         * \brief Get the file extension for a shader stage (for auto-detection)
+         * \param stage the shader stage
+         * \return the corresponding file extension
+         */
         std::string getShaderExtension(vk::ShaderStageFlagBits stage){
             switch (stage) {
                 case vk::ShaderStageFlagBits::eVertex:                  return ".vert";

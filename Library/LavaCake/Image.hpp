@@ -5,7 +5,10 @@
 #include <span>
 
 namespace LavaCake {
-    class ImageView; 
+    class ImageView;
+    /**
+     * \brief Manages Vulkan images with VMA memory allocation
+     */
     class Image {
     public:
 
@@ -235,38 +238,75 @@ namespace LavaCake {
             m_imageView = m_device.getDevice().createImageView(viewInfo);
         }*/
 
+        /**
+         * \brief Destructor - cleans up image resources
+         */
         ~Image() {
             cleanup();
         }
 
+        /**
+         * \brief Get the Vulkan image handle
+         * \return the vk::Image handle
+         */
         vk::Image getImage() const { return m_image; }
-        
-        
-        operator vk::Image() const { return m_image; }
-        
 
+        /**
+         * \brief Implicit conversion to vk::Image
+         * \return the vk::Image handle
+         */
+        operator vk::Image() const { return m_image; }
+
+        /**
+         * \brief Get image width in pixels
+         * \return the width
+         */
         uint32_t getWidth() const { return m_width; }
+
+        /**
+         * \brief Get image height in pixels
+         * \return the height
+         */
         uint32_t getHeight() const { return m_height; }
+
+        /**
+         * \brief Get image depth for 3D images
+         * \return the depth
+         */
         uint32_t getDepth() const { return m_depth; }
+
+        /**
+         * \brief Get image format
+         * \return the vk::Format
+         */
         vk::Format getFormat() const { return m_format; }
 
         friend class ImageView;
 
     private:
-        vk::Image m_image;
-        VmaAllocation m_allocation;
+        vk::Image m_image;                      ///< The Vulkan image handle
+        VmaAllocation m_allocation;             ///< VMA allocation handle
 
-        uint32_t m_width = 0;
-        uint32_t m_height = 0;
-        uint32_t m_depth = 1;
-        uint32_t m_mipLevels = 1;
-        uint32_t m_arrayLayers = 1;
-        vk::Format m_format = vk::Format::eUndefined;
+        uint32_t m_width = 0;                   ///< Image width in pixels
+        uint32_t m_height = 0;                  ///< Image height in pixels
+        uint32_t m_depth = 1;                   ///< Image depth (for 3D images)
+        uint32_t m_mipLevels = 1;               ///< Number of mipmap levels
+        uint32_t m_arrayLayers = 1;             ///< Number of array layers
+        vk::Format m_format = vk::Format::eUndefined; ///< Image format
 
-        LavaCake::Device m_device = LavaCake::Device();
+        LavaCake::Device m_device = LavaCake::Device(); ///< Associated device
 
         /**
          * \brief Initialize and allocate an image
+         * \param device the device on which to create the image
+         * \param width image width in pixels
+         * \param height image height in pixels
+         * \param depth image depth for 3D images
+         * \param format image format
+         * \param usage image usage flags
+         * \param memoryFlags memory allocation flags
+         * \param mipLevels number of mipmap levels
+         * \param arrayLayers number of array layers
          */
         void init(const LavaCake::Device& device,
                  uint32_t width,
@@ -341,17 +381,24 @@ namespace LavaCake {
         }
     };
 
-
+    /**
+     * \brief Creates and manages Vulkan image views for images
+     */
     class ImageView {
 
     private:
-        vk::ImageView m_imageView;
+        vk::ImageView m_imageView;              ///< The Vulkan image view handle
 
-        LavaCake::Device m_device = LavaCake::Device();
+        LavaCake::Device m_device = LavaCake::Device(); ///< Associated device
 
         ImageView() = default;
 
-
+        /**
+         * \brief Create an image view with default parameters
+         * \param image the image to create a view for
+         * \param viewType the type of image view (default: 2D)
+         * \param aspectMask the aspect mask (default: Color)
+         */
         ImageView (const Image& image,
                            vk::ImageViewType viewType = vk::ImageViewType::e2D,
                            vk::ImageAspectFlags aspectMask = vk::ImageAspectFlagBits::eColor){
@@ -369,11 +416,22 @@ namespace LavaCake {
             m_device = image.m_device;
         }
 
+        /**
+         * \brief Create an image view with full control over subresource range
+         * \param image the image to create a view for
+         * \param viewType the type of image view
+         * \param aspectMask the aspect mask
+         * \param format the view format
+         * \param baseMipLevel the first mipmap level
+         * \param levelCount the number of mipmap levels
+         * \param baseArrayLayer the first array layer
+         * \param layerCount the number of array layers
+         */
         ImageView (const Image& image,
                            vk::ImageViewType viewType,
                            vk::ImageAspectFlags aspectMask,
                            vk::Format format,
-                           uint32_t baseMipLevel, uint32_t levelCount, 
+                           uint32_t baseMipLevel, uint32_t levelCount,
                            uint32_t baseArrayLayer, uint32_t layerCount){
             vk::ImageViewCreateInfo viewInfo{};
             viewInfo.image = image.m_image;
@@ -388,11 +446,22 @@ namespace LavaCake {
             m_imageView = image.m_device.getDevice().createImageView(viewInfo);
             m_device = image.m_device;
         }
-      
-        
+
+        /**
+         * \brief Implicit conversion to vk::ImageView
+         * \return the vk::ImageView handle
+         */
         operator vk::ImageView() const { return m_imageView; }
+
+        /**
+         * \brief Get the Vulkan image view handle
+         * \return the vk::ImageView handle
+         */
         vk::ImageView getImageView() const { return m_imageView; }
 
+        /**
+         * \brief Destructor - destroys the image view
+         */
         ~ImageView(){
             if (m_imageView) {
                 m_device.getDevice().destroyImageView(m_imageView);
@@ -401,16 +470,21 @@ namespace LavaCake {
         }
     };
 
+    /**
+     * \brief Manages Vulkan samplers for texture filtering and addressing
+     */
     class Sampler{
     public:
         Sampler() = default;
 
-        // Delete copy to prevent duplicate handles
+        /*
+        * Delete copy constructor and copy assignment to avoid duplicate handles
+        */
         Sampler(const Sampler&) = delete;
         Sampler& operator=(const Sampler&) = delete;
 
         /**
-         * \brief Move constructor
+         * \brief Move constructor - transfers ownership without duplicating GPU resources
          */
         Sampler(Sampler&& s) noexcept
             : m_sampler(std::exchange(s.m_sampler, VK_NULL_HANDLE)),
@@ -418,7 +492,7 @@ namespace LavaCake {
         {}
 
         /**
-         * \brief Move assignment
+         * \brief Move assignment - transfers ownership without duplicating GPU resources
          */
         Sampler& operator=(Sampler&& s) noexcept {
             if (this != &s) {
@@ -464,6 +538,8 @@ namespace LavaCake {
 
         /**
          * \brief Create a sampler from a full SamplerCreateInfo
+         * \param device the device on which to create the sampler
+         * \param createInfo the sampler creation parameters
          */
         Sampler(const LavaCake::Device& device, const vk::SamplerCreateInfo& createInfo) {
             m_device = device;
@@ -471,19 +547,50 @@ namespace LavaCake {
             std::cout << "Sampler created.\n";
         }
 
+        /**
+         * \brief Destructor - destroys the sampler
+         */
         ~Sampler() {
             cleanup();
         }
 
+        /**
+         * \brief Get the Vulkan sampler handle
+         * \return the vk::Sampler handle
+         */
         vk::Sampler getSampler() const { return m_sampler; }
+
+        /**
+         * \brief Implicit conversion to vk::Sampler
+         * \return the vk::Sampler handle
+         */
         operator vk::Sampler() const { return m_sampler; }
 
+        /**
+         * \brief Check if the sampler is valid
+         * \return true if the sampler handle is valid
+         */
         bool isValid() const { return m_sampler != VK_NULL_HANDLE; }
 
     private:
-        vk::Sampler m_sampler;
-        LavaCake::Device m_device;
+        vk::Sampler m_sampler;                  ///< The Vulkan sampler handle
+        LavaCake::Device m_device;              ///< Associated device
 
+        /**
+         * \brief Initialize the sampler with specified parameters
+         * \param device the device on which to create the sampler
+         * \param magFilter magnification filter
+         * \param minFilter minification filter
+         * \param addressModeU U coordinate addressing mode
+         * \param addressModeV V coordinate addressing mode
+         * \param addressModeW W coordinate addressing mode
+         * \param anisotropyEnable enable anisotropic filtering
+         * \param maxAnisotropy maximum anisotropy level
+         * \param mipmapMode mipmap filtering mode
+         * \param minLod minimum LOD level
+         * \param maxLod maximum LOD level
+         * \param mipLodBias LOD bias
+         */
         void init(const LavaCake::Device& device,
                  vk::Filter magFilter,
                  vk::Filter minFilter,
@@ -526,6 +633,9 @@ namespace LavaCake {
             std::cout << "Sampler created.\n";
         }
 
+        /**
+         * \brief Clean up sampler resources
+         */
         void cleanup() {
             if (m_sampler) {
                 m_device.getDevice().destroySampler(m_sampler);

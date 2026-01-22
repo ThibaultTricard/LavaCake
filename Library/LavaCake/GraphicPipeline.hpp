@@ -5,38 +5,45 @@
 #include <array>
 
 namespace LavaCake {
-    // Graphics pipeline builder with modern bindless support
+    /**
+     * \brief Graphics pipeline with modern bindless support and dynamic rendering
+     */
     class GraphicsPipeline : public Pipeline {
     public:
-        // Vertex input configuration
+        /**
+         * \brief Vertex input configuration structure
+         */
         struct VertexInputInfo {
-            std::vector<vk::VertexInputBindingDescription> bindings;
-            std::vector<vk::VertexInputAttributeDescription> attributes;
+            std::vector<vk::VertexInputBindingDescription> bindings;    ///< Vertex buffer binding descriptions
+            std::vector<vk::VertexInputAttributeDescription> attributes; ///< Vertex attribute descriptions
         };
-        
-        // Builder for creating graphics pipelines
+
+        /**
+         * \brief Builder class for creating graphics pipelines
+         */
         class Builder {
         private:
             LavaCake::Device m_device;
             vk::RenderPass m_renderPass;
             uint32_t m_subpass = 0;
             
-            // DYNAMIC RENDERING: No render pass needed!
+            /// Color attachment formats for dynamic rendering
             std::vector<vk::Format> m_colorAttachmentFormats;
-            vk::Format m_depthAttachmentFormat = vk::Format::eUndefined;
-            vk::Format m_stencilAttachmentFormat = vk::Format::eUndefined;
-            bool m_useDynamicRendering = false;  // Track which mode to use
+            vk::Format m_depthAttachmentFormat = vk::Format::eUndefined;     ///< Depth attachment format
+            vk::Format m_stencilAttachmentFormat = vk::Format::eUndefined;   ///< Stencil attachment format
+            bool m_useDynamicRendering = false;                              ///< Track which rendering mode to use
 
+            /**
+             * \brief Shader module creation information structure
+             */
             struct ShaderModuleCreateInfo{
-                // to create the shader module
-                std::string filepath = "";
-                LavaCake::ShadingLanguage lang = ShadingLanguage::eSPIRV;
-                bool optimize = false;
-                std::vector<std::string> macro;
-                std::string entryPoint = "main";
-                // Specialization constants
-                std::vector<vk::SpecializationMapEntry> specializationEntries;
-                std::vector<uint8_t> specializationData;
+                std::string filepath = "";                                   ///< Path to shader file
+                LavaCake::ShadingLanguage lang = ShadingLanguage::eSPIRV;   ///< Shading language
+                bool optimize = false;                                       ///< Enable shader optimization
+                std::vector<std::string> macro;                             ///< Macro definitions
+                std::string entryPoint = "main";                            ///< Shader entry point function name
+                std::vector<vk::SpecializationMapEntry> specializationEntries; ///< Specialization constant entries
+                std::vector<uint8_t> specializationData;                    ///< Specialization constant data
             };
 
 
@@ -123,21 +130,35 @@ namespace LavaCake {
 
         public:
 
-            // Constructor for dynamic rendering (modern - NO RENDER PASS!)
+            /**
+             * \brief Constructor for dynamic rendering mode (modern - no render pass needed)
+             * \param dev the device on which the graphics pipeline will be created
+             */
             Builder(const LavaCake::Device& dev)
                 : m_device(dev), m_useDynamicRendering(true) {
                 m_colorBlendAttachments.push_back(getDefaultColorBlendAttachment());
             }
 
-
+            /**
+             * \brief Constructor for legacy render pass mode
+             * \param dev the device on which the graphics pipeline will be created
+             * \param rp the render pass
+             * \param sp the subpass index (default: 0)
+             */
             Builder(const LavaCake::Device& dev, const vk::RenderPass& rp, uint32_t sp = 0)
                 : m_device(dev), m_renderPass(rp), m_subpass(sp) {
-                // Default color blend attachment (no blending)
                 m_colorBlendAttachments.push_back(getDefaultColorBlendAttachment());
             }
-            
-            // Shader configuration
-            Builder& addShaderFromFile(const std::string& path, 
+
+            /**
+             * \brief Add a shader stage from a file
+             * \param path the path to the shader file
+             * \param type the shader stage type
+             * \param language the shading language (default: GLSL)
+             * \param entry the entry point function name (default: "main")
+             * \return reference to this builder for method chaining
+             */
+            Builder& addShaderFromFile(const std::string& path,
                                     vk::ShaderStageFlagBits type,
                                     const LavaCake::ShadingLanguage language= ShadingLanguage::eGLSL,
                                     const std::string& entry = "main") {
@@ -163,7 +184,11 @@ namespace LavaCake {
                 return *this;
             }
 
-            // DYNAMIC RENDERING: Set color attachment formats
+            /**
+             * \brief Add a color attachment format for dynamic rendering
+             * \param format the color attachment format
+             * \return reference to this builder for method chaining
+             */
             Builder& addColorAttachmentFormat(vk::Format format) {
                 m_colorAttachmentFormats.push_back(format);
                 
@@ -175,6 +200,11 @@ namespace LavaCake {
                 return *this;
             }
 
+            /**
+             * \brief Set all color attachment formats for dynamic rendering
+             * \param formats the vector of color attachment formats
+             * \return reference to this builder for method chaining
+             */
             Builder& setColorAttachmentFormats(const std::vector<vk::Format>& formats) {
                 m_colorAttachmentFormats = formats;
                 
@@ -186,54 +216,95 @@ namespace LavaCake {
                 return *this;
             }
 
-            // DYNAMIC RENDERING: Set depth/stencil formats
+            /**
+             * \brief Set the depth attachment format for dynamic rendering
+             * \param format the depth attachment format
+             * \return reference to this builder for method chaining
+             */
             Builder& setDepthAttachmentFormat(vk::Format format) {
                 m_depthAttachmentFormat = format;
                 return *this;
             }
 
+            /**
+             * \brief Set the stencil attachment format for dynamic rendering
+             * \param format the stencil attachment format
+             * \return reference to this builder for method chaining
+             */
             Builder& setStencilAttachmentFormat(vk::Format format) {
                 m_stencilAttachmentFormat = format;
                 return *this;
             }
 
+            /**
+             * \brief Set both depth and stencil attachment formats to the same format
+             * \param format the depth and stencil attachment format
+             * \return reference to this builder for method chaining
+             */
             Builder& setDepthStencilFormat(vk::Format format) {
                 m_depthAttachmentFormat = format;
                 m_stencilAttachmentFormat = format;
                 return *this;
             }
-            
-            // Vertex input (optional for bindless - can use shader inputs instead)
+
+            /**
+             * \brief Set the vertex input configuration
+             * \param info the vertex input information
+             * \return reference to this builder for method chaining
+             */
             Builder& setVertexInput(const VertexInputInfo& info) {
                 m_vertexInput = info;
                 return *this;
             }
-            
-            // For bindless: no vertex input needed
+
+            /**
+             * \brief Configure for bindless rendering with no vertex input
+             * \return reference to this builder for method chaining
+             */
             Builder& setBindlessVertexInput() {
                 m_vertexInput = VertexInputInfo{};
                 return *this;
             }
-            
-            // Input assembly
+
+            /**
+             * \brief Set the primitive topology and restart enable
+             * \param topo the primitive topology
+             * \param restart enable primitive restart (default: false)
+             * \return reference to this builder for method chaining
+             */
             Builder& setTopology(vk::PrimitiveTopology topo, bool restart = false) {
                 m_topology = topo;
                 m_primitiveRestartEnable = restart;
                 return *this;
             }
-            
-            // Rasterization
+
+            /**
+             * \brief Set the polygon rasterization mode
+             * \param mode the polygon mode (fill, line, or point)
+             * \return reference to this builder for method chaining
+             */
             Builder& setPolygonMode(vk::PolygonMode mode) {
                 m_polygonMode = mode;
                 return *this;
             }
-            
+
+            /**
+             * \brief Set the face culling mode
+             * \param mode the cull mode flags
+             * \param face the front face orientation (default: counter-clockwise)
+             * \return reference to this builder for method chaining
+             */
             Builder& setCullMode(vk::CullModeFlags mode, vk::FrontFace face = vk::FrontFace::eCounterClockwise) {
                 m_cullMode = mode;
                 m_frontFace = face;
                 return *this;
             }
-            
+
+            /**
+             * \brief Set the line width for line rasterization
+             * \param width the line width (adds dynamic state if not 1.0)
+             * \return reference to this builder for method chaining
+             */
             Builder& setLineWidth(float width) {
                 m_lineWidth = width;
                 if (width != 1.0f) {
@@ -241,23 +312,38 @@ namespace LavaCake {
                 }
                 return *this;
             }
-            
-            // Depth testing
+
+            /**
+             * \brief Configure depth testing
+             * \param enable enable depth testing
+             * \param write enable depth writes (default: true)
+             * \param op the depth comparison operator (default: less)
+             * \return reference to this builder for method chaining
+             */
             Builder& setDepthTest(bool enable, bool write = true, vk::CompareOp op = vk::CompareOp::eLess) {
                 m_depthTestEnable = enable;
                 m_depthWriteEnable = write;
                 m_depthCompareOp = op;
                 return *this;
             }
-            
-            // Multisampling
+
+            /**
+             * \brief Configure multisampling anti-aliasing
+             * \param count the number of samples per pixel
+             * \param sampleShading enable sample shading (default: false)
+             * \return reference to this builder for method chaining
+             */
             Builder& setMultisampling(vk::SampleCountFlagBits count, bool sampleShading = false) {
                 m_samples = count;
                 m_sampleShadingEnable = sampleShading;
                 return *this;
             }
-            
-            // Color blending
+
+            /**
+             * \brief Enable or disable color blending
+             * \param enable enable blending for the first color attachment
+             * \return reference to this builder for method chaining
+             */
             Builder& setBlendMode(bool enable) {
                 m_blendEnable = enable;
                 if (!m_colorBlendAttachments.empty()) {
@@ -265,49 +351,87 @@ namespace LavaCake {
                 }
                 return *this;
             }
-            
+
+            /**
+             * \brief Set custom color blend attachment states
+             * \param attachments the vector of color blend attachment states
+             * \return reference to this builder for method chaining
+             */
             Builder& setColorBlendAttachments(const std::vector<vk::PipelineColorBlendAttachmentState>& attachments) {
                 m_colorBlendAttachments = attachments;
                 return *this;
             }
-            
-            // Bindless descriptor sets
+
+            /**
+             * \brief Add a descriptor set layout to the pipeline
+             * \param layout the descriptor set layout to add
+             * \return reference to this builder for method chaining
+             */
             Builder& addDescriptorSetLayout(vk::DescriptorSetLayout layout) {
                 m_descriptorLayouts.push_back(layout);
                 return *this;
             }
-            
+
+            /**
+             * \brief Set all descriptor set layouts for the pipeline
+             * \param layouts the vector of descriptor set layouts
+             * \return reference to this builder for method chaining
+             */
             Builder& setDescriptorSetLayouts(const std::vector<vk::DescriptorSetLayout>& layouts) {
                 m_descriptorLayouts = layouts;
                 return *this;
             }
-            
-            // Push constants
+
+            /**
+             * \brief Add a push constant range to the pipeline
+             * \param stages the shader stages that will use this push constant
+             * \param offset the offset in bytes
+             * \param size the size in bytes
+             * \return reference to this builder for method chaining
+             */
             Builder& addPushConstantRange(vk::ShaderStageFlags stages, uint32_t offset, uint32_t size) {
                 m_pushConstants.push_back(vk::PushConstantRange{stages, offset, size});
                 return *this;
             }
-            
+
+            /**
+             * \brief Add a typed push constant to the pipeline
+             * \tparam T the type of the push constant
+             * \param stages the shader stages that will use this push constant
+             * \param offset the offset in bytes (default: 0)
+             * \return reference to this builder for method chaining
+             */
             template<typename T>
             Builder& addPushConstant(vk::ShaderStageFlags stages, uint32_t offset = 0) {
                 return addPushConstantRange(stages, offset, sizeof(T));
             }
-            
-            // Dynamic states
+
+            /**
+             * \brief Add a dynamic state to the pipeline
+             * \param state the dynamic state to add
+             * \return reference to this builder for method chaining
+             */
             Builder& addDynamicState(vk::DynamicState state) {
                 if (std::find(m_dynamicStates.begin(), m_dynamicStates.end(), state) == m_dynamicStates.end()) {
                     m_dynamicStates.push_back(state);
                 }
                 return *this;
             }
-            
-            // Pipeline cache
+
+            /**
+             * \brief Set the pipeline cache for faster pipeline creation
+             * \param pipelineCache the Vulkan pipeline cache
+             * \return reference to this builder for method chaining
+             */
             Builder& setPipelineCache(vk::PipelineCache pipelineCache) {
                 m_cache = pipelineCache;
                 return *this;
             }
-            
-            // Build the pipeline
+
+            /**
+             * \brief Build and create the graphics pipeline
+             * \return the constructed GraphicsPipeline
+             */
             GraphicsPipeline build(){
                 auto graphicsPipeline = GraphicsPipeline(m_device);
                 
@@ -489,8 +613,12 @@ namespace LavaCake {
                 
                 return graphicsPipeline;
             }
-            
+
         private:
+            /**
+             * \brief Get the default color blend attachment state with no blending
+             * \return the default color blend attachment state
+             */
             static vk::PipelineColorBlendAttachmentState getDefaultColorBlendAttachment() {
                 vk::PipelineColorBlendAttachmentState attachment{};
                 attachment.colorWriteMask = 
@@ -502,28 +630,64 @@ namespace LavaCake {
                 return attachment;
             }
         };
-        
+
+        /**
+         * \brief Constructs a GraphicsPipeline
+         * \param dev the device on which the graphics pipeline will be created
+         */
         GraphicsPipeline(const LavaCake::Device& dev)
             : Pipeline(dev, vk::PipelineBindPoint::eGraphics) {}
-        
-        // Draw commands
-        void draw(const vk::CommandBuffer& cmd, uint32_t vertexCount, 
-                uint32_t instanceCount = 1, uint32_t firstVertex = 0, 
+
+        /**
+         * \brief Draw primitives
+         * \param cmd the command buffer
+         * \param vertexCount the number of vertices to draw
+         * \param instanceCount the number of instances to draw (default: 1)
+         * \param firstVertex the index of the first vertex to draw (default: 0)
+         * \param firstInstance the instance ID of the first instance to draw (default: 0)
+         */
+        void draw(const vk::CommandBuffer& cmd, uint32_t vertexCount,
+                uint32_t instanceCount = 1, uint32_t firstVertex = 0,
                 uint32_t firstInstance = 0) const {
             cmd.draw(vertexCount, instanceCount, firstVertex, firstInstance);
         }
-        
+
+        /**
+         * \brief Draw indexed primitives
+         * \param cmd the command buffer
+         * \param indexCount the number of indices to draw
+         * \param instanceCount the number of instances to draw (default: 1)
+         * \param firstIndex the base index within the index buffer (default: 0)
+         * \param vertexOffset the value added to the vertex index before indexing into the vertex buffer (default: 0)
+         * \param firstInstance the instance ID of the first instance to draw (default: 0)
+         */
         void drawIndexed(const vk::CommandBuffer& cmd, uint32_t indexCount,
                         uint32_t instanceCount = 1, uint32_t firstIndex = 0,
                         int32_t vertexOffset = 0, uint32_t firstInstance = 0) const {
             cmd.drawIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
         }
-        
+
+        /**
+         * \brief Draw primitives with indirect parameters from a buffer
+         * \param cmd the command buffer
+         * \param buffer the buffer containing draw parameters
+         * \param offset the byte offset into the buffer
+         * \param drawCount the number of draws to execute
+         * \param stride the byte stride between successive sets of draw parameters
+         */
         void drawIndirect(const vk::CommandBuffer& cmd, vk::Buffer buffer,
                         vk::DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
             cmd.drawIndirect(buffer, offset, drawCount, stride);
         }
-        
+
+        /**
+         * \brief Draw indexed primitives with indirect parameters from a buffer
+         * \param cmd the command buffer
+         * \param buffer the buffer containing draw parameters
+         * \param offset the byte offset into the buffer
+         * \param drawCount the number of draws to execute
+         * \param stride the byte stride between successive sets of draw parameters
+         */
         void drawIndexedIndirect(const vk::CommandBuffer& cmd, vk::Buffer buffer,
                                 vk::DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
             cmd.drawIndexedIndirect(buffer, offset, drawCount, stride);

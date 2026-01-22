@@ -4,7 +4,9 @@
 #include <span>
 
 namespace LavaCake {
-
+    /**
+     * \brief Manages Vulkan buffers with VMA memory allocation
+     */
     class Buffer{
         public :
 
@@ -161,7 +163,9 @@ namespace LavaCake {
             }
         }
 
-
+        /**
+         * \brief Destructor - unmaps and destroys the buffer
+         */
         ~Buffer(){
             if(m_mapped){
                 unmap();
@@ -169,22 +173,31 @@ namespace LavaCake {
             vmaDestroyBuffer(m_device.getAllocator(), m_buffer, m_allocation);
         }
 
+        /**
+         * \brief Get the Vulkan buffer handle
+         * \return the vk::Buffer handle
+         */
         vk::Buffer getBuffer() const{
             return m_buffer;
         }
+
+        /**
+         * \brief Implicit conversion to vk::Buffer
+         * \return the vk::Buffer handle
+         */
         operator vk::Buffer() const{
             return m_buffer;
         }
 
         private :
-        VkDeviceSize                    m_size;
-        vk::Buffer                      m_buffer;
-        VmaAllocation                   m_allocation;
+        VkDeviceSize                    m_size;         ///< Buffer size in bytes
+        vk::Buffer                      m_buffer;       ///< The Vulkan buffer handle
+        VmaAllocation                   m_allocation;   ///< VMA allocation handle
 
-        void*                           m_data;
-        bool                            m_mapped = false;
+        void*                           m_data;         ///< Mapped memory pointer
+        bool                            m_mapped = false; ///< Whether the buffer is currently mapped
 
-        LavaCake::Device                m_device = LavaCake::Device();
+        LavaCake::Device                m_device = LavaCake::Device(); ///< Associated device
 
 
         /**

@@ -1,0 +1,70 @@
+# Doxyfile for LavaCake
+
+# Project related configuration
+PROJECT_NAME           = "LavaCake"
+PROJECT_BRIEF          = "Vulkan Graphics Library"
+PROJECT_NUMBER         = 2.0
+OUTPUT_DIRECTORY       = .
+
+# Build related configuration
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+
+# Input files
+INPUT                  = ../Library/LavaCake
+FILE_PATTERNS          = *.hpp *.cpp *.h *.c
+RECURSIVE              = YES
+USE_MDFILE_AS_MAINPAGE = ../README.md
+
+# Source browsing
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+# Alphabetical class index
+ALPHABETICAL_INDEX     = YES
+
+# HTML output
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_GAMMA  = 80
+HTML_TIMESTAMP         = YES
+HTML_DYNAMIC_SECTIONS  = YES
+
+# LaTeX output (disabled by default)
+GENERATE_LATEX         = NO
+
+# Diagrams
+HAVE_DOT               = YES
+DOT_NUM_THREADS        = 0
+CLASS_DIAGRAMS         = YES
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+GRAPHICAL_HIERARCHY    = YES
+DIRECTORY_GRAPH        = YES
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+
+# Preprocessing
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+SEARCH_INCLUDES        = YES
+
+# Other options
+OPTIMIZE_OUTPUT_FOR_C  = NO
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES

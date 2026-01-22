@@ -25,6 +25,14 @@ namespace LavaCake {
     // Debug Callback
     // ---------------------------------------------------------------
 
+    /**
+     * \brief Debug callback function for Vulkan validation layers (macOS version)
+     * \param severity the severity level of the message
+     * \param type the type of message
+     * \param data the callback data containing the message
+     * \param userData optional user data pointer
+     * \return VK_FALSE to continue execution
+     */
 #ifdef __APPLE__
     VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
         vk::DebugUtilsMessageSeverityFlagBitsEXT severity,
@@ -36,13 +44,22 @@ namespace LavaCake {
         return VK_FALSE;
     }
 #else
+    /**
+     * \brief Debug callback function for Vulkan validation layers
+     * \param messageSeverity the severity level of the message
+     * \param messageType the type of message
+     * \param data the callback data containing the message
+     * \param pUserData optional user data pointer
+     * \return VK_FALSE to continue execution
+     */
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT* data,
     void* pUserData)
 {
-         std::cerr << "Validation: " << data->pMessage << std::endl;
+        if(data->messageIdNumber != 0)
+        std::cerr << "Validation: " << data->messageIdNumber  << " Message: "<< data->pMessage << std::endl;
         return VK_FALSE;
 }
 #endif
@@ -50,6 +67,11 @@ namespace LavaCake {
     // ---------------------------------------------------------------
     // Device scoring: pick the most powerful GPU
     // ---------------------------------------------------------------
+    /**
+     * \brief Scores a physical device to determine the most powerful GPU
+     * \param device the physical device to score
+     * \return the score value, higher is better
+     */
     int scoreDevice(vk::PhysicalDevice device)
     {
         auto props = device.getProperties();
@@ -80,6 +102,10 @@ namespace LavaCake {
 
         Device(){};
 
+        /**
+         * \brief Copy constructor, copies a device
+         * \param d the device to copy
+         */
         Device(const Device& d){
             m_physicalDevice = d.m_physicalDevice;
             m_device = d.m_device;
@@ -97,6 +123,11 @@ namespace LavaCake {
             m_allocator = d.m_allocator;
         };
 
+        /**
+         * \brief Copy assignment operator, copies a device
+         * \param d the device to copy
+         * \return reference to this device
+         */
         Device& operator=(const Device& d) {
             m_physicalDevice = d.m_physicalDevice;
             m_device = d.m_device;
@@ -115,6 +146,10 @@ namespace LavaCake {
             return *this;
         };
 
+        /**
+         * \brief Move constructor, moves a device
+         * \param d the device to move
+         */
         Device(Device&& d) noexcept{
             m_physicalDevice = d.m_physicalDevice;
             m_device = d.m_device;
@@ -132,6 +167,11 @@ namespace LavaCake {
             m_allocator = d.m_allocator;
         }
 
+        /**
+         * \brief Move assignment operator, moves a device
+         * \param d the device to move
+         * \return reference to this device
+         */
         Device& operator=(Device&& d) noexcept
         {
             m_physicalDevice = d.m_physicalDevice;
@@ -293,10 +333,10 @@ namespace LavaCake {
         }
 
         /**
-        * \brief Allocates and returns multiple Command Buffers 
-        * the command buffer are the reponsability of the calling function,
+        * \brief Allocates and returns multiple Command Buffers
+        * the command buffers are the responsibility of the calling function,
         * they will not be destroyed by the device
-        * \param number the number of command buffer to allocate
+        * \param number the number of command buffers to allocate
         * \return a std::vector of vk::CommandBuffer
         */
         std::vector<vk::CommandBuffer> allocateCommandBuffers(uint32_t number){
@@ -316,8 +356,8 @@ namespace LavaCake {
         }
 
         /**
-        * \brief Frees multiple Command Buffer 
-        * \param cmd the vector of command buffer to free
+        * \brief Frees multiple Command Buffers
+        * \param cmd the vector of command buffers to free
         */
         void freeCommandBuffers(std::vector<vk::CommandBuffer> cmd) const{
             m_device.freeCommandBuffers(m_commandPool, cmd);
@@ -325,6 +365,11 @@ namespace LavaCake {
 
 
 
+        /**
+         * \brief Acquires the next available swapchain image
+         * \param isAvailableSemaphore the semaphore to signal when the image is available
+         * \return reference to the acquired SwapChainImage
+         */
         LavaCake::SwapChainImage& aquireSwapChainImage(vk::Semaphore isAvailableSemaphore){
             uint32_t imageIndex;
 
@@ -339,10 +384,20 @@ namespace LavaCake {
             return m_swapchainImages[imageIndex];
         }
 
+        /**
+         * \brief Returns the swapchain image format
+         * \return the vk::Format of the swapchain
+         */
         vk::Format getSwapchainFormat(){
             return m_swapchainFormat;
         }
 
+        /**
+         * \brief Presents a swapchain image to the screen
+         * \param image the SwapChainImage to present
+         * \param semaphores the semaphores to wait on before presenting
+         * \return vk::Result indicating success or failure
+         */
         vk::Result presentImage(LavaCake::SwapChainImage image, std::vector<vk::Semaphore>semaphores){
             uint32_t index = image.getIndex();
             vk::PresentInfoKHR present{};
@@ -587,6 +642,9 @@ namespace LavaCake {
                     if (std::string(ext.extensionName) == "VK_NV_shading_rate_image") continue;
                     
                     if (std::string(ext.extensionName) == "VK_EXT_descriptor_buffer") continue;
+                    if (std::string(ext.extensionName) == "VK_NV_disk_cache_utils") continue;
+
+                    if (std::string(ext.extensionName) == "VK_NV_internal_nvpresent") continue;
                     
                     deviceExtensions.push_back(ext.extensionName);
                 }

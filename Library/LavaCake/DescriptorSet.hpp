@@ -10,12 +10,17 @@
 namespace LavaCake{
 
     // ========== DESCRIPTOR SET LAYOUT BUILDER ==========
+    /**
+     * \brief Manages Vulkan descriptor set layouts
+     */
     class DescriptorSetLayout {
     private:
         LavaCake::Device m_device;
         vk::DescriptorSetLayout m_layout;
         
-        // Store binding information for validation
+        /**
+         * \brief Store binding information for validation
+         */
         struct BindingInfo {
             vk::DescriptorType type;
             uint32_t count;
@@ -25,6 +30,9 @@ namespace LavaCake{
         std::unordered_map<uint32_t, BindingInfo> m_bindings;
 
     public:
+        /**
+         * \brief Builder class for constructing DescriptorSetLayout instances
+         */
         class Builder {
         private:
             LavaCake::Device m_device;
@@ -45,10 +53,21 @@ namespace LavaCake{
             BindingConfig* m_currentBinding = nullptr;
 
         public:
+            /**
+             * \brief Constructs a Builder for a DescriptorSetLayout
+             * \param dev the device on which the descriptor set layout will be created
+             */
             explicit Builder(LavaCake::Device& dev) : m_device(dev) {}
-            
-            // Start a new binding
-            Builder& addBinding(uint32_t binding, 
+
+            /**
+             * \brief Add a new descriptor binding to the layout
+             * \param binding the binding number
+             * \param type the descriptor type
+             * \param stages the shader stages that will access this binding
+             * \param count the number of descriptors in this binding (default: 1)
+             * \return reference to this builder for method chaining
+             */
+            Builder& addBinding(uint32_t binding,
                             vk::DescriptorType type,
                             vk::ShaderStageFlags stages,
                             uint32_t count = 1) {
@@ -64,34 +83,76 @@ namespace LavaCake{
                 m_currentBinding = &m_bindingConfigs.back();
                 return *this;
             }
-            
-            // Convenience methods for common descriptor types
+
+
+            /**
+             * \brief Convenience method to add a uniform buffer binding
+             * \param binding the binding number
+             * \param stages the shader stages that will access this binding
+             * \return reference to this builder for method chaining
+             */
             Builder& addUniformBuffer(uint32_t binding, vk::ShaderStageFlags stages) {
                 return addBinding(binding, vk::DescriptorType::eUniformBuffer, stages, 1);
             }
-            
-            Builder& addStorageBuffer(uint32_t binding, vk::ShaderStageFlags stages, 
+
+
+            /**
+             * \brief Convenience method to add a storage buffer binding
+             * \param binding the binding number
+             * \param stages the shader stages that will access this binding
+             * \param count the number of descriptors in this binding (default: 1)
+             * \return reference to this builder for method chaining
+             */
+            Builder& addStorageBuffer(uint32_t binding, vk::ShaderStageFlags stages,
                                     uint32_t count = 1) {
                 return addBinding(binding, vk::DescriptorType::eStorageBuffer, stages, count);
             }
-            
+
+
+            /**
+             * \brief Convenience method to add a combined image sampler binding
+             * \param binding the binding number
+             * \param stages the shader stages that will access this binding
+             * \param count the number of descriptors in this binding (default: 1)
+             * \return reference to this builder for method chaining
+             */
             Builder& addCombinedImageSampler(uint32_t binding, vk::ShaderStageFlags stages,
                                             uint32_t count = 1) {
                 return addBinding(binding, vk::DescriptorType::eCombinedImageSampler, 
                                 stages, count);
             }
-            
+
+
+            /**
+             * \brief Convenience method to add a storage image binding
+             * \param binding the binding number
+             * \param stages the shader stages that will access this binding
+             * \param count the number of descriptors in this binding (default: 1)
+             * \return reference to this builder for method chaining
+             */
             Builder& addStorageImage(uint32_t binding, vk::ShaderStageFlags stages,
                                 uint32_t count = 1) {
                 return addBinding(binding, vk::DescriptorType::eStorageImage, stages, count);
             }
-            
+
+
+            /**
+             * \brief Convenience method to add an acceleration structure binding for ray tracing
+             * \param binding the binding number
+             * \param stages the shader stages that will access this binding
+             * \return reference to this builder for method chaining
+             */
             Builder& addAccelerationStructure(uint32_t binding, vk::ShaderStageFlags stages) {
                 return addBinding(binding, vk::DescriptorType::eAccelerationStructureKHR,
                                 stages, 1);
             }
-            
-            // Configure the current binding
+
+
+            /**
+             * \brief Set the descriptor count for the current binding
+             * \param count the number of descriptors
+             * \return reference to this builder for method chaining
+             */
             Builder& setCount(uint32_t count) {
                 if (!m_currentBinding) {
                     throw std::runtime_error("No binding to configure. Call addBinding first.");
@@ -99,8 +160,13 @@ namespace LavaCake{
                 m_currentBinding->count = count;
                 return *this;
             }
-            
-            // Enable bindless for current binding (large array with partial binding)
+
+
+            /**
+             * \brief Enable bindless rendering for the current binding (large array with partial binding)
+             * \param maxDescriptors the maximum number of descriptors (default: 10000)
+             * \return reference to this builder for method chaining
+             */
             Builder& setBindless(uint32_t maxDescriptors = 10000) {
                 if (!m_currentBinding) {
                     throw std::runtime_error("No binding to configure. Call addBinding first.");
@@ -113,8 +179,13 @@ namespace LavaCake{
                 m_layoutFlags |= vk::DescriptorSetLayoutCreateFlagBits::eUpdateAfterBindPool;
                 return *this;
             }
-            
-            // Set variable descriptor count (for last binding)
+
+
+            /**
+             * \brief Set variable descriptor count for the current binding (typically used for the last binding)
+             * \param maxCount the maximum descriptor count
+             * \return reference to this builder for method chaining
+             */
             Builder& setVariableDescriptorCount(uint32_t maxCount) {
                 if (!m_currentBinding) {
                     throw std::runtime_error("No binding to configure. Call addBinding first.");
@@ -123,8 +194,13 @@ namespace LavaCake{
                 m_currentBinding->flags |= vk::DescriptorBindingFlagBits::eVariableDescriptorCount;
                 return *this;
             }
-            
-            // Add individual binding flags
+
+
+            /**
+             * \brief Add binding flags to the current binding
+             * \param flags the descriptor binding flags to add
+             * \return reference to this builder for method chaining
+             */
             Builder& addBindingFlags(vk::DescriptorBindingFlags flags) {
                 if (!m_currentBinding) {
                     throw std::runtime_error("No binding to configure. Call addBinding first.");
@@ -137,8 +213,13 @@ namespace LavaCake{
                 }
                 return *this;
             }
-            
-            // Set immutable samplers
+
+
+            /**
+             * \brief Set immutable samplers for the current binding
+             * \param samplers the vector of immutable samplers
+             * \return reference to this builder for method chaining
+             */
             Builder& setImmutableSamplers(const std::vector<vk::Sampler>& samplers) {
                 if (!m_currentBinding) {
                     throw std::runtime_error("No binding to configure. Call addBinding first.");
@@ -147,14 +228,23 @@ namespace LavaCake{
                 m_currentBinding->count = static_cast<uint32_t>(samplers.size());
                 return *this;
             }
-            
-            // Add layout-level flags
+
+
+            /**
+             * \brief Add layout-level creation flags
+             * \param flags the descriptor set layout creation flags
+             * \return reference to this builder for method chaining
+             */
             Builder& addLayoutFlags(vk::DescriptorSetLayoutCreateFlags flags) {
                 m_layoutFlags |= flags;
                 return *this;
             }
-            
-            // Build the layout
+
+
+            /**
+             * \brief Build and create the descriptor set layout
+             * \return the constructed DescriptorSetLayout
+             */
             DescriptorSetLayout build() {
                 if (m_bindingConfigs.empty()) {
                     throw std::runtime_error("Cannot create descriptor set layout with no bindings");
@@ -207,27 +297,44 @@ namespace LavaCake{
                 return result;
             }
         };
-        
+
+        /**
+         * \brief Constructs a DescriptorSetLayout (typically used by Builder)
+         * \param dev the device on which the descriptor set layout will be created
+         */
         DescriptorSetLayout(const LavaCake::Device& dev) : m_device(dev) {}
-        
+
+        /**
+         * \brief Destructor
+         */
         ~DescriptorSetLayout() {
             if (m_layout) {
                 //m_device.getDevice().destroyDescriptorSetLayout(m_layout);
             }
         }
-        
-        // Delete copy
+
+        /*
+        * we delete const copy and const = operator to avoid duplication
+        */
         DescriptorSetLayout(const DescriptorSetLayout&) = delete;
         DescriptorSetLayout& operator=(const DescriptorSetLayout&) = delete;
-        
-        // Allow move
+
+        /**
+         * \brief Move constructor
+         * \param other the DescriptorSetLayout to move from
+         */
         DescriptorSetLayout(DescriptorSetLayout&& other) noexcept
             : m_device(other.m_device)
             , m_layout(other.m_layout)
             , m_bindings(std::move(other.m_bindings)) {
             other.m_layout = nullptr;
         }
-        
+
+        /**
+         * \brief Move assignment operator
+         * \param other the DescriptorSetLayout to move from
+         * \return reference to this DescriptorSetLayout
+         */
         DescriptorSetLayout& operator=(DescriptorSetLayout&& other) noexcept {
             if (this != &other) {
                 if (m_layout) {
@@ -240,17 +347,32 @@ namespace LavaCake{
             }
             return *this;
         }
-        
+
+        /**
+         * \brief Returns the underlying Vulkan descriptor set layout
+         * \return the vk::DescriptorSetLayout
+         */
         vk::DescriptorSetLayout getLayout() const { return m_layout; }
+
+        /**
+         * \brief Implicit conversion operator to vk::DescriptorSetLayout
+         * \return the vk::DescriptorSetLayout
+         */
         operator vk::DescriptorSetLayout() const { return m_layout; }
-        
-        // Get binding info for validation
+
+        /**
+         * \brief Get binding information for validation
+         * \return const reference to the map of binding information
+         */
         const std::unordered_map<uint32_t, BindingInfo>& getBindings() const {
             return m_bindings;
         }
     };
 
     // ========== DESCRIPTOR SET UPDATER ==========
+    /**
+     * \brief Helper class for updating descriptor sets with resources
+     */
     class DescriptorSetUpdater {
     private:
         LavaCake::Device m_device;
@@ -281,10 +403,23 @@ namespace LavaCake{
         std::vector<UpdatePointerInfos> m_updatePointerInfos= {};
 
     public:
+        /**
+         * \brief Constructs a DescriptorSetUpdater
+         * \param dev the device
+         * \param set the descriptor set to update
+         */
         DescriptorSetUpdater(const LavaCake::Device& dev, vk::DescriptorSet set)
             : m_device(dev), m_descriptorSet(set) {}
-        
-        // Bind single uniform buffer
+
+        /**
+         * \brief Bind a single uniform buffer to a binding
+         * \param binding the binding number
+         * \param buffer the buffer to bind
+         * \param offset the offset in the buffer (default: 0)
+         * \param range the range of the buffer to bind (default: VK_WHOLE_SIZE)
+         * \param arrayElement the array element index (default: 0)
+         * \return reference to this updater for method chaining
+         */
         DescriptorSetUpdater& bindUniformBuffer(uint32_t binding,
                                             vk::Buffer buffer,
                                             vk::DeviceSize offset = 0,
@@ -308,8 +443,16 @@ namespace LavaCake{
             m_writes.push_back(write);
             return *this;
         }
-        
-        // Bind single storage buffer
+
+        /**
+         * \brief Bind a single storage buffer to a binding
+         * \param binding the binding number
+         * \param buffer the buffer to bind
+         * \param offset the offset in the buffer (default: 0)
+         * \param range the range of the buffer to bind (default: VK_WHOLE_SIZE)
+         * \param arrayElement the array element index (default: 0)
+         * \return reference to this updater for method chaining
+         */
         DescriptorSetUpdater& bindStorageBuffer(uint32_t binding,
                                             vk::Buffer buffer,
                                             vk::DeviceSize offset = 0,
@@ -339,7 +482,14 @@ namespace LavaCake{
 
             return *this;
         }
-        
+
+        /**
+         * \brief Bind an array of uniform buffers to a binding
+         * \param binding the binding number
+         * \param buffers the vector of buffers to bind
+         * \param arrayElement the starting array element index (default: 0)
+         * \return reference to this updater for method chaining
+         */
         DescriptorSetUpdater& bindUniformBufferArray(uint32_t binding,
                                             const std::vector<LavaCake::Buffer>& buffers,
                                             uint32_t arrayElement = 0) {
@@ -366,7 +516,13 @@ namespace LavaCake{
             return *this;
         }
 
-        // Bind buffer array (for bindless)
+        /**
+         * \brief Bind an array of storage buffers to a binding (for bindless rendering)
+         * \param binding the binding number
+         * \param buffers the vector of buffers to bind
+         * \param arrayElement the starting array element index (default: 0)
+         * \return reference to this updater for method chaining
+         */
         DescriptorSetUpdater& bindStorageBufferArray(uint32_t binding,
                                                     const std::vector<LavaCake::Buffer>& buffers,
                                                     uint32_t arrayElement = 0) {
@@ -393,8 +549,16 @@ namespace LavaCake{
             m_writes.push_back(write);
             return *this;
         }
-        
-        // Bind single image
+
+        /**
+         * \brief Bind a single combined image sampler to a binding
+         * \param binding the binding number
+         * \param imageView the image view to bind
+         * \param sampler the sampler to use
+         * \param layout the image layout (default: eShaderReadOnlyOptimal)
+         * \param arrayElement the array element index (default: 0)
+         * \return reference to this updater for method chaining
+         */
         DescriptorSetUpdater& bindImage(uint32_t binding,
                                     vk::ImageView imageView,
                                     vk::Sampler sampler,
@@ -418,8 +582,15 @@ namespace LavaCake{
             m_writes.push_back(write);
             return *this;
         }
-        
-        // Bind storage image
+
+        /**
+         * \brief Bind a storage image to a binding
+         * \param binding the binding number
+         * \param imageView the image view to bind
+         * \param layout the image layout (default: eGeneral)
+         * \param arrayElement the array element index (default: 0)
+         * \return reference to this updater for method chaining
+         */
         DescriptorSetUpdater& bindStorageImage(uint32_t binding,
                                             vk::ImageView imageView,
                                             vk::ImageLayout layout = vk::ImageLayout::eGeneral,
@@ -442,8 +613,16 @@ namespace LavaCake{
             m_writes.push_back(write);
             return *this;
         }
-        
-        // Bind image array (for bindless textures)
+
+        /**
+         * \brief Bind an array of images to a binding (for bindless textures)
+         * \param binding the binding number
+         * \param imageViews the vector of image views to bind
+         * \param sampler the sampler to use for all images
+         * \param layout the image layout (default: eShaderReadOnlyOptimal)
+         * \param arrayElement the starting array element index (default: 0)
+         * \return reference to this updater for method chaining
+         */
         DescriptorSetUpdater& bindImageArray(uint32_t binding,
                                             const std::vector<vk::ImageView>& imageViews,
                                             vk::Sampler sampler,
@@ -472,8 +651,16 @@ namespace LavaCake{
             m_writes.push_back(write);
             return *this;
         }
-        
-        // Bind individual image to array slot (useful for sparse bindless updates)
+
+        /**
+         * \brief Bind individual image to array slot (useful for sparse bindless updates)
+         * \param binding the binding number
+         * \param arrayIndex the array index
+         * \param imageView the image view to bind
+         * \param sampler the sampler to use
+         * \param layout the image layout
+         * \return reference to this updater for method chaining
+         */
         /*DescriptorSetUpdater& bindImageToArraySlot(uint32_t binding,
                                                 uint32_t arrayIndex,
                                                 vk::ImageView imageView,
@@ -481,8 +668,14 @@ namespace LavaCake{
                                                 vk::ImageLayout layout = vk::ImageLayout::eShaderReadOnlyOptimal) {
             return bindImage(binding, imageView, sampler, layout, arrayIndex);
         }*/
-        
-        // Bind acceleration structure
+
+        /**
+         * \brief Bind an acceleration structure for ray tracing
+         * \param binding the binding number
+         * \param as the acceleration structure to bind
+         * \param arrayElement the array element index (default: 0)
+         * \return reference to this updater for method chaining
+         */
         DescriptorSetUpdater& bindAccelerationStructure(uint32_t binding,
                                                     vk::AccelerationStructureKHR as,
                                                     uint32_t arrayElement = 0) {
@@ -507,8 +700,10 @@ namespace LavaCake{
             m_writes.push_back(write);
             return *this;
         }
-        
-        // Update all bindings
+
+        /**
+         * \brief Update all bindings and submit to the device
+         */
         void update() {
             
             for(uint32_t i = 0; i < m_updatePointerInfos.size(); i ++){
@@ -547,8 +742,11 @@ namespace LavaCake{
                 delete asInfo.pAccelerationStructures;
             }
         }
-        
-        // Get write count (for debugging)
+
+        /**
+         * \brief Get the number of pending write operations (for debugging)
+         * \return the number of write operations
+         */
         size_t getWriteCount() const { return m_writes.size(); }
     };
 
