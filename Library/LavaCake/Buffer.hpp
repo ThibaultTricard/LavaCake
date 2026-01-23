@@ -1,7 +1,7 @@
 #pragma once
 #include "./Device.hpp"
 #include "./VMAFlags.hpp"
-#include <span>
+#include <ranges>
 
 namespace LavaCake {
     /**
@@ -67,22 +67,23 @@ namespace LavaCake {
          * \param usage the buffer usage
          * \param memoryFlags the memory requirements
          */
-        template <typename T>
-        Buffer(const LavaCake::Device& device, const std::vector<T>& data, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags = vk::AllocationCreateFlagBits::eCreateDedicatedMemory) {
-            vk::DeviceSize bufferSize = data.size()*sizeof(T);
+        template <std::ranges::contiguous_range Range>
+        Buffer(const LavaCake::Device& device, const Range& data, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags = vk::AllocationCreateFlagBits::eCreateDedicatedMemory) {
+            using T = std::ranges::range_value_t<Range>;
+            vk::DeviceSize bufferSize = std::ranges::size(data) * sizeof(T);
             if(memoryFlags & vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite){
                 init(device,bufferSize,usage,memoryFlags);
                 map();
-                memcpy(m_data, &data[0], m_size);
+                memcpy(m_data, std::ranges::data(data), m_size);
                 unmap();
             }else{
 
                 init(device,bufferSize,usage | vk::BufferUsageFlagBits::eTransferDst,memoryFlags);
-                Buffer staging(device, data.size()*sizeof(T) , usage | vk::BufferUsageFlagBits::eTransferSrc, memoryFlags | vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
-               
+                Buffer staging(device, bufferSize, usage | vk::BufferUsageFlagBits::eTransferSrc, memoryFlags | vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
+
                 void* staggingMemory = staging.map();
                 // Copy data
-                memcpy(staggingMemory, data.data(), bufferSize);
+                memcpy(staggingMemory, std::ranges::data(data), bufferSize);
                 staging.unmap();
 
                 

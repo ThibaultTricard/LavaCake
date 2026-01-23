@@ -2,7 +2,7 @@
 #include "./Device.hpp"
 #include "./VMAFlags.hpp"
 #include "./Buffer.hpp"
-#include <span>
+#include <ranges>
 
 namespace LavaCake {
     class ImageView;
@@ -94,9 +94,9 @@ namespace LavaCake {
          * \param usage Image usage flags
          * \param memoryFlags Memory allocation flags
          */
-        template <typename T>
+        template <std::ranges::contiguous_range Range>
         Image(const LavaCake::Device& device,
-              const std::vector<T>& data,
+              const Range& data,
               uint32_t width,
               uint32_t height,
               uint32_t depth,
@@ -106,6 +106,7 @@ namespace LavaCake {
               uint32_t mipLevels = 1,
               uint32_t arrayLayers = 1)
         {
+            using T = std::ranges::range_value_t<Range>;
             init(device, width, height, depth, format, usage | vk::ImageUsageFlagBits::eTransferDst, memoryFlags, mipLevels, arrayLayers);
 
             // Create staging buffer
