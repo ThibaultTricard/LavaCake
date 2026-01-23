@@ -1,11 +1,12 @@
 /**
- * LavaCake Example 06: Bindless Quad (Programmable Vertex Pulling)
+ * LavaCake Example 07: Bindless Quad (Programmable Vertex Pulling) Textured
  *
  * This example demonstrates:
  * - Using storage buffers instead of vertex/index buffers
  * - Binding vertex data via descriptor sets
  * - Programmable vertex pulling using gl_VertexIndex
  * - Modern bindless rendering approach
+ * - Texture binding
  *
  * Instead of using traditional vertex input bindings, vertex data is stored
  * in storage buffers and fetched manually in the vertex shader using gl_VertexIndex.
