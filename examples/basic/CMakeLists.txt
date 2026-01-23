@@ -2,4 +2,6 @@
 add_lavacake_example(01_clear_screen 01_clear_screen.cpp)
 add_lavacake_example(02_colored_triangle 02_colored_triangle.cpp)
 add_lavacake_example(03_uniform_buffer 03_uniform_buffer.cpp)
-#add_lavacake_example(04_indexed_quad 04_indexed_quad.cpp)
+add_lavacake_example(04_vertex_buffer 04_vertex_buffer.cpp)
+add_lavacake_example(05_indexed_quad 05_indexed_quad.cpp)
+add_lavacake_example(06_bindless_quad 06_bindless_quad.cpp)
