@@ -390,7 +390,7 @@ namespace LavaCake {
         vk::ImageView m_imageView;              ///< The Vulkan image view handle
 
         LavaCake::Device m_device = LavaCake::Device(); ///< Associated device
-
+    public:
         ImageView() = default;
 
         /**
