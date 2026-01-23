@@ -727,6 +727,7 @@ namespace LavaCake {
                 }
 
                 vk::PhysicalDeviceFeatures features{};
+                features.samplerAnisotropy = VK_TRUE;
 
                 vk::DeviceCreateInfo devInfo{};
                 devInfo.queueCreateInfoCount = queueInfos.size();
