@@ -366,7 +366,7 @@ namespace LavaCake {
             }
 
             m_image = vk::Image(image);
-            std::cout << "VMA image allocated.\n";
+            //std::cout << "VMA image allocated.\n";
 
             m_device = device;
         }
@@ -545,7 +545,7 @@ namespace LavaCake {
         Sampler(const LavaCake::Device& device, const vk::SamplerCreateInfo& createInfo) {
             m_device = device;
             m_sampler = m_device.getDevice().createSampler(createInfo);
-            std::cout << "Sampler created.\n";
+            //std::cout << "Sampler created.\n";
         }
 
         /**
@@ -631,7 +631,7 @@ namespace LavaCake {
             samplerInfo.maxLod = maxLod;
 
             m_sampler = m_device.getDevice().createSampler(samplerInfo);
-            std::cout << "Sampler created.\n";
+            //std::cout << "Sampler created.\n";
         }
 
         /**
