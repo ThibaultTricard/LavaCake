@@ -82,7 +82,7 @@ int main() {
         vk::BufferUsageFlagBits::eStorageBuffer
     );
 
-    std::cout << "Storage buffers created for positions, colors, and indices\n";
+    std::cout << "Storage buffers created for positions, textureCoordinates, and indices\n";
 
 
     // Create the image data
