@@ -10,6 +10,7 @@
  */
 
 #include <LavaCake/Device.hpp>
+#include <LavaCake/CommandBuffer.hpp>
 #include <LavaCake/Buffer.hpp>
 
 #include <LavaCake/ComputePipeline.hpp>
@@ -85,12 +86,11 @@ int main() {
         .addDescriptorSetLayout(descriptorLayout)
         .build();
 
-    // Record command buffer
-    vk::CommandBuffer cmd = device.allocateCommandBuffer();
-    vk::CommandBufferBeginInfo beginInfo;
-    beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+    // Create command buffer with fence for synchronization
+    LavaCake::CommandBuffer cmd(device, true);
 
-    cmd.begin(beginInfo);
+    // Record command buffer
+    cmd.begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
 
     // Bind pipeline and descriptor set
     pipeline.bind(cmd);
@@ -101,16 +101,18 @@ int main() {
 
     cmd.end();
 
-    // Submit and wait
+    // Submit with fence
     vk::SubmitInfo submitInfo;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &cmd;
+    vk::CommandBuffer rawCmd = cmd.getCommandBuffer();
+    submitInfo.pCommandBuffers = &rawCmd;
 
     auto queue = device.getAnyQueue();
-    queue.submit(submitInfo);
-    queue.waitIdle();
+    queue.submit(submitInfo, cmd.getFence());
+    cmd.markSubmitted();
 
-    device.freeCommandBuffer(cmd);
+    // Wait for compute to complete
+    cmd.waitForCompletion();
 
     // Read results back to CPU
     void* data = bufferC.map();
