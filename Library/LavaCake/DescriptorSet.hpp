@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Device.hpp"
+#include "Image.hpp"
 #include <vector>
 #include <unordered_map>
 #include <memory>
@@ -309,7 +310,8 @@ namespace LavaCake{
          */
         ~DescriptorSetLayout() {
             if (m_layout) {
-                //m_device.getDevice().destroyDescriptorSetLayout(m_layout);
+                m_device.getDevice().destroyDescriptorSetLayout(m_layout);
+                m_layout = nullptr;
             }
         }
 
@@ -592,7 +594,7 @@ namespace LavaCake{
          * \return reference to this updater for method chaining
          */
         DescriptorSetUpdater& bindStorageImage(uint32_t binding,
-                                            vk::ImageView imageView,
+                                            vk::ImageView& imageView,
                                             vk::ImageLayout layout = vk::ImageLayout::eGeneral,
                                             uint32_t arrayElement = 0) {
             m_imageInfos.push_back({nullptr, imageView, layout});
@@ -624,7 +626,7 @@ namespace LavaCake{
          * \return reference to this updater for method chaining
          */
         DescriptorSetUpdater& bindImageArray(uint32_t binding,
-                                            const std::vector<vk::ImageView>& imageViews,
+                                            const std::vector<LavaCake::ImageView>& imageViews,
                                             vk::Sampler sampler,
                                             vk::ImageLayout layout = vk::ImageLayout::eShaderReadOnlyOptimal,
                                             uint32_t arrayElement = 0) {

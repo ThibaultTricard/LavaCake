@@ -196,13 +196,57 @@ namespace LavaCake{
          */
         DescriptorPool(const LavaCake::Device& dev) : m_device(dev) {}
 
+        /**
+         * \brief Destructor - cleans up descriptor pool resources
+         */
+        ~DescriptorPool() {
+            if (m_pool) {
+                m_device.getDevice().destroyDescriptorPool(m_pool);
+                m_pool = nullptr;
+            }
+        }
+
+        /*
+         * Delete copy constructor and copy assignment to avoid GPU handle duplication
+         */
+        DescriptorPool(const DescriptorPool&) = delete;
+        DescriptorPool& operator=(const DescriptorPool&) = delete;
+
+        /**
+         * \brief Move constructor - transfers ownership without duplicating GPU resources
+         */
+        DescriptorPool(DescriptorPool&& other) noexcept
+            : m_device(other.m_device)
+            , m_pool(std::exchange(other.m_pool, nullptr))
+            , m_maxSets(other.m_maxSets)
+            , m_flags(other.m_flags)
+        {}
+
+        /**
+         * \brief Move assignment - transfers ownership without duplicating GPU resources
+         */
+        DescriptorPool& operator=(DescriptorPool&& other) noexcept {
+            if (this != &other) {
+                // Clean up existing resources
+                if (m_pool) {
+                    m_device.getDevice().destroyDescriptorPool(m_pool);
+                }
+                m_device = other.m_device;
+                m_pool = std::exchange(other.m_pool, nullptr);
+                m_maxSets = other.m_maxSets;
+                m_flags = other.m_flags;
+            }
+            return *this;
+        }
 
         /**
          * \brief Destroys and frees the descriptor pool
+         * \deprecated Use destructor instead, this is kept for backward compatibility
          */
         void freeDescriptorPool(){
             if (m_pool) {
                 m_device.getDevice().destroyDescriptorPool(m_pool);
+                m_pool = nullptr;
             }
         }
 

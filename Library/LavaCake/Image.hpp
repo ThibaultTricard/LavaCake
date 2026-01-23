@@ -394,6 +394,35 @@ namespace LavaCake {
     public:
         ImageView() = default;
 
+        /*
+        * Delete copy constructor and copy assignment to avoid GPU handle duplication
+        */
+        ImageView(const ImageView&) = delete;
+        ImageView& operator=(const ImageView&) = delete;
+
+        /**
+         * \brief Move constructor - transfers ownership without duplicating GPU resources
+         */
+        ImageView(ImageView&& other) noexcept
+            : m_imageView(std::exchange(other.m_imageView, VK_NULL_HANDLE)),
+              m_device(other.m_device)
+        {}
+
+        /**
+         * \brief Move assignment - transfers ownership without duplicating GPU resources
+         */
+        ImageView& operator=(ImageView&& other) noexcept {
+            if (this != &other) {
+                // Clean up existing resources
+                if (m_imageView) {
+                    m_device.getDevice().destroyImageView(m_imageView);
+                }
+                m_imageView = std::exchange(other.m_imageView, VK_NULL_HANDLE);
+                m_device = other.m_device;
+            }
+            return *this;
+        }
+
         /**
          * \brief Create an image view with default parameters
          * \param image the image to create a view for

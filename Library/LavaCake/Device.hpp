@@ -520,7 +520,7 @@ namespace LavaCake {
 
 
                 vk::ApplicationInfo appInfo{
-                    "Vulkan Full Example",
+                    "",
                     VK_MAKE_VERSION(1,0,0),
                     "Lavacake",
                     VK_MAKE_VERSION(2,0,0),
@@ -738,6 +738,14 @@ namespace LavaCake {
 
                 vk::PhysicalDeviceVulkan12Features vulkan12Features{};
                 vulkan12Features.scalarBlockLayout = VK_TRUE;
+                // Descriptor indexing features for bindless rendering
+                vulkan12Features.descriptorIndexing = VK_TRUE;
+                vulkan12Features.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+                vulkan12Features.shaderStorageBufferArrayNonUniformIndexing = VK_TRUE;
+                vulkan12Features.runtimeDescriptorArray = VK_TRUE;
+                vulkan12Features.descriptorBindingPartiallyBound = VK_TRUE;
+                vulkan12Features.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+                vulkan12Features.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
 
                 vk::PhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures{};
                 dynamicRenderingFeatures.dynamicRendering = VK_TRUE;

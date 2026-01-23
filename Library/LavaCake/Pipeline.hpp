@@ -153,6 +153,8 @@ class Pipeline {
 
         /**
          * \brief Clean up and destroy pipeline resources
+         * Note: Descriptor set layouts are NOT destroyed here - they are owned by
+         * the caller's DescriptorSetLayout objects which handle their own cleanup.
          */
         void cleanup() {
             if (m_pipeline) {
@@ -162,11 +164,6 @@ class Pipeline {
             if (m_pipelineLayout) {
                 m_device.getDevice().destroyPipelineLayout(m_pipelineLayout);
                 m_pipelineLayout = nullptr;
-            }
-            for (auto layout : m_descriptorSetLayouts) {
-                if (layout) {
-                    m_device.getDevice().destroyDescriptorSetLayout(layout);
-                }
             }
             m_descriptorSetLayouts.clear();
         }
