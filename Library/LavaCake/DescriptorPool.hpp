@@ -278,7 +278,7 @@ namespace LavaCake{
             if (!(m_flags & vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet)) {
                 throw std::runtime_error("Cannot free descriptor set - pool not created with FREE_DESCRIPTOR_SET flag");
             }
-            m_device.getDevice().freeDescriptorSets(m_pool, 1, &set);
+            (void)m_device.getDevice().freeDescriptorSets(m_pool, 1, &set);
         }
 
         /**
