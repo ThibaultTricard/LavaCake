@@ -437,8 +437,12 @@ namespace LavaCake {
             vmaDestroyAllocator(m_allocator);
             m_device.destroyCommandPool(m_commandPool);
             if(m_hasSurface)  {
+                // Destroy swapchain image views (owned by SwapChainImage objects)
+                for(auto& img : m_swapchainImages) {
+                    m_device.destroyImageView(img.getView());
+                }
+                m_swapchainImages.clear();
                 m_device.destroySwapchainKHR(m_swapchain);
-                //for(auto v : m_swapchainImagesView) m_device.destroyImageView(v);
             }
             m_device.destroy();
             if(m_hasSurface)  {
