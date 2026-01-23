@@ -184,6 +184,7 @@ LavaCake/
 ├── Library/LavaCake/     # Header-only library
 │   ├── Device.hpp        # Core device management + SurfaceConfig
 │   ├── GLFWSupport.hpp   # Optional GLFW convenience utilities
+│   ├── SDL2Support.hpp   # Optional SDL2 convenience utilities
 │   ├── Buffer.hpp        # GPU buffer handling
 │   ├── Image.hpp         # Image and sampler management
 │   ├── CommandBuffer.hpp # Command recording
