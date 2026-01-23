@@ -81,6 +81,9 @@ int main() {
         vk::BufferUsageFlagBits::eStorageBuffer
     );
 
+    std::cout << "Storage buffers created for positions, colors, and indices\n";
+
+
     // Create the image data
     uint32_t imageSize = 64;
     uint32_t cellSize = 4;
@@ -115,7 +118,9 @@ int main() {
     // Creation of a Sampler
     LavaCake::Sampler checkerSampler(device);
 
-    std::cout << "Storage buffers created for positions, colors, and indices\n";
+
+    std::cout << "Image, ImageView and Sampler created. \n";
+
 
     // Create descriptor set layout with 3 storage buffer an a texture (CombinedImageSampler) bindings
     LavaCake::DescriptorSetLayout descriptorSetLayout =
@@ -145,7 +150,7 @@ int main() {
         .bindImage(3, checkerImageView, checkerSampler)
         .update();
 
-    std::cout << "Descriptor set updated with storage buffers\n";
+    std::cout << "Descriptor set updated with storage buffers and a texture\n";
 
     // Create graphics pipeline - note: no vertex input configuration needed!
     LavaCake::GraphicsPipeline graphicPipeline = LavaCake::GraphicsPipeline::Builder(device)
@@ -256,7 +261,7 @@ int main() {
     }
 
     std::cout << "Example completed successfully!\n";
-    std::cout << "The quad was rendered using programmable vertex pulling from storage buffers.\n";
+    std::cout << "The quad was rendered using programmable vertex pulling from storage buffers and textured with a sampler2D.\n";
 
     return 0;
 }
