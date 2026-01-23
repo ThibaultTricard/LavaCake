@@ -735,8 +735,12 @@ namespace LavaCake {
                 devInfo.enabledExtensionCount = deviceExtensions.size();
                 devInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
+                vk::PhysicalDeviceVulkan12Features vulkan12Features{};
+                vulkan12Features.scalarBlockLayout = VK_TRUE;
+
                 vk::PhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures{};
                 dynamicRenderingFeatures.dynamicRendering = VK_TRUE;
+                dynamicRenderingFeatures.pNext = &vulkan12Features;
 
                 devInfo.pNext = &dynamicRenderingFeatures;
 
