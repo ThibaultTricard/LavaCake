@@ -6,11 +6,13 @@
  * - Setting up dynamic rendering
  * - Clearing the screen to a color
  * - Basic render loop and swapchain presentation
+ * - Using CommandBuffer with fence for GPU synchronization
  *
  * No shaders or pipelines needed - just clears to cornflower blue!
  */
 
 #include <LavaCake/Device.hpp>
+#include <LavaCake/CommandBuffer.hpp>
 #include <LavaCake/DynamicRendering.hpp>
 #include <iostream>
 #include <thread>
@@ -26,31 +28,38 @@ int main() {
 
     LavaCake::Device device(window,1);
 
-
-    vk::CommandBuffer cmdBuffer = device.allocateCommandBuffer();
+    // Create command buffer with fence for synchronization
+    LavaCake::CommandBuffer cmdBuffer(device, true);
 
     std::cout << "LavaCake Example 01: Clear Screen\n";
 
-    // Create semaphores for synchronization
+    // Create semaphores per swapchain image to avoid reuse conflicts
+    size_t swapchainImageCount = device.getSwapChainImagesNumber();
     vk::SemaphoreCreateInfo semaphoreInfo;
-    vk::Semaphore imageAvailableSemaphore;
-    vk::Semaphore renderFinishedSemaphore;
-    
+    std::vector<vk::Semaphore> imageAvailableSemaphores(swapchainImageCount);
+    std::vector<vk::Semaphore> renderFinishedSemaphores(swapchainImageCount);
+
+    for (size_t i = 0; i < swapchainImageCount; i++) {
+        imageAvailableSemaphores[i] = device.getDevice().createSemaphore(semaphoreInfo);
+        renderFinishedSemaphores[i] = device.getDevice().createSemaphore(semaphoreInfo);
+    }
+
+    uint32_t currentFrame = 0;
 
     // Main render loop
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
 
+        // Wait for previous frame to complete
+        cmdBuffer.waitForCompletion();
+        cmdBuffer.reset();
 
-        // Acquire next swapchain image
-        imageAvailableSemaphore = device.getDevice().createSemaphore(semaphoreInfo);
-        LavaCake::SwapChainImage& swapchainImage = device.aquireSwapChainImage(imageAvailableSemaphore);
+        // Acquire next swapchain image using current frame's semaphore
+        LavaCake::SwapChainImage& swapchainImage = device.aquireSwapChainImage(imageAvailableSemaphores[currentFrame]);
 
-        // Get command buffer for this frame
-        vk::CommandBufferBeginInfo beginInfo{};
-        beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-        cmdBuffer.begin(beginInfo);
+        // Begin recording commands
+        cmdBuffer.begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
 
         // Transition swapchain image to COLOR_ATTACHMENT_OPTIMAL
         swapchainImage.prepareForAttachementBarrier(cmdBuffer);
@@ -73,34 +82,36 @@ int main() {
 
         cmdBuffer.end();
 
-
-        renderFinishedSemaphore = device.getDevice().createSemaphore(semaphoreInfo);
-        // Submit command buffer and wait for image to be available
+        // Submit command buffer with fence using current frame's semaphores
         vk::PipelineStageFlags waitStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         vk::SubmitInfo submitInfo;
         submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = &imageAvailableSemaphore;
+        submitInfo.pWaitSemaphores = &imageAvailableSemaphores[currentFrame];
         submitInfo.pWaitDstStageMask = &waitStage;
         submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &cmdBuffer;
+        vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
+        submitInfo.pCommandBuffers = &rawCmd;
         submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = &renderFinishedSemaphore;
+        submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 
-        device.getGraphicQueue(0).submit(submitInfo);
+        device.getGraphicQueue(0).submit(submitInfo, cmdBuffer.getFence());
+        cmdBuffer.markSubmitted();
 
         // Present the image
-        device.presentImage(swapchainImage, {renderFinishedSemaphore});
+        device.presentImage(swapchainImage, {renderFinishedSemaphores[currentFrame]});
 
-
-        device.getGraphicQueue(0).waitIdle();
-
-        device.getDevice().destroySemaphore(imageAvailableSemaphore);
-        device.getDevice().destroySemaphore(renderFinishedSemaphore);
-
+        // Advance to next frame
+        currentFrame = (currentFrame + 1) % swapchainImageCount;
     }
 
     // Wait for device to finish before cleanup
     device.waitForAllCommands();
+
+    // Clean up all semaphores
+    for (size_t i = 0; i < swapchainImageCount; i++) {
+        device.getDevice().destroySemaphore(imageAvailableSemaphores[i]);
+        device.getDevice().destroySemaphore(renderFinishedSemaphores[i]);
+    }
 
     std::cout << "Example completed successfully!\n";
     return 0;

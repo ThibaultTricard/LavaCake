@@ -318,7 +318,7 @@ namespace LavaCake {
         * \brief Make sure every command send to the device are finished
         */
         void waitForAllCommands(){
-            
+            m_device.waitIdle();
         }
 
         /**
@@ -402,6 +402,14 @@ namespace LavaCake {
          */
         vk::Extent2D getSwapchainExtent(){
             return m_swapchainExtent;
+        }
+
+        /**
+         * \brief Returns the number of swapchain Image
+         * \return the size_t of the swapchain Images array
+         */ 
+        size_t getSwapChainImagesNumber(){
+           return m_swapchainImages.size(); 
         }
 
         /**
