@@ -1,18 +1,17 @@
 #version 450
-#extension GL_EXT_scalar_block_layout : require
 
 // Storage buffer containing vertex positions
-layout(scalar, set = 0, binding = 0) readonly buffer PositionBuffer {
+layout(set = 0, binding = 0) readonly buffer PositionBuffer {
     vec2 positions[];
 };
 
 // Storage buffer containing vertex texture coordinates
-layout(scalar, set = 0, binding = 1) readonly buffer UVBuffer {
+layout(set = 0, binding = 1) readonly buffer UVBuffer {
     vec2 UV[];
 };
 
 // Storage buffer containing indices
-layout(scalar, set = 0, binding = 2) readonly buffer IndexBuffer {
+layout(set = 0, binding = 2) readonly buffer IndexBuffer {
     uint indices[];
 };
 
