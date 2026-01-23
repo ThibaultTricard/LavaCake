@@ -89,32 +89,43 @@ int main() {
 }
 ```
 
-### With Other Windowing Libraries (SDL2, Qt, etc.)
+### With SDL2
+
+```cpp
+#include <LavaCake/SDL2Support.hpp>  // Convenience header for SDL2 users
+#include <LavaCake/CommandBuffer.hpp>
+
+int main() {
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window* window = SDL_CreateWindow("LavaCake",
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        800, 600, SDL_WINDOW_VULKAN);
+
+    auto surfaceConfig = LavaCake::SDL2::createSurfaceConfig(window);
+    LavaCake::Device device(surfaceConfig, 1);  // 1 graphics queue
+    // ...
+}
+```
+
+### With Other Windowing Libraries (Qt, etc.)
 
 LavaCake is window-manager agnostic. Provide your own `SurfaceConfig`:
 
 ```cpp
 #include <LavaCake/Device.hpp>
-#include <SDL2/SDL_vulkan.h>
 
 int main() {
-    SDL_Window* window = SDL_CreateWindow("LavaCake",
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        800, 600, SDL_WINDOW_VULKAN);
+    // Create your window using your preferred library...
 
-    // Create surface config for SDL2
     LavaCake::SurfaceConfig config;
 
-    // Get required extensions
-    unsigned int count;
-    SDL_Vulkan_GetInstanceExtensions(window, &count, nullptr);
-    config.requiredExtensions.resize(count);
-    SDL_Vulkan_GetInstanceExtensions(window, &count, config.requiredExtensions.data());
+    // Get required Vulkan extensions from your windowing library
+    config.requiredExtensions = { /* VK_KHR_surface, platform-specific extensions */ };
 
     // Provide surface creation callback
-    config.createSurface = [window](vk::Instance instance) -> vk::SurfaceKHR {
+    config.createSurface = [](vk::Instance instance) -> vk::SurfaceKHR {
         VkSurfaceKHR surface;
-        SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(instance), &surface);
+        // Create surface using your windowing library's API
         return vk::SurfaceKHR(surface);
     };
 
