@@ -16,8 +16,6 @@
 #include <LavaCake/ComputePipeline.hpp>
 #include <LavaCake/DescriptorPool.hpp>
 
-#include <cassert>
-#define assertm(exp, msg) assert((void(msg), exp))
 
 std::string root = PROJECT_ROOT;
 
@@ -82,7 +80,7 @@ int main() {
 
     // Create compute pipeline from shader code
     LavaCake::ComputePipeline pipeline = LavaCake::ComputePipeline::Builder(device)
-        .setShaderFromFile(root+"shaders/vectorAddition.comp", LavaCake::ShadingLanguage::eGLSL)
+        .setShaderFromFile(root+"shaders/vector_addition.comp", LavaCake::ShadingLanguage::eGLSL)
         .addDescriptorSetLayout(descriptorLayout)
         .build();
 
