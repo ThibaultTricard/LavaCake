@@ -21,7 +21,7 @@ LavaCake provides high-level abstractions over the Vulkan API, letting you lever
 - C++20 compatible compiler
 - CMake 3.10+
 - Vulkan SDK 1.3+
-- GLFW3 (for windowed applications)
+- A windowing library (GLFW3, SDL2, Qt, etc.) - only for graphics applications
 
 ## Installation
 
@@ -50,92 +50,91 @@ cmake --build .
 cmake --install . --prefix /your/install/path
 ```
 
+To build without examples (no GLFW dependency required):
+```bash
+cmake .. -DLAVACAKE_BUILD_EXAMPLES=OFF
+```
+
 ## Quick Start
 
-### Clear Screen Example
+### With GLFW
 
 ```cpp
-#include <LavaCake/Device.hpp>
-#include <LavaCake/SwapChainImage.hpp>
+#include <LavaCake/GLFWSupport.hpp>  // Convenience header for GLFW users
+#include <LavaCake/CommandBuffer.hpp>
+#include <LavaCake/DynamicRendering.hpp>
 
 int main() {
-    // Create device with window
-    LavaCake::Device device;
-    device.initDevice(800, 600, "LavaCake Window");
-    device.initSwapChain();
+    // Initialize GLFW
+    glfwInit();
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "LavaCake", nullptr, nullptr);
 
-    while (!glfwWindowShouldClose(device.getWindow())) {
+    // Create device with GLFW window
+    auto surfaceConfig = LavaCake::GLFW::createSurfaceConfig(window);
+    LavaCake::Device device(surfaceConfig, 1);  // 1 graphics queue
+
+    LavaCake::CommandBuffer cmdBuffer(device, true);
+
+    while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
-        // Acquire swapchain image
-        auto [swapchainImage, swapchainIndex] = device.acquireSwapChainImage();
-        auto& commandBuffer = device.getCommandBuffer();
-
-        commandBuffer.wait();
-        commandBuffer.resetFence();
-        commandBuffer.begin();
-
-        // Transition and clear
-        swapchainImage.transitionImageLayout(
-            commandBuffer.getHandle(),
-            vk::ImageLayout::eTransferDstOptimal
-        );
-
-        vk::ClearColorValue clearColor(std::array<float, 4>{0.2f, 0.3f, 0.4f, 1.0f});
-        commandBuffer.getHandle().clearColorImage(
-            swapchainImage.getImage(),
-            vk::ImageLayout::eTransferDstOptimal,
-            clearColor,
-            vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)
-        );
-
-        swapchainImage.prepareForPresent(commandBuffer.getHandle());
-        commandBuffer.end();
-        commandBuffer.submit(device.getGraphicQueue());
-
-        device.presentImage(swapchainIndex);
+        // Render frame...
+        // See examples/basic/01_clear_screen.cpp for complete code
     }
 
-    device.waitIdle();
+    device.waitForAllCommands();
+    device.releaseDevice();
     return 0;
 }
 ```
 
-### Compute Shader Example
+### With Other Windowing Libraries (SDL2, Qt, etc.)
+
+LavaCake is window-manager agnostic. Provide your own `SurfaceConfig`:
+
+```cpp
+#include <LavaCake/Device.hpp>
+#include <SDL2/SDL_vulkan.h>
+
+int main() {
+    SDL_Window* window = SDL_CreateWindow("LavaCake",
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        800, 600, SDL_WINDOW_VULKAN);
+
+    // Create surface config for SDL2
+    LavaCake::SurfaceConfig config;
+
+    // Get required extensions
+    unsigned int count;
+    SDL_Vulkan_GetInstanceExtensions(window, &count, nullptr);
+    config.requiredExtensions.resize(count);
+    SDL_Vulkan_GetInstanceExtensions(window, &count, config.requiredExtensions.data());
+
+    // Provide surface creation callback
+    config.createSurface = [window](vk::Instance instance) -> vk::SurfaceKHR {
+        VkSurfaceKHR surface;
+        SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(instance), &surface);
+        return vk::SurfaceKHR(surface);
+    };
+
+    LavaCake::Device device(config, 1);
+    // ...
+}
+```
+
+### Headless Compute
 
 ```cpp
 #include <LavaCake/Device.hpp>
 #include <LavaCake/Buffer.hpp>
 #include <LavaCake/ComputePipeline.hpp>
-#include <LavaCake/DescriptorSet.hpp>
 
 int main() {
-    // Create headless device (no window)
-    LavaCake::Device device;
-    device.initDevice();
+    // Create headless device (no window, no surface)
+    LavaCake::Device device(0, 1);  // 0 graphics queues, 1 compute queue
 
-    // Create buffers
-    std::vector<float> inputA = {1.0f, 2.0f, 3.0f, 4.0f};
-    std::vector<float> inputB = {5.0f, 6.0f, 7.0f, 8.0f};
-
-    LavaCake::Buffer bufferA(device, inputA, vk::BufferUsageFlagBits::eStorageBuffer);
-    LavaCake::Buffer bufferB(device, inputB, vk::BufferUsageFlagBits::eStorageBuffer);
-    LavaCake::Buffer bufferC(device, 4 * sizeof(float),
-                             vk::BufferUsageFlagBits::eStorageBuffer,
-                             VMA_MEMORY_USAGE_GPU_TO_CPU);
-
-    // Create compute pipeline
-    LavaCake::ComputePipeline pipeline(device);
-    pipeline.setComputeShader("shaders/vector_addition.comp");
-    pipeline.addStorageBuffer(0, 0);
-    pipeline.addStorageBuffer(0, 1);
-    pipeline.addStorageBuffer(0, 2);
-    pipeline.compile();
-
-    // Bind and dispatch
-    // ... (see examples for full code)
-
-    return 0;
+    // See examples/compute/01_vector_addition.cpp for complete code
 }
 ```
 
@@ -152,16 +151,18 @@ The `examples/` directory contains progressive tutorials:
 | `04_vertex_buffer` | Vertex buffer creation and usage |
 | `05_indexed_quad` | Indexed drawing with index buffers |
 | `06_bindless_quad` | Modern bindless rendering pattern |
+| `07_bindless_quad_textured` | Bindless rendering with textures |
+| `08_bindless_combined` | Bindless texture and buffer arrays |
 
 ### Compute
 | Example | Description |
 |---------|-------------|
 | `01_vector_addition` | Headless compute with storage buffers |
 
-Build examples with:
+Build examples with (requires GLFW):
 ```bash
 cd build
-cmake .. -DBUILD_EXAMPLES=ON
+cmake .. -DLAVACAKE_BUILD_EXAMPLES=ON
 cmake --build .
 ```
 
@@ -170,7 +171,8 @@ cmake --build .
 ```
 LavaCake/
 ├── Library/LavaCake/     # Header-only library
-│   ├── Device.hpp        # Core device management
+│   ├── Device.hpp        # Core device management + SurfaceConfig
+│   ├── GLFWSupport.hpp   # Optional GLFW convenience utilities
 │   ├── Buffer.hpp        # GPU buffer handling
 │   ├── Image.hpp         # Image and sampler management
 │   ├── CommandBuffer.hpp # Command recording
@@ -179,7 +181,7 @@ LavaCake/
 │   ├── DescriptorSet.hpp
 │   ├── ShaderModule.hpp
 │   └── DynamicRendering.hpp
-├── examples/             # Usage examples
+├── examples/             # Usage examples (requires GLFW)
 ├── cmake/                # CMake configuration
 └── documentation/        # Doxygen config
 ```

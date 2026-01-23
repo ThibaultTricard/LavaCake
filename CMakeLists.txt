@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
-project(VulkanHPP_FullExample)
+project(LavaCake)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Options
+option(LAVACAKE_BUILD_EXAMPLES "Build LavaCake examples (requires GLFW)" ON)
 
 
 if(APPLE)
@@ -22,7 +25,6 @@ if(APPLE)
 endif()
 
 find_package(Vulkan REQUIRED)
-find_package(glfw3 REQUIRED)
 
 
 
@@ -206,5 +208,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/LavaCakeConfig.cmake
 
 
 
-# Add examples subdirectory
- add_subdirectory(examples)
+# Add examples subdirectory (optional)
+if(LAVACAKE_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()

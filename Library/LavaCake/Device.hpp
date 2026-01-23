@@ -3,11 +3,11 @@
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_extension_inspection.hpp>
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <optional>
 #include <set>
 #include <map>
+#include <functional>
 
 #define VMA_IMPLEMENTATION
 #include <vk_mem_alloc.h>
@@ -93,6 +93,59 @@ namespace LavaCake {
 
         return score;
     }
+
+    // ---------------------------------------------------------------
+    // Surface Configuration (for window-manager agnostic design)
+    // ---------------------------------------------------------------
+
+    /**
+     * \brief Callback type for creating a VkSurfaceKHR from a VkInstance
+     *
+     * Users implement this using their windowing library's surface creation API.
+     * Return a null/empty SurfaceKHR on failure.
+     */
+    using SurfaceCreateFn = std::function<vk::SurfaceKHR(vk::Instance instance)>;
+
+    /**
+     * \brief Configuration for creating a Device with a presentation surface
+     *
+     * This struct decouples LavaCake from any specific windowing library.
+     * Users provide the required Vulkan instance extensions and a callback
+     * to create the surface using their windowing system of choice.
+     *
+     * Example with SDL2:
+     * \code
+     * SurfaceConfig config;
+     * unsigned int count;
+     * SDL_Vulkan_GetInstanceExtensions(window, &count, nullptr);
+     * config.requiredExtensions.resize(count);
+     * SDL_Vulkan_GetInstanceExtensions(window, &count, config.requiredExtensions.data());
+     * config.createSurface = [window](vk::Instance inst) -> vk::SurfaceKHR {
+     *     VkSurfaceKHR surf;
+     *     SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst), &surf);
+     *     return vk::SurfaceKHR(surf);
+     * };
+     * \endcode
+     */
+    struct SurfaceConfig {
+        /**
+         * \brief Required Vulkan instance extensions for surface support
+         *
+         * These are window-system-specific extensions needed for presentation.
+         * Typically includes VK_KHR_surface plus platform-specific extensions
+         * (e.g., VK_KHR_win32_surface, VK_KHR_xcb_surface, VK_MVK_macos_surface, etc.)
+         */
+        std::vector<const char*> requiredExtensions;
+
+        /**
+         * \brief Callback function to create the VkSurfaceKHR
+         *
+         * This function will be called after the Vulkan instance is created.
+         * The user implements this using their windowing library's surface creation API.
+         * Return a null SurfaceKHR on failure.
+         */
+        SurfaceCreateFn createSurface;
+    };
 
     /**
     \brief helps manage Vulkan device related task
@@ -290,27 +343,27 @@ namespace LavaCake {
 
         /**
         * \brief Initialise the device with a surface
-        * \param window the window to use for the surface creation
-        * \param nbComputeQueue the number of compute queue requiered by the application
-        * \param nbGraphicQueue the number of graphic queue requiered by the application
+        * \param surfaceConfig configuration containing required extensions and surface creation callback
+        * \param nbGraphicQueue the number of graphic queue required by the application
+        * \param nbComputeQueue the number of compute queue required by the application
         */
         Device(
-            GLFWwindow* window ,
+            const SurfaceConfig& surfaceConfig,
             int nbGraphicQueue,
             int nbComputeQueue = 0
-            ) : Device(nbGraphicQueue,nbComputeQueue,true,window){
+            ) : Device(nbGraphicQueue, nbComputeQueue, true, surfaceConfig.requiredExtensions, surfaceConfig.createSurface){
 
             }
         
         /**
-        * \brief Initialise the device without a surface
-        * \param nbComputeQueue the number of compute queue requiered by the application
-        * \param nbGraphicQueue the number of graphic queue requiered by the application
+        * \brief Initialise the device without a surface (headless mode)
+        * \param nbGraphicQueue the number of graphic queue required by the application
+        * \param nbComputeQueue the number of compute queue required by the application
         */
         Device(
             int nbGraphicQueue,
             int nbComputeQueue = 1
-            ) : Device(nbGraphicQueue,nbComputeQueue,false,nullptr){
+            ) : Device(nbGraphicQueue, nbComputeQueue, false, {}, nullptr){
 
             }
 
@@ -480,17 +533,18 @@ namespace LavaCake {
         
         /**
         * \brief Initialise the device
-        * \param nbComputeQueue the number of compute queue requiered by the application
-        * \param nbGraphicQueue the number of graphic queue requiered by the application
+        * \param nbGraphicQueue the number of graphic queue required by the application
+        * \param nbComputeQueue the number of compute queue required by the application
         * \param createSurface true if the device needs to create a surface
-        * \param window the window to use for the surface creation
-        * \return a reference to a ComputeQueue
+        * \param additionalExtensions additional instance extensions (e.g., for surface support)
+        * \param surfaceCreator callback to create the surface after instance creation
         */
         Device(
             int nbGraphicQueue,
             int nbComputeQueue,
             bool createSurface,
-            GLFWwindow* window
+            std::vector<const char*> additionalExtensions,
+            SurfaceCreateFn surfaceCreator
             ){
 
             try
@@ -502,9 +556,8 @@ namespace LavaCake {
 
                 std::vector<const char*> layers = { "VK_LAYER_KHRONOS_validation" };
 
-                uint32_t glfwExtCount = 0;
-                const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtCount);
-                std::vector<const char*> instanceExtensions(glfwExtensions, glfwExtensions + glfwExtCount);
+                // Start with user-provided extensions (e.g., surface extensions from windowing library)
+                std::vector<const char*> instanceExtensions(additionalExtensions.begin(), additionalExtensions.end());
                 instanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
                 #ifdef __APPLE__
@@ -570,10 +623,11 @@ namespace LavaCake {
                 // -----------------------------------------------------------
                 // 4) Create Window Surface
                 // -----------------------------------------------------------
-                if(createSurface){
-                    VkSurfaceKHR rawSurface;
-                    glfwCreateWindowSurface(static_cast<VkInstance>(m_instance), window, nullptr, &rawSurface);
-                    m_presentationSurface = vk::SurfaceKHR (rawSurface);
+                if(createSurface && surfaceCreator){
+                    m_presentationSurface = surfaceCreator(m_instance);
+                    if(!m_presentationSurface){
+                        throw std::runtime_error("Failed to create presentation surface");
+                    }
                 }
 
                 // -----------------------------------------------------------

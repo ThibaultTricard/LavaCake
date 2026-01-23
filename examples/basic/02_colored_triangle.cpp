@@ -11,7 +11,7 @@
  * The triangle vertices and colors are hardcoded in the vertex shader.
  */
 
-#include <LavaCake/Device.hpp>
+#include <LavaCake/GLFWSupport.hpp>
 #include <LavaCake/CommandBuffer.hpp>
 #include <LavaCake/GraphicPipeline.hpp>
 #include <LavaCake/DynamicRendering.hpp>
@@ -31,7 +31,8 @@ int main() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     GLFWwindow* window = glfwCreateWindow(800, 600, "02 - Colored Triangle Example", nullptr, nullptr);
 
-    LavaCake::Device device(window,1);
+    auto surfaceConfig = LavaCake::GLFW::createSurfaceConfig(window);
+    LavaCake::Device device(surfaceConfig, 1);
     { // Create a context to make sure all GPU objects are destroyed before we release the device
 
         // Create command buffer with fence for synchronization
