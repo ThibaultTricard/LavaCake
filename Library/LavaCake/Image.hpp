@@ -226,6 +226,11 @@ namespace LavaCake {
                 barrier.dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
                 srcStage = vk::PipelineStageFlagBits::eTopOfPipe;
                 dstStage = vk::PipelineStageFlagBits::eEarlyFragmentTests;
+            } else if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal) {
+                barrier.srcAccessMask = vk::AccessFlagBits::eNone;
+                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+                srcStage = vk::PipelineStageFlagBits::eTopOfPipe;
+                dstStage = vk::PipelineStageFlagBits::eFragmentShader;
             } else {
                 throw std::invalid_argument("Unsupported layout transition");
             }
