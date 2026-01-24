@@ -181,15 +181,28 @@ namespace LavaCake {
          * \param cmd Command buffer to record the transition
          * \param oldLayout Current layout
          * \param newLayout Target layout
+         * \param aspectMask Image aspect (default: auto-detect based on format)
          */
-        void transitionLayout(vk::CommandBuffer& cmd, vk::ImageLayout oldLayout, vk::ImageLayout newLayout) {
+        void transitionLayout(vk::CommandBuffer& cmd, vk::ImageLayout oldLayout, vk::ImageLayout newLayout,
+                             vk::ImageAspectFlags aspectMask = vk::ImageAspectFlags{}) {
+            // Auto-detect aspect mask based on format if not specified
+            if (!aspectMask) {
+                if (m_format == vk::Format::eD32Sfloat || m_format == vk::Format::eD16Unorm) {
+                    aspectMask = vk::ImageAspectFlagBits::eDepth;
+                } else if (m_format == vk::Format::eD24UnormS8Uint || m_format == vk::Format::eD32SfloatS8Uint) {
+                    aspectMask = vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil;
+                } else {
+                    aspectMask = vk::ImageAspectFlagBits::eColor;
+                }
+            }
+
             vk::ImageMemoryBarrier barrier{};
             barrier.oldLayout = oldLayout;
             barrier.newLayout = newLayout;
             barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
             barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
             barrier.image = m_image;
-            barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+            barrier.subresourceRange.aspectMask = aspectMask;
             barrier.subresourceRange.baseMipLevel = 0;
             barrier.subresourceRange.levelCount = m_mipLevels;
             barrier.subresourceRange.baseArrayLayer = 0;
@@ -208,6 +221,11 @@ namespace LavaCake {
                 barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
                 srcStage = vk::PipelineStageFlagBits::eTransfer;
                 dstStage = vk::PipelineStageFlagBits::eFragmentShader;
+            } else if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eDepthStencilAttachmentOptimal) {
+                barrier.srcAccessMask = vk::AccessFlagBits::eNone;
+                barrier.dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+                srcStage = vk::PipelineStageFlagBits::eTopOfPipe;
+                dstStage = vk::PipelineStageFlagBits::eEarlyFragmentTests;
             } else {
                 throw std::invalid_argument("Unsupported layout transition");
             }
