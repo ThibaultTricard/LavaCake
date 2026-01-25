@@ -185,6 +185,8 @@ namespace LavaCake {
          */
         void transitionLayout(vk::CommandBuffer& cmd, vk::ImageLayout oldLayout, vk::ImageLayout newLayout,
                              vk::ImageAspectFlags aspectMask = vk::ImageAspectFlags{}) {
+            if (oldLayout == newLayout) return;
+
             // Auto-detect aspect mask based on format if not specified
             if (!aspectMask) {
                 if (m_format == vk::Format::eD32Sfloat || m_format == vk::Format::eD16Unorm) {
@@ -208,32 +210,98 @@ namespace LavaCake {
             barrier.subresourceRange.baseArrayLayer = 0;
             barrier.subresourceRange.layerCount = m_arrayLayers;
 
+            // Determine source access mask and pipeline stage based on old layout
+            vk::AccessFlags srcAccessMask;
             vk::PipelineStageFlags srcStage;
+
+            switch (oldLayout) {
+                case vk::ImageLayout::eUndefined:
+                    srcAccessMask = vk::AccessFlagBits::eNone;
+                    srcStage = vk::PipelineStageFlagBits::eTopOfPipe;
+                    break;
+                case vk::ImageLayout::eGeneral:
+                    srcAccessMask = vk::AccessFlagBits::eMemoryWrite;
+                    srcStage = vk::PipelineStageFlagBits::eAllCommands;
+                    break;
+                case vk::ImageLayout::eColorAttachmentOptimal:
+                    srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
+                    srcStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+                    break;
+                case vk::ImageLayout::eDepthStencilAttachmentOptimal:
+                    srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+                    srcStage = vk::PipelineStageFlagBits::eLateFragmentTests;
+                    break;
+                case vk::ImageLayout::eDepthStencilReadOnlyOptimal:
+                    srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead;
+                    srcStage = vk::PipelineStageFlagBits::eLateFragmentTests;
+                    break;
+                case vk::ImageLayout::eShaderReadOnlyOptimal:
+                    srcAccessMask = vk::AccessFlagBits::eShaderRead;
+                    srcStage = vk::PipelineStageFlagBits::eFragmentShader;
+                    break;
+                case vk::ImageLayout::eTransferSrcOptimal:
+                    srcAccessMask = vk::AccessFlagBits::eTransferRead;
+                    srcStage = vk::PipelineStageFlagBits::eTransfer;
+                    break;
+                case vk::ImageLayout::eTransferDstOptimal:
+                    srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+                    srcStage = vk::PipelineStageFlagBits::eTransfer;
+                    break;
+                case vk::ImageLayout::ePresentSrcKHR:
+                    srcAccessMask = vk::AccessFlagBits::eMemoryRead;
+                    srcStage = vk::PipelineStageFlagBits::eBottomOfPipe;
+                    break;
+                default:
+                    srcAccessMask = vk::AccessFlagBits::eMemoryWrite;
+                    srcStage = vk::PipelineStageFlagBits::eAllCommands;
+                    break;
+            }
+
+            // Determine destination access mask and pipeline stage based on new layout
+            vk::AccessFlags dstAccessMask;
             vk::PipelineStageFlags dstStage;
 
-            if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eTransferDstOptimal) {
-                barrier.srcAccessMask = vk::AccessFlagBits::eNone;
-                barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
-                srcStage = vk::PipelineStageFlagBits::eTopOfPipe;
-                dstStage = vk::PipelineStageFlagBits::eTransfer;
-            } else if (oldLayout == vk::ImageLayout::eTransferDstOptimal && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal) {
-                barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
-                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-                srcStage = vk::PipelineStageFlagBits::eTransfer;
-                dstStage = vk::PipelineStageFlagBits::eFragmentShader;
-            } else if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eDepthStencilAttachmentOptimal) {
-                barrier.srcAccessMask = vk::AccessFlagBits::eNone;
-                barrier.dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
-                srcStage = vk::PipelineStageFlagBits::eTopOfPipe;
-                dstStage = vk::PipelineStageFlagBits::eEarlyFragmentTests;
-            } else if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal) {
-                barrier.srcAccessMask = vk::AccessFlagBits::eNone;
-                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-                srcStage = vk::PipelineStageFlagBits::eTopOfPipe;
-                dstStage = vk::PipelineStageFlagBits::eFragmentShader;
-            } else {
-                throw std::invalid_argument("Unsupported layout transition");
+            switch (newLayout) {
+                case vk::ImageLayout::eGeneral:
+                    dstAccessMask = vk::AccessFlagBits::eMemoryRead | vk::AccessFlagBits::eMemoryWrite;
+                    dstStage = vk::PipelineStageFlagBits::eAllCommands;
+                    break;
+                case vk::ImageLayout::eColorAttachmentOptimal:
+                    dstAccessMask = vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite;
+                    dstStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+                    break;
+                case vk::ImageLayout::eDepthStencilAttachmentOptimal:
+                    dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+                    dstStage = vk::PipelineStageFlagBits::eEarlyFragmentTests;
+                    break;
+                case vk::ImageLayout::eDepthStencilReadOnlyOptimal:
+                    dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead;
+                    dstStage = vk::PipelineStageFlagBits::eEarlyFragmentTests;
+                    break;
+                case vk::ImageLayout::eShaderReadOnlyOptimal:
+                    dstAccessMask = vk::AccessFlagBits::eShaderRead;
+                    dstStage = vk::PipelineStageFlagBits::eFragmentShader;
+                    break;
+                case vk::ImageLayout::eTransferSrcOptimal:
+                    dstAccessMask = vk::AccessFlagBits::eTransferRead;
+                    dstStage = vk::PipelineStageFlagBits::eTransfer;
+                    break;
+                case vk::ImageLayout::eTransferDstOptimal:
+                    dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+                    dstStage = vk::PipelineStageFlagBits::eTransfer;
+                    break;
+                case vk::ImageLayout::ePresentSrcKHR:
+                    dstAccessMask = vk::AccessFlagBits::eMemoryRead;
+                    dstStage = vk::PipelineStageFlagBits::eBottomOfPipe;
+                    break;
+                default:
+                    dstAccessMask = vk::AccessFlagBits::eMemoryRead | vk::AccessFlagBits::eMemoryWrite;
+                    dstStage = vk::PipelineStageFlagBits::eAllCommands;
+                    break;
             }
+
+            barrier.srcAccessMask = srcAccessMask;
+            barrier.dstAccessMask = dstAccessMask;
 
             cmd.pipelineBarrier(srcStage, dstStage, vk::DependencyFlags{}, nullptr, nullptr, barrier);
         }

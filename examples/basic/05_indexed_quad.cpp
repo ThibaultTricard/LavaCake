@@ -147,7 +147,7 @@ int main() {
             LavaCake::DynamicRenderingContext renderingContext = LavaCake::DynamicRenderingContext::Builder()
                 .setRenderArea(device.getSwapchainExtent())
                 .addColorAttachment(
-                    swapchainImage.getView(),
+                    swapchainImage,
                     vk::ClearColorValue(std::array<float, 4>{0.2f, 0.2f, 0.2f, 1.0f})
                 )
                 .begin(cmdBuffer);
@@ -159,13 +159,12 @@ int main() {
             graphicPipeline.bind(cmdBuffer);
 
             // Bind the vertex buffer
-            vk::Buffer vkVertexBuffer = vertexBuffer.getBuffer();
             vk::DeviceSize vertexOffset = 0;
-            cmdBuffer.getCommandBuffer().bindVertexBuffers(0, 1, &vkVertexBuffer, &vertexOffset);
+            cmdBuffer.getCommandBuffer().bindVertexBuffers(0, 1, vertexBuffer, &vertexOffset);
 
             // Bind the index buffer
             cmdBuffer.getCommandBuffer().bindIndexBuffer(
-                indexBuffer.getBuffer(),
+                indexBuffer,
                 0,                          // offset
                 vk::IndexType::eUint16      // index type matches std::vector<uint16_t>
             );

@@ -492,7 +492,7 @@ namespace LavaCake {
             if(m_hasSurface)  {
                 // Destroy swapchain image views (owned by SwapChainImage objects)
                 for(auto& img : m_swapchainImages) {
-                    m_device.destroyImageView(img.getView());
+                    m_device.destroyImageView(img.getImageView());
                 }
                 m_swapchainImages.clear();
                 m_device.destroySwapchainKHR(m_swapchain);

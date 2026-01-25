@@ -147,9 +147,9 @@ int main() {
 
         // Update descriptor set with our storage buffers and our texture
         LavaCake::DescriptorSetUpdater(device, descriptorSet)
-            .bindStorageBuffer(0, positionBuffer.getBuffer())
-            .bindStorageBuffer(1, UVBuffer.getBuffer())
-            .bindStorageBuffer(2, indexBuffer.getBuffer())
+            .bindStorageBuffer(0, positionBuffer)
+            .bindStorageBuffer(1, UVBuffer)
+            .bindStorageBuffer(2, indexBuffer)
             .bindImage(3, checkerImageView, checkerSampler)
             .update();
 
@@ -200,7 +200,7 @@ int main() {
             LavaCake::DynamicRenderingContext renderingContext = LavaCake::DynamicRenderingContext::Builder()
                 .setRenderArea(device.getSwapchainExtent())
                 .addColorAttachment(
-                    swapchainImage.getView(),
+                    swapchainImage,
                     vk::ClearColorValue(std::array<float, 4>{0.15f, 0.15f, 0.2f, 1.0f})
                 )
                 .begin(cmdBuffer);

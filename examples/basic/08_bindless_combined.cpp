@@ -184,11 +184,11 @@ int main() {
         
         // Update descriptor set
         LavaCake::DescriptorSetUpdater(device, descriptorSet)
-            .bindStorageBuffer(0, positionBuffer.getBuffer())
-            .bindStorageBuffer(1, UVBuffer.getBuffer())
-            .bindStorageBuffer(2, indexBuffer.getBuffer())
-            .bindStorageBuffer(3, transformBuffer.getBuffer())
-            .bindImageArray(4, textureViews, textureSampler.getSampler())
+            .bindStorageBuffer(0, positionBuffer)
+            .bindStorageBuffer(1, UVBuffer)
+            .bindStorageBuffer(2, indexBuffer)
+            .bindStorageBuffer(3, transformBuffer)
+            .bindImageArray(4, textureViews, textureSampler)
             .update();
 
         std::cout << "Bindless descriptor set created and updated\n";
@@ -241,7 +241,7 @@ int main() {
             LavaCake::DynamicRenderingContext renderingContext = LavaCake::DynamicRenderingContext::Builder()
                 .setRenderArea(device.getSwapchainExtent())
                 .addColorAttachment(
-                    swapchainImage.getView(),
+                    swapchainImage,
                     vk::ClearColorValue(std::array<float, 4>{0.1f, 0.1f, 0.15f, 1.0f})
                 )
                 .begin(cmdBuffer);

@@ -70,7 +70,7 @@ int main() {
             LavaCake::DynamicRenderingContext renderingContext = LavaCake::DynamicRenderingContext::Builder()
                 .setRenderArea(device.getSwapchainExtent())
                 .addColorAttachment(
-                    swapchainImage.getView(),
+                    swapchainImage,
                     vk::ClearColorValue(std::array<float, 4>{0.39f, 0.58f, 0.93f, 1.0f}) // Cornflower blue!
                 )
                 .begin(cmdBuffer);

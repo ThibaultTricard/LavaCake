@@ -80,7 +80,7 @@ int main() {
 
         // Update descriptor set to point to our uniform buffer
         LavaCake::DescriptorSetUpdater(device, descriptorSet)
-            .bindUniformBuffer(0, uniformBuffer.getBuffer(), 0, uniformBuffer.size())
+            .bindUniformBuffer(0, uniformBuffer, 0, uniformBuffer.size())
             .update();
 
         // Create graphics pipeline with descriptor set
@@ -144,7 +144,7 @@ int main() {
                 LavaCake::DynamicRenderingContext::Builder()
                     .setRenderArea(device.getSwapchainExtent())
                     .addColorAttachment(
-                        swapchainImage.getView(),
+                        swapchainImage,
                         vk::ClearColorValue(std::array<float, 4>{0.1f, 0.1f, 0.1f, 1.0f})
                     )
                     .begin(cmdBuffer);

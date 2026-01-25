@@ -101,7 +101,13 @@ namespace LavaCake{
          * \brief Returns the image view for rendering
          * \return reference to the vk::ImageView
          */
-        vk::ImageView& getView(){return m_imageView;}
+        vk::ImageView& getImageView(){return m_imageView;}
+
+        /**
+         * \brief Implicit conversion to vk::ImageView
+         * \return the vk::ImageView handle
+         */
+        operator vk::ImageView() const { return m_imageView; }
 
         /**
          * \brief Returns the underlying Vulkan image

@@ -132,7 +132,7 @@ int main() {
             LavaCake::DynamicRenderingContext renderingContext = LavaCake::DynamicRenderingContext::Builder()
                 .setRenderArea(device.getSwapchainExtent())
                 .addColorAttachment(
-                    swapchainImage.getView(),
+                    swapchainImage,
                     vk::ClearColorValue(std::array<float, 4>{0.39f, 0.58f, 0.93f, 1.0f})
                 )
                 .begin(cmdBuffer);
@@ -144,9 +144,8 @@ int main() {
             graphicPipeline.bind(cmdBuffer);
 
             // Bind the vertex buffer
-            vk::Buffer vkBuffer = vertexBuffer.getBuffer();
             vk::DeviceSize offset = 0;
-            cmdBuffer.getCommandBuffer().bindVertexBuffers(0, 1, &vkBuffer, &offset);
+            cmdBuffer.getCommandBuffer().bindVertexBuffers(0, 1, vertexBuffer, &offset);
 
             // Draw the triangle (3 vertices)
             graphicPipeline.draw(cmdBuffer, static_cast<uint32_t>(vertices.size()));

@@ -22,3 +22,4 @@ endfunction()
 # Add example subdirectories
 add_subdirectory(basic)
 add_subdirectory(compute)
+add_subdirectory(advanced)

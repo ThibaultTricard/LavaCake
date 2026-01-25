@@ -173,10 +173,10 @@ int main() {
 
         // Update descriptor set with our buffers
         LavaCake::DescriptorSetUpdater(device, descriptorSet)
-            .bindStorageBuffer(0, positionBuffer.getBuffer())
-            .bindStorageBuffer(1, colorBuffer.getBuffer())
-            .bindStorageBuffer(2, indexBuffer.getBuffer())
-            .bindUniformBuffer(3, transformBuffer.getBuffer(), 0, transformBuffer.size())
+            .bindStorageBuffer(0, positionBuffer)
+            .bindStorageBuffer(1, colorBuffer)
+            .bindStorageBuffer(2, indexBuffer)
+            .bindUniformBuffer(3, transformBuffer, 0, transformBuffer.size())
             .update();
 
         std::cout << "Descriptor set updated\n";
@@ -275,10 +275,10 @@ int main() {
             LavaCake::DynamicRenderingContext renderingContext = LavaCake::DynamicRenderingContext::Builder()
                 .setRenderArea(device.getSwapchainExtent())
                 .addColorAttachment(
-                    swapchainImage.getView(),
+                    swapchainImage,
                     vk::ClearColorValue(std::array<float, 4>{0.1f, 0.1f, 0.15f, 1.0f})
                 )
-                .setDepthAttachment(depthImageView.getImageView(), 1.0f)
+                .setDepthAttachment(depthImageView, 1.0f)
                 .begin(cmdBuffer);
 
             // Set the Viewport and Scissor

@@ -190,6 +190,14 @@ namespace LavaCake {
             return m_buffer;
         }
 
+        /**
+         * \brief Implicit conversion to vk::Buffer pointer
+         * \return pointer to the vk::Buffer handle
+         */
+        operator const vk::Buffer*() const{
+            return &m_buffer;
+        }
+
         private :
         VkDeviceSize                    m_size;         ///< Buffer size in bytes
         vk::Buffer                      m_buffer;       ///< The Vulkan buffer handle
