@@ -68,13 +68,43 @@ namespace LavaCake {
         }
 
         /**
+         * \brief Create a Shader Module from SPIR-V bytecode
+         * \param device the device on which the shader module will be created
+         * \param spirvCode pointer to the SPIR-V bytecode (as uint32_t array)
+         * \param sizeInBytes size of the SPIR-V bytecode in bytes
+         * \param stage the shader stage
+         */
+        ShaderModule(
+            LavaCake::Device& device,
+            const uint32_t* spirvCode,
+            size_t sizeInBytes,
+            const vk::ShaderStageFlagBits stage)
+        {
+            m_stage = stage;
+            m_lang = ShadingLanguage::eSPIRV;
+            m_device = device;
+
+            vk::ShaderModuleCreateInfo createInfo{};
+            createInfo.codeSize = sizeInBytes;
+            createInfo.pCode = spirvCode;
+
+            try {
+                m_shaderModule = m_device.getDevice().createShaderModule(createInfo);
+            } catch (vk::SystemError& err) {
+                throw std::runtime_error(
+                    "Failed to create shader module from SPIR-V: " + std::string(err.what())
+                );
+            }
+        }
+
+        /**
          * \brief Create a Shader Module from a shader file
          * \param device the device on which the buffer will be created
          * \param filepath the path of the shader
          * \param lang the shading language
          * \param stage the shading stage,
          * \param optimize does the shader need to be optimized
-         * \param macroDefinitions 
+         * \param macroDefinitions
          */
         ShaderModule(
             LavaCake::Device& device,

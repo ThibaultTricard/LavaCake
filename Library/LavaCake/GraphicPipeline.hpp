@@ -44,6 +44,9 @@ namespace LavaCake {
                 std::string entryPoint = "main";                            ///< Shader entry point function name
                 std::vector<vk::SpecializationMapEntry> specializationEntries; ///< Specialization constant entries
                 std::vector<uint8_t> specializationData;                    ///< Specialization constant data
+                const uint32_t* spirvCode = nullptr;                        ///< Pointer to embedded SPIR-V bytecode
+                size_t spirvSizeInBytes = 0;                                ///< Size of SPIR-V bytecode in bytes
+                bool fromBytecode = false;                                  ///< True if shader comes from bytecode, false if from file
             };
 
 
@@ -177,10 +180,46 @@ namespace LavaCake {
                     return *this;
                     break;
                 }
-                last->filepath =path;
+                last->filepath = path;
                 last->entryPoint = entry;
                 last->lang = language;
-            
+                last->fromBytecode = false;
+
+                return *this;
+            }
+
+            /**
+             * \brief Add a shader stage from embedded SPIR-V bytecode
+             * \param spirvCode pointer to the SPIR-V bytecode (as uint32_t array)
+             * \param sizeInBytes size of the SPIR-V bytecode in bytes
+             * \param type the shader stage type
+             * \param entry the entry point function name (default: "main")
+             * \return reference to this builder for method chaining
+             */
+            Builder& addShaderFromSpirvByteCode(const uint32_t* spirvCode,
+                                                size_t sizeInBytes,
+                                                vk::ShaderStageFlagBits type,
+                                                const std::string& entry = "main") {
+
+                switch (type)
+                {
+                case vk::ShaderStageFlagBits::eVertex: last = &m_vertexShaderCreateInfo; m_isSetVertex = true; break;
+                case vk::ShaderStageFlagBits::eTessellationControl: last = &m_tessellationControlShaderCreateInfo; m_isSetTessellationControl = true; break;
+                case vk::ShaderStageFlagBits::eTessellationEvaluation: last = &m_tessellationEvaluationShaderCreateInfo; m_isSetTessellationEvaluation = true; break;
+                case vk::ShaderStageFlagBits::eGeometry: last = &m_geometryShaderCreateInfo; m_isSetGeometry = true; break;
+                case vk::ShaderStageFlagBits::eFragment: last = &m_fragmentShaderCreateInfo; m_isSetFragment = true; break;
+                case vk::ShaderStageFlagBits::eTaskEXT: last = &m_taskShaderCreateInfo; m_isSetTask = true; break;
+                case vk::ShaderStageFlagBits::eMeshEXT: last = &m_meshShaderCreateInfo; m_isSetMesh = true; break;
+
+                default:
+                    return *this;
+                    break;
+                }
+                last->spirvCode = spirvCode;
+                last->spirvSizeInBytes = sizeInBytes;
+                last->entryPoint = entry;
+                last->fromBytecode = true;
+
                 return *this;
             }
 
@@ -452,14 +491,26 @@ namespace LavaCake {
                 std::vector<vk::PipelineShaderStageCreateInfo> shaderStages;
 
                 auto compileShader = [&shaderModules,&shaderStages](LavaCake::Device d, LavaCake::ShaderModule& m, vk::ShaderStageFlagBits type, ShaderModuleCreateInfo info){
-                    m = LavaCake::ShaderModule(
-                        d,
-                        info.filepath,
-                        info.lang,
-                        type,
-                        info.optimize,
-                        info.macro
-                    );
+                    if (info.fromBytecode) {
+                        // Create shader module from embedded SPIR-V bytecode
+                        m = LavaCake::ShaderModule(
+                            d,
+                            info.spirvCode,
+                            info.spirvSizeInBytes,
+                            type
+                        );
+                    } else {
+                        // Create shader module from file
+                        m = LavaCake::ShaderModule(
+                            d,
+                            info.filepath,
+                            info.lang,
+                            type,
+                            info.optimize,
+                            info.macro
+                        );
+                    }
+
                     vk::SpecializationInfo specializationInfo{};
                     if (!info.specializationEntries.empty()) {
                         specializationInfo.mapEntryCount = static_cast<uint32_t>(info.specializationEntries.size());

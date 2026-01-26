@@ -26,6 +26,10 @@ namespace LavaCake {
                 // Specialization constants
                 std::vector<vk::SpecializationMapEntry> specializationEntries;
                 std::vector<uint8_t> specializationData;
+                // For SPIR-V bytecode
+                const uint32_t* spirvCode = nullptr;
+                size_t spirvSizeInBytes = 0;
+                bool fromBytecode = false;
             };
 
             LavaCake::Device m_device;
@@ -64,9 +68,25 @@ namespace LavaCake {
             Builder& setShaderFromFile(const std::string& filepath, const LavaCake::ShadingLanguage language= ShadingLanguage::eGLSL , const std::string& entry = "main") {
                 m_shaderModuleCreateInfo.filepath = filepath;
                 m_shaderModuleCreateInfo.lang = language;
-
                 m_shaderModuleCreateInfo.entryPoint = entry;
-                
+                m_shaderModuleCreateInfo.fromBytecode = false;
+
+                return *this;
+            }
+
+            /**
+             * \brief Set the compute shader from SPIR-V bytecode
+             * \param spirvCode pointer to the SPIR-V bytecode (as uint32_t array)
+             * \param sizeInBytes size of the SPIR-V bytecode in bytes
+             * \param entry the entry point function name (default: "main")
+             * \return reference to this builder for method chaining
+             */
+            Builder& setShaderFromSpirvByteCode(const uint32_t* spirvCode, size_t sizeInBytes, const std::string& entry = "main") {
+                m_shaderModuleCreateInfo.spirvCode = spirvCode;
+                m_shaderModuleCreateInfo.spirvSizeInBytes = sizeInBytes;
+                m_shaderModuleCreateInfo.entryPoint = entry;
+                m_shaderModuleCreateInfo.fromBytecode = true;
+
                 return *this;
             }
 
@@ -193,8 +213,23 @@ namespace LavaCake {
                 ComputePipeline computePipeline(m_device);
 
                 //create Shader module;
-                
-                m_shaderModule= LavaCake::ShaderModule(m_device, m_shaderModuleCreateInfo.filepath, m_shaderModuleCreateInfo.lang, vk::ShaderStageFlagBits::eCompute, m_shaderModuleCreateInfo.optimize, m_shaderModuleCreateInfo.macro);
+                if (m_shaderModuleCreateInfo.fromBytecode) {
+                    m_shaderModule = LavaCake::ShaderModule(
+                        m_device,
+                        m_shaderModuleCreateInfo.spirvCode,
+                        m_shaderModuleCreateInfo.spirvSizeInBytes,
+                        vk::ShaderStageFlagBits::eCompute
+                    );
+                } else {
+                    m_shaderModule = LavaCake::ShaderModule(
+                        m_device,
+                        m_shaderModuleCreateInfo.filepath,
+                        m_shaderModuleCreateInfo.lang,
+                        vk::ShaderStageFlagBits::eCompute,
+                        m_shaderModuleCreateInfo.optimize,
+                        m_shaderModuleCreateInfo.macro
+                    );
+                }
                 
                 // 2. Create shader stage with specialization constants
                 vk::SpecializationInfo specializationInfo{};
