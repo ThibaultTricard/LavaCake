@@ -143,7 +143,7 @@ EXAMPLES_DIR="$BUILD_DIR/examples"
 
 if [[ -d "$EXAMPLES_DIR" ]]; then
     # Find executables in basic/, advanced/, and compute/ subdirectories
-    for subdir in basic advanced compute; do
+    for subdir in basic advanced compute imgui; do
         if [[ -d "$EXAMPLES_DIR/$subdir" ]]; then
             for exe in "$EXAMPLES_DIR/$subdir"/*; do
                 # Check if it's an executable file (not a directory, not a .cmake/.txt file)
