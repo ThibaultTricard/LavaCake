@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 project(LavaCake)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -166,7 +166,18 @@ target_include_directories(LavaCake INTERFACE
 # Note: shaderc includes are not added to the interface as they're in the build directory
 # Users will need to have their own shaderc installation
 target_compile_definitions(LavaCake INTERFACE VMA_VULKAN_HPP)
-target_link_libraries(LavaCake INTERFACE Vulkan::Vulkan)
+target_link_libraries(LavaCake INTERFACE
+    Vulkan::Vulkan
+    $<BUILD_INTERFACE:VulkanMemoryAllocator>
+    $<BUILD_INTERFACE:${SHADERC_LIB}>
+)
+
+# Add shaderc includes to interface (only when fetched from source)
+if(DEFINED SHADERC_INCLUDE_DIRS)
+    target_include_directories(LavaCake INTERFACE
+        $<BUILD_INTERFACE:${SHADERC_INCLUDE_DIRS}>
+    )
+endif()
 
 # Create an alias for consistent usage
 add_library(LavaCake::LavaCake ALIAS LavaCake)

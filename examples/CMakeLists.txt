@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 
 # Find required dependencies
 find_package(Vulkan REQUIRED)
@@ -15,8 +15,7 @@ add_compile_definitions(PROJECT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}/")
 # Helper function to create examples
 function(add_lavacake_example TARGET_NAME SOURCE_FILE)
     add_executable(${TARGET_NAME} ${SOURCE_FILE})
-    target_link_libraries(${TARGET_NAME} PRIVATE LavaCake::LavaCake glfw glm::glm VulkanMemoryAllocator ${SHADERC_LIB})
-    target_include_directories(${TARGET_NAME} PRIVATE ${SHADERC_INCLUDE_DIRS})
+    target_link_libraries(${TARGET_NAME} PRIVATE LavaCake::LavaCake glfw glm::glm)
 endfunction()
 
 # Add example subdirectories

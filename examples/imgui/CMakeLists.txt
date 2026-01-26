@@ -32,8 +32,5 @@ target_link_libraries(imgui_demo PRIVATE
     LavaCake::LavaCake
     glfw
     glm::glm
-    VulkanMemoryAllocator
-    ${SHADERC_LIB}
     imgui_glfw
 )
-target_include_directories(imgui_demo PRIVATE ${SHADERC_INCLUDE_DIRS})
