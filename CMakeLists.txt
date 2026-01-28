@@ -39,48 +39,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(VulkanMemoryAllocator)
 
 # === SHADERC DETECTION ===
-set(SHADERC_FOUND FALSE)
 
-if(DEFINED SHADERC_ROOT)
-    # Use custom shaderc build
-    find_library(SHADERC_LIB
-        NAMES shaderc_combined
-        PATHS ${SHADERC_ROOT}/lib
-        NO_DEFAULT_PATH
-        REQUIRED
-    )
-    
-    include_directories(${SHADERC_ROOT}/include)
-    set(SHADERC_FOUND TRUE)
-    message(STATUS "Using custom shaderc: ${SHADERC_LIB}")
-else()
-    # === OPTION 2: Try system shaderc ===
-    find_package(unofficial-shaderc CONFIG QUIET)
-    
-    if(unofficial-shaderc_FOUND)
-        set(SHADERC_LIB unofficial::shaderc::shaderc)
-        set(SHADERC_FOUND TRUE)
-        message(STATUS "Using system shaderc package")
-    else()
-        # Try to find in Vulkan SDK
-        find_library(SHADERC_LIB 
-            NAMES shaderc_combined shaderc
-            PATHS 
-                ${Vulkan_LIBRARY_DIR}
-                $ENV{VULKAN_SDK}/Lib
-                $ENV{VULKAN_SDK}/lib
-        )
-        
-        if(SHADERC_LIB)
-            set(SHADERC_FOUND TRUE)
-            message(STATUS "Using Vulkan SDK shaderc: ${SHADERC_LIB}")
-            # Add include directory
-            if(EXISTS "$ENV{VULKAN_SDK}/include")
-                include_directories($ENV{VULKAN_SDK}/include)
-            endif()
-        endif()
-    endif()
-endif()
+#TODO Try to find shaderc locally
+set(SHADERC_FOUND false)
 
 
 # If shaderc not found, fetch it from source
@@ -148,7 +109,7 @@ if(NOT SHADERC_FOUND)
     
     set(SHADERC_LIB shaderc_combined)
     message(STATUS "Using fetched shaderc with dependencies")
-     message(STATUS "  Include dir: ${SHADERC_INCLUDE_DIRS}")
+    message(STATUS "  Include dir: ${SHADERC_INCLUDE_DIRS}")
 endif()
 
 
