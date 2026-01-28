@@ -360,7 +360,7 @@ int main() {
             .setBindlessVertexInput()
             .addDescriptorSetLayout(shadowDescLayout)
             .addPushConstantRange(vk::ShaderStageFlagBits::eVertex, 0, sizeof(ShadowPushConstant))
-            .setCullMode(vk::CullModeFlagBits::eFront)
+            .setCullMode(vk::CullModeFlagBits::eNone)
             .build();
 
         // Scene pipeline
@@ -373,7 +373,7 @@ int main() {
             .setBindlessVertexInput()
             .addDescriptorSetLayout(sceneDescLayout0)
             .addDescriptorSetLayout(sceneDescLayout1)
-            .setCullMode(vk::CullModeFlagBits::eBack)
+            .setCullMode(vk::CullModeFlagBits::eNone)
             .build();
 
         std::cout << "Pipelines created\n";
@@ -436,7 +436,7 @@ int main() {
             for (uint32_t i = 0; i < NUM_LIGHTS; i++) {
                 float angle = time * (0.5f + i * 0.2f) + i * (glm::pi<float>() / 2.0f);
                 float radius = 4.0f;
-                float height = 3.0f + std::sin(time + i) * 0.5f;
+                float height = 4.0f;
 
                 sceneData.lights[i].position = glm::vec4(
                     radius * std::cos(angle),
@@ -448,7 +448,7 @@ int main() {
 
                 // Compute light space matrix for shadow mapping
                 glm::vec3 lightPos = glm::vec3(sceneData.lights[i].position);
-                glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, 25.0f);
+                glm::mat4 lightProjection = glm::perspective(glm::radians(140.0f), 1.0f, 1.0f, 25.0f);
                 lightProjection[1][1] *= -1;  // Flip Y for Vulkan
                 glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
                 sceneData.lights[i].lightSpaceMatrix = lightProjection * lightView;
@@ -492,21 +492,15 @@ int main() {
                 shadowContext.setScissor(cmdBuffer, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
 
                 shadowPipeline.bind(cmdBuffer);
-                cmdBuffer.getCommandBuffer().bindDescriptorSets(
-                    vk::PipelineBindPoint::eGraphics,
-                    shadowPipeline.getLayout(),
-                    0, {shadowDescSet}, {}
-                );
 
+                shadowPipeline.bindDescriptorSets(cmdBuffer, {shadowDescSet});
+              
                 // Push light space matrix
                 ShadowPushConstant pushData;
                 pushData.lightSpaceMatrix = sceneData.lights[lightIdx].lightSpaceMatrix;
                 pushData.lightIndex = lightIdx;
-                cmdBuffer.getCommandBuffer().pushConstants(
-                    shadowPipeline.getLayout(),
-                    vk::ShaderStageFlagBits::eVertex,
-                    0, sizeof(ShadowPushConstant), &pushData
-                );
+
+                shadowPipeline.pushConstants<ShadowPushConstant>(cmdBuffer,vk::ShaderStageFlagBits::eVertex,  0, pushData);
 
                 shadowPipeline.draw(cmdBuffer, static_cast<uint32_t>(indices.size()));
 
@@ -535,11 +529,8 @@ int main() {
             sceneContext.setDefaultViewportScissor(cmdBuffer);
 
             scenePipeline.bind(cmdBuffer);
-            cmdBuffer.getCommandBuffer().bindDescriptorSets(
-                vk::PipelineBindPoint::eGraphics,
-                scenePipeline.getLayout(),
-                0, {sceneDescSet0, sceneDescSet1}, {}
-            );
+            scenePipeline.bindDescriptorSets(cmdBuffer,{sceneDescSet0, sceneDescSet1} );
+           
             scenePipeline.draw(cmdBuffer, static_cast<uint32_t>(indices.size()));
 
             sceneContext.end(cmdBuffer);
@@ -555,8 +546,7 @@ int main() {
             submitInfo.pWaitSemaphores = &imageAvailableSemaphores[currentFrame];
             submitInfo.pWaitDstStageMask = &waitStage;
             submitInfo.commandBufferCount = 1;
-            vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
-            submitInfo.pCommandBuffers = &rawCmd;
+            submitInfo.pCommandBuffers = cmdBuffer;
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 

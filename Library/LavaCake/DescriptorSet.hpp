@@ -163,6 +163,7 @@ namespace LavaCake{
             }
 
 
+            //TODO check if bindles can be determined automatiquement 
             /**
              * \brief Enable bindless rendering for the current binding (large array with partial binding)
              * \param maxDescriptors the maximum number of descriptors (default: 10000)
