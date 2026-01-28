@@ -597,6 +597,7 @@ namespace LavaCake {
             return *this;
         }
 
+
         /**
          * \brief Create a sampler with specified parameters
          * \param device The device on which to create the sampler
@@ -626,7 +627,42 @@ namespace LavaCake {
                 vk::SamplerAddressMode addressModeW = vk::SamplerAddressMode::eRepeat
                 )
         {
-            init(device, magFilter, minFilter, addressModeU, addressModeV, addressModeW,
+            init(device, device.getPhysicalDevice().getProperties(), magFilter, minFilter, addressModeU, addressModeV, addressModeW,
+                 anisotropyEnable, maxAnisotropy, mipmapMode, minLod, maxLod, mipLodBias);
+        }
+
+        /**
+         * \brief Create a sampler with specified parameters
+         * \param device The device on which to create the sampler
+         * \param properties The physica device properties
+         * \param mipmapMode Mipmap filtering mode
+         * \param minLod Minimum LOD level
+         * \param maxLod Maximum LOD level
+         * \param mipLodBias LOD bias
+         * \param anisotropyEnable Enable anisotropic filtering
+         * \param maxAnisotropy Maximum anisotropy level
+         * \param magFilter Magnification filter
+         * \param minFilter Minification filter
+         * \param addressModeU U coordinate addressing mode
+         * \param addressModeV V coordinate addressing mode
+         * \param addressModeW W coordinate addressing mode
+         */
+        Sampler(const vk::Device& device,
+                const vk::PhysicalDeviceProperties& properties,
+                vk::SamplerMipmapMode mipmapMode = vk::SamplerMipmapMode::eLinear,
+                float minLod = 0.0f,
+                float maxLod = VK_LOD_CLAMP_NONE,
+                float mipLodBias = 0.0f,
+                bool anisotropyEnable = true,
+                float maxAnisotropy = 16.0f,
+                vk::Filter magFilter = vk::Filter::eLinear,
+                vk::Filter minFilter = vk::Filter::eLinear,
+                vk::SamplerAddressMode addressModeU = vk::SamplerAddressMode::eRepeat,
+                vk::SamplerAddressMode addressModeV = vk::SamplerAddressMode::eRepeat,
+                vk::SamplerAddressMode addressModeW = vk::SamplerAddressMode::eRepeat
+                )
+        {
+            init(device, properties, magFilter, minFilter, addressModeU, addressModeV, addressModeW,
                  anisotropyEnable, maxAnisotropy, mipmapMode, minLod, maxLod, mipLodBias);
         }
 
@@ -635,9 +671,9 @@ namespace LavaCake {
          * \param device the device on which to create the sampler
          * \param createInfo the sampler creation parameters
          */
-        Sampler(const LavaCake::Device& device, const vk::SamplerCreateInfo& createInfo) {
+        Sampler(const vk::Device& device, const vk::SamplerCreateInfo& createInfo) {
             m_device = device;
-            m_sampler = m_device.getDevice().createSampler(createInfo);
+            m_sampler = m_device.createSampler(createInfo);
             //std::cout << "Sampler created.\n";
         }
 
@@ -668,11 +704,12 @@ namespace LavaCake {
 
     private:
         vk::Sampler m_sampler;                  ///< The Vulkan sampler handle
-        LavaCake::Device m_device;              ///< Associated device
+        vk::Device m_device;                    ///< Associated device
 
         /**
          * \brief Initialize the sampler with specified parameters
          * \param device the device on which to create the sampler
+         * \param properties The physica device properties
          * \param magFilter magnification filter
          * \param minFilter minification filter
          * \param addressModeU U coordinate addressing mode
@@ -685,7 +722,8 @@ namespace LavaCake {
          * \param maxLod maximum LOD level
          * \param mipLodBias LOD bias
          */
-        void init(const LavaCake::Device& device,
+        void init(const vk::Device& device,
+                 const vk::PhysicalDeviceProperties& properties,
                  vk::Filter magFilter,
                  vk::Filter minFilter,
                  vk::SamplerAddressMode addressModeU,
@@ -700,8 +738,6 @@ namespace LavaCake {
         {
             m_device = device;
 
-            // Clamp anisotropy to device limits
-            vk::PhysicalDeviceProperties properties = m_device.getPhysicalDevice().getProperties();
             if (anisotropyEnable && maxAnisotropy > properties.limits.maxSamplerAnisotropy) {
                 maxAnisotropy = properties.limits.maxSamplerAnisotropy;
             }
@@ -723,7 +759,7 @@ namespace LavaCake {
             samplerInfo.minLod = minLod;
             samplerInfo.maxLod = maxLod;
 
-            m_sampler = m_device.getDevice().createSampler(samplerInfo);
+            m_sampler = m_device.createSampler(samplerInfo);
             //std::cout << "Sampler created.\n";
         }
 
@@ -732,7 +768,7 @@ namespace LavaCake {
          */
         void cleanup() {
             if (m_sampler) {
-                m_device.getDevice().destroySampler(m_sampler);
+                m_device.destroySampler(m_sampler);
                 m_sampler = VK_NULL_HANDLE;
             }
         }
