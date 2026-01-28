@@ -357,10 +357,37 @@ namespace LavaCake{
         vk::DescriptorSetLayout getLayout() const { return m_layout; }
 
         /**
+         * \brief Returns the underlying Vulkan descriptor set layout
+         * \return the vk::DescriptorSetLayout&
+         */
+        vk::DescriptorSetLayout& getLayout() { return m_layout; }
+
+
+        /**
          * \brief Implicit conversion operator to vk::DescriptorSetLayout
          * \return the vk::DescriptorSetLayout
          */
         operator vk::DescriptorSetLayout() const { return m_layout; }
+
+        /**
+         * \brief Implicit conversion operator to vk::DescriptorSetLayout
+         * \return the vk::DescriptorSetLayout&
+         */
+        operator vk::DescriptorSetLayout&() { return m_layout; }
+
+
+        /**
+         * \brief Implicit conversion operator to const vk::DescriptorSetLayout
+         * \return the cosnt vk::DescriptorSetLayout
+         */
+        operator const vk::DescriptorSetLayout() const { return m_layout; }
+
+        /**
+         * \brief Implicit conversion operator to const vk::DescriptorSetLayout&
+         * \return the const vk::DescriptorSetLayout&
+         */
+        operator const vk::DescriptorSetLayout&() const { return m_layout; }
+
 
         /**
          * \brief Get binding information for validation

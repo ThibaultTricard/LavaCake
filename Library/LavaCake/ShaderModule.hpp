@@ -75,7 +75,7 @@ namespace LavaCake {
          * \param stage the shader stage
          */
         ShaderModule(
-            LavaCake::Device& device,
+            const vk::Device& device,
             const uint32_t* spirvCode,
             size_t sizeInBytes,
             const vk::ShaderStageFlagBits stage)
@@ -89,7 +89,7 @@ namespace LavaCake {
             createInfo.pCode = spirvCode;
 
             try {
-                m_shaderModule = m_device.getDevice().createShaderModule(createInfo);
+                m_shaderModule = m_device.createShaderModule(createInfo);
             } catch (vk::SystemError& err) {
                 throw std::runtime_error(
                     "Failed to create shader module from SPIR-V: " + std::string(err.what())
@@ -107,7 +107,7 @@ namespace LavaCake {
          * \param macroDefinitions
          */
         ShaderModule(
-            LavaCake::Device& device,
+            const vk::Device& device,
             const std::string& filepath,
             const ShadingLanguage lang,
             const vk::ShaderStageFlagBits stage,
@@ -148,7 +148,7 @@ namespace LavaCake {
 
         ~ShaderModule(){
             if (m_shaderModule) {
-                m_device.getDevice().destroyShaderModule(m_shaderModule);
+                m_device.destroyShaderModule(m_shaderModule);
             }
         }
 
@@ -161,7 +161,7 @@ namespace LavaCake {
     bool                            m_optimize;
     std::vector<std::string>        m_macroDefinitions;
 
-    LavaCake::Device                m_device;
+    vk::Device                      m_device;
 
     /**
      * \brief Convert Vulkan shader stage to shaderc shader kind
@@ -246,7 +246,7 @@ namespace LavaCake {
             
             
             try {
-                return m_device.getDevice().createShaderModule(createInfo);
+                return m_device.createShaderModule(createInfo);
                 std::cout<<"loaded"<< std::endl;
             } catch (vk::SystemError& err) {
                 throw std::runtime_error(

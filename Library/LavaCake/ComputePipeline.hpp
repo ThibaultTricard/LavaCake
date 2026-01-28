@@ -32,7 +32,7 @@ namespace LavaCake {
                 bool fromBytecode = false;
             };
 
-            LavaCake::Device m_device;
+            vk::Device m_device;
             
 
             // Shader
@@ -54,7 +54,7 @@ namespace LavaCake {
              * \brief Constructs a Builder for a ComputePipeline
              * \param dev the device on which the compute pipeline will be created
              */
-            Builder(LavaCake::Device& dev) : m_device(dev){
+            Builder(const vk::Device& dev) : m_device(dev){
 
             }
 
@@ -115,8 +115,8 @@ namespace LavaCake {
              * \param layout the descriptor set layout to add
              * \return reference to this builder for method chaining
              */
-            Builder& addDescriptorSetLayout(LavaCake::DescriptorSetLayout& layout) {
-                m_descriptorLayouts.push_back(layout.getLayout());
+            Builder& addDescriptorSetLayout(const vk::DescriptorSetLayout& layout) {
+                m_descriptorLayouts.push_back(layout);
                 return *this;
             }
 
@@ -256,7 +256,7 @@ namespace LavaCake {
                 pipelineInfo.stage = shaderStage;
                 pipelineInfo.layout = computePipeline.getLayout();
                 
-                auto result = m_device.getDevice().createComputePipeline(cache, pipelineInfo);
+                auto result = m_device.createComputePipeline(cache, pipelineInfo);
                 if (result.result != vk::Result::eSuccess) {
                     throw std::runtime_error("Failed to create compute pipeline!");
                 }
@@ -272,7 +272,7 @@ namespace LavaCake {
          * \brief Constructs a ComputePipeline
          * \param dev the device on which the compute pipeline will be created
          */
-        ComputePipeline(LavaCake::Device& dev)
+        ComputePipeline(const vk::Device& dev)
             : Pipeline(dev, vk::PipelineBindPoint::eCompute) {}
 
         /**

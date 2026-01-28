@@ -12,7 +12,7 @@ namespace LavaCake{
  */
 class Pipeline {
     protected:
-        LavaCake::Device m_device;
+        vk::Device m_device;
         vk::Pipeline m_pipeline;
         vk::PipelineLayout m_pipelineLayout;
         vk::PipelineBindPoint m_bindPoint;
@@ -29,7 +29,7 @@ class Pipeline {
          * \param dev the device on which the pipeline will be created
          * \param bp the pipeline bind point (graphics, compute, or ray tracing)
          */
-        Pipeline(const LavaCake::Device dev, vk::PipelineBindPoint bp)
+        Pipeline(const vk::Device dev, vk::PipelineBindPoint bp)
             : m_bindPoint(bp) {
                 m_device = dev;
             }
@@ -158,11 +158,11 @@ class Pipeline {
          */
         void cleanup() {
             if (m_pipeline) {
-                m_device.getDevice().destroyPipeline(m_pipeline);
+                m_device.destroyPipeline(m_pipeline);
                 m_pipeline = nullptr;
             }
             if (m_pipelineLayout) {
-                m_device.getDevice().destroyPipelineLayout(m_pipelineLayout);
+                m_device.destroyPipelineLayout(m_pipelineLayout);
                 m_pipelineLayout = nullptr;
             }
             m_descriptorSetLayouts.clear();
@@ -185,7 +185,7 @@ class Pipeline {
             layoutInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size());
             layoutInfo.pPushConstantRanges = pushConstants.data();
             
-            m_pipelineLayout = m_device.getDevice().createPipelineLayout(layoutInfo);
+            m_pipelineLayout = m_device.createPipelineLayout(layoutInfo);
         }
     };
 }

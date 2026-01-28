@@ -208,17 +208,15 @@ int main() {
 
         // Transition depth image to optimal layout (one-time operation)
         {
-            vk::CommandBuffer cmd = device.allocateCommandBuffer();
-            vk::CommandBufferBeginInfo beginInfo{};
-            beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-            cmd.begin(beginInfo);
+            LavaCake::CommandBuffer cmd(device);
+            cmd.begin();
 
             depthImage.transitionLayout(cmd, vk::ImageLayout::eUndefined, vk::ImageLayout::eDepthStencilAttachmentOptimal);
 
             cmd.end();
             vk::SubmitInfo submitInfo{};
             submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &cmd;
+            submitInfo.pCommandBuffers = cmd;
             device.getGraphicQueue(0).submit(submitInfo);
             device.getGraphicQueue(0).waitIdle();
             device.freeCommandBuffer(cmd);

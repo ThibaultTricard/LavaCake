@@ -490,7 +490,7 @@ namespace LavaCake {
                 std::vector<vk::ShaderModule> shaderModules;
                 std::vector<vk::PipelineShaderStageCreateInfo> shaderStages;
 
-                auto compileShader = [&shaderModules,&shaderStages](LavaCake::Device d, LavaCake::ShaderModule& m, vk::ShaderStageFlagBits type, ShaderModuleCreateInfo info){
+                auto compileShader = [&shaderModules,&shaderStages](LavaCake::Device& d, LavaCake::ShaderModule& m, vk::ShaderStageFlagBits type, ShaderModuleCreateInfo info){
                     if (info.fromBytecode) {
                         // Create shader module from embedded SPIR-V bytecode
                         m = LavaCake::ShaderModule(

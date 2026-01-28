@@ -27,7 +27,8 @@ namespace LavaCake {
             m_size(std::exchange(b.m_size, 0)),
             m_data(std::exchange(b.m_data, nullptr)),
             m_mapped(std::exchange(b.m_mapped, false)),
-            m_device(b.m_device)
+            m_device(b.m_device),
+            m_allocator(b.m_allocator)
         {}
 
         /**
@@ -43,6 +44,7 @@ namespace LavaCake {
             m_data=std::exchange(b.m_data, nullptr);
             m_mapped=std::exchange(b.m_mapped, false);
             m_device = b.m_device;
+            m_allocator = b.m_allocator;
             }
             return *this;
         }
@@ -55,10 +57,21 @@ namespace LavaCake {
          * \param usage the buffer usage
          * \param memoryFlags the memory requirements
          */
-        Buffer(const LavaCake::Device& device, VkDeviceSize size, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags= vk::AllocationCreateFlagBits::eCreateDedicatedMemory){
-           init(device,size,usage,memoryFlags);
-        }
+        Buffer(const LavaCake::Device& device, VkDeviceSize size, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags= vk::AllocationCreateFlagBits::eCreateDedicatedMemory) : 
+            Buffer(device, device.getAllocator(), size,  usage,  memoryFlags){}
 
+
+        /**
+         * \brief Create and allocate a buffer
+         * \param device the device on which the buffer will be created
+         * \param allocator the vma allocator which will be used to allocate the buffer 
+         * \param size the size of the buffer in byte
+         * \param usage the buffer usage
+         * \param memoryFlags the memory requirements
+         */
+        Buffer(const vk::Device& device, const VmaAllocator& allocator, VkDeviceSize size, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags= vk::AllocationCreateFlagBits::eCreateDedicatedMemory){
+           init(device, allocator, size,usage,memoryFlags);
+        }
 
         /**
          * \brief Create and allocate a buffer wiht predefined data using a throw away staging buffer
@@ -67,31 +80,46 @@ namespace LavaCake {
          * \param usage the buffer usage
          * \param memoryFlags the memory requirements
          */
+
         template <std::ranges::contiguous_range Range>
-        Buffer(const LavaCake::Device& device, const Range& data, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags = vk::AllocationCreateFlagBits::eCreateDedicatedMemory) {
+        Buffer(const LavaCake::Device& device, const Range& data, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags = vk::AllocationCreateFlagBits::eCreateDedicatedMemory) : 
+            Buffer(device, device.getAllocator(), device.getAnyQueue(), device.getCommandPool() , data,  usage,  memoryFlags){}
+
+
+        /**
+         * \brief Create and allocate a buffer wiht predefined data using a throw away staging buffer
+         * \param device the device on which the buffer will be created
+         * \param allocator the vma allocator which will be used to allocate the buffer 
+         * \param queue the queue that will be used to copy the data to the buffer 
+         * \param commandPool the commandPool that will be used to create the commandbuffer used for the copy operation 
+         * \param data the data to initialize the buffer with
+         * \param usage the buffer usage
+         * \param memoryFlags the memory requirements
+         */
+        template <std::ranges::contiguous_range Range>
+        Buffer(const vk::Device& device, const VmaAllocator& allocator, const vk::Queue& queue, const vk::CommandPool& commandPool, const Range& data, vk::BufferUsageFlags usage, vk::AllocationCreateFlags memoryFlags = vk::AllocationCreateFlagBits::eCreateDedicatedMemory) {
             using T = std::ranges::range_value_t<Range>;
             vk::DeviceSize bufferSize = std::ranges::size(data) * sizeof(T);
             if(memoryFlags & vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite){
-                init(device,bufferSize,usage,memoryFlags);
+                init(device,allocator,bufferSize,usage,memoryFlags);
                 map();
                 memcpy(m_data, std::ranges::data(data), m_size);
                 unmap();
             }else{
 
-                init(device,bufferSize,usage | vk::BufferUsageFlagBits::eTransferDst,memoryFlags);
-                Buffer staging(device, bufferSize, usage | vk::BufferUsageFlagBits::eTransferSrc, memoryFlags | vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
+                init(device,allocator,bufferSize,usage | vk::BufferUsageFlagBits::eTransferDst,memoryFlags);
+                Buffer staging(device,allocator, bufferSize, usage | vk::BufferUsageFlagBits::eTransferSrc, memoryFlags | vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
 
                 void* staggingMemory = staging.map();
                 // Copy data
                 memcpy(staggingMemory, std::ranges::data(data), bufferSize);
                 staging.unmap();
 
-                
-                vk::CommandBuffer cmd = device.allocateCommandBuffer();
 
-                vk::CommandBufferBeginInfo beginInfo{};
-                beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-                cmd.begin(beginInfo);
+                auto cmd = LavaCake::CommandBuffer(device,commandPool,false);
+
+                
+                cmd.begin();
 
                 copyFromBuffer(cmd,staging);
 
@@ -99,12 +127,10 @@ namespace LavaCake {
 
                 vk::SubmitInfo submitInfo{};
                 submitInfo.commandBufferCount = 1;
-                submitInfo.pCommandBuffers = &cmd;
-                auto queue = device.getAnyQueue();
+                submitInfo.pCommandBuffers = cmd;
                 queue.submit(submitInfo);
                 queue.waitIdle();
 
-                device.freeCommandBuffer( cmd);
             }
         }
 
@@ -148,7 +174,7 @@ namespace LavaCake {
             if(m_mapped){
                 return m_data;
             }else{
-                vmaMapMemory(m_device.getAllocator(), m_allocation, &m_data); 
+                vmaMapMemory(m_allocator, m_allocation, &m_data); 
                 m_mapped = true;
                 return m_data;
             }
@@ -159,7 +185,7 @@ namespace LavaCake {
          */
         void unmap(){
             if(m_mapped){
-                vmaUnmapMemory(m_device.getAllocator(), m_allocation); 
+                vmaUnmapMemory(m_allocator, m_allocation); 
                 m_mapped = false;
             }
         }
@@ -171,7 +197,7 @@ namespace LavaCake {
             if(m_mapped){
                 unmap();
             }
-            vmaDestroyBuffer(m_device.getAllocator(), m_buffer, m_allocation);
+            vmaDestroyBuffer(m_allocator, m_buffer, m_allocation);
         }
 
         /**
@@ -206,24 +232,27 @@ namespace LavaCake {
         void*                           m_data;         ///< Mapped memory pointer
         bool                            m_mapped = false; ///< Whether the buffer is currently mapped
 
-        LavaCake::Device                m_device = LavaCake::Device(); ///< Associated device
+        vk::Device                      m_device;        ///< Associated device
+        VmaAllocator                    m_allocator;     ///< Associated allocator
 
 
         /**
          * \brief Create and allocate a buffer 
          * This is only to be called by the constructor of the class
          * \param device the device on which the buffer will be created
+         * \param allocator the vma allocator which will be used to allocate the buffer 
          * \param size the size of the buffer in byte
          * \param usage the buffer usage
          * \param memoryFlags the memory requirements
          */
 
-        void init(const LavaCake::Device& device, VkDeviceSize size, vk::BufferUsageFlags usage,  vk::AllocationCreateFlags memoryFlags){
+        void init(const vk::Device& device, VmaAllocator allocator,  VkDeviceSize size, vk::BufferUsageFlags usage,  vk::AllocationCreateFlags memoryFlags){
             m_size = size;
             vk::BufferCreateInfo bufferInfo{};
             bufferInfo.size = size;
             bufferInfo.usage = usage;
             bufferInfo.sharingMode = vk::SharingMode::eExclusive;
+            m_allocator = allocator;
 
             VmaAllocationCreateInfo allocInfo{};
             allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
@@ -232,7 +261,7 @@ namespace LavaCake {
             VkBuffer buffer;
 
             if (vmaCreateBuffer(
-                    device.getAllocator(),
+                    m_allocator,
                     reinterpret_cast<VkBufferCreateInfo*>(&bufferInfo),
                     &allocInfo,
                     &buffer,

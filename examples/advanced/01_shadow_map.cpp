@@ -345,10 +345,8 @@ int main() {
 
         // Transition depth images
         {
-            vk::CommandBuffer cmd = device.allocateCommandBuffer();
-            vk::CommandBufferBeginInfo beginInfo{};
-            beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-            cmd.begin(beginInfo);
+            LavaCake::CommandBuffer cmd (device);
+            cmd.begin();
 
             // Shadow map starts in shader read layout for the render loop transition logic
             shadowMapImage.transitionLayout(cmd, vk::ImageLayout::eUndefined, vk::ImageLayout::eShaderReadOnlyOptimal);
@@ -357,7 +355,7 @@ int main() {
             cmd.end();
             vk::SubmitInfo submitInfo{};
             submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &cmd;
+            submitInfo.pCommandBuffers = cmd;
             device.getGraphicQueue(0).submit(submitInfo);
             device.getGraphicQueue(0).waitIdle();
             device.freeCommandBuffer(cmd);

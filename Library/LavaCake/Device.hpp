@@ -52,13 +52,13 @@ namespace LavaCake {
      * \param pUserData optional user data pointer
      * \return VK_FALSE to continue execution
      */
-    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+    VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT* data,
     void* pUserData)
 {
-        if(data->messageIdNumber != 0)
+        if(data->messageIdNumber == 0 || data->messageIdNumber == 2044605652) return VK_FALSE;
         std::cerr << "Validation: " << data->messageIdNumber  << " Message: "<< data->pMessage << std::endl;
         return VK_FALSE;
 }
@@ -375,36 +375,6 @@ namespace LavaCake {
         }
 
         /**
-        * \brief Allocates and returns a Command Buffer 
-        * the command buffer is the reponsability of the calling function,
-        * it will not be destroyed by the device
-        * \return a vk::CommandBuffer
-        */
-
-        vk::CommandBuffer allocateCommandBuffer() const{
-            vk::CommandBufferAllocateInfo allocInfo{};
-            allocInfo.commandPool = m_commandPool;
-            allocInfo.level = vk::CommandBufferLevel::ePrimary;
-            allocInfo.commandBufferCount = 1;
-            return m_device.allocateCommandBuffers(allocInfo)[0];
-        }
-
-        /**
-        * \brief Allocates and returns multiple Command Buffers
-        * the command buffers are the responsibility of the calling function,
-        * they will not be destroyed by the device
-        * \param number the number of command buffers to allocate
-        * \return a std::vector of vk::CommandBuffer
-        */
-        std::vector<vk::CommandBuffer> allocateCommandBuffers(uint32_t number){
-            vk::CommandBufferAllocateInfo allocInfo{};
-            allocInfo.commandPool = m_commandPool;
-            allocInfo.level = vk::CommandBufferLevel::ePrimary;
-            allocInfo.commandBufferCount = number;
-            return m_device.allocateCommandBuffers(allocInfo);
-        }
-
-        /**
         * \brief Frees a Command Buffer 
         * \param cmd the command buffer to free
         */
@@ -503,6 +473,15 @@ namespace LavaCake {
             }
             m_instance.destroyDebugUtilsMessengerEXT(m_debugMessenger);
             m_instance.destroy();
+        }
+
+
+        /**
+         * \brief Implicit conversion to vk::Device
+         * \return the vk::Device handle
+         */
+        operator vk::Device() const{
+            return m_device;
         }
 
     private:

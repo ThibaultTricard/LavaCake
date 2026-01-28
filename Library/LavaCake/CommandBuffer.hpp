@@ -50,6 +50,7 @@ namespace LavaCake
             : m_cmd(other.m_cmd)
             , m_fence(other.m_fence)
             , m_device(other.m_device)
+            , m_commandPool(other.m_commandPool)
             , m_submitted(other.m_submitted)
             , m_hasFence(other.m_hasFence)
         {
@@ -67,6 +68,7 @@ namespace LavaCake
                 m_cmd = other.m_cmd;
                 m_fence = other.m_fence;
                 m_device = other.m_device;
+                m_commandPool = other.m_commandPool;
                 m_submitted = other.m_submitted;
                 m_hasFence = other.m_hasFence;
                 other.m_fence = nullptr;
@@ -81,17 +83,33 @@ namespace LavaCake
          * \param device the device on which the command buffer will be created
          * \param createFence whether to create a fence for synchronization
          */
-        CommandBuffer(const Device& device, bool createFence = false)
+        CommandBuffer(const LavaCake::Device& device, bool createFence = false)
+            : CommandBuffer(device, device.getCommandPool(), createFence) { }
+
+
+        /**
+         * \brief Constructor with device and optional fence
+         * \param device the device on which the command buffer will be created
+         * \param commandPool the commandpool used to create the command Buffer
+         * \param createFence whether to create a fence for synchronization
+         */
+        CommandBuffer(const vk::Device& device, const vk::CommandPool commandPool, bool createFence = false)
             : m_device(device)
+            , m_commandPool(commandPool)
             , m_hasFence(createFence)
         {
-            m_cmd = m_device.allocateCommandBuffer();
+            vk::CommandBufferAllocateInfo allocInfo{};
+            allocInfo.commandPool = m_commandPool;
+            allocInfo.level = vk::CommandBufferLevel::ePrimary;
+            allocInfo.commandBufferCount = 1;
+            m_cmd = m_device.allocateCommandBuffers(allocInfo)[0];
 
             if (createFence) {
                 vk::FenceCreateInfo fenceInfo{};
-                m_fence = m_device.getDevice().createFence(fenceInfo);
+                m_fence = m_device.createFence(fenceInfo);
             }
         }
+
 
         /**
          * \brief Begin recording commands
@@ -133,7 +151,7 @@ namespace LavaCake
          */
         vk::Result waitForCompletion(uint64_t timeout = UINT64_MAX) {
             if (m_hasFence && m_submitted) {
-                return m_device.getDevice().waitForFences(m_fence, VK_TRUE, timeout);
+                return m_device.waitForFences(m_fence, VK_TRUE, timeout);
             }
             return vk::Result::eSuccess;
         }
@@ -146,7 +164,7 @@ namespace LavaCake
             if (!m_hasFence || !m_submitted) {
                 return true;
             }
-            vk::Result result = m_device.getDevice().getFenceStatus(m_fence);
+            vk::Result result = m_device.getFenceStatus(m_fence);
             return result == vk::Result::eSuccess;
         }
 
@@ -155,7 +173,7 @@ namespace LavaCake
          */
         void reset() {
             if (m_hasFence) {
-                m_device.getDevice().resetFences(m_fence);
+                m_device.resetFences(m_fence);
             }
             m_cmd.reset();
             m_submitted = false;
@@ -187,6 +205,16 @@ namespace LavaCake
         }
 
         /**
+         * \brief Implicit conversion to const vk::CommandBuffer* (const pointer)
+         * Allows passing CommandBuffer to functions expecting vk::CommandBuffer*
+         * \return reference to the vk::CommandBuffer handle
+         */
+        operator const vk::CommandBuffer*() const{
+            return &m_cmd;
+        }
+
+
+        /**
          * \brief Destructor - cleans up fence and command buffer
          */
         ~CommandBuffer() {
@@ -196,7 +224,8 @@ namespace LavaCake
     private:
         vk::CommandBuffer m_cmd;           ///< The Vulkan command buffer
         vk::Fence m_fence;                 ///< Fence for synchronization
-        Device m_device;                   ///< Associated device
+        vk::Device m_device;               ///< Associated device
+        vk::CommandPool m_commandPool;     ///< Associated device
         bool m_submitted = false;          ///< Whether the command buffer has been submitted
         bool m_hasFence = false;           ///< Whether a fence was created
 
@@ -207,13 +236,13 @@ namespace LavaCake
             if (m_hasFence && m_fence) {
                 // Wait for any pending operations before destroying
                 if (m_submitted) {
-                    (void)m_device.getDevice().waitForFences(m_fence, VK_TRUE, UINT64_MAX);
+                    (void)m_device.waitForFences(m_fence, VK_TRUE, UINT64_MAX);
                 }
-                m_device.getDevice().destroyFence(m_fence);
+                m_device.destroyFence(m_fence);
                 m_fence = nullptr;
             }
             if (m_cmd) {
-                m_device.freeCommandBuffer(m_cmd);
+                m_device.freeCommandBuffers(m_commandPool, m_cmd);
                 m_cmd = nullptr;
             }
         }

@@ -13,7 +13,7 @@ namespace LavaCake{
      */
     class DescriptorPool {
     private:
-        LavaCake::Device m_device;
+        vk::Device m_device;
         vk::DescriptorPool m_pool;
         uint32_t m_maxSets;
         vk::DescriptorPoolCreateFlags m_flags;
@@ -24,7 +24,7 @@ namespace LavaCake{
          */
         class Builder {
         private:
-            LavaCake::Device m_device;
+            vk::Device m_device;
             std::vector<vk::DescriptorPoolSize> m_poolSizes;
             uint32_t m_maxSets = 1000;
             vk::DescriptorPoolCreateFlags m_flags;
@@ -34,7 +34,7 @@ namespace LavaCake{
              * \brief Constructs a Builder for a DescriptorPool
              * \param dev the device on which the descriptor pool will be created
              */
-            explicit Builder(const LavaCake::Device& dev) : m_device(dev) {}
+            explicit Builder(const vk::Device& dev) : m_device(dev) {}
 
             /**
              * \brief Set maximum number of descriptor sets that can be allocated from the pool
@@ -184,7 +184,7 @@ namespace LavaCake{
                 poolInfo.poolSizeCount = static_cast<uint32_t>(m_poolSizes.size());
                 poolInfo.pPoolSizes = m_poolSizes.data();
                 
-                result.m_pool = m_device.getDevice().createDescriptorPool(poolInfo);
+                result.m_pool = m_device.createDescriptorPool(poolInfo);
                 
                 return result;
             }
@@ -194,14 +194,14 @@ namespace LavaCake{
          * \brief Constructs a DescriptorPool (typically used by Builder)
          * \param dev the device on which the descriptor pool will be created
          */
-        DescriptorPool(const LavaCake::Device& dev) : m_device(dev) {}
+        DescriptorPool(const vk::Device& dev) : m_device(dev) {}
 
         /**
          * \brief Destructor - cleans up descriptor pool resources
          */
         ~DescriptorPool() {
             if (m_pool) {
-                m_device.getDevice().destroyDescriptorPool(m_pool);
+                m_device.destroyDescriptorPool(m_pool);
                 m_pool = nullptr;
             }
         }
@@ -229,7 +229,7 @@ namespace LavaCake{
             if (this != &other) {
                 // Clean up existing resources
                 if (m_pool) {
-                    m_device.getDevice().destroyDescriptorPool(m_pool);
+                    m_device.destroyDescriptorPool(m_pool);
                 }
                 m_device = other.m_device;
                 m_pool = std::exchange(other.m_pool, nullptr);
@@ -245,7 +245,7 @@ namespace LavaCake{
          */
         void freeDescriptorPool(){
             if (m_pool) {
-                m_device.getDevice().destroyDescriptorPool(m_pool);
+                m_device.destroyDescriptorPool(m_pool);
                 m_pool = nullptr;
             }
         }
@@ -268,13 +268,13 @@ namespace LavaCake{
          * \param layout the descriptor set layout to use
          * \return the allocated vk::DescriptorSet
          */
-        vk::DescriptorSet allocate(vk::DescriptorSetLayout layout) {
+        vk::DescriptorSet allocate(vk::DescriptorSetLayout& layout) {
             vk::DescriptorSetAllocateInfo allocInfo{};
             allocInfo.descriptorPool = m_pool;
             allocInfo.descriptorSetCount = 1;
             allocInfo.pSetLayouts = &layout;
             
-            auto sets = m_device.getDevice().allocateDescriptorSets(allocInfo);
+            auto sets = m_device.allocateDescriptorSets(allocInfo);
             return sets[0];
         }
 
@@ -289,7 +289,7 @@ namespace LavaCake{
             allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
             allocInfo.pSetLayouts = layouts.data();
             
-            return m_device.getDevice().allocateDescriptorSets(allocInfo);
+            return m_device.allocateDescriptorSets(allocInfo);
         }
 
         /**
@@ -298,7 +298,7 @@ namespace LavaCake{
          * \param variableDescriptorCount the number of variable descriptors to allocate
          * \return the allocated vk::DescriptorSet
          */
-        vk::DescriptorSet allocateVariable(vk::DescriptorSetLayout layout,
+        vk::DescriptorSet allocateVariable(vk::DescriptorSetLayout& layout,
                                         uint32_t variableDescriptorCount) {
             vk::DescriptorSetVariableDescriptorCountAllocateInfo variableInfo{};
             variableInfo.descriptorSetCount = 1;
@@ -310,7 +310,7 @@ namespace LavaCake{
             allocInfo.pSetLayouts = &layout;
             allocInfo.pNext = &variableInfo;
             
-            auto sets = m_device.getDevice().allocateDescriptorSets(allocInfo);
+            auto sets = m_device.allocateDescriptorSets(allocInfo);
             return sets[0];
         }
 
@@ -322,7 +322,7 @@ namespace LavaCake{
             if (!(m_flags & vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet)) {
                 throw std::runtime_error("Cannot free descriptor set - pool not created with FREE_DESCRIPTOR_SET flag");
             }
-            (void)m_device.getDevice().freeDescriptorSets(m_pool, 1, &set);
+            (void)m_device.freeDescriptorSets(m_pool, 1, &set);
         }
 
         /**
@@ -333,14 +333,14 @@ namespace LavaCake{
             if (!(m_flags & vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet)) {
                 throw std::runtime_error("Cannot free descriptor sets - pool not created with FREE_DESCRIPTOR_SET flag");
             }
-            m_device.getDevice().freeDescriptorSets(m_pool, sets);
+            m_device.freeDescriptorSets(m_pool, sets);
         }
 
         /**
          * \brief Reset the descriptor pool, freeing all allocated descriptor sets
          */
         void reset() {
-            m_device.getDevice().resetDescriptorPool(m_pool);
+            m_device.resetDescriptorPool(m_pool);
         }
     };
 
@@ -375,14 +375,6 @@ namespace LavaCake{
             return {std::move(layout), set};
         }
 
-        /**
-         * \brief Allocate a descriptor set from an existing layout
-         * \param layout the LavaCake descriptor set layout
-         * \return the allocated vk::DescriptorSet
-         */
-        vk::DescriptorSet allocate(const LavaCake::DescriptorSetLayout& layout) {
-            return pool->allocate(layout.getLayout());
-        }
 
         /**
          * \brief Allocate a descriptor set from an existing Vulkan layout

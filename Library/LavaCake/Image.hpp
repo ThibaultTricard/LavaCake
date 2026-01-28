@@ -45,7 +45,6 @@ namespace LavaCake {
                 cleanup();
                 
                 m_image = std::exchange(img.m_image, VK_NULL_HANDLE);
-                //m_imageView = std::exchange(img.m_imageView, VK_NULL_HANDLE);
                 m_allocation = std::exchange(img.m_allocation, {});
                 m_width = std::exchange(img.m_width, 0);
                 m_height = std::exchange(img.m_height, 0);
@@ -113,12 +112,11 @@ namespace LavaCake {
             vk::DeviceSize imageSize = width * height * depth * sizeof(T);
             Buffer staging(device, data, vk::BufferUsageFlagBits::eTransferSrc,
                          vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
+            
 
+            LavaCake::CommandBuffer cmd(device,false);
             // Transition to transfer dst layout and copy
-            vk::CommandBuffer cmd = device.allocateCommandBuffer();
-            vk::CommandBufferBeginInfo beginInfo{};
-            beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-            cmd.begin(beginInfo);
+            cmd.begin();
 
             transitionLayout(cmd, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
             copyFromBuffer(cmd, staging);
@@ -128,12 +126,11 @@ namespace LavaCake {
 
             vk::SubmitInfo submitInfo{};
             submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &cmd;
+            submitInfo.pCommandBuffers = cmd;
             auto queue = device.getAnyQueue();
             queue.submit(submitInfo);
             queue.waitIdle();
 
-            device.freeCommandBuffer(cmd);
         }
 
         /**
@@ -305,30 +302,6 @@ namespace LavaCake {
 
             cmd.pipelineBarrier(srcStage, dstStage, vk::DependencyFlags{}, nullptr, nullptr, barrier);
         }
-
-        /**
-         * \brief Create an image view for this image
-         * \param viewType Type of image view (default: 2D)
-         * \param aspectMask Aspect mask (default: Color)
-         */
-        /*void createImageView(vk::ImageViewType viewType = vk::ImageViewType::e2D,
-                           vk::ImageAspectFlags aspectMask = vk::ImageAspectFlagBits::eColor) {
-            if (m_imageView) {
-                m_device.getDevice().destroyImageView(m_imageView);
-            }
-
-            vk::ImageViewCreateInfo viewInfo{};
-            viewInfo.image = m_image;
-            viewInfo.viewType = viewType;
-            viewInfo.format = m_format;
-            viewInfo.subresourceRange.aspectMask = aspectMask;
-            viewInfo.subresourceRange.baseMipLevel = 0;
-            viewInfo.subresourceRange.levelCount = m_mipLevels;
-            viewInfo.subresourceRange.baseArrayLayer = 0;
-            viewInfo.subresourceRange.layerCount = m_arrayLayers;
-
-            m_imageView = m_device.getDevice().createImageView(viewInfo);
-        }*/
 
         /**
          * \brief Destructor - cleans up image resources
