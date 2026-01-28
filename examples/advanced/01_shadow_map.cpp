@@ -358,7 +358,6 @@ int main() {
             submitInfo.pCommandBuffers = cmd;
             device.getGraphicQueue(0).submit(submitInfo);
             device.getGraphicQueue(0).waitIdle();
-            device.freeCommandBuffer(cmd);
         }
 
         float angle = 0.0f;
@@ -438,11 +437,9 @@ int main() {
             shadowContext.setScissor(cmdBuffer, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
 
             shadowPipeline.bind(cmdBuffer);
-            cmdBuffer.getCommandBuffer().bindDescriptorSets(
-                vk::PipelineBindPoint::eGraphics,
-                shadowPipeline.getLayout(),
-                0, {shadowDescSet}, {}
-            );
+            shadowPipeline.bindDescriptorSets(cmdBuffer, {shadowDescSet});
+            
+            
             shadowPipeline.draw(cmdBuffer, static_cast<uint32_t>(indices.size()));
 
             shadowContext.end(cmdBuffer);
@@ -470,11 +467,8 @@ int main() {
             sceneContext.setDefaultViewportScissor(cmdBuffer);
 
             scenePipeline.bind(cmdBuffer);
-            cmdBuffer.getCommandBuffer().bindDescriptorSets(
-                vk::PipelineBindPoint::eGraphics,
-                scenePipeline.getLayout(),
-                0, {sceneDescSet0, sceneDescSet1}, {}
-            );
+            scenePipeline.bindDescriptorSets(cmdBuffer, {{sceneDescSet0, sceneDescSet1}});
+            
             scenePipeline.draw(cmdBuffer, static_cast<uint32_t>(indices.size()));
 
             sceneContext.end(cmdBuffer);
@@ -491,7 +485,7 @@ int main() {
             submitInfo.pWaitDstStageMask = &waitStage;
             submitInfo.commandBufferCount = 1;
             vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
-            submitInfo.pCommandBuffers = &rawCmd;
+            submitInfo.pCommandBuffers = cmdBuffer;
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 
