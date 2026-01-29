@@ -70,9 +70,9 @@ int main() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     GLFWwindow* window = glfwCreateWindow(800, 600, "LavaCake", nullptr, nullptr);
 
-    // Create device with GLFW window
+    // Create device with GLFW window using factory function
     auto surfaceConfig = LavaCake::GLFW::createSurfaceConfig(window);
-    LavaCake::Device device(surfaceConfig, 1);  // 1 graphics queue
+    auto device = LavaCake::createWindowedDevice(surfaceConfig, 1);  // 1 graphics queue
 
     LavaCake::CommandBuffer cmdBuffer(device, true);
 
@@ -102,7 +102,7 @@ int main() {
         800, 600, SDL_WINDOW_VULKAN);
 
     auto surfaceConfig = LavaCake::SDL2::createSurfaceConfig(window);
-    LavaCake::Device device(surfaceConfig, 1);  // 1 graphics queue
+    auto device = LavaCake::createWindowedDevice(surfaceConfig, 1);  // 1 graphics queue
     // ...
 }
 ```
@@ -129,7 +129,7 @@ int main() {
         return vk::SurfaceKHR(surface);
     };
 
-    LavaCake::Device device(config, 1);
+    auto device = LavaCake::createWindowedDevice(config, 1);
     // ...
 }
 ```
@@ -143,11 +143,83 @@ int main() {
 
 int main() {
     // Create headless device (no window, no surface)
-    LavaCake::Device device(0, 1);  // 0 graphics queues, 1 compute queue
+    auto device = LavaCake::createHeadlessDevice(1, 1);  // 1 graphics queue, 1 compute queue
 
     // See examples/compute/01_vector_addition.cpp for complete code
 }
 ```
+
+## Device Creation
+
+LavaCake provides multiple ways to create a Vulkan device, from simple factory functions to a full-featured builder pattern.
+
+### Factory Functions (Recommended for Most Use Cases)
+
+Quick device creation with sensible defaults:
+
+```cpp
+// Basic headless device - 1 graphics queue, validation enabled
+auto device = LavaCake::createBasicDevice();
+
+// Windowed device with surface - custom queue counts
+auto device = LavaCake::createWindowedDevice(surfaceConfig, 2, 1);  // 2 graphics, 1 compute
+
+// Headless device - for compute or offscreen rendering
+auto device = LavaCake::createHeadlessDevice(1, 0);  // 1 graphics, 0 compute
+
+// Advanced device - includes anisotropic filtering and descriptor indexing
+auto device = LavaCake::createAdvancedDevice(surfaceConfig, 2, 1);
+```
+
+### Builder Pattern (For Advanced Configuration)
+
+Use the builder for full control over device features:
+
+```cpp
+// Custom device with specific features
+auto device = LavaCake::createDeviceBuilder()
+    .setGraphicQueueCount(2)
+    .setComputeQueueCount(1)
+    .setSurface(surfaceConfig)
+    .enableSamplerAnisotropy(true)
+    .enableGeometryShader(true)
+    .setApplicationInfo("MyApp", VK_MAKE_VERSION(1, 0, 0))
+    .setApiVersion(VK_API_VERSION_1_3)
+    .preferDiscreteGPU()
+    .build();
+
+// Compute-only device with custom GPU selection
+auto device = LavaCake::createDeviceBuilder()
+    .setGraphicQueueCount(0)
+    .setComputeQueueCount(4)
+    .headless()
+    .setDeviceSelector([](vk::PhysicalDevice dev) {
+        // Custom GPU scoring logic
+        auto props = dev.getProperties();
+        return (props.deviceType == vk::PhysicalDeviceType::eDiscreteGpu) ? 100000 : 1000;
+    })
+    .build();
+
+// Advanced features with Vulkan 1.2+ feature structures
+vk::PhysicalDeviceVulkan12Features vulkan12{};
+vulkan12.bufferDeviceAddress = VK_TRUE;
+vulkan12.descriptorIndexing = VK_TRUE;
+
+auto device = LavaCake::createDeviceBuilder()
+    .setGraphicQueueCount(1)
+    .addFeature(vulkan12)  // Generic method - works with ANY Vulkan feature struct
+    .headless()
+    .build();
+```
+
+### Key Features
+
+- **Dynamic Rendering**: Always enabled (mandatory) - no need for explicit render passes
+- **Fluent API**: Method chaining for readable configuration
+- **Generic Feature Chain**: Support for any Vulkan feature structure via `addFeature<T>()`
+- **Automatic Extensions**: Swapchain extensions added automatically when surface is configured
+- **VMA Integration**: Vulkan Memory Allocator automatically initialized with customizable flags
+- **Validation Layers**: Enabled by default, can be disabled for release builds
 
 ## Examples
 
@@ -202,9 +274,14 @@ LavaCake/
 
 LavaCake uses modern C++ patterns throughout:
 
-- **Builder Pattern** - Fluent API for pipeline and descriptor configuration
+- **Builder Pattern** - Fluent API for device, pipeline, and descriptor configuration
+  - Factory functions (`createBasicDevice`, `createWindowedDevice`, etc.) for common use cases
+  - Full builder API (`Device::Builder`) for advanced customization
+  - Generic feature chain support via templates
 - **RAII** - Automatic resource cleanup when objects go out of scope
 - **Move Semantics** - Efficient resource transfer without copying
+- **Header-Only** - All implementations inline for easy integration
+- **Type Safety** - Leverages Vulkan-HPP for type-safe Vulkan API usage
 
 ## License
 
