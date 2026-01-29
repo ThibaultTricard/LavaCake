@@ -7,6 +7,7 @@
 #include <optional>
 #include <set>
 #include <map>
+#include <cstring>
 #include <any>
 #include <functional>
 
@@ -27,42 +28,41 @@ namespace LavaCake {
     // ---------------------------------------------------------------
 
     /**
-     * \brief Debug callback function for Vulkan validation layers (macOS version)
-     * \param severity the severity level of the message
-     * \param type the type of message
-     * \param data the callback data containing the message
-     * \param userData optional user data pointer
-     * \return VK_FALSE to continue execution
-     */
-#ifdef __APPLE__
-    VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-        vk::DebugUtilsMessageSeverityFlagBitsEXT severity,
-        vk::DebugUtilsMessageTypeFlagsEXT type,
-        const vk::DebugUtilsMessengerCallbackDataEXT* data,
-        void* userData)
-    {
-        std::cerr << "Validation: " << data->pMessage << std::endl;
-        return VK_FALSE;
-    }
-#else
-    /**
      * \brief Debug callback function for Vulkan validation layers
      * \param messageSeverity the severity level of the message
      * \param messageType the type of message
-     * \param data the callback data containing the message
+     * \param pCallbackData the callback data containing the message
      * \param pUserData optional user data pointer
      * \return VK_FALSE to continue execution
      */
+#if defined(VK_API_VERSION_1_4)
+    // Vulkan 1.4+ headers use C++ wrapper types in the callback signature
     VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT* data,
-    void* pUserData)
-{
-        if(data->messageIdNumber == 0 || data->messageIdNumber == 2044605652) return VK_FALSE;
-        std::cerr << "Validation: " << data->messageIdNumber  << " Message: "<< data->pMessage << std::endl;
+        vk::DebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        vk::DebugUtilsMessageTypeFlagsEXT messageType,
+        const vk::DebugUtilsMessengerCallbackDataEXT* pCallbackData,
+        void* pUserData)
+    {
+        if (pCallbackData->messageIdNumber == 0 || pCallbackData->messageIdNumber == 2044605652)
+            return VK_FALSE;
+        std::cerr << "Validation: " << pCallbackData->messageIdNumber
+                  << " Message: " << pCallbackData->pMessage << std::endl;
         return VK_FALSE;
-}
+    }
+#else
+    // Vulkan 1.3 headers use C types in the callback signature
+    VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        VkDebugUtilsMessageTypeFlagsEXT messageType,
+        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+        void* pUserData)
+    {
+        if (pCallbackData->messageIdNumber == 0 || pCallbackData->messageIdNumber == 2044605652)
+            return VK_FALSE;
+        std::cerr << "Validation: " << pCallbackData->messageIdNumber
+                  << " Message: " << pCallbackData->pMessage << std::endl;
+        return VK_FALSE;
+    }
 #endif
 
     // ---------------------------------------------------------------
@@ -1207,15 +1207,6 @@ namespace LavaCake {
                         instanceExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
                     #endif
 
-                    auto instanceExtensionProps = vk::enumerateInstanceExtensionProperties();
-
-                    for (const vk::ExtensionProperties& ext : instanceExtensionProps) {
-                        if (vk::isDeprecatedExtension(ext.extensionName)) continue;
-                        if (vk::isPromotedExtension(ext.extensionName)) continue;
-                        if (vk::isObsoletedExtension(ext.extensionName)) continue;
-                        instanceExtensions.push_back(ext.extensionName);
-                    }
-
                     // Use application info from builder
                     vk::ApplicationInfo appInfo{
                         m_appName,
@@ -1349,6 +1340,18 @@ namespace LavaCake {
                     if (m_hasSurface) {
                         deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
                     }
+
+                    #ifdef __APPLE__
+                    // On macOS with MoltenVK, VK_KHR_portability_subset must be enabled
+                    // if the physical device supports it
+                    auto availableExtensions = device.m_physicalDevice.enumerateDeviceExtensionProperties();
+                    for (const auto& ext : availableExtensions) {
+                        if (strcmp(ext.extensionName, "VK_KHR_portability_subset") == 0) {
+                            deviceExtensions.push_back("VK_KHR_portability_subset");
+                            break;
+                        }
+                    }
+                    #endif
 
                     // -----------------------------------------------------------
                     // Create Logical Device with builder features
