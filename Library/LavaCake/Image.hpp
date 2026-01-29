@@ -455,6 +455,7 @@ namespace LavaCake {
             m_format = format;
             m_mipLevels = mipLevels;
             m_arrayLayers = arrayLayers;
+            m_allocator = allocator;
 
             vk::ImageType imageType = vk::ImageType::e1D;
             if(m_height > 1){

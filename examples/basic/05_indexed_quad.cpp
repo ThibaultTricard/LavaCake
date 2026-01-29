@@ -36,7 +36,7 @@ int main() {
     GLFWwindow* window = glfwCreateWindow(800, 600, "05 - Indexed Quad Example", nullptr, nullptr);
 
     auto surfaceConfig = LavaCake::GLFW::createSurfaceConfig(window);
-    LavaCake::Device device(surfaceConfig, 1);
+    LavaCake::Device device = LavaCake::createAdvancedDevice(surfaceConfig,1);
     { // Create a context to make sure all GPU objects are destroyed before we release the device
 
         // Create command buffer with fence for synchronization

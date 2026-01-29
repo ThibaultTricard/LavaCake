@@ -155,7 +155,7 @@ int main() {
     GLFWwindow* window = glfwCreateWindow(1024, 768, "Advanced 01 - Shadow Mapping", nullptr, nullptr);
 
     auto surfaceConfig = LavaCake::GLFW::createSurfaceConfig(window);
-    LavaCake::Device device(surfaceConfig, 1);
+    LavaCake::Device device = LavaCake::createAdvancedDevice(surfaceConfig,1);
     {
         LavaCake::CommandBuffer cmdBuffer(device, true);
 

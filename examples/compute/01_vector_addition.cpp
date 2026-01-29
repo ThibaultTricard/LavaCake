@@ -23,7 +23,10 @@ std::string root = PROJECT_ROOT;
 int main() {
     // Create a headless device (no window needed for compute)
     bool success = true;
-    LavaCake::Device device(0, 1);
+    LavaCake::Device device = LavaCake::Device::Builder()
+                            .setComputeQueueCount(1)
+                            .headless()
+                            .build();
     {
 
         std::cout << "LavaCake Compute Example: Vector Addition\n";
