@@ -33,7 +33,8 @@ namespace LavaCake {
               m_mipLevels(std::exchange(img.m_mipLevels, 1)),
               m_arrayLayers(std::exchange(img.m_arrayLayers, 1)),
               m_format(std::exchange(img.m_format, vk::Format::eUndefined)),
-              m_device(img.m_device)
+              m_device(img.m_device),
+              m_allocator(img.m_allocator)
         {}
 
         /**
@@ -41,8 +42,6 @@ namespace LavaCake {
          */
         Image& operator=(Image&& img) noexcept {
             if (this != &img) {
-                // Clean up existing resources
-                cleanup();
                 
                 m_image = std::exchange(img.m_image, VK_NULL_HANDLE);
                 m_allocation = std::exchange(img.m_allocation, {});
@@ -53,24 +52,27 @@ namespace LavaCake {
                 m_arrayLayers = std::exchange(img.m_arrayLayers, 1);
                 m_format = std::exchange(img.m_format, vk::Format::eUndefined);
                 m_device = img.m_device;
+                m_allocator = img.m_allocator;
             }
             return *this;
         }
 
+
         /**
          * \brief Create and allocate an image
          * \param device The device on which the image will be created
+         * \param allocator The VMA allocator for memory allocation
          * \param width Image width in pixels
          * \param height Image height in pixels
+         * \param depth Image depth for 3D images
          * \param format Image format
          * \param usage Image usage flags
-         * \param memoryFlags Memory allocation flags
+         * \param memoryFlags Memory allocation flags (default: dedicated memory)
          * \param mipLevels Number of mipmap levels (default: 1)
          * \param arrayLayers Number of array layers (default: 1)
-         * \param depth Image depth for 3D images (default: 1)
-         * \param imageType Image type (default: 2D)
          */
         Image(const LavaCake::Device& device,
+              const VmaAllocator& allocator,
               uint32_t width,
               uint32_t height,
               uint32_t depth,
@@ -80,18 +82,46 @@ namespace LavaCake {
               uint32_t mipLevels = 1,
               uint32_t arrayLayers = 1)
         {
-            init(device, width, height, depth, format, usage, memoryFlags, mipLevels, arrayLayers);
+            init(device, allocator, width, height, depth, format, usage, memoryFlags, mipLevels, arrayLayers);
         }
 
+
         /**
-         * \brief Create and initialize an image with data from a staging buffer
+         * \brief Create and allocate an image (uses device's default allocator)
          * \param device The device on which the image will be created
          * \param width Image width in pixels
          * \param height Image height in pixels
+         * \param depth Image depth for 3D images
          * \param format Image format
-         * \param data The pixel data to upload
          * \param usage Image usage flags
-         * \param memoryFlags Memory allocation flags
+         * \param memoryFlags Memory allocation flags (default: dedicated memory)
+         * \param mipLevels Number of mipmap levels (default: 1)
+         * \param arrayLayers Number of array layers (default: 1)
+         */
+        Image(const LavaCake::Device& device,
+              uint32_t width,
+              uint32_t height,
+              uint32_t depth,
+              vk::Format format,
+              vk::ImageUsageFlags usage,
+              vk::AllocationCreateFlags memoryFlags = vk::AllocationCreateFlagBits::eCreateDedicatedMemory,
+              uint32_t mipLevels = 1,
+              uint32_t arrayLayers = 1) :  Image(device, device.getAllocator(), width, height, depth, format, usage, memoryFlags, mipLevels, arrayLayers){}
+
+        
+
+        /**
+         * \brief Create and initialize an image with data from a staging buffer (uses device's default allocator, queue, and command pool)
+         * \param device The device on which the image will be created
+         * \param data The pixel data to upload
+         * \param width Image width in pixels
+         * \param height Image height in pixels
+         * \param depth Image depth for 3D images
+         * \param format Image format
+         * \param usage Image usage flags (automatically adds transfer destination flag)
+         * \param memoryFlags Memory allocation flags (default: dedicated memory)
+         * \param mipLevels Number of mipmap levels (default: 1)
+         * \param arrayLayers Number of array layers (default: 1)
          */
         template <std::ranges::contiguous_range Range>
         Image(const LavaCake::Device& device,
@@ -103,18 +133,51 @@ namespace LavaCake {
               vk::ImageUsageFlags usage,
               vk::AllocationCreateFlags memoryFlags = vk::AllocationCreateFlagBits::eCreateDedicatedMemory,
               uint32_t mipLevels = 1,
+              uint32_t arrayLayers = 1) :
+              Image(device, device.getAllocator(), device.getAnyQueue(), device.getCommandPool(), data,width, height, depth, format, usage, memoryFlags, mipLevels, arrayLayers)
+        {}
+
+        /**
+         * \brief Create and initialize an image with data from a staging buffer
+         * \param device The device on which the image will be created
+         * \param allocator The VMA allocator for memory allocation
+         * \param queue The queue to submit the transfer commands to
+         * \param commandPool The command pool to allocate command buffers from
+         * \param data The pixel data to upload
+         * \param width Image width in pixels
+         * \param height Image height in pixels
+         * \param depth Image depth for 3D images
+         * \param format Image format
+         * \param usage Image usage flags (automatically adds transfer destination flag)
+         * \param memoryFlags Memory allocation flags (default: dedicated memory)
+         * \param mipLevels Number of mipmap levels (default: 1)
+         * \param arrayLayers Number of array layers (default: 1)
+         */
+        template <std::ranges::contiguous_range Range>
+        Image(const vk::Device& device,
+              const VmaAllocator& allocator,
+              const vk::Queue& queue,
+              const vk::CommandPool& commandPool,
+              const Range& data,
+              uint32_t width,
+              uint32_t height,
+              uint32_t depth,
+              vk::Format format,
+              vk::ImageUsageFlags usage,
+              vk::AllocationCreateFlags memoryFlags = vk::AllocationCreateFlagBits::eCreateDedicatedMemory,
+              uint32_t mipLevels = 1,
               uint32_t arrayLayers = 1)
         {
             using T = std::ranges::range_value_t<Range>;
-            init(device, width, height, depth, format, usage | vk::ImageUsageFlagBits::eTransferDst, memoryFlags, mipLevels, arrayLayers);
+            init(device, allocator ,width, height, depth, format, usage | vk::ImageUsageFlagBits::eTransferDst, memoryFlags, mipLevels, arrayLayers);
 
             // Create staging buffer
             vk::DeviceSize imageSize = width * height * depth * sizeof(T);
-            Buffer staging(device, data, vk::BufferUsageFlagBits::eTransferSrc,
+            Buffer staging(device, allocator, queue, commandPool, data, vk::BufferUsageFlagBits::eTransferSrc,
                          vk::AllocationCreateFlagBits::eCreateHostAccessSequentialWrite);
             
 
-            LavaCake::CommandBuffer cmd(device,false);
+            LavaCake::CommandBuffer cmd(device, commandPool,false);
             // Transition to transfer dst layout and copy
             cmd.begin();
 
@@ -127,7 +190,6 @@ namespace LavaCake {
             vk::SubmitInfo submitInfo{};
             submitInfo.commandBufferCount = 1;
             submitInfo.pCommandBuffers = cmd;
-            auto queue = device.getAnyQueue();
             queue.submit(submitInfo);
             queue.waitIdle();
 
@@ -359,11 +421,13 @@ namespace LavaCake {
         uint32_t m_arrayLayers = 1;             ///< Number of array layers
         vk::Format m_format = vk::Format::eUndefined; ///< Image format
 
-        LavaCake::Device m_device = LavaCake::Device(); ///< Associated device
+        vk::Device m_device;                     ///< Associated device
+        VmaAllocator m_allocator;                ///< Associated Allocator
 
         /**
          * \brief Initialize and allocate an image
          * \param device the device on which to create the image
+         * \param allocator the VMA allocator for memory allocation
          * \param width image width in pixels
          * \param height image height in pixels
          * \param depth image depth for 3D images
@@ -373,7 +437,8 @@ namespace LavaCake {
          * \param mipLevels number of mipmap levels
          * \param arrayLayers number of array layers
          */
-        void init(const LavaCake::Device& device,
+        void init(const vk::Device& device,
+                 const VmaAllocator& allocator,
                  uint32_t width,
                  uint32_t height,
                  uint32_t depth,
@@ -419,7 +484,7 @@ namespace LavaCake {
 
             VkImage image;
             if (vmaCreateImage(
-                    device.getAllocator(),
+                    allocator,
                     reinterpret_cast<VkImageCreateInfo*>(&imageInfo),
                     &allocInfo,
                     &image,
@@ -436,11 +501,11 @@ namespace LavaCake {
         }
 
         /**
-         * \brief Clean up image and image view resources
+         * \brief Clean up image resources
          */
         void cleanup() {
             if (m_image) {
-                vmaDestroyImage(m_device.getAllocator(), m_image, m_allocation);
+                vmaDestroyImage(m_allocator, m_image, m_allocation);
                 m_image = VK_NULL_HANDLE;
             }
         }
@@ -454,7 +519,7 @@ namespace LavaCake {
     private:
         vk::ImageView m_imageView;              ///< The Vulkan image view handle
 
-        LavaCake::Device m_device = LavaCake::Device(); ///< Associated device
+        vk::Device m_device;                 ///< Associated device
     public:
         ImageView() = default;
 
@@ -478,9 +543,6 @@ namespace LavaCake {
         ImageView& operator=(ImageView&& other) noexcept {
             if (this != &other) {
                 // Clean up existing resources
-                if (m_imageView) {
-                    m_device.getDevice().destroyImageView(m_imageView);
-                }
                 m_imageView = std::exchange(other.m_imageView, VK_NULL_HANDLE);
                 m_device = other.m_device;
             }
@@ -506,7 +568,7 @@ namespace LavaCake {
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = image.m_arrayLayers;
 
-            m_imageView = image.m_device.getDevice().createImageView(viewInfo);
+            m_imageView = image.m_device.createImageView(viewInfo);
             m_device = image.m_device;
         }
 
@@ -537,8 +599,41 @@ namespace LavaCake {
             viewInfo.subresourceRange.baseArrayLayer = baseArrayLayer;
             viewInfo.subresourceRange.layerCount = layerCount;
 
-            m_imageView = image.m_device.getDevice().createImageView(viewInfo);
+            m_imageView = image.m_device.createImageView(viewInfo);
             m_device = image.m_device;
+        }
+
+        /**
+         * \brief Create an image view with full control over subresource range
+         * \param device The device on which the image View will be created
+         * \param image the image to create a view for
+         * \param viewType the type of image view
+         * \param aspectMask the aspect mask
+         * \param format the view format
+         * \param baseMipLevel the first mipmap level
+         * \param levelCount the number of mipmap levels
+         * \param baseArrayLayer the first array layer
+         * \param layerCount the number of array layers
+         */
+        ImageView (const vk::Device& device,
+                           const vk::Image& image,
+                           vk::ImageViewType viewType,
+                           vk::ImageAspectFlags aspectMask,
+                           vk::Format format,
+                           uint32_t baseMipLevel, uint32_t levelCount,
+                           uint32_t baseArrayLayer, uint32_t layerCount){
+            vk::ImageViewCreateInfo viewInfo{};
+            viewInfo.image = image;
+            viewInfo.viewType = viewType;
+            viewInfo.format = format;
+            viewInfo.subresourceRange.aspectMask = aspectMask;
+            viewInfo.subresourceRange.baseMipLevel = baseMipLevel;
+            viewInfo.subresourceRange.levelCount = levelCount;
+            viewInfo.subresourceRange.baseArrayLayer = baseArrayLayer;
+            viewInfo.subresourceRange.layerCount = layerCount;
+
+            m_imageView = device.createImageView(viewInfo);
+            m_device = device;
         }
 
         /**
@@ -558,7 +653,7 @@ namespace LavaCake {
          */
         ~ImageView(){
             if (m_imageView) {
-                m_device.getDevice().destroyImageView(m_imageView);
+                m_device.destroyImageView(m_imageView);
                 m_imageView = VK_NULL_HANDLE;
             }
         }
