@@ -30,7 +30,7 @@ int main() {
     GLFWwindow* window = glfwCreateWindow(1280, 720, "LavaCake ImGui Demo", nullptr, nullptr);
 
     auto surfaceConfig = LavaCake::GLFW::createSurfaceConfig(window);
-    LavaCake::Device device = LavaCake::createAdvancedDevice(surfaceConfig,1);
+    LavaCake::Device device = LavaCake::createWindowedDevice(surfaceConfig,1);
     {
         // Create command buffer with fence for synchronization
         LavaCake::CommandBuffer cmdBuffer(device, true);

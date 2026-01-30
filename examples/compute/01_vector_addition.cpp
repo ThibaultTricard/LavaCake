@@ -25,7 +25,6 @@ int main() {
     bool success = true;
     LavaCake::Device device = LavaCake::Device::Builder()
                             .setComputeQueueCount(1)
-                            .headless()
                             .build();
     {
 

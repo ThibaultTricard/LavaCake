@@ -43,7 +43,7 @@ namespace LavaCake {
         const vk::DebugUtilsMessengerCallbackDataEXT* pCallbackData,
         void* pUserData)
     {
-        if (pCallbackData->messageIdNumber == 0 || pCallbackData->messageIdNumber == 2044605652)
+        if (pCallbackData->messageIdNumber == 0)
             return VK_FALSE;
         std::cerr << "Validation: " << pCallbackData->messageIdNumber
                   << " Message: " << pCallbackData->pMessage << std::endl;
@@ -57,7 +57,7 @@ namespace LavaCake {
         const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
         void* pUserData)
     {
-        if (pCallbackData->messageIdNumber == 0 || pCallbackData->messageIdNumber == 2044605652)
+        if (pCallbackData->messageIdNumber == 0)
             return VK_FALSE;
         std::cerr << "Validation: " << pCallbackData->messageIdNumber
                   << " Message: " << pCallbackData->pMessage << std::endl;
@@ -576,18 +576,6 @@ namespace LavaCake {
                 return *this;
             }
 
-            /**
-             * \brief Configures the device for headless operation (no presentation surface)
-             * \return Reference to this builder for method chaining
-             * \details Headless devices are suitable for compute workloads or offscreen rendering
-             *          without a window or display output.
-             */
-            Builder& headless() {
-                m_hasSurface = false;
-                m_surfaceConfig = std::nullopt;
-                return *this;
-            }
-
             // ---------------------------------------------------------------
             // API Configuration
             // ---------------------------------------------------------------
@@ -648,6 +636,44 @@ namespace LavaCake {
                 m_validationLayers = std::move(layers);
                 return *this;
             }
+
+            /**
+             * \brief Sets a custom debug message callback function
+             * \param callback Function pointer to the debug callback
+             * \return Reference to this builder for method chaining
+             * \details The callback function signature depends on the Vulkan header version:
+             *          - Vulkan 1.4+: Uses vk::* C++ wrapper types
+             *          - Vulkan 1.3: Uses Vk* C types
+             *          If not set, the default LavaCake debug callback will be used.
+             *
+             * Example usage (Vulkan 1.3):
+             * \code
+             * VKAPI_ATTR VkBool32 VKAPI_CALL myDebugCallback(
+             *     VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+             *     VkDebugUtilsMessageTypeFlagsEXT type,
+             *     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+             *     void* pUserData)
+             * {
+             *     std::cerr << "Custom: " << pCallbackData->pMessage << std::endl;
+             *     return VK_FALSE;
+             * }
+             *
+             * auto device = Device::Builder()
+             *     .setDebugCallback(myDebugCallback)
+             *     .build();
+             * \endcode
+             */
+#if defined(VK_API_VERSION_1_4)
+            Builder& setDebugCallback(vk::PFN_DebugUtilsMessengerCallbackEXT callback) {
+                m_debugCallback = callback;
+                return *this;
+            }
+#else
+            Builder& setDebugCallback(PFN_vkDebugUtilsMessengerCallbackEXT callback) {
+                m_debugCallback = callback;
+                return *this;
+            }
+#endif
 
             // ---------------------------------------------------------------
             // Instance Extension Configuration
@@ -1246,7 +1272,7 @@ namespace LavaCake {
                             vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
                             vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
 
-                        debugInfo.pfnUserCallback = debugCallback;
+                        debugInfo.pfnUserCallback = m_debugCallback;
 
                         device.m_debugMessenger =
                             device.m_instance.createDebugUtilsMessengerEXT(debugInfo);
@@ -1414,17 +1440,32 @@ namespace LavaCake {
 
                     // Build feature chain: Chain all custom features together
                     void* featureChainTail = nullptr;
+                    bool hasVulkan13Features = false;
 
                     // Chain custom features in reverse order (last added becomes deepest in chain)
                     for (auto it = m_customFeatures.rbegin(); it != m_customFeatures.rend(); ++it) {
                         auto& wrapper = *it;
                         wrapper.setPNext(wrapper.feature, featureChainTail);
                         featureChainTail = wrapper.getPtr(wrapper.feature);
+
+                        // Check if this is Vulkan13Features by examining the sType
+                        auto* baseStruct = static_cast<VkBaseOutStructure*>(featureChainTail);
+                        if (baseStruct->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES) {
+                            hasVulkan13Features = true;
+                            // Enable dynamic rendering in Vulkan13Features since we won't add separate structure
+                            auto* vulkan13 = static_cast<VkPhysicalDeviceVulkan13Features*>(featureChainTail);
+                            vulkan13->dynamicRendering = VK_TRUE;
+                        }
                     }
 
-                    // Dynamic rendering (mandatory) is always at the head of the chain
-                    m_dynamicRenderingFeatures.pNext = featureChainTail;
-                    devInfo.pNext = &m_dynamicRenderingFeatures;
+                    // Only add separate DynamicRenderingFeatures if Vulkan13Features is NOT in the chain
+                    // (Vulkan spec forbids having both in pNext chain)
+                    if (hasVulkan13Features) {
+                        devInfo.pNext = featureChainTail;
+                    } else {
+                        m_dynamicRenderingFeatures.pNext = featureChainTail;
+                        devInfo.pNext = &m_dynamicRenderingFeatures;
+                    }
 
                     device.m_device = device.m_physicalDevice.createDevice(devInfo);
                     VULKAN_HPP_DEFAULT_DISPATCHER.init(device.m_device);
@@ -1559,6 +1600,11 @@ namespace LavaCake {
             // Validation
             bool m_enableValidation = true;
             std::vector<const char*> m_validationLayers = { "VK_LAYER_KHRONOS_validation" };
+#if defined(VK_API_VERSION_1_4)
+            vk::PFN_DebugUtilsMessengerCallbackEXT m_debugCallback = debugCallback;
+#else
+            PFN_vkDebugUtilsMessengerCallbackEXT m_debugCallback = debugCallback;
+#endif
 
             // Extensions
             std::vector<const char*> m_instanceExtensions;
@@ -1632,6 +1678,9 @@ namespace LavaCake {
      * \details Creates a headless device with:
      * - 1 graphics queue
      * - 0 compute queues
+     * - Anisotropic filtering enabled
+     * - Descriptor indexing enabled (Vulkan 1.2 features)
+     * - Scalar block layout
      * - No presentation surface
      * - Dynamic rendering enabled (mandatory)
      * - Default validation layers enabled
@@ -1640,34 +1689,53 @@ namespace LavaCake {
      * or learning purposes.
      */
     inline Device createBasicDevice() {
+        // Setup Vulkan 1.2 features for descriptor indexing
+        vk::PhysicalDeviceVulkan12Features vulkan12{};
+        vulkan12.scalarBlockLayout = VK_TRUE;
+        vulkan12.descriptorIndexing = VK_TRUE;
+        vulkan12.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.shaderStorageBufferArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.runtimeDescriptorArray = VK_TRUE;
+        vulkan12.descriptorBindingPartiallyBound = VK_TRUE;
+        vulkan12.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
+        
         return Device::Builder()
             .setGraphicQueueCount(1)
             .setComputeQueueCount(0)
-            .headless()
+            .enableSamplerAnisotropy(true)
+            .addFeature(vulkan12)
             .build();
     }
 
+
     /**
-     * \brief Creates an advanced graphics device with enhanced features
-     * \param surfaceConfig Surface configuration for presentation
-     * \param nbGraphicQueue Number of graphics queues
-     * \param nbComputeQueue Number of compute queues
-     * \return Device configured for advanced graphics usage
+     * \brief Creates a windowed device with presentation support
+     * \param surfaceConfig Surface configuration for window presentation
+     * \param nbGraphicQueue Number of graphics queues (default: 1)
+     * \param nbComputeQueue Number of compute queues (default: 0)
+     * \return Device configured for windowed usage
      *
      * \details Creates a windowed device with:
      * - Custom queue configuration
+     * - Presentation surface support
      * - Anisotropic filtering enabled
      * - Descriptor indexing enabled (Vulkan 1.2 features)
      * - Scalar block layout
-     * - Runtime descriptor arrays
+     * - Swapchain creation
      * - Dynamic rendering enabled (mandatory)
-     * - Discrete GPU preference
-     * - Presentation surface support
+     * - Default validation layers enabled
      *
-     * This configuration is suitable for modern graphics applications requiring
-     * advanced Vulkan 1.2+ features.
+     * The surface configuration must be provided using your windowing library
+     * (e.g., SDL2, GLFW). The device will automatically enable the swapchain
+     * extension and create a swapchain for presentation.
      */
-    inline Device createAdvancedDevice(const SurfaceConfig& surfaceConfig, int nbGraphicQueue, int nbComputeQueue = 0) {
+    inline Device createWindowedDevice(
+        const SurfaceConfig& surfaceConfig,
+        int nbGraphicQueue = 1,
+        int nbComputeQueue = 0
+    ) {
+
         // Setup Vulkan 1.2 features for descriptor indexing
         vk::PhysicalDeviceVulkan12Features vulkan12{};
         vulkan12.scalarBlockLayout = VK_TRUE;
@@ -1679,14 +1747,107 @@ namespace LavaCake {
         vulkan12.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
         vulkan12.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
 
+        
         return Device::Builder()
             .setGraphicQueueCount(nbGraphicQueue)
             .setComputeQueueCount(nbComputeQueue)
             .enableSamplerAnisotropy(true)
             .addFeature(vulkan12)
+            .setSurface(surfaceConfig)
+            .build();
+    }
+
+    /**
+     * \brief Creates an advanced graphics device with maximum MoltenVK-compatible features
+     * \param surfaceConfig Surface configuration for presentation
+     * \param nbGraphicQueue Number of graphics queues
+     * \param nbComputeQueue Number of compute queues
+     * \return Device configured for advanced graphics usage
+     *
+     * \details Creates a windowed device with the most advanced features supported by MoltenVK:
+     *
+     * Vulkan 1.0 features:
+     * - Sampler anisotropy
+     * - Fill mode non-solid (wireframe rendering)
+     *
+     * Vulkan 1.2 features:
+     * - Full descriptor indexing for bindless rendering
+     * - Scalar block layout
+     * - Buffer device address for GPU-driven rendering
+     * - Timeline semaphores
+     * - Host query reset
+     *
+     * Vulkan 1.3 features (when available):
+     * - Synchronization2 for improved sync API
+     * - Maintenance4
+     * - Private data
+     *
+     * Note: Mesh shaders (VK_EXT_mesh_shader) are NOT enabled by default as they require
+     * a custom MoltenVK build. Use the Builder API to add them if your MoltenVK supports it:
+     *   .addDeviceExtension(VK_EXT_MESH_SHADER_EXTENSION_NAME)
+     *   .addFeature(meshShaderFeatures)
+     *
+     * Always enabled:
+     * - Dynamic rendering (mandatory)
+     * - Discrete GPU preference
+     * - Presentation surface support
+     *
+     * This configuration is suitable for modern graphics applications requiring
+     * advanced Vulkan features while maintaining MoltenVK compatibility on macOS.
+     */
+    inline Device createAdvancedDevice(const SurfaceConfig& surfaceConfig, int nbGraphicQueue, int nbComputeQueue = 0) {
+        // Vulkan 1.2 features - widely supported by MoltenVK
+        vk::PhysicalDeviceVulkan12Features vulkan12{};
+        // Descriptor indexing for bindless rendering
+        vulkan12.scalarBlockLayout = VK_TRUE;
+        vulkan12.descriptorIndexing = VK_TRUE;
+        vulkan12.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.shaderStorageBufferArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.shaderUniformBufferArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.runtimeDescriptorArray = VK_TRUE;
+        vulkan12.descriptorBindingPartiallyBound = VK_TRUE;
+        vulkan12.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingUniformBufferUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingVariableDescriptorCount = VK_TRUE;
+        // Buffer device address for advanced GPU-driven rendering
+        vulkan12.bufferDeviceAddress = VK_TRUE;
+        // Timeline semaphores for flexible synchronization
+        vulkan12.timelineSemaphore = VK_TRUE;
+        // Host query reset
+        vulkan12.hostQueryReset = VK_TRUE;
+
+#if defined(VK_API_VERSION_1_4)
+        // Vulkan 1.3 features - supported by recent MoltenVK versions
+        vk::PhysicalDeviceVulkan13Features vulkan13{};
+        // Synchronization2 for improved sync API
+        vulkan13.synchronization2 = VK_TRUE;
+        // Maintenance4 for various improvements
+        vulkan13.maintenance4 = VK_TRUE;
+        // Private data for better extension interop
+        vulkan13.privateData = VK_TRUE;
+
+        return Device::Builder()
+            .setGraphicQueueCount(nbGraphicQueue)
+            .setComputeQueueCount(nbComputeQueue)
+            .enableSamplerAnisotropy(true)
+            .enableFillModeNonSolid(true)
+            .addFeature(vulkan12)
+            .addFeature(vulkan13)
             .preferDiscreteGPU()
             .setSurface(surfaceConfig)
             .build();
+#else
+        return Device::Builder()
+            .setGraphicQueueCount(nbGraphicQueue)
+            .setComputeQueueCount(nbComputeQueue)
+            .enableSamplerAnisotropy(true)
+            .enableFillModeNonSolid(true)
+            .addFeature(vulkan12)
+            .preferDiscreteGPU()
+            .setSurface(surfaceConfig)
+            .build();
+#endif
     }
 
     /**
@@ -1711,60 +1872,7 @@ namespace LavaCake {
         return Device::Builder()
             .setGraphicQueueCount(nbGraphicQueue)
             .setComputeQueueCount(nbComputeQueue)
-            .headless()
             .build();
-    }
-
-    /**
-     * \brief Creates a windowed device with presentation support
-     * \param surfaceConfig Surface configuration for window presentation
-     * \param nbGraphicQueue Number of graphics queues (default: 1)
-     * \param nbComputeQueue Number of compute queues (default: 0)
-     * \return Device configured for windowed usage
-     *
-     * \details Creates a windowed device with:
-     * - Custom queue configuration
-     * - Presentation surface support
-     * - Swapchain creation
-     * - Dynamic rendering enabled (mandatory)
-     * - Default validation layers enabled
-     *
-     * The surface configuration must be provided using your windowing library
-     * (e.g., SDL2, GLFW). The device will automatically enable the swapchain
-     * extension and create a swapchain for presentation.
-     */
-    inline Device createWindowedDevice(
-        const SurfaceConfig& surfaceConfig,
-        int nbGraphicQueue = 1,
-        int nbComputeQueue = 0
-    ) {
-        return Device::Builder()
-            .setGraphicQueueCount(nbGraphicQueue)
-            .setComputeQueueCount(nbComputeQueue)
-            .setSurface(surfaceConfig)
-            .build();
-    }
-
-    /**
-     * \brief Returns a new device builder for custom configuration
-     * \return Builder instance for fluent configuration
-     *
-     * \details Use this function to access the builder for advanced device
-     *          configuration with full control over all options.
-     *
-     * Example usage:
-     * \code
-     * auto device = createDeviceBuilder()
-     *     .setGraphicQueues(2)
-     *     .setComputeQueues(1)
-     *     .enableGeometryShader(true)
-     *     .enableTessellationShader(true)
-     *     .preferDiscreteGPU()
-     *     .build();
-     * \endcode
-     */
-    inline Device::Builder createDeviceBuilder() {
-        return Device::Builder();
     }
 
 }
