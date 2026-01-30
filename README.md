@@ -14,6 +14,7 @@ LavaCake provides high-level abstractions over the Vulkan API, letting you lever
 - **Integrated Memory Management** - Built-in VMA (Vulkan Memory Allocator) integration
 - **Runtime Shader Compilation** - Automatic GLSL to SPIR-V compilation via shaderc
 - **Bindless Rendering** - Support for modern bindless descriptor patterns
+- **ImGui Integration** - Built-in ImGuiRenderer for easy UI overlay support
 - **Cross-Platform** - Works on macOS, Linux, and Windows (Windows support is untested)
 
 ## Requirements
@@ -269,11 +270,23 @@ The `examples/` directory contains progressive tutorials:
 | `06_bindless_quad` | Modern bindless rendering pattern |
 | `07_bindless_quad_textured` | Bindless rendering with textures |
 | `08_bindless_combined` | Bindless texture and buffer arrays |
+| `09_rotating_cube` | 3D cube with depth testing and MVP transformations |
+
+### Advanced
+| Example | Description |
+|---------|-------------|
+| `01_shadow_map` | Two-pass shadow mapping with PCF soft shadows |
+| `02_multiple_lights` | Multiple point lights with bindless shadow map arrays |
 
 ### Compute
 | Example | Description |
 |---------|-------------|
 | `01_vector_addition` | Headless compute with storage buffers |
+
+### ImGui
+| Example | Description |
+|---------|-------------|
+| `01_imgui_demo` | ImGui integration with LavaCake's ImGuiRenderer |
 
 Build examples with (requires GLFW):
 ```bash
@@ -286,21 +299,32 @@ cmake --build .
 
 ```
 LavaCake/
-├── Library/LavaCake/     # Header-only library
-│   ├── Device.hpp        # Core device management + SurfaceConfig
-│   ├── GLFWSupport.hpp   # Optional GLFW convenience utilities
-│   ├── SDL2Support.hpp   # Optional SDL2 convenience utilities
-│   ├── Buffer.hpp        # GPU buffer handling
-│   ├── Image.hpp         # Image and sampler management
-│   ├── CommandBuffer.hpp # Command recording
-│   ├── GraphicPipeline.hpp
-│   ├── ComputePipeline.hpp
-│   ├── DescriptorSet.hpp
-│   ├── ShaderModule.hpp
-│   └── DynamicRendering.hpp
-├── examples/             # Usage examples (requires GLFW)
-├── cmake/                # CMake configuration
-└── documentation/        # Doxygen config
+├── Library/LavaCake/       # Header-only library
+│   ├── Device.hpp          # Core device management + SurfaceConfig
+│   ├── GLFWSupport.hpp     # GLFW surface configuration
+│   ├── SDL2Support.hpp     # SDL2 surface configuration
+│   ├── Buffer.hpp          # GPU buffer handling
+│   ├── UniformBuffer.hpp   # Uniform buffer utilities
+│   ├── Image.hpp           # Image and sampler management
+│   ├── SwapChainImage.hpp  # Swapchain image handling
+│   ├── CommandBuffer.hpp   # Command recording
+│   ├── Pipeline.hpp        # Base pipeline class
+│   ├── GraphicPipeline.hpp # Graphics pipeline
+│   ├── ComputePipeline.hpp # Compute pipeline
+│   ├── DescriptorSet.hpp   # Descriptor set management
+│   ├── DescriptorPool.hpp  # Descriptor pool management
+│   ├── ShaderModule.hpp    # Shader compilation
+│   ├── DynamicRendering.hpp# Dynamic rendering utilities
+│   ├── ImGui.hpp           # ImGui integration
+│   ├── VMAFlags.hpp        # VMA configuration flags
+│   └── ByteDictionary.hpp  # Byte buffer utilities
+├── examples/               # Usage examples
+│   ├── basic/              # Introductory examples
+│   ├── advanced/           # Shadow mapping, multiple lights
+│   ├── compute/            # GPGPU examples
+│   └── imgui/              # ImGui integration
+├── cmake/                  # CMake configuration
+└── documentation/          # Doxygen config
 ```
 
 ## API Design
