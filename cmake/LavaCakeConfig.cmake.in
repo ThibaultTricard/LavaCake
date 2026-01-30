@@ -4,6 +4,20 @@ include(CMakeFindDependencyMacro)
 
 find_dependency(Vulkan REQUIRED)
 
+# Find shaderc library (installed alongside LavaCake)
+find_library(SHADERC_COMBINED_LIB
+    NAMES shaderc_combined
+    HINTS "${PACKAGE_PREFIX_DIR}/lib"
+    REQUIRED
+)
+
 include("${CMAKE_CURRENT_LIST_DIR}/LavaCakeTargets.cmake")
+
+# Add shaderc to the imported target's link libraries
+if(TARGET LavaCake::LavaCake AND SHADERC_COMBINED_LIB)
+    set_property(TARGET LavaCake::LavaCake APPEND PROPERTY
+        INTERFACE_LINK_LIBRARIES "${SHADERC_COMBINED_LIB}"
+    )
+endif()
 
 check_required_components(LavaCake)

@@ -99,7 +99,7 @@ if(NOT SHADERC_FOUND)
     # Configure shaderc build options
     set(SHADERC_SKIP_TESTS ON CACHE BOOL "" FORCE)
     set(SHADERC_SKIP_EXAMPLES ON CACHE BOOL "" FORCE)
-    set(SHADERC_SKIP_INSTALL ON CACHE BOOL "" FORCE)
+    set(SHADERC_SKIP_INSTALL OFF CACHE BOOL "" FORCE)
     
     FetchContent_MakeAvailable(shaderc)
 
@@ -118,11 +118,9 @@ file(GLOB_RECURSE LAVACAKE_HEADERS "Library/LavaCake/*.hpp" "Library/LavaCake/*.
 add_library(LavaCake INTERFACE)
 target_include_directories(LavaCake INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Library>
-    $<INSTALL_INTERFACE:include>
-)
-target_include_directories(LavaCake INTERFACE
     $<BUILD_INTERFACE:${Vulkan_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${vmahpp_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 # Note: shaderc includes are not added to the interface as they're in the build directory
 # Users will need to have their own shaderc installation
@@ -139,6 +137,8 @@ if(DEFINED SHADERC_INCLUDE_DIRS)
         $<BUILD_INTERFACE:${SHADERC_INCLUDE_DIRS}>
     )
 endif()
+
+# Note: INSTALL_INTERFACE for shaderc is already covered by CMAKE_INSTALL_INCLUDEDIR above
 
 # Create an alias for consistent usage
 add_library(LavaCake::LavaCake ALIAS LavaCake)
@@ -158,6 +158,20 @@ install(DIRECTORY Library/LavaCake
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h"
 )
+
+# Install VulkanMemoryAllocator headers
+FetchContent_GetProperties(VulkanMemoryAllocator SOURCE_DIR VMA_SOURCE_DIR)
+install(FILES ${VMA_SOURCE_DIR}/include/vk_mem_alloc.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+# Install shaderc headers
+if(DEFINED SHADERC_INCLUDE_DIRS)
+    install(DIRECTORY ${SHADERC_INCLUDE_DIRS}/shaderc
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h"
+    )
+endif()
 
 install(EXPORT LavaCakeTargets
     FILE LavaCakeTargets.cmake
