@@ -25,7 +25,7 @@ LavaCake provides high-level abstractions over the Vulkan API, letting you lever
 
 ## Installation
 
-### Using CMake FetchContent
+### Using CMake FetchContent (Recommended)
 
 ```cmake
 include(FetchContent)
@@ -39,6 +39,20 @@ FetchContent_MakeAvailable(LavaCake)
 target_link_libraries(your_target PRIVATE LavaCake::LavaCake)
 ```
 
+### Using an Installed Version
+
+If you've installed LavaCake to your system (see [Building from Source](#building-from-source)):
+
+```cmake
+find_package(LavaCake REQUIRED)
+target_link_libraries(your_target PRIVATE LavaCake::LavaCake)
+```
+
+If installed to a non-standard location, specify the prefix:
+```bash
+cmake -DCMAKE_PREFIX_PATH=/your/install/path ..
+```
+
 ### Building from Source
 
 ```bash
@@ -50,9 +64,28 @@ cmake --build .
 cmake --install . --prefix /your/install/path
 ```
 
+Common install prefixes:
+- **macOS (Apple Silicon)**: `/opt/homebrew`
+- **macOS (Intel)**: `/usr/local`
+- **Linux**: `/usr/local` or `/usr`
+
+The installation includes:
+- LavaCake headers
+- VulkanMemoryAllocator header (`vk_mem_alloc.h`)
+- shaderc headers and library (`libshaderc_combined.a`)
+- CMake config files for `find_package(LavaCake)`
+
 To build without examples (no GLFW dependency required):
 ```bash
 cmake .. -DLAVACAKE_BUILD_EXAMPLES=OFF
+```
+
+### Uninstalling
+
+After installation, CMake creates `build/install_manifest.txt` listing all installed files. To uninstall:
+
+```bash
+xargs rm -f < build/install_manifest.txt
 ```
 
 ## Quick Start
