@@ -1594,9 +1594,6 @@ namespace LavaCake {
                         auto formats = device.m_physicalDevice.getSurfaceFormatsKHR(device.m_presentationSurface);
                         auto presentModes = device.m_physicalDevice.getSurfacePresentModesKHR(device.m_presentationSurface);
 
-                        #ifdef WAYLAND_CLIENT_H
-                            //TODO
-                        #endif
                         // Use preferred surface format if provided, otherwise use first available
                         vk::SurfaceFormatKHR surfaceFormat = m_preferredSurfaceFormat.value_or(formats[0]);
 
