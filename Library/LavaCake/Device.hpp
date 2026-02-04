@@ -183,6 +183,10 @@ namespace LavaCake {
             m_swapchainImages = d.m_swapchainImages;
             m_swapchainFormat = d.m_swapchainFormat;
             m_swapchainExtent = d.m_swapchainExtent;
+            m_swapchainColorSpace = d.m_swapchainColorSpace;
+            m_graphicsQueueFamilyIndex = d.m_graphicsQueueFamilyIndex;
+            m_presentQueueFamilyIndex = d.m_presentQueueFamilyIndex;
+            m_presentMode = d.m_presentMode;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -206,6 +210,10 @@ namespace LavaCake {
             m_swapchainImages = d.m_swapchainImages;
             m_swapchainFormat = d.m_swapchainFormat;
             m_swapchainExtent = d.m_swapchainExtent;
+            m_swapchainColorSpace = d.m_swapchainColorSpace;
+            m_graphicsQueueFamilyIndex = d.m_graphicsQueueFamilyIndex;
+            m_presentQueueFamilyIndex = d.m_presentQueueFamilyIndex;
+            m_presentMode = d.m_presentMode;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -229,6 +237,10 @@ namespace LavaCake {
             m_swapchainImages = d.m_swapchainImages;
             m_swapchainFormat = d.m_swapchainFormat;
             m_swapchainExtent = d.m_swapchainExtent;
+            m_swapchainColorSpace = d.m_swapchainColorSpace;
+            m_graphicsQueueFamilyIndex = d.m_graphicsQueueFamilyIndex;
+            m_presentQueueFamilyIndex = d.m_presentQueueFamilyIndex;
+            m_presentMode = d.m_presentMode;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -253,6 +265,10 @@ namespace LavaCake {
             m_swapchainImages = d.m_swapchainImages;
             m_swapchainFormat = d.m_swapchainFormat;
             m_swapchainExtent = d.m_swapchainExtent;
+            m_swapchainColorSpace = d.m_swapchainColorSpace;
+            m_graphicsQueueFamilyIndex = d.m_graphicsQueueFamilyIndex;
+            m_presentQueueFamilyIndex = d.m_presentQueueFamilyIndex;
+            m_presentMode = d.m_presentMode;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -421,7 +437,64 @@ namespace LavaCake {
          * \return the size_t of the swapchain Images array
          */ 
         size_t getSwapChainImagesNumber(){
-           return m_swapchainImages.size(); 
+           return m_swapchainImages.size();
+        }
+
+        /**
+         * \brief Resizes the swapchain to match the current surface extent
+         * \details Destroys the current swapchain and recreates it using the
+         *          surface's currentExtent. Must be called when no command buffers
+         *          are using the swapchain.
+         */
+        void resizeSwapchain() {
+            if (!m_hasSurface) return;
+
+            m_device.waitIdle();
+
+            for (auto& img : m_swapchainImages) {
+                m_device.destroyImageView(img.getImageView());
+            }
+            uint32_t imageCount = static_cast<uint32_t>(m_swapchainImages.size());
+            m_swapchainImages.clear();
+
+            auto surfaceCaps = m_physicalDevice.getSurfaceCapabilitiesKHR(m_presentationSurface);
+
+            uint32_t indices[] = { m_graphicsQueueFamilyIndex, m_presentQueueFamilyIndex };
+
+            vk::SwapchainCreateInfoKHR swapInfo{};
+            swapInfo.surface            = m_presentationSurface;
+            swapInfo.minImageCount      = imageCount;
+            swapInfo.imageFormat        = m_swapchainFormat;
+            swapInfo.imageColorSpace    = m_swapchainColorSpace;
+            swapInfo.imageExtent        = surfaceCaps.currentExtent;
+            swapInfo.imageArrayLayers   = 1;
+            swapInfo.imageUsage         = vk::ImageUsageFlagBits::eColorAttachment;
+
+            if (m_graphicsQueueFamilyIndex != m_presentQueueFamilyIndex) {
+                swapInfo.imageSharingMode       = vk::SharingMode::eConcurrent;
+                swapInfo.queueFamilyIndexCount  = 2;
+                swapInfo.pQueueFamilyIndices    = indices;
+            } else {
+                swapInfo.imageSharingMode = vk::SharingMode::eExclusive;
+            }
+
+            swapInfo.preTransform   = surfaceCaps.currentTransform;
+            swapInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
+            swapInfo.presentMode    = m_presentMode;
+            swapInfo.clipped        = VK_TRUE;
+            swapInfo.oldSwapchain   = m_swapchain;
+
+            vk::SwapchainKHR oldSwapchain = m_swapchain;
+            m_swapchain = m_device.createSwapchainKHR(swapInfo);
+            m_device.destroySwapchainKHR(oldSwapchain);
+
+            m_swapchainExtent = surfaceCaps.currentExtent;
+
+            auto images = m_device.getSwapchainImagesKHR(m_swapchain);
+            m_swapchainImages.reserve(images.size());
+            for (uint32_t i = 0; i < images.size(); i++) {
+                m_swapchainImages.emplace_back(m_device, images[i], i, m_swapchainFormat);
+            }
         }
 
         /**
@@ -1494,6 +1567,9 @@ namespace LavaCake {
                         auto formats = device.m_physicalDevice.getSurfaceFormatsKHR(device.m_presentationSurface);
                         auto presentModes = device.m_physicalDevice.getSurfacePresentModesKHR(device.m_presentationSurface);
 
+                        #ifdef WAYLAND_CLIENT_H
+                            //TODO
+                        #endif
                         // Use preferred surface format if provided, otherwise use first available
                         vk::SurfaceFormatKHR surfaceFormat = m_preferredSurfaceFormat.value_or(formats[0]);
 
@@ -1537,7 +1613,11 @@ namespace LavaCake {
                         swapInfo.presentMode = presentMode;
                         swapInfo.clipped = VK_TRUE;
 
-                        device.m_swapchainFormat = surfaceFormat.format;
+                        device.m_swapchainFormat            = surfaceFormat.format;
+                        device.m_swapchainColorSpace        = surfaceFormat.colorSpace;
+                        device.m_graphicsQueueFamilyIndex   = graphicsFamily.value();
+                        device.m_presentQueueFamilyIndex    = presentFamily.value();
+                        device.m_presentMode                = presentMode;
 
                         device.m_swapchain = device.m_device.createSwapchainKHR(swapInfo);
 
@@ -1649,6 +1729,10 @@ namespace LavaCake {
         std::vector<LavaCake::SwapChainImage>                 m_swapchainImages;
         vk::Format                                            m_swapchainFormat;
         vk::Extent2D                                          m_swapchainExtent;
+        vk::ColorSpaceKHR                                     m_swapchainColorSpace;
+        uint32_t                                              m_graphicsQueueFamilyIndex;
+        uint32_t                                              m_presentQueueFamilyIndex;
+        vk::PresentModeKHR                                    m_presentMode;
 
         vk::CommandPool                                       m_commandPool;
         vk::DebugUtilsMessengerEXT                            m_debugMessenger;

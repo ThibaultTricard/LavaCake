@@ -31,6 +31,12 @@ int main() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     GLFWwindow* window = glfwCreateWindow(800, 600, "02 - Colored Triangle Example", nullptr, nullptr);
 
+    bool framebufferResized = false;
+    glfwSetWindowUserPointer(window, &framebufferResized);
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int, int) {
+        *static_cast<bool*>(glfwGetWindowUserPointer(win)) = true;
+    });
+
     auto surfaceConfig = LavaCake::GLFW::createSurfaceConfig(window);
     LavaCake::Device device = LavaCake::createWindowedDevice(surfaceConfig,1);
     { // Create a context to make sure all GPU objects are destroyed before we release the device
@@ -67,62 +73,84 @@ int main() {
         {
             glfwPollEvents();
 
+            if (framebufferResized) {
+                framebufferResized = false;
+                // Spin while minimized — swapchain can't be created with a zero extent
+                int width = 0, height = 0;
+                glfwGetFramebufferSize(window, &width, &height);
+                while (width == 0 || height == 0) {
+                    glfwWaitEvents();
+                    glfwGetFramebufferSize(window, &width, &height);
+                }
+                device.resizeSwapchain();
+                continue;
+            }
+
             // Wait for previous frame to complete
             cmdBuffer.waitForCompletion();
             cmdBuffer.reset();
 
-            // Acquire next swapchain image using current frame's semaphore
-            LavaCake::SwapChainImage& swapchainImage = device.aquireSwapChainImage(imageAvailableSemaphores[currentFrame]);
+            try {
+                // Acquire next swapchain image using current frame's semaphore
+                LavaCake::SwapChainImage& swapchainImage = device.aquireSwapChainImage(imageAvailableSemaphores[currentFrame]);
 
-            // Begin recording commands
-            cmdBuffer.begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+                // Begin recording commands
+                cmdBuffer.begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
 
-            // Transition swapchain image to COLOR_ATTACHMENT_OPTIMAL
-            swapchainImage.prepareForAttachementBarrier(cmdBuffer);
+                // Transition swapchain image to COLOR_ATTACHMENT_OPTIMAL
+                swapchainImage.prepareForAttachementBarrier(cmdBuffer);
 
-            // Begin dynamic rendering with cornflower blue clear color
-            LavaCake::DynamicRenderingContext renderingContext = LavaCake::DynamicRenderingContext::Builder()
-                .setRenderArea(device.getSwapchainExtent())
-                .addColorAttachment(
-                    swapchainImage,
-                    vk::ClearColorValue(std::array<float, 4>{0.39f, 0.58f, 0.93f, 1.0f}) // Cornflower blue!
-                )
-                .begin(cmdBuffer);
-            
-            // Set the Viewport and Scissor to for rendering on the whole image
-            renderingContext.setDefaultViewportScissor(cmdBuffer);
+                // Begin dynamic rendering with cornflower blue clear color
+                LavaCake::DynamicRenderingContext renderingContext = LavaCake::DynamicRenderingContext::Builder()
+                    .setRenderArea(device.getSwapchainExtent())
+                    .addColorAttachment(
+                        swapchainImage,
+                        vk::ClearColorValue(std::array<float, 4>{0.39f, 0.58f, 0.93f, 1.0f}) // Cornflower blue!
+                    )
+                    .begin(cmdBuffer);
 
-            // binding the pipeline
-            graphicPipeline.bind(cmdBuffer);
+                // Set the Viewport and Scissor to for rendering on the whole image
+                renderingContext.setDefaultViewportScissor(cmdBuffer);
 
-            // draw call for three vertices
-            graphicPipeline.draw(cmdBuffer,3);
+                // binding the pipeline
+                graphicPipeline.bind(cmdBuffer);
 
-            // End rendering
-            renderingContext.end(cmdBuffer);
+                // draw call for three vertices
+                graphicPipeline.draw(cmdBuffer,3);
 
-            // Transition swapchain image to PRESENT layout
-            swapchainImage.prepareForPresentBarrier(cmdBuffer);
+                // End rendering
+                renderingContext.end(cmdBuffer);
 
-            cmdBuffer.end();
+                // Transition swapchain image to PRESENT layout
+                swapchainImage.prepareForPresentBarrier(cmdBuffer);
 
-            // Submit command buffer with fence using current frame's semaphores
-            vk::PipelineStageFlags waitStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-            vk::SubmitInfo submitInfo;
-            submitInfo.waitSemaphoreCount = 1;
-            submitInfo.pWaitSemaphores = &imageAvailableSemaphores[currentFrame];
-            submitInfo.pWaitDstStageMask = &waitStage;
-            submitInfo.commandBufferCount = 1;
-            vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
-            submitInfo.pCommandBuffers = &rawCmd;
-            submitInfo.signalSemaphoreCount = 1;
-            submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
+                cmdBuffer.end();
 
-            device.getGraphicQueue(0).submit(submitInfo, cmdBuffer.getFence());
-            cmdBuffer.markSubmitted();
+                // Submit command buffer with fence using current frame's semaphores
+                vk::PipelineStageFlags waitStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+                vk::SubmitInfo submitInfo;
+                submitInfo.waitSemaphoreCount = 1;
+                submitInfo.pWaitSemaphores = &imageAvailableSemaphores[currentFrame];
+                submitInfo.pWaitDstStageMask = &waitStage;
+                submitInfo.commandBufferCount = 1;
+                vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
+                submitInfo.pCommandBuffers = &rawCmd;
+                submitInfo.signalSemaphoreCount = 1;
+                submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 
-            // Present the image
-            device.presentImage(swapchainImage, {renderFinishedSemaphores[currentFrame]});
+                device.getGraphicQueue(0).submit(submitInfo, cmdBuffer.getFence());
+                cmdBuffer.markSubmitted();
+
+                // Present the image
+                device.presentImage(swapchainImage, {renderFinishedSemaphores[currentFrame]});
+
+            } catch (const vk::OutOfDateKHRError&) {
+                // Swapchain became incompatible mid-frame (resize arrived after the
+                // flag check). Trigger the resize path on the next iteration;
+                // resizeSwapchain will waitIdle before recreating.
+                framebufferResized = true;
+                continue;
+            }
 
             // Advance to next frame
             currentFrame = (currentFrame + 1) % swapchainImageCount;

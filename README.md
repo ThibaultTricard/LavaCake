@@ -15,6 +15,7 @@ LavaCake provides high-level abstractions over the Vulkan API, letting you lever
 - **Runtime Shader Compilation** - Automatic GLSL to SPIR-V compilation via shaderc
 - **Bindless Rendering** - Support for modern bindless descriptor patterns
 - **ImGui Integration** - Built-in ImGuiRenderer for easy UI overlay support
+- **Swapchain Resizing** - Simple `resizeSwapchain()` with automatic teardown and recreation
 - **Cross-Platform** - Works on macOS, Linux, and Windows (Windows support is untested)
 
 ## Requirements
@@ -254,6 +255,61 @@ auto device = LavaCake::createDeviceBuilder()
 - **Automatic Extensions**: Swapchain extensions added automatically when surface is configured
 - **VMA Integration**: Vulkan Memory Allocator automatically initialized with customizable flags
 - **Validation Layers**: Enabled by default, can be disabled for release builds
+
+## Swapchain Resizing
+
+When the window is resized the swapchain must be recreated to match the new surface extent. `device.resizeSwapchain()` handles teardown and recreation automatically — it waits for the GPU to idle, destroys the old swapchain images, and rebuilds everything from the surface's current extent.
+
+Two things can trigger a resize:
+
+1. The window manager fires a resize callback **before** the next frame starts — detected via a flag.
+2. `acquireNextImageKHR` or `presentKHR` returns `OutOfDateKHR` on a frame that was **already in flight** when the resize happened — this surfaces as a `vk::OutOfDateKHRError` exception from vulkan.hpp.
+
+Both paths need to be handled. Here is the complete GLFW pattern:
+
+```cpp
+// --- setup (once, after window creation) ---
+bool framebufferResized = false;
+glfwSetWindowUserPointer(window, &framebufferResized);
+glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int, int) {
+    *static_cast<bool*>(glfwGetWindowUserPointer(win)) = true;
+});
+
+// --- render loop ---
+while (!glfwWindowShouldClose(window)) {
+    glfwPollEvents();
+
+    // Path 1: resize callback fired before this frame
+    if (framebufferResized) {
+        framebufferResized = false;
+        // Spin while minimized — zero extent is invalid for swapchain creation
+        int w = 0, h = 0;
+        glfwGetFramebufferSize(window, &w, &h);
+        while (w == 0 || h == 0) {
+            glfwWaitEvents();
+            glfwGetFramebufferSize(window, &w, &h);
+        }
+        device.resizeSwapchain();
+        continue;
+    }
+
+    // Path 2: OutOfDateKHR on an in-flight frame
+    try {
+        auto& image = device.aquireSwapChainImage(imageAvailableSemaphore);
+        // ... record commands, submit, present ...
+        device.presentImage(image, {renderFinishedSemaphore});
+    } catch (const vk::OutOfDateKHRError&) {
+        framebufferResized = true;  // will be handled at the top of the next iteration
+        continue;
+    }
+}
+```
+
+Key points:
+- `resizeSwapchain()` calls `waitIdle` internally, so all in-flight GPU work completes before the old swapchain is destroyed.
+- The minimization spin (`while (w == 0 || h == 0)`) prevents attempting to create a swapchain with a zero extent.
+- The `OutOfDateKHR` catch is necessary because the resize callback and the present call are not atomic — a resize can arrive between the flag check and the end of the frame.
+- See `examples/basic/02_colored_triangle.cpp` for a complete working example.
 
 ## Examples
 
