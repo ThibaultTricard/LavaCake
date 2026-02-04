@@ -49,6 +49,13 @@ namespace SDL2 {
             SDL_Vulkan_GetInstanceExtensions(window, &extCount, config.requiredExtensions.data());
         }
 
+        // Snapshot the current window size so the swapchain has a valid
+        // fallback on platforms that report currentExtent as UINT32_MAX
+        int sdlWidth = 0, sdlHeight = 0;
+        SDL_Vulkan_GetWindowSize(window, &sdlWidth, &sdlHeight);
+        config.width  = static_cast<uint32_t>(sdlWidth);
+        config.height = static_cast<uint32_t>(sdlHeight);
+
         // Create surface callback that captures the window pointer
         config.createSurface = [window](vk::Instance instance) -> vk::SurfaceKHR {
             VkSurfaceKHR rawSurface;

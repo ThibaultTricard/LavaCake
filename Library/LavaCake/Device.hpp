@@ -146,6 +146,22 @@ namespace LavaCake {
          * Return a null SurfaceKHR on failure.
          */
         SurfaceCreateFn createSurface;
+
+        /**
+         * \brief Preferred swapchain width in pixels
+         *
+         * Used on platforms where the surface does not report a currentExtent
+         * (e.g. Wayland).  Set to 0 to let the surface decide.
+         */
+        uint32_t width = 0;
+
+        /**
+         * \brief Preferred swapchain height in pixels
+         *
+         * Used on platforms where the surface does not report a currentExtent
+         * (e.g. Wayland).  Set to 0 to let the surface decide.
+         */
+        uint32_t height = 0;
     };
 
     /**
@@ -441,12 +457,14 @@ namespace LavaCake {
         }
 
         /**
-         * \brief Resizes the swapchain to match the current surface extent
-         * \details Destroys the current swapchain and recreates it using the
-         *          surface's currentExtent. Must be called when no command buffers
-         *          are using the swapchain.
+         * \brief Resizes the swapchain
+         * \param newExtent optional new extent.  Used when the surface does not
+         *        report a currentExtent (e.g. Wayland).  Ignored when the surface
+         *        provides a fixed currentExtent.  If omitted and currentExtent is
+         *        UINT32_MAX the previous extent is reused.
+         * \details Must be called when no command buffers are using the swapchain.
          */
-        void resizeSwapchain() {
+        void resizeSwapchain(std::optional<vk::Extent2D> newExtent = std::nullopt) {
             if (!m_hasSurface) return;
 
             m_device.waitIdle();
@@ -466,7 +484,15 @@ namespace LavaCake {
             swapInfo.minImageCount      = imageCount;
             swapInfo.imageFormat        = m_swapchainFormat;
             swapInfo.imageColorSpace    = m_swapchainColorSpace;
-            swapInfo.imageExtent        = surfaceCaps.currentExtent;
+            if (surfaceCaps.currentExtent.width != UINT32_MAX) {
+                m_swapchainExtent = surfaceCaps.currentExtent;
+            } else if (newExtent.has_value()) {
+                m_swapchainExtent = newExtent.value();
+            }else {
+                throw std::runtime_error("Surface does not report a currentExtent — fill the optional newExtent parameter of the resizeFunction");
+            }
+
+            swapInfo.imageExtent        = m_swapchainExtent;
             swapInfo.imageArrayLayers   = 1;
             swapInfo.imageUsage         = vk::ImageUsageFlagBits::eColorAttachment;
 
@@ -487,8 +513,6 @@ namespace LavaCake {
             vk::SwapchainKHR oldSwapchain = m_swapchain;
             m_swapchain = m_device.createSwapchainKHR(swapInfo);
             m_device.destroySwapchainKHR(oldSwapchain);
-
-            m_swapchainExtent = surfaceCaps.currentExtent;
 
             auto images = m_device.getSwapchainImagesKHR(m_swapchain);
             m_swapchainImages.reserve(images.size());
@@ -646,6 +670,9 @@ namespace LavaCake {
             Builder& setSurface(const SurfaceConfig& config) {
                 m_surfaceConfig = config;
                 m_hasSurface = true;
+                if (config.width != 0 && config.height != 0) {
+                    m_preferredExtent = vk::Extent2D{config.width, config.height};
+                }
                 return *this;
             }
 
@@ -1576,7 +1603,13 @@ namespace LavaCake {
                         // Use preferred present mode if provided, otherwise use FIFO
                         vk::PresentModeKHR presentMode = m_preferredPresentMode.value_or(vk::PresentModeKHR::eFifo);
 
-                        device.m_swapchainExtent = surfaceCaps.currentExtent;
+                        if (surfaceCaps.currentExtent.width != UINT32_MAX) {
+                            device.m_swapchainExtent = surfaceCaps.currentExtent;
+                        } else if (m_preferredExtent.has_value()) {
+                            device.m_swapchainExtent = m_preferredExtent.value();
+                        } else {
+                            throw std::runtime_error("Surface does not report a currentExtent — call setSwapchainExtent() on the builder");
+                        }
 
                         // Use preferred image count if provided
                         uint32_t imageCount = m_preferredSwapchainImageCount.value_or(surfaceCaps.minImageCount + 1);
@@ -1715,6 +1748,7 @@ namespace LavaCake {
             std::optional<uint32_t> m_preferredSwapchainImageCount;
             std::optional<vk::PresentModeKHR> m_preferredPresentMode;
             std::optional<vk::SurfaceFormatKHR> m_preferredSurfaceFormat;
+            std::optional<vk::Extent2D> m_preferredExtent;
         };
 
     private:

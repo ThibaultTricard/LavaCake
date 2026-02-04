@@ -82,7 +82,9 @@ int main() {
                     glfwWaitEvents();
                     glfwGetFramebufferSize(window, &width, &height);
                 }
-                device.resizeSwapchain();
+
+                auto newExtent = vk::Extent2D(width,height);
+                device.resizeSwapchain(newExtent);
                 continue;
             }
 

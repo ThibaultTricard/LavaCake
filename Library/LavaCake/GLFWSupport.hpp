@@ -46,6 +46,13 @@ namespace GLFW {
             config.requiredExtensions.assign(glfwExtensions, glfwExtensions + glfwExtCount);
         }
 
+        // Snapshot the current framebuffer size so the swapchain has a valid
+        // fallback on platforms that report currentExtent as UINT32_MAX
+        int fbWidth = 0, fbHeight = 0;
+        glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+        config.width  = static_cast<uint32_t>(fbWidth);
+        config.height = static_cast<uint32_t>(fbHeight);
+
         // Create surface callback that captures the window pointer
         config.createSurface = [window](vk::Instance instance) -> vk::SurfaceKHR {
             VkSurfaceKHR rawSurface;
