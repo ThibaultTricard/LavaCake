@@ -82,6 +82,7 @@ To build without examples (no GLFW dependency required):
 cmake .. -DLAVACAKE_BUILD_EXAMPLES=OFF
 ```
 
+
 ### Uninstalling
 
 After installation, CMake creates `build/install_manifest.txt` listing all installed files. To uninstall:
@@ -344,7 +345,7 @@ The `examples/` directory contains progressive tutorials:
 |---------|-------------|
 | `01_imgui_demo` | ImGui integration with LavaCake's ImGuiRenderer |
 
-Build examples with (requires GLFW):
+Build examples with (requires GLFW and glm):
 ```bash
 cd build
 cmake .. -DLAVACAKE_BUILD_EXAMPLES=ON
