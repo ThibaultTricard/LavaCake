@@ -1,0 +1,222 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+
+layout(binding = 0, set = 0) uniform accelerationStructureEXT topLevelAS;
+layout(binding = 1, set = 0, rgba8) uniform image2D image;
+layout(binding = 2, set = 0) uniform CameraData {
+    mat4 viewInverse;
+    mat4 projInverse;
+    uint frameIndex;
+} camera;
+layout(binding = 5, set = 0, rgba32f) uniform image2D accumulationImage;
+
+// Ray payload - receives hit information from closest hit shader
+struct RayPayload {
+    vec3 hitPos;       // World position of hit
+    vec3 hitNormal;    // Surface normal at hit
+    vec3 albedo;       // Surface color/albedo
+    bool hit;          // Whether ray hit geometry
+};
+
+layout(location = 0) rayPayloadEXT RayPayload payload;
+layout(location = 1) rayPayloadEXT bool isShadowed;
+
+// Light parameters
+const vec3 lightPos = vec3(0.0, 1.95, 0.0);
+const vec3 lightColor = vec3(1.0, 0.95, 0.85);
+const float lightIntensity = 2.5;
+
+const int MAX_BOUNCES = 60;
+
+// Integer hash functions (no sine)
+uint hash(uint x) {
+    x += (x << 10u);
+    x ^= (x >> 6u);
+    x += (x << 3u);
+    x ^= (x >> 11u);
+    x += (x << 15u);
+    return x;
+}
+
+uint hash(uvec2 v) {
+    return hash(v.x ^ hash(v.y));
+}
+
+uint hash(uvec3 v) {
+    return hash(v.x ^ hash(v.y) ^ hash(v.z));
+}
+
+// Convert hash to float [0, 1)
+float floatConstruct(uint m) {
+    const uint ieeeMantissa = 0x007FFFFFu;
+    const uint ieeeOne = 0x3F800000u;
+
+    m &= ieeeMantissa;
+    m |= ieeeOne;
+
+    float f = uintBitsToFloat(m);
+    return f - 1.0;
+}
+
+// Random float from uvec2 seed
+float random(uvec2 seed) {
+    return floatConstruct(hash(seed));
+}
+
+// Random float from uvec3 seed
+float random(uvec3 seed) {
+    return floatConstruct(hash(seed));
+}
+
+// Build orthonormal basis from normal (Frisvad's method, revised)
+void buildOrthonormalBasis(vec3 n, out vec3 tangent, out vec3 bitangent) {
+    if (n.z < -0.9999999) {
+        tangent = vec3(0.0, -1.0, 0.0);
+        bitangent = vec3(-1.0, 0.0, 0.0);
+    } else {
+        float a = 1.0 / (1.0 + n.z);
+        float b = -n.x * n.y * a;
+        tangent = vec3(1.0 - n.x * n.x * a, b, -n.x);
+        bitangent = vec3(b, 1.0 - n.y * n.y * a, -n.y);
+    }
+}
+
+// Generate cosine-weighted hemisphere direction
+vec3 cosineWeightedHemisphere(vec3 normal, uvec3 seed) {
+    float u1 = random(seed);
+    float u2 = random(uvec3(seed.y, seed.z, seed.x + 7919u));  // Better decorrelation
+
+    float r = sqrt(u1);
+    float theta = 2.0 * 3.14159265 * u2;
+
+    float x = r * cos(theta);
+    float y = r * sin(theta);
+    float z = sqrt(max(0.0, 1.0 - u1));
+
+    // Create orthonormal basis from normal
+    vec3 tangent, bitangent;
+    buildOrthonormalBasis(normal, tangent, bitangent);
+
+    return normalize(tangent * x + bitangent * y + normal * z);
+}
+
+// Trace a primary/bounce ray and get hit info
+void traceRay(vec3 origin, vec3 direction) {
+    payload.hit = false;
+
+    traceRayEXT(topLevelAS,
+                gl_RayFlagsOpaqueEXT,
+                0xff,
+                0, 0, 0,
+                origin,
+                0.001,
+                direction,
+                10000.0,
+                0);
+}
+
+// Trace shadow ray, returns true if in shadow
+bool traceShadowRay(vec3 origin, vec3 direction, float maxDist) {
+    isShadowed = true;
+
+    traceRayEXT(topLevelAS,
+                gl_RayFlagsTerminateOnFirstHitEXT | gl_RayFlagsOpaqueEXT | gl_RayFlagsSkipClosestHitShaderEXT,
+                0xff,
+                0, 0, 1,
+                origin,
+                0.001,
+                direction,
+                maxDist,
+                1);
+
+    return isShadowed;
+}
+
+// Compute direct lighting at a point
+vec3 computeDirectLighting(vec3 pos, vec3 normal, vec3 albedo) {
+    vec3 lightDir = normalize(lightPos - pos);
+    float NdotL = max(dot(normal, lightDir), 0.0);
+
+    if (NdotL <= 0.0) {
+        return vec3(0.0);
+    }
+
+    float lightDist = length(lightPos - pos);
+    float attenuation = 1.0 / (1.0 + 0.3 * lightDist * lightDist);
+
+    // Shadow test
+    vec3 shadowOrigin = pos + normal * 0.001;
+    bool shadowed = traceShadowRay(shadowOrigin, lightDir, lightDist - 0.01);
+
+    if (shadowed) {
+        return vec3(0.0);
+    }
+
+    return albedo * lightColor * lightIntensity * NdotL * attenuation;
+}
+
+void main() {
+    const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+    const vec2 inUV = pixelCenter / vec2(gl_LaunchSizeEXT.xy);
+    vec2 d = inUV * 2.0 - 1.0;
+
+    vec4 origin = camera.viewInverse * vec4(0, 0, 0, 1);
+    vec4 target = camera.projInverse * vec4(d.x, d.y, 1, 1);
+    vec4 direction = camera.viewInverse * vec4(normalize(target.xyz), 0);
+
+    vec3 finalColor = vec3(0.0);
+    vec3 throughput = vec3(1.0);
+    vec3 rayOrigin = origin.xyz;
+    vec3 rayDirection = direction.xyz;
+
+    for (int bounce = 0; bounce <= MAX_BOUNCES; bounce++) {
+        traceRay(rayOrigin, rayDirection);
+
+        if (!payload.hit) {
+            break;
+        }
+
+        // Compute direct lighting at hit point
+        vec3 directLight = computeDirectLighting(payload.hitPos, payload.hitNormal, payload.albedo);
+
+        // Add direct lighting contribution weighted by throughput
+        finalColor += throughput * directLight;
+
+        // Update throughput for next bounce
+        throughput *= payload.albedo;
+
+        // Stop if throughput too low
+        float maxThroughput = max(throughput.r, max(throughput.g, throughput.b));
+        if (maxThroughput < 0.0001) {
+            break;
+        }
+
+        // Generate bounce direction with unique seed per pixel, bounce, and frame
+        uvec3 seed = uvec3(gl_LaunchIDEXT.xy, uint(bounce) + camera.frameIndex * 1000u);
+        rayOrigin = payload.hitPos + payload.hitNormal * 0.001;
+        rayDirection = cosineWeightedHemisphere(payload.hitNormal, seed);
+    }
+
+    // Add small ambient term
+    finalColor += vec3(0.02);
+
+    // Temporal accumulation
+    ivec2 pixelCoord = ivec2(gl_LaunchIDEXT.xy);
+
+    if (camera.frameIndex == 0) {
+        // First frame: store directly
+        imageStore(accumulationImage, pixelCoord, vec4(finalColor, 1.0));
+    } else {
+        // Subsequent frames: blend with accumulated history
+        vec4 accumulated = imageLoad(accumulationImage, pixelCoord);
+        float weight = 1.0 / float(camera.frameIndex + 1);
+        vec3 blended = mix(accumulated.rgb, finalColor, weight);
+        imageStore(accumulationImage, pixelCoord, vec4(blended, 1.0));
+        finalColor = blended;
+    }
+
+    // Gamma correction
+    finalColor = pow(finalColor, vec3(1.0 / 2.2));
+
+    imageStore(image, pixelCoord, vec4(finalColor, 1.0));
+}

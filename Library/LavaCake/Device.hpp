@@ -573,6 +573,43 @@ namespace LavaCake {
         }
 
         // ---------------------------------------------------------------
+        // Ray Tracing Properties
+        // ---------------------------------------------------------------
+
+        /**
+         * \brief Get ray tracing pipeline properties
+         * \return the RT pipeline properties structure
+         * \details Returns properties needed for shader binding table creation:
+         * - shaderGroupHandleSize
+         * - shaderGroupBaseAlignment
+         * - shaderGroupHandleAlignment
+         * - maxRayRecursionDepth
+         * - maxShaderGroupStride
+         */
+        vk::PhysicalDeviceRayTracingPipelinePropertiesKHR getRayTracingPipelineProperties() const {
+            auto props = m_physicalDevice.getProperties2<
+                vk::PhysicalDeviceProperties2,
+                vk::PhysicalDeviceRayTracingPipelinePropertiesKHR>();
+            return props.get<vk::PhysicalDeviceRayTracingPipelinePropertiesKHR>();
+        }
+
+        /**
+         * \brief Get acceleration structure properties
+         * \return the AS properties structure
+         * \details Returns properties needed for acceleration structure creation:
+         * - maxGeometryCount
+         * - maxInstanceCount
+         * - maxPrimitiveCount
+         * - maxPerStageDescriptorAccelerationStructures
+         */
+        vk::PhysicalDeviceAccelerationStructurePropertiesKHR getAccelerationStructureProperties() const {
+            auto props = m_physicalDevice.getProperties2<
+                vk::PhysicalDeviceProperties2,
+                vk::PhysicalDeviceAccelerationStructurePropertiesKHR>();
+            return props.get<vk::PhysicalDeviceAccelerationStructurePropertiesKHR>();
+        }
+
+        // ---------------------------------------------------------------
         // Nested Builder Class
         // ---------------------------------------------------------------
 
@@ -1987,6 +2024,152 @@ namespace LavaCake {
         return Device::Builder()
             .setGraphicQueueCount(nbGraphicQueue)
             .setComputeQueueCount(nbComputeQueue)
+            .build();
+    }
+
+    // ---------------------------------------------------------------
+    // Ray Tracing Device Factory Functions
+    // ---------------------------------------------------------------
+
+    /**
+     * \brief Creates a windowed device with ray tracing support
+     * \param surfaceConfig Surface configuration for presentation
+     * \param nbGraphicQueue Number of graphics queues (default: 1)
+     * \param nbComputeQueue Number of compute queues (default: 0)
+     * \return Device configured for ray tracing
+     *
+     * \details Creates a windowed device with full ray tracing support:
+     *
+     * Required Extensions:
+     * - VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME
+     * - VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME
+     * - VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME
+     *
+     * Required Features:
+     * - vk::PhysicalDeviceAccelerationStructureFeaturesKHR
+     * - vk::PhysicalDeviceRayTracingPipelineFeaturesKHR
+     * - bufferDeviceAddress (from Vulkan 1.2)
+     *
+     * Also includes all features from createAdvancedDevice:
+     * - Full descriptor indexing for bindless rendering
+     * - Dynamic rendering (mandatory)
+     * - Timeline semaphores
+     *
+     * Note: This function will throw if the device does not support ray tracing.
+     * Check device capabilities before calling.
+     */
+    inline Device createRayTracingDevice(
+        const SurfaceConfig& surfaceConfig,
+        int nbGraphicQueue = 1,
+        int nbComputeQueue = 0
+    ) {
+        // Vulkan 1.2 features - required for RT
+        vk::PhysicalDeviceVulkan12Features vulkan12{};
+        vulkan12.scalarBlockLayout = VK_TRUE;
+        vulkan12.descriptorIndexing = VK_TRUE;
+        vulkan12.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.shaderStorageBufferArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.shaderUniformBufferArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.runtimeDescriptorArray = VK_TRUE;
+        vulkan12.descriptorBindingPartiallyBound = VK_TRUE;
+        vulkan12.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingUniformBufferUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingVariableDescriptorCount = VK_TRUE;
+        // Critical for ray tracing
+        vulkan12.bufferDeviceAddress = VK_TRUE;
+        vulkan12.timelineSemaphore = VK_TRUE;
+        vulkan12.hostQueryReset = VK_TRUE;
+
+        // Acceleration structure features
+        vk::PhysicalDeviceAccelerationStructureFeaturesKHR asFeatures{};
+        asFeatures.accelerationStructure = VK_TRUE;
+
+        // Ray tracing pipeline features
+        vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeatures{};
+        rtPipelineFeatures.rayTracingPipeline = VK_TRUE;
+
+        return Device::Builder()
+            .setGraphicQueueCount(nbGraphicQueue)
+            .setComputeQueueCount(nbComputeQueue)
+            .enableSamplerAnisotropy(true)
+            .enableFillModeNonSolid(true)
+            // Add Vulkan 1.2 features
+            .addFeature(vulkan12)
+            // Add RT-specific features
+            .addFeature(asFeatures)
+            .addFeature(rtPipelineFeatures)
+            // Add RT extensions
+            .addDeviceExtension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME)
+            .addDeviceExtension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME)
+            .addDeviceExtension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME)
+              
+            .setPresentMode(vk::PresentModeKHR::eImmediate)
+            // Enable VMA buffer device address flag
+            .setVmaFlags(VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT)
+            .preferDiscreteGPU()
+            .setSurface(surfaceConfig)
+            .build();
+    }
+
+    /**
+     * \brief Creates a headless device with ray tracing support
+     * \param nbGraphicQueue Number of graphics queues (default: 1)
+     * \param nbComputeQueue Number of compute queues (default: 0)
+     * \return Device configured for headless ray tracing
+     *
+     * \details Creates a headless device with full ray tracing support,
+     * suitable for offline rendering, compute-based ray tracing, or testing.
+     *
+     * Same features as createRayTracingDevice but without presentation surface.
+     */
+    inline Device createHeadlessRayTracingDevice(
+        int nbGraphicQueue = 1,
+        int nbComputeQueue = 0
+    ) {
+        // Vulkan 1.2 features - required for RT
+        vk::PhysicalDeviceVulkan12Features vulkan12{};
+        vulkan12.scalarBlockLayout = VK_TRUE;
+        vulkan12.descriptorIndexing = VK_TRUE;
+        vulkan12.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.shaderStorageBufferArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.shaderUniformBufferArrayNonUniformIndexing = VK_TRUE;
+        vulkan12.runtimeDescriptorArray = VK_TRUE;
+        vulkan12.descriptorBindingPartiallyBound = VK_TRUE;
+        vulkan12.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingUniformBufferUpdateAfterBind = VK_TRUE;
+        vulkan12.descriptorBindingVariableDescriptorCount = VK_TRUE;
+        // Critical for ray tracing
+        vulkan12.bufferDeviceAddress = VK_TRUE;
+        vulkan12.timelineSemaphore = VK_TRUE;
+        vulkan12.hostQueryReset = VK_TRUE;
+
+        // Acceleration structure features
+        vk::PhysicalDeviceAccelerationStructureFeaturesKHR asFeatures{};
+        asFeatures.accelerationStructure = VK_TRUE;
+
+        // Ray tracing pipeline features
+        vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeatures{};
+        rtPipelineFeatures.rayTracingPipeline = VK_TRUE;
+
+        return Device::Builder()
+            .setGraphicQueueCount(nbGraphicQueue)
+            .setComputeQueueCount(nbComputeQueue)
+            .enableSamplerAnisotropy(true)
+            .enableFillModeNonSolid(true)
+            // Add Vulkan 1.2 features
+            .addFeature(vulkan12)
+            // Add RT-specific features
+            .addFeature(asFeatures)
+            .addFeature(rtPipelineFeatures)
+            // Add RT extensions
+            .addDeviceExtension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME)
+            .addDeviceExtension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME)
+            .addDeviceExtension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME)
+            // Enable VMA buffer device address flag
+            .setVmaFlags(VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT)
+            .preferDiscreteGPU()
             .build();
     }
 

@@ -11,6 +11,7 @@ LavaCake provides high-level abstractions over the Vulkan API, letting you lever
 - **Simplified Device Setup** - Automatic GPU selection, instance creation, and queue management
 - **Dynamic Rendering** - Modern Vulkan 1.3 rendering without explicit render passes
 - **Compute Pipelines** - Streamlined compute shader support for GPGPU workloads
+- **Ray Tracing** - Hardware-accelerated ray tracing with acceleration structures and SBT management
 - **Integrated Memory Management** - Built-in VMA (Vulkan Memory Allocator) integration
 - **Runtime Shader Compilation** - Automatic GLSL to SPIR-V compilation via shaderc
 - **Bindless Rendering** - Support for modern bindless descriptor patterns
@@ -340,6 +341,11 @@ The `examples/` directory contains progressive tutorials:
 |---------|-------------|
 | `01_vector_addition` | Headless compute with storage buffers |
 
+### Ray Tracing
+| Example | Description |
+|---------|-------------|
+| `01_cornell_box` | Path traced Cornell Box with temporal accumulation |
+
 ### ImGui
 | Example | Description |
 |---------|-------------|
@@ -368,6 +374,9 @@ LavaCake/
 │   ├── Pipeline.hpp        # Base pipeline class
 │   ├── GraphicPipeline.hpp # Graphics pipeline
 │   ├── ComputePipeline.hpp # Compute pipeline
+│   ├── RayTracingPipeline.hpp    # Ray tracing pipeline
+│   ├── AccelerationStructure.hpp # BLAS/TLAS builders
+│   ├── ShaderBindingTable.hpp    # SBT management
 │   ├── DescriptorSet.hpp   # Descriptor set management
 │   ├── DescriptorPool.hpp  # Descriptor pool management
 │   ├── ShaderModule.hpp    # Shader compilation
@@ -379,6 +388,7 @@ LavaCake/
 │   ├── basic/              # Introductory examples
 │   ├── advanced/           # Shadow mapping, multiple lights
 │   ├── compute/            # GPGPU examples
+│   ├── raytracing/         # Hardware ray tracing examples
 │   └── imgui/              # ImGui integration
 ├── cmake/                  # CMake configuration
 └── documentation/          # Doxygen config
