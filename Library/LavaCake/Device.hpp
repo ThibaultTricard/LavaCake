@@ -174,9 +174,9 @@ namespace LavaCake {
         class Builder;
 
         Device()
-            : m_physicalDevice(VK_NULL_HANDLE)
-            , m_device(VK_NULL_HANDLE)
-            , m_instance(VK_NULL_HANDLE)
+            : m_physicalDevice()
+            , m_device()
+            , m_instance()
             , m_presentationSurface(VK_NULL_HANDLE)
             , m_swapchain(VK_NULL_HANDLE)
             , m_swapchainFormat(vk::Format::eUndefined)
@@ -1431,7 +1431,7 @@ namespace LavaCake {
                     auto devices = device.m_instance.enumeratePhysicalDevices();
                     if (devices.empty()) throw std::runtime_error("No Vulkan devices found.");
 
-                    device.m_physicalDevice = VK_NULL_HANDLE;
+                    device.m_physicalDevice = vk::PhysicalDevice();
                     int bestScore = -1;
 
                     // Use device selector from builder

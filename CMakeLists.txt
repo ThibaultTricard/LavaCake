@@ -3,6 +3,7 @@ project(LavaCake)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Options
 option(LAVACAKE_BUILD_EXAMPLES "Build LavaCake examples (requires GLFW)" ON)
@@ -124,7 +125,7 @@ target_include_directories(LavaCake INTERFACE
 )
 # Note: shaderc includes are not added to the interface as they're in the build directory
 # Users will need to have their own shaderc installation
-target_compile_definitions(LavaCake INTERFACE VMA_VULKAN_HPP)
+target_compile_definitions(LavaCake INTERFACE VMA_VULKAN_HPP VULKAN_HPP_NO_SPACESHIP_OPERATOR VULKAN_HPP_DISPATCH_LOADER_DYNAMIC)
 target_link_libraries(LavaCake INTERFACE
     Vulkan::Vulkan
     $<BUILD_INTERFACE:VulkanMemoryAllocator>

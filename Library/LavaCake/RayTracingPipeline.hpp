@@ -63,9 +63,9 @@ namespace LavaCake {
              * \brief Information about a hit group
              */
             struct HitGroupInfo {
-                int32_t closestHitIndex = VK_SHADER_UNUSED_KHR;
-                int32_t anyHitIndex = VK_SHADER_UNUSED_KHR;
-                int32_t intersectionIndex = VK_SHADER_UNUSED_KHR;
+                int32_t closestHitIndex = (int32_t) VK_SHADER_UNUSED_KHR;
+                int32_t anyHitIndex = (int32_t) VK_SHADER_UNUSED_KHR;
+                int32_t intersectionIndex = (int32_t) VK_SHADER_UNUSED_KHR;
             };
 
         public:
