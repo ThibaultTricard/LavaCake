@@ -743,5 +743,30 @@ namespace LavaCake {
                                 vk::DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
             cmd.drawIndexedIndirect(buffer, offset, drawCount, stride);
         }
+
+        /**
+         * \brief Draw mesh task primitives (requires VK_EXT_mesh_shader)
+         * \param cmd the command buffer
+         * \param groupCountX the number of local workgroups to dispatch in the X dimension
+         * \param groupCountY the number of local workgroups to dispatch in the Y dimension (default: 1)
+         * \param groupCountZ the number of local workgroups to dispatch in the Z dimension (default: 1)
+         */
+        void drawMeshTasks(const vk::CommandBuffer& cmd, uint32_t groupCountX,
+                           uint32_t groupCountY = 1, uint32_t groupCountZ = 1) const {
+            cmd.drawMeshTasksEXT(groupCountX, groupCountY, groupCountZ);
+        }
+
+        /**
+         * \brief Draw mesh task primitives with indirect parameters from a buffer (requires VK_EXT_mesh_shader)
+         * \param cmd the command buffer
+         * \param buffer the buffer containing draw parameters (VkDrawMeshTasksIndirectCommandEXT structs)
+         * \param offset the byte offset into the buffer
+         * \param drawCount the number of draws to execute
+         * \param stride the byte stride between successive sets of draw parameters
+         */
+        void drawMeshTasksIndirect(const vk::CommandBuffer& cmd, vk::Buffer buffer,
+                                   vk::DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
+            cmd.drawMeshTasksIndirectEXT(buffer, offset, drawCount, stride);
+        }
     };
 }
