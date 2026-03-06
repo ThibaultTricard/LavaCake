@@ -129,6 +129,31 @@ namespace LavaCake
         }
 
         /**
+         * \brief Records a pipeline barrier command into the command buffer.
+         *
+         * A pipeline barrier defines an execution and memory dependency between
+         * commands submitted before and after the barrier. It can synchronize
+         * access to buffers and images as well as perform image layout transitions.
+         *
+         * \param srcStageMask           Pipeline stages that must complete before the barrier.
+         * \param dstStageMask           Pipeline stages that are blocked until the barrier is resolved.
+         * \param dependencyFlags        Flags specifying how the dependency is formed (e.g., by-region).
+         * \param memoryBarriers         Global memory barriers applying to all memory.
+         * \param bufferMemoryBarriers   Buffer-specific memory barriers, optionally transferring queue ownership.
+         * \param imageMemoryBarriers    Image-specific memory barriers, optionally changing the image layout or transferring queue ownership.
+         */
+        void pipelineBarrier(
+            vk::PipelineStageFlags        srcStageMask,
+            vk::PipelineStageFlags        dstStageMask,
+            vk::DependencyFlags           dependencyFlags,
+            vk::ArrayProxy<const vk::MemoryBarrier>       memoryBarriers,
+            vk::ArrayProxy<const vk::BufferMemoryBarrier> bufferMemoryBarriers,
+            vk::ArrayProxy<const vk::ImageMemoryBarrier>  imageMemoryBarriers
+        ){
+            m_cmd.pipelineBarrier(srcStageMask, dstStageMask, dependencyFlags, memoryBarriers, bufferMemoryBarriers, imageMemoryBarriers);
+        }
+
+        /**
          * \brief Get the fence for manual submission
          * \return the vk::Fence handle (can be null if no fence was created)
          */
