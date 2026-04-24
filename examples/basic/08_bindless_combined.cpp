@@ -251,12 +251,11 @@ int main() {
             graphicPipeline.bind(cmdBuffer);
 
             // Bind the bindless descriptor set
-            cmdBuffer.getCommandBuffer().bindDescriptorSets(
+            cmdBuffer.bindDescriptorSets(
                 vk::PipelineBindPoint::eGraphics,
                 graphicPipeline.getLayout(),
                 0,
-                {descriptorSet},
-                {}
+                {descriptorSet}
             );
 
             // Draw 4 quads, each with different texture and transform
@@ -265,12 +264,11 @@ int main() {
                 pc.textureIndex = i;      // Each quad uses a different texture
                 pc.transformIndex = i;    // Each quad uses a different transform
 
-                cmdBuffer.getCommandBuffer().pushConstants(
+                cmdBuffer.pushConstants(
                     graphicPipeline.getLayout(),
                     vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
                     0,
-                    sizeof(PushConstants),
-                    &pc
+                    pc
                 );
 
                 // Draw the quad (6 vertices for 2 triangles)
@@ -290,8 +288,7 @@ int main() {
             submitInfo.pWaitSemaphores = &imageAvailableSemaphores[currentFrame];
             submitInfo.pWaitDstStageMask = &waitStage;
             submitInfo.commandBufferCount = 1;
-            vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
-            submitInfo.pCommandBuffers = &rawCmd;
+            submitInfo.pCommandBuffers = cmdBuffer;
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 

@@ -145,7 +145,7 @@ int main() {
 
             // Bind the vertex buffer
             vk::DeviceSize offset = 0;
-            cmdBuffer.getCommandBuffer().bindVertexBuffers(0, 1, vertexBuffer, &offset);
+            cmdBuffer.bindVertexBuffers(0, {vertexBuffer}, {offset});
 
             // Draw the triangle (3 vertices)
             graphicPipeline.draw(cmdBuffer, static_cast<uint32_t>(vertices.size()));
@@ -165,8 +165,7 @@ int main() {
             submitInfo.pWaitSemaphores = &imageAvailableSemaphores[currentFrame];
             submitInfo.pWaitDstStageMask = &waitStage;
             submitInfo.commandBufferCount = 1;
-            vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
-            submitInfo.pCommandBuffers = &rawCmd;
+            submitInfo.pCommandBuffers = cmdBuffer;
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 

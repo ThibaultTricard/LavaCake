@@ -160,14 +160,10 @@ int main() {
 
             // Bind the vertex buffer
             vk::DeviceSize vertexOffset = 0;
-            cmdBuffer.getCommandBuffer().bindVertexBuffers(0, 1, vertexBuffer, &vertexOffset);
+            cmdBuffer.bindVertexBuffers(0, {vertexBuffer}, {vertexOffset});
 
             // Bind the index buffer
-            cmdBuffer.getCommandBuffer().bindIndexBuffer(
-                indexBuffer,
-                0,                          // offset
-                vk::IndexType::eUint16      // index type matches std::vector<uint16_t>
-            );
+            cmdBuffer.bindIndexBuffer(indexBuffer, 0, vk::IndexType::eUint16);
 
             // Draw indexed (6 indices = 2 triangles = 1 quad)
             graphicPipeline.drawIndexed(cmdBuffer, static_cast<uint32_t>(indices.size()));
@@ -187,8 +183,7 @@ int main() {
             submitInfo.pWaitSemaphores = &imageAvailableSemaphores[currentFrame];
             submitInfo.pWaitDstStageMask = &waitStage;
             submitInfo.commandBufferCount = 1;
-            vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
-            submitInfo.pCommandBuffers = &rawCmd;
+            submitInfo.pCommandBuffers = cmdBuffer;
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 

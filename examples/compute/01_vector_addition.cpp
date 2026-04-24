@@ -106,8 +106,7 @@ int main() {
         // Submit with fence
         vk::SubmitInfo submitInfo;
         submitInfo.commandBufferCount = 1;
-        vk::CommandBuffer rawCmd = cmd.getCommandBuffer();
-        submitInfo.pCommandBuffers = &rawCmd;
+        submitInfo.pCommandBuffers = cmd;
 
         auto queue = device.getAnyQueue();
         queue.submit(submitInfo, cmd.getFence());

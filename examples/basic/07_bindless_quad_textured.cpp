@@ -212,12 +212,11 @@ int main() {
             graphicPipeline.bind(cmdBuffer);
 
             // Bind descriptor set (contains our vertex data in storage buffers)
-            cmdBuffer.getCommandBuffer().bindDescriptorSets(
+            cmdBuffer.bindDescriptorSets(
                 vk::PipelineBindPoint::eGraphics,
                 graphicPipeline.getLayout(),
                 0,
-                {descriptorSet},
-                {}
+                {descriptorSet}
             );
 
             // Draw 6 vertices (the shader will use gl_VertexIndex to fetch from index buffer)
@@ -239,8 +238,7 @@ int main() {
             submitInfo.pWaitSemaphores = &imageAvailableSemaphores[currentFrame];
             submitInfo.pWaitDstStageMask = &waitStage;
             submitInfo.commandBufferCount = 1;
-            vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
-            submitInfo.pCommandBuffers = &rawCmd;
+            submitInfo.pCommandBuffers = cmdBuffer;
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 
