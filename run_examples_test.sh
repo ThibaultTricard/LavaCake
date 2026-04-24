@@ -107,31 +107,31 @@ run_example() {
     if [[ $exit_code -eq 124 ]] || [[ $exit_code -eq 143 ]] || [[ $exit_code -eq 137 ]]; then
         if [[ $has_validation_error -eq 0 ]]; then
             echo -e "${GREEN}PASS${NC} (timeout - expected)"
-            ((PASSED++))
+            PASSED=$((PASSED + 1))
         else
             echo -e "${RED}FAIL${NC} (validation errors)"
             echo "  Validation errors found:"
             grep -i "validation error\|VUID-\|ERROR: \[Validation\]" "$output_file" | head -5 | sed 's/^/    /'
-            ((FAILED++))
+            FAILED=$((FAILED + 1))
             FAILED_EXAMPLES+=("$exe_name (validation)")
         fi
     elif [[ $exit_code -eq 0 ]] && [[ $has_validation_error -eq 0 ]]; then
         echo -e "${GREEN}PASS${NC}"
-        ((PASSED++))
+        PASSED=$((PASSED + 1))
     elif [[ $has_validation_error -eq 1 ]]; then
         echo -e "${RED}FAIL${NC} (validation errors)"
         echo "  Validation errors found:"
         grep -i "validation error\|VUID-\|ERROR: \[Validation\]" "$output_file" | head -5 | sed 's/^/    /'
-        ((FAILED++))
+        FAILED=$((FAILED + 1))
         FAILED_EXAMPLES+=("$exe_name (validation)")
     elif [[ $has_crash -eq 1 ]]; then
         echo -e "${RED}FAIL${NC} (crashed, exit code: $exit_code)"
-        ((FAILED++))
+        FAILED=$((FAILED + 1))
         FAILED_EXAMPLES+=("$exe_name (crash)")
     else
         echo -e "${RED}FAIL${NC} (exit code: $exit_code)"
         tail -5 "$output_file" | sed 's/^/    /'
-        ((FAILED++))
+        FAILED=$((FAILED + 1))
         FAILED_EXAMPLES+=("$exe_name (error)")
     fi
 
