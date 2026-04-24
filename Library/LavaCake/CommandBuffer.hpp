@@ -143,14 +143,58 @@ namespace LavaCake
          * \param imageMemoryBarriers    Image-specific memory barriers, optionally changing the image layout or transferring queue ownership.
          */
         void pipelineBarrier(
-            vk::PipelineStageFlags        srcStageMask,
-            vk::PipelineStageFlags        dstStageMask,
-            vk::DependencyFlags           dependencyFlags,
+            vk::PipelineStageFlags                        srcStageMask,
+            vk::PipelineStageFlags                        dstStageMask,
+            vk::DependencyFlags                           dependencyFlags,
             vk::ArrayProxy<const vk::MemoryBarrier>       memoryBarriers,
             vk::ArrayProxy<const vk::BufferMemoryBarrier> bufferMemoryBarriers,
             vk::ArrayProxy<const vk::ImageMemoryBarrier>  imageMemoryBarriers
-        ){
+        ) {
             m_cmd.pipelineBarrier(srcStageMask, dstStageMask, dependencyFlags, memoryBarriers, bufferMemoryBarriers, imageMemoryBarriers);
+        }
+
+        void pipelineBarrier2(const vk::DependencyInfo& dependencyInfo) {
+            m_cmd.pipelineBarrier2(dependencyInfo);
+        }
+
+        void bindDescriptorSets(
+            vk::PipelineBindPoint                        pipelineBindPoint,
+            vk::PipelineLayout                           layout,
+            uint32_t                                     firstSet,
+            vk::ArrayProxy<const vk::DescriptorSet>      descriptorSets,
+            vk::ArrayProxy<const uint32_t>               dynamicOffsets = {}
+        ) {
+            m_cmd.bindDescriptorSets(pipelineBindPoint, layout, firstSet, descriptorSets, dynamicOffsets);
+        }
+
+        void bindIndexBuffer(vk::Buffer buffer, vk::DeviceSize offset, vk::IndexType indexType) {
+            m_cmd.bindIndexBuffer(buffer, offset, indexType);
+        }
+
+        void bindVertexBuffers(
+            uint32_t                                firstBinding,
+            vk::ArrayProxy<const vk::Buffer>        buffers,
+            vk::ArrayProxy<const vk::DeviceSize>    offsets
+        ) {
+            m_cmd.bindVertexBuffers(firstBinding, buffers, offsets);
+        }
+
+        template<typename T>
+        void pushConstants(
+            vk::PipelineLayout     layout,
+            vk::ShaderStageFlags   stageFlags,
+            uint32_t               offset,
+            const T&               value
+        ) {
+            m_cmd.pushConstants(layout, stageFlags, offset, sizeof(T), &value);
+        }
+
+        void fillBuffer(vk::Buffer dstBuffer, vk::DeviceSize dstOffset, vk::DeviceSize size, uint32_t data) {
+            m_cmd.fillBuffer(dstBuffer, dstOffset, size, data);
+        }
+
+        void executeCommands(vk::ArrayProxy<const vk::CommandBuffer> commandBuffers) {
+            m_cmd.executeCommands(commandBuffers);
         }
 
         /**

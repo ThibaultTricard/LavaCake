@@ -138,32 +138,32 @@ namespace LavaCake {
          * \brief Copy the buffer's data to another buffer
          * \param cmd the command buffer to register the copy operation into
          * \param dstBuffer the buffer to copy the data to
+         * \param srcOffset byte offset into this buffer
+         * \param dstOffset byte offset into dstBuffer
+         * \param size number of bytes to copy (0 = copy all)
          */
-        void copyToBuffer(vk::CommandBuffer&cmd, Buffer& dstBuffer){
+        void copyToBuffer(vk::CommandBuffer cmd, Buffer& dstBuffer, VkDeviceSize srcOffset = 0, VkDeviceSize dstOffset = 0, VkDeviceSize size = 0) {
             vk::BufferCopy copyRegion{};
-            copyRegion.size = m_size;
-
-            cmd.copyBuffer(
-                m_buffer,
-                dstBuffer. m_buffer,
-                copyRegion
-            );
+            copyRegion.srcOffset = srcOffset;
+            copyRegion.dstOffset = dstOffset;
+            copyRegion.size = size == 0 ? m_size : size;
+            cmd.copyBuffer(m_buffer, dstBuffer.m_buffer, copyRegion);
         }
 
         /**
-         * \brief Copy the data from another buffer 
+         * \brief Copy the data from another buffer
          * \param cmd the command buffer to register the copy operation into
          * \param srcBuffer the buffer to copy the data from
+         * \param srcOffset byte offset into srcBuffer
+         * \param dstOffset byte offset into this buffer
+         * \param size number of bytes to copy (0 = copy all)
          */
-        void copyFromBuffer(vk::CommandBuffer&cmd, Buffer& srcBuffer){
+        void copyFromBuffer(vk::CommandBuffer cmd, Buffer& srcBuffer, VkDeviceSize srcOffset = 0, VkDeviceSize dstOffset = 0, VkDeviceSize size = 0) {
             vk::BufferCopy copyRegion{};
-            copyRegion.size = m_size;
-
-            cmd.copyBuffer(
-                srcBuffer.m_buffer,
-                m_buffer,
-                copyRegion
-            );
+            copyRegion.srcOffset = srcOffset;
+            copyRegion.dstOffset = dstOffset;
+            copyRegion.size = size == 0 ? m_size : size;
+            cmd.copyBuffer(srcBuffer.m_buffer, m_buffer, copyRegion);
         }
 
         /**
@@ -204,23 +204,38 @@ namespace LavaCake {
          * \brief Get the Vulkan buffer handle
          * \return the vk::Buffer handle
          */
-        vk::Buffer getBuffer() const{
+        vk::Buffer getBuffer() const {
             return m_buffer;
         }
 
         /**
-         * \brief Implicit conversion to vk::Buffer
-         * \return the vk::Buffer handle
+         * \brief Get the buffer size in bytes
          */
-        operator vk::Buffer() const{
+        VkDeviceSize size() const {
+            return m_size;
+        }
+
+        /**
+         * \brief Get the device address of the buffer
+         * \param device the logical device (must have bufferDeviceAddress feature enabled)
+         */
+        vk::DeviceAddress getDeviceAddress(const vk::Device& device) const {
+            vk::BufferDeviceAddressInfo info{};
+            info.buffer = m_buffer;
+            return device.getBufferAddress(info);
+        }
+
+        /**
+         * \brief Implicit conversion to vk::Buffer
+         */
+        operator vk::Buffer() const {
             return m_buffer;
         }
 
         /**
          * \brief Implicit conversion to vk::Buffer pointer
-         * \return pointer to the vk::Buffer handle
          */
-        operator const vk::Buffer*() const{
+        operator const vk::Buffer*() const {
             return &m_buffer;
         }
 
