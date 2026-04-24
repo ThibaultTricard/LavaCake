@@ -40,9 +40,19 @@ void main() {
     // Compute barycentric coordinates
     const vec3 barycentrics = vec3(1.0 - attribs.x - attribs.y, attribs.x, attribs.y);
 
-    // Interpolate and return hit information
-    payload.hitPos = v0.pos * barycentrics.x + v1.pos * barycentrics.y + v2.pos * barycentrics.z;
-    payload.hitNormal = normalize(v0.normal * barycentrics.x + v1.normal * barycentrics.y + v2.normal * barycentrics.z);
+    // Use built-in ray hit position (more numerically robust)
+    payload.hitPos = gl_WorldRayOriginEXT + gl_HitTEXT * gl_WorldRayDirectionEXT;
+
+    // Use the stored vertex normal (all vertices of a face have the same normal for flat shading)
+    // This is more stable than computing from edges
+    vec3 normal = normalize(v0.normal);
+
+    // Ensure normal faces the ray (flip if backface hit)
+    if (dot(normal, gl_WorldRayDirectionEXT) > 0.0) {
+        normal = -normal;
+    }
+
+    payload.hitNormal = normal;
     payload.albedo = v0.color * barycentrics.x + v1.color * barycentrics.y + v2.color * barycentrics.z;
     payload.hit = true;
 }

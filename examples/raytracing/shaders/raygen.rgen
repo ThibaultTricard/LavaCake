@@ -22,11 +22,22 @@ layout(location = 0) rayPayloadEXT RayPayload payload;
 layout(location = 1) rayPayloadEXT bool isShadowed;
 
 // Light parameters
-const vec3 lightPos = vec3(0.0, 1.95, 0.0);
+const vec3 lightPos = vec3(0.0, 1.9, 0.0);  // Moved slightly lower to avoid ceiling grazing
 const vec3 lightColor = vec3(1.0, 0.95, 0.85);
 const float lightIntensity = 2.5;
 
-const int MAX_BOUNCES = 60;
+const int MAX_BOUNCES = 2;
+
+// Robust ray origin offset - Ray Tracing Gems Chapter 6 (Wächter & Binder)
+vec3 offsetRay(vec3 p, vec3 n) {
+    const float origin      = 1.0 / 32.0;
+    const float float_scale = 1.0 / 65536.0;
+    const float int_scale   = 256.0;
+
+    ivec3 of_i = ivec3(int_scale * n);
+    vec3 p_i = intBitsToFloat(floatBitsToInt(p) + mix(-of_i, of_i, greaterThanEqual(p, vec3(0.0))));
+    return mix(p + float_scale * n, p_i, greaterThanEqual(abs(p), vec3(origin)));
+}
 
 // Integer hash functions (no sine)
 uint hash(uint x) {
@@ -68,17 +79,12 @@ float random(uvec3 seed) {
     return floatConstruct(hash(seed));
 }
 
-// Build orthonormal basis from normal (Frisvad's method, revised)
+// Build orthonormal basis from normal (Hughes-Moller method - robust for all directions)
 void buildOrthonormalBasis(vec3 n, out vec3 tangent, out vec3 bitangent) {
-    if (n.z < -0.9999999) {
-        tangent = vec3(0.0, -1.0, 0.0);
-        bitangent = vec3(-1.0, 0.0, 0.0);
-    } else {
-        float a = 1.0 / (1.0 + n.z);
-        float b = -n.x * n.y * a;
-        tangent = vec3(1.0 - n.x * n.x * a, b, -n.x);
-        bitangent = vec3(b, 1.0 - n.y * n.y * a, -n.y);
-    }
+    // Choose the axis that n is least aligned with
+    vec3 up = abs(n.x) < 0.9 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
+    tangent = normalize(cross(up, n));
+    bitangent = cross(n, tangent);
 }
 
 // Generate cosine-weighted hemisphere direction
@@ -100,6 +106,9 @@ vec3 cosineWeightedHemisphere(vec3 normal, uvec3 seed) {
     return normalize(tangent * x + bitangent * y + normal * z);
 }
 
+// Small bias for ray tMin (additional protection alongside offsetRay)
+const float RAY_TMIN = 0.0001;
+
 // Trace a primary/bounce ray and get hit info
 void traceRay(vec3 origin, vec3 direction) {
     payload.hit = false;
@@ -109,7 +118,7 @@ void traceRay(vec3 origin, vec3 direction) {
                 0xff,
                 0, 0, 0,
                 origin,
-                0.001,
+                RAY_TMIN,
                 direction,
                 10000.0,
                 0);
@@ -124,9 +133,9 @@ bool traceShadowRay(vec3 origin, vec3 direction, float maxDist) {
                 0xff,
                 0, 0, 1,
                 origin,
-                0.001,
+                RAY_TMIN,
                 direction,
-                maxDist,
+                maxDist - RAY_TMIN,
                 1);
 
     return isShadowed;
@@ -144,8 +153,8 @@ vec3 computeDirectLighting(vec3 pos, vec3 normal, vec3 albedo) {
     float lightDist = length(lightPos - pos);
     float attenuation = 1.0 / (1.0 + 0.3 * lightDist * lightDist);
 
-    // Shadow test
-    vec3 shadowOrigin = pos + normal * 0.001;
+    // Shadow test - use robust offset to avoid self-intersection
+    vec3 shadowOrigin = offsetRay(pos, normal);
     bool shadowed = traceShadowRay(shadowOrigin, lightDir, lightDist - 0.01);
 
     if (shadowed) {
@@ -193,7 +202,7 @@ void main() {
 
         // Generate bounce direction with unique seed per pixel, bounce, and frame
         uvec3 seed = uvec3(gl_LaunchIDEXT.xy, uint(bounce) + camera.frameIndex * 1000u);
-        rayOrigin = payload.hitPos + payload.hitNormal * 0.001;
+        rayOrigin = offsetRay(payload.hitPos, payload.hitNormal);
         rayDirection = cosineWeightedHemisphere(payload.hitNormal, seed);
     }
 

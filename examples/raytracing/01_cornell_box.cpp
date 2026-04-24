@@ -99,45 +99,46 @@ void createCornellBox(std::vector<Vertex>& vertices, std::vector<uint32_t>& indi
     glm::vec3 green(0.12f, 0.45f, 0.15f);
 
     // Room dimensions: -1 to 1 in X and Z, 0 to 2 in Y
+    // Surfaces meet exactly at corners — no overlap, rely on RTG robust offset for self-intersection
     float roomSize = 1.0f;
 
     // Floor (white)
     addQuad(vertices, indices,
             glm::vec3(-roomSize, 0, -roomSize),
-            glm::vec3(-roomSize, 0, roomSize),
-            glm::vec3(roomSize, 0, roomSize),
-            glm::vec3(roomSize, 0, -roomSize),
+            glm::vec3(-roomSize, 0,  roomSize),
+            glm::vec3( roomSize, 0,  roomSize),
+            glm::vec3( roomSize, 0, -roomSize),
             glm::vec3(0, 1, 0), white);
 
     // Ceiling (white)
     addQuad(vertices, indices,
             glm::vec3(-roomSize, 2 * roomSize, -roomSize),
-            glm::vec3(roomSize, 2 * roomSize, -roomSize),
-            glm::vec3(roomSize, 2 * roomSize, roomSize),
-            glm::vec3(-roomSize, 2 * roomSize, roomSize),
+            glm::vec3( roomSize, 2 * roomSize, -roomSize),
+            glm::vec3( roomSize, 2 * roomSize,  roomSize),
+            glm::vec3(-roomSize, 2 * roomSize,  roomSize),
             glm::vec3(0, -1, 0), white);
 
     // Back wall (white)
     addQuad(vertices, indices,
-            glm::vec3(-roomSize, 0, -roomSize),
-            glm::vec3(roomSize, 0, -roomSize),
-            glm::vec3(roomSize, 2 * roomSize, -roomSize),
-            glm::vec3(-roomSize, 2 * roomSize, -roomSize),
+            glm::vec3(-roomSize, 0,              -roomSize),
+            glm::vec3( roomSize, 0,              -roomSize),
+            glm::vec3( roomSize, 2 * roomSize,   -roomSize),
+            glm::vec3(-roomSize, 2 * roomSize,   -roomSize),
             glm::vec3(0, 0, 1), white);
 
     // Left wall (red)
     addQuad(vertices, indices,
-            glm::vec3(-roomSize, 0, roomSize),
-            glm::vec3(-roomSize, 0, -roomSize),
+            glm::vec3(-roomSize, 0,             roomSize),
+            glm::vec3(-roomSize, 0,            -roomSize),
             glm::vec3(-roomSize, 2 * roomSize, -roomSize),
-            glm::vec3(-roomSize, 2 * roomSize, roomSize),
+            glm::vec3(-roomSize, 2 * roomSize,  roomSize),
             glm::vec3(1, 0, 0), red);
 
     // Right wall (green)
     addQuad(vertices, indices,
-            glm::vec3(roomSize, 0, -roomSize),
-            glm::vec3(roomSize, 0, roomSize),
-            glm::vec3(roomSize, 2 * roomSize, roomSize),
+            glm::vec3(roomSize, 0,            -roomSize),
+            glm::vec3(roomSize, 0,             roomSize),
+            glm::vec3(roomSize, 2 * roomSize,  roomSize),
             glm::vec3(roomSize, 2 * roomSize, -roomSize),
             glm::vec3(-1, 0, 0), green);
 
@@ -158,7 +159,7 @@ int main() {
     // Initialize GLFW
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Cornell Box - Ray Tracing Example", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1600, 1200, "Cornell Box - Ray Tracing Example", nullptr, nullptr);
 
     // Create ray tracing device
     auto surfaceConfig = LavaCake::GLFW::createSurfaceConfig(window);
@@ -436,14 +437,14 @@ int main() {
             cmdBuffer.begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
 
             // Update uniform buffer on GPU
-            cameraBuffer.update(cmdBuffer.getCommandBuffer());
+            cameraBuffer.update(cmdBuffer);
 
             // === Ray tracing pass ===
             rtPipeline.bind(cmdBuffer);
-            cmdBuffer.getCommandBuffer().bindDescriptorSets(
+            cmdBuffer.bindDescriptorSets(
                 vk::PipelineBindPoint::eRayTracingKHR,
                 rtPipeline.getLayout(),
-                0, {rtDescriptorSet}, {});
+                0, {rtDescriptorSet});
 
             rtPipeline.traceRays(cmdBuffer,
                 sbt.getRaygenRegion(),
@@ -456,10 +457,10 @@ int main() {
             vk::MemoryBarrier memoryBarrier{};
             memoryBarrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
             memoryBarrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-            cmdBuffer.getCommandBuffer().pipelineBarrier(
+            cmdBuffer.pipelineBarrier(
                 vk::PipelineStageFlagBits::eRayTracingShaderKHR,
                 vk::PipelineStageFlagBits::eFragmentShader,
-                {}, memoryBarrier, {}, {});
+                {}, {memoryBarrier}, {}, {});
 
             // === Display pass ===
             swapchainImage.prepareForAttachementBarrier(cmdBuffer);
@@ -473,10 +474,10 @@ int main() {
 
             renderContext.setDefaultViewportScissor(cmdBuffer);
             displayPipeline.bind(cmdBuffer);
-            cmdBuffer.getCommandBuffer().bindDescriptorSets(
+            cmdBuffer.bindDescriptorSets(
                 vk::PipelineBindPoint::eGraphics,
                 displayPipeline.getLayout(),
-                0, {displayDescriptorSet}, {});
+                0, {displayDescriptorSet});
             displayPipeline.draw(cmdBuffer, 3);  // Fullscreen triangle
 
             renderContext.end(cmdBuffer);
@@ -491,8 +492,7 @@ int main() {
             submitInfo.pWaitSemaphores = &imageAvailableSemaphores[currentFrame];
             submitInfo.pWaitDstStageMask = &waitStage;
             submitInfo.commandBufferCount = 1;
-            vk::CommandBuffer rawCmd = cmdBuffer.getCommandBuffer();
-            submitInfo.pCommandBuffers = &rawCmd;
+            submitInfo.pCommandBuffers = cmdBuffer;
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 
