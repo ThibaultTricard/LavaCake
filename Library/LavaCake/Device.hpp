@@ -493,8 +493,8 @@ namespace LavaCake {
             }
 
             swapInfo.imageExtent        = m_swapchainExtent;
-            swapInfo.imageArrayLayers   = 1;
-            swapInfo.imageUsage         = vk::ImageUsageFlagBits::eColorAttachment;
+            swapInfo.imageArrayLayers   = m_swapchainImageArrayLayers;
+            swapInfo.imageUsage         = m_swapchainImageUsage;
 
             if (m_graphicsQueueFamilyIndex != m_presentQueueFamilyIndex) {
                 swapInfo.imageSharingMode       = vk::SharingMode::eConcurrent;
@@ -505,7 +505,7 @@ namespace LavaCake {
             }
 
             swapInfo.preTransform   = surfaceCaps.currentTransform;
-            swapInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
+            swapInfo.compositeAlpha = m_swapchainCompositeAlpha;
             swapInfo.presentMode    = m_presentMode;
             swapInfo.clipped        = VK_TRUE;
             swapInfo.oldSwapchain   = m_swapchain;
@@ -1291,6 +1291,40 @@ namespace LavaCake {
                 return *this;
             }
 
+            /**
+             * \brief Sets additional swapchain image usage flags
+             * \param usage Flags ORed on top of the mandatory vk::ImageUsageFlagBits::eColorAttachment.
+             *              Example: vk::ImageUsageFlagBits::eTransferDst to allow vkCmdBlitImage / vkCmdCopyImage targeting the swapchain.
+             * \return Reference to this builder for method chaining
+             * \note Only applies when a surface is configured
+             */
+            Builder& setSwapchainImageUsage(vk::ImageUsageFlags usage) {
+                m_preferredSwapchainImageUsage = usage;
+                return *this;
+            }
+
+            /**
+             * \brief Sets the number of layers in each swapchain image
+             * \param layers Layer count — use 1 for normal rendering, 2 for stereo/VR (multiview)
+             * \return Reference to this builder for method chaining
+             * \note Only applies when a surface is configured
+             */
+            Builder& setSwapchainImageArrayLayers(uint32_t layers) {
+                m_preferredSwapchainImageArrayLayers = layers;
+                return *this;
+            }
+
+            /**
+             * \brief Sets the composite alpha mode for the swapchain
+             * \param alpha Composite alpha flag (default: eOpaque). Use ePreMultiplied or eInherit for transparent-window compositing.
+             * \return Reference to this builder for method chaining
+             * \note Only applies when a surface is configured
+             */
+            Builder& setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR alpha) {
+                m_preferredCompositeAlpha = alpha;
+                return *this;
+            }
+
             // ---------------------------------------------------------------
             // Build
             // ---------------------------------------------------------------
@@ -1656,8 +1690,11 @@ namespace LavaCake {
                         swapInfo.imageFormat = surfaceFormat.format;
                         swapInfo.imageColorSpace = surfaceFormat.colorSpace;
                         swapInfo.imageExtent = device.m_swapchainExtent;
-                        swapInfo.imageArrayLayers = 1;
-                        swapInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+                        uint32_t imageArrayLayers = m_preferredSwapchainImageArrayLayers.value_or(1);
+                        swapInfo.imageArrayLayers = imageArrayLayers;
+                        vk::ImageUsageFlags imageUsage = vk::ImageUsageFlagBits::eColorAttachment | m_preferredSwapchainImageUsage.value_or(vk::ImageUsageFlags{});
+                        swapInfo.imageUsage = imageUsage;
+                        vk::CompositeAlphaFlagBitsKHR compositeAlpha = m_preferredCompositeAlpha.value_or(vk::CompositeAlphaFlagBitsKHR::eOpaque);
 
                         uint32_t indices[] = {
                             graphicsFamily.value(),
@@ -1676,15 +1713,18 @@ namespace LavaCake {
                         }
 
                         swapInfo.preTransform = surfaceCaps.currentTransform;
-                        swapInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
+                        swapInfo.compositeAlpha = compositeAlpha;
                         swapInfo.presentMode = presentMode;
                         swapInfo.clipped = VK_TRUE;
 
-                        device.m_swapchainFormat            = surfaceFormat.format;
-                        device.m_swapchainColorSpace        = surfaceFormat.colorSpace;
-                        device.m_graphicsQueueFamilyIndex   = graphicsFamily.value();
-                        device.m_presentQueueFamilyIndex    = presentFamily.value();
-                        device.m_presentMode                = presentMode;
+                        device.m_swapchainFormat                = surfaceFormat.format;
+                        device.m_swapchainColorSpace            = surfaceFormat.colorSpace;
+                        device.m_graphicsQueueFamilyIndex       = graphicsFamily.value();
+                        device.m_presentQueueFamilyIndex        = presentFamily.value();
+                        device.m_presentMode                    = presentMode;
+                        device.m_swapchainImageUsage            = imageUsage;
+                        device.m_swapchainImageArrayLayers      = imageArrayLayers;
+                        device.m_swapchainCompositeAlpha        = compositeAlpha;
 
                         device.m_swapchain = device.m_device.createSwapchainKHR(swapInfo);
 
@@ -1783,6 +1823,9 @@ namespace LavaCake {
             std::optional<vk::PresentModeKHR> m_preferredPresentMode;
             std::optional<vk::SurfaceFormatKHR> m_preferredSurfaceFormat;
             std::optional<vk::Extent2D> m_preferredExtent;
+            std::optional<vk::ImageUsageFlags> m_preferredSwapchainImageUsage;
+            std::optional<uint32_t> m_preferredSwapchainImageArrayLayers;
+            std::optional<vk::CompositeAlphaFlagBitsKHR> m_preferredCompositeAlpha;
         };
 
     private:
@@ -1801,6 +1844,9 @@ namespace LavaCake {
         uint32_t                                              m_graphicsQueueFamilyIndex;
         uint32_t                                              m_presentQueueFamilyIndex;
         vk::PresentModeKHR                                    m_presentMode;
+        vk::ImageUsageFlags                                   m_swapchainImageUsage;
+        uint32_t                                              m_swapchainImageArrayLayers;
+        vk::CompositeAlphaFlagBitsKHR                         m_swapchainCompositeAlpha;
 
         vk::CommandPool                                       m_commandPool;
         vk::DebugUtilsMessengerEXT                            m_debugMessenger;
