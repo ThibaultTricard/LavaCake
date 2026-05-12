@@ -203,6 +203,9 @@ namespace LavaCake {
             m_graphicsQueueFamilyIndex = d.m_graphicsQueueFamilyIndex;
             m_presentQueueFamilyIndex = d.m_presentQueueFamilyIndex;
             m_presentMode = d.m_presentMode;
+            m_swapchainImageUsage = d.m_swapchainImageUsage;
+            m_swapchainImageArrayLayers = d.m_swapchainImageArrayLayers;
+            m_swapchainCompositeAlpha = d.m_swapchainCompositeAlpha;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -230,6 +233,9 @@ namespace LavaCake {
             m_graphicsQueueFamilyIndex = d.m_graphicsQueueFamilyIndex;
             m_presentQueueFamilyIndex = d.m_presentQueueFamilyIndex;
             m_presentMode = d.m_presentMode;
+            m_swapchainImageUsage = d.m_swapchainImageUsage;
+            m_swapchainImageArrayLayers = d.m_swapchainImageArrayLayers;
+            m_swapchainCompositeAlpha = d.m_swapchainCompositeAlpha;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -257,6 +263,9 @@ namespace LavaCake {
             m_graphicsQueueFamilyIndex = d.m_graphicsQueueFamilyIndex;
             m_presentQueueFamilyIndex = d.m_presentQueueFamilyIndex;
             m_presentMode = d.m_presentMode;
+            m_swapchainImageUsage = d.m_swapchainImageUsage;
+            m_swapchainImageArrayLayers = d.m_swapchainImageArrayLayers;
+            m_swapchainCompositeAlpha = d.m_swapchainCompositeAlpha;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
@@ -285,6 +294,9 @@ namespace LavaCake {
             m_graphicsQueueFamilyIndex = d.m_graphicsQueueFamilyIndex;
             m_presentQueueFamilyIndex = d.m_presentQueueFamilyIndex;
             m_presentMode = d.m_presentMode;
+            m_swapchainImageUsage = d.m_swapchainImageUsage;
+            m_swapchainImageArrayLayers = d.m_swapchainImageArrayLayers;
+            m_swapchainCompositeAlpha = d.m_swapchainCompositeAlpha;
             m_commandPool = d.m_commandPool;
             m_debugMessenger = d.m_debugMessenger;
             m_graphicQueues = d.m_graphicQueues;
