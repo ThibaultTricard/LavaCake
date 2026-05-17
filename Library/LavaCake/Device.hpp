@@ -16,8 +16,9 @@
 #endif
 #include <vk_mem_alloc.h>
 
+#ifndef LAVACAKE_NO_VMA_IMPLEMENTATION
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
-
+#endif
 
 #include "SwapChainImage.hpp"
 
@@ -39,7 +40,7 @@ namespace LavaCake {
      */
 #if defined(VK_API_VERSION_1_4)
     // Vulkan 1.4+ headers use C++ wrapper types in the callback signature
-    VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+    inline VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
         vk::DebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
         vk::DebugUtilsMessageTypeFlagsEXT messageType,
         const vk::DebugUtilsMessengerCallbackDataEXT* pCallbackData,
@@ -53,7 +54,7 @@ namespace LavaCake {
     }
 #else
     // Vulkan 1.3 headers use C types in the callback signature
-    VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+    inline VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
         VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
         VkDebugUtilsMessageTypeFlagsEXT messageType,
         const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
@@ -75,7 +76,7 @@ namespace LavaCake {
      * \param device the physical device to score
      * \return the score value, higher is better
      */
-    int scoreDevice(vk::PhysicalDevice device)
+    inline int scoreDevice(vk::PhysicalDevice device)
     {
         auto props = device.getProperties();
         auto memProps = device.getMemoryProperties();
