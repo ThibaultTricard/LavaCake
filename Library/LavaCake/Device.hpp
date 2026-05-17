@@ -11,7 +11,9 @@
 #include <any>
 #include <functional>
 
+#ifndef LAVACAKE_NO_VMA_IMPLEMENTATION
 #define VMA_IMPLEMENTATION
+#endif
 #include <vk_mem_alloc.h>
 
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
