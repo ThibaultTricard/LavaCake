@@ -22,7 +22,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 #include "SwapChainImage.hpp"
 
-uint32_t api_version = VK_API_VERSION_1_3;
+inline uint32_t api_version = VK_API_VERSION_1_3;
 
 namespace LavaCake {
 
