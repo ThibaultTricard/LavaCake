@@ -190,6 +190,20 @@ namespace LavaCake {
 
             // Copy from staging to device-local buffer
             m_stagingBuffer.copyToBuffer(commandBuffer, m_buffer);
+
+            // Barrier: ensure the transfer is visible to uniform reads in all shader stages
+            vk::BufferMemoryBarrier barrier{};
+            barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+            barrier.dstAccessMask = vk::AccessFlagBits::eUniformRead;
+            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.buffer = m_buffer.getBuffer();
+            barrier.offset = 0;
+            barrier.size   = VK_WHOLE_SIZE;
+            commandBuffer.pipelineBarrier(
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                {}, {}, barrier, {});
         }
 
         /**
