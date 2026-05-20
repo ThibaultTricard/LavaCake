@@ -2,6 +2,7 @@
 #include "./Device.hpp"
 #include "./VMAFlags.hpp"
 #include <ranges>
+#include <utility>
 
 namespace LavaCake {
     /**
