@@ -99,31 +99,33 @@ namespace LavaCake {
         }
 
         /**
-         * \brief Create a Shader Module from a shader file
-         * \param device the device on which the buffer will be created
-         * \param filepath the path of the shader
+         * \brief Create a Shader Module from a file path or source code string
+         * \param device the device on which the shader module will be created
+         * \param pathOrSource the file path or shader source code
          * \param lang the shading language
-         * \param stage the shading stage,
+         * \param stage the shader stage
+         * \param isPath whether pathOrSource is a file path (true) or source code (false)
          * \param optimize does the shader need to be optimized
-         * \param macroDefinitions
+         * \param macroDefinitions optional macro definitions
          */
         ShaderModule(
             const vk::Device& device,
-            const std::string& filepath,
+            const std::string& pathOrSource,
             const ShadingLanguage lang,
             const vk::ShaderStageFlagBits stage,
+            bool isPath = true,
             bool optimize = true,
             const std::vector<std::string>& macroDefinitions = {}){
-                
-                m_filePath = filepath;
+
                 m_lang = lang;
                 m_stage = stage;
-                m_optimize= optimize;
+                m_optimize = optimize;
                 m_macroDefinitions = macroDefinitions;
-
                 m_device = device;
 
-                std::string source = readFile(filepath);
+                std::string source = isPath ? readFile(pathOrSource) : pathOrSource;
+                if (isPath) m_filePath = pathOrSource;
+
                 std::vector<uint32_t> spvcode;
                 switch (lang){
                     case ShadingLanguage::eSPIRV:
@@ -134,7 +136,6 @@ namespace LavaCake {
                     case ShadingLanguage::eGLSL:
                         m_shaderModule = compileShaderFromGLSLFile(source);
                         break;
-                        
                 }
             }
 

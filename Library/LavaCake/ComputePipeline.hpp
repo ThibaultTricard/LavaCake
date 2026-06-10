@@ -30,6 +30,8 @@ namespace LavaCake {
                 const uint32_t* spirvCode = nullptr;
                 size_t spirvSizeInBytes = 0;
                 bool fromBytecode = false;
+                std::string sourceCode = "";
+                bool fromSource = false;
             };
 
             vk::Device m_device;
@@ -81,6 +83,22 @@ namespace LavaCake {
              * \param entry the entry point function name (default: "main")
              * \return reference to this builder for method chaining
              */
+            /**
+             * \brief Set the compute shader from a source code string
+             * \param source the shader source code
+             * \param language the shading language
+             * \param entry the entry point function name (default: "main")
+             * \return reference to this builder for method chaining
+             */
+            Builder& setShaderFromSource(const std::string& source, const LavaCake::ShadingLanguage language = ShadingLanguage::eGLSL, const std::string& entry = "main") {
+                m_shaderModuleCreateInfo.sourceCode = source;
+                m_shaderModuleCreateInfo.lang = language;
+                m_shaderModuleCreateInfo.entryPoint = entry;
+                m_shaderModuleCreateInfo.fromSource = true;
+                m_shaderModuleCreateInfo.fromBytecode = false;
+                return *this;
+            }
+
             Builder& setShaderFromSpirvByteCode(const uint32_t* spirvCode, size_t sizeInBytes, const std::string& entry = "main") {
                 m_shaderModuleCreateInfo.spirvCode = spirvCode;
                 m_shaderModuleCreateInfo.spirvSizeInBytes = sizeInBytes;
@@ -220,12 +238,23 @@ namespace LavaCake {
                         m_shaderModuleCreateInfo.spirvSizeInBytes,
                         vk::ShaderStageFlagBits::eCompute
                     );
+                } else if (m_shaderModuleCreateInfo.fromSource) {
+                    m_shaderModule = LavaCake::ShaderModule(
+                        m_device,
+                        m_shaderModuleCreateInfo.sourceCode,
+                        m_shaderModuleCreateInfo.lang,
+                        vk::ShaderStageFlagBits::eCompute,
+                        false,
+                        m_shaderModuleCreateInfo.optimize,
+                        m_shaderModuleCreateInfo.macro
+                    );
                 } else {
                     m_shaderModule = LavaCake::ShaderModule(
                         m_device,
                         m_shaderModuleCreateInfo.filepath,
                         m_shaderModuleCreateInfo.lang,
                         vk::ShaderStageFlagBits::eCompute,
+                        true,
                         m_shaderModuleCreateInfo.optimize,
                         m_shaderModuleCreateInfo.macro
                     );

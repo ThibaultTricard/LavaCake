@@ -47,6 +47,8 @@ namespace LavaCake {
                 const uint32_t* spirvCode = nullptr;                        ///< Pointer to embedded SPIR-V bytecode
                 size_t spirvSizeInBytes = 0;                                ///< Size of SPIR-V bytecode in bytes
                 bool fromBytecode = false;                                  ///< True if shader comes from bytecode, false if from file
+                std::string sourceCode = "";                                ///< Inline shader source code
+                bool fromSource = false;                                    ///< True if shader comes from inline source
             };
 
 
@@ -196,6 +198,37 @@ namespace LavaCake {
              * \param entry the entry point function name (default: "main")
              * \return reference to this builder for method chaining
              */
+            /**
+             * \brief Add a shader stage from source code
+             * \param source the shader source code
+             * \param language the shading language
+             * \param type the shader stage type
+             * \param entry the entry point function name (default: "main")
+             * \return reference to this builder for method chaining
+             */
+            Builder& addShaderFromSource(const std::string& source,
+                                         LavaCake::ShadingLanguage language,
+                                         vk::ShaderStageFlagBits type,
+                                         const std::string& entry = "main") {
+                switch (type)
+                {
+                case vk::ShaderStageFlagBits::eVertex: last = &m_vertexShaderCreateInfo; m_isSetVertex = true; break;
+                case vk::ShaderStageFlagBits::eTessellationControl: last = &m_tessellationControlShaderCreateInfo; m_isSetTessellationControl = true; break;
+                case vk::ShaderStageFlagBits::eTessellationEvaluation: last = &m_tessellationEvaluationShaderCreateInfo; m_isSetTessellationEvaluation = true; break;
+                case vk::ShaderStageFlagBits::eGeometry: last = &m_geometryShaderCreateInfo; m_isSetGeometry = true; break;
+                case vk::ShaderStageFlagBits::eFragment: last = &m_fragmentShaderCreateInfo; m_isSetFragment = true; break;
+                case vk::ShaderStageFlagBits::eTaskEXT: last = &m_taskShaderCreateInfo; m_isSetTask = true; break;
+                case vk::ShaderStageFlagBits::eMeshEXT: last = &m_meshShaderCreateInfo; m_isSetMesh = true; break;
+                default: return *this;
+                }
+                last->sourceCode = source;
+                last->lang = language;
+                last->entryPoint = entry;
+                last->fromSource = true;
+                last->fromBytecode = false;
+                return *this;
+            }
+
             Builder& addShaderFromSpirvByteCode(const uint32_t* spirvCode,
                                                 size_t sizeInBytes,
                                                 vk::ShaderStageFlagBits type,
@@ -492,20 +525,29 @@ namespace LavaCake {
 
                 auto compileShader = [&shaderModules,&shaderStages](LavaCake::Device& d, LavaCake::ShaderModule& m, vk::ShaderStageFlagBits type, ShaderModuleCreateInfo& info){
                     if (info.fromBytecode) {
-                        // Create shader module from embedded SPIR-V bytecode
                         m = LavaCake::ShaderModule(
                             d,
                             info.spirvCode,
                             info.spirvSizeInBytes,
                             type
                         );
+                    } else if (info.fromSource) {
+                        m = LavaCake::ShaderModule(
+                            d,
+                            info.sourceCode,
+                            info.lang,
+                            type,
+                            false,
+                            info.optimize,
+                            info.macro
+                        );
                     } else {
-                        // Create shader module from file
                         m = LavaCake::ShaderModule(
                             d,
                             info.filepath,
                             info.lang,
                             type,
+                            true,
                             info.optimize,
                             info.macro
                         );

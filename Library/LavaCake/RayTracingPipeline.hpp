@@ -56,6 +56,8 @@ namespace LavaCake {
                 const uint32_t* spirvCode = nullptr;
                 size_t spirvSizeInBytes = 0;
                 bool fromBytecode = false;
+                std::string sourceCode = "";
+                bool fromSource = false;
                 vk::ShaderStageFlagBits stage;
             };
 
@@ -113,6 +115,14 @@ namespace LavaCake {
                 return *this;
             }
 
+            Builder& addRaygenShaderFromSource(const std::string& source,
+                                               ShadingLanguage lang = ShadingLanguage::eGLSL,
+                                               const std::string& entry = "main") {
+                int32_t index = addShaderFromSource(vk::ShaderStageFlagBits::eRaygenKHR, source, lang, entry);
+                m_raygenShaderIndices.push_back(index);
+                return *this;
+            }
+
             // ---------------------------------------------------------------
             // Miss Shaders
             // ---------------------------------------------------------------
@@ -144,6 +154,14 @@ namespace LavaCake {
                                                    const std::string& entry = "main") {
                 int32_t index = addShaderFromBytecode(vk::ShaderStageFlagBits::eMissKHR,
                                                      spirvCode, sizeInBytes, entry);
+                m_missShaderIndices.push_back(index);
+                return *this;
+            }
+
+            Builder& addMissShaderFromSource(const std::string& source,
+                                             ShadingLanguage lang = ShadingLanguage::eGLSL,
+                                             const std::string& entry = "main") {
+                int32_t index = addShaderFromSource(vk::ShaderStageFlagBits::eMissKHR, source, lang, entry);
                 m_missShaderIndices.push_back(index);
                 return *this;
             }
@@ -199,6 +217,17 @@ namespace LavaCake {
                 return *this;
             }
 
+            Builder& setClosestHitShaderFromSource(const std::string& source,
+                                                   ShadingLanguage lang = ShadingLanguage::eGLSL,
+                                                   const std::string& entry = "main") {
+                if (!m_currentHitGroup) {
+                    throw std::runtime_error("Must call beginHitGroup() before setting hit shaders");
+                }
+                int32_t index = addShaderFromSource(vk::ShaderStageFlagBits::eClosestHitKHR, source, lang, entry);
+                m_currentHitGroup->closestHitIndex = index;
+                return *this;
+            }
+
             /**
              * \brief Sets the any hit shader for the current hit group
              * \param path path to the shader file
@@ -236,6 +265,17 @@ namespace LavaCake {
                 return *this;
             }
 
+            Builder& setAnyHitShaderFromSource(const std::string& source,
+                                               ShadingLanguage lang = ShadingLanguage::eGLSL,
+                                               const std::string& entry = "main") {
+                if (!m_currentHitGroup) {
+                    throw std::runtime_error("Must call beginHitGroup() before setting hit shaders");
+                }
+                int32_t index = addShaderFromSource(vk::ShaderStageFlagBits::eAnyHitKHR, source, lang, entry);
+                m_currentHitGroup->anyHitIndex = index;
+                return *this;
+            }
+
             /**
              * \brief Sets the intersection shader for the current hit group (procedural geometry)
              * \param path path to the shader file
@@ -269,6 +309,17 @@ namespace LavaCake {
                 }
                 int32_t index = addShaderFromBytecode(vk::ShaderStageFlagBits::eIntersectionKHR,
                                                      spirvCode, sizeInBytes, entry);
+                m_currentHitGroup->intersectionIndex = index;
+                return *this;
+            }
+
+            Builder& setIntersectionShaderFromSource(const std::string& source,
+                                                     ShadingLanguage lang = ShadingLanguage::eGLSL,
+                                                     const std::string& entry = "main") {
+                if (!m_currentHitGroup) {
+                    throw std::runtime_error("Must call beginHitGroup() before setting hit shaders");
+                }
+                int32_t index = addShaderFromSource(vk::ShaderStageFlagBits::eIntersectionKHR, source, lang, entry);
                 m_currentHitGroup->intersectionIndex = index;
                 return *this;
             }
@@ -313,6 +364,14 @@ namespace LavaCake {
                                                        const std::string& entry = "main") {
                 int32_t index = addShaderFromBytecode(vk::ShaderStageFlagBits::eCallableKHR,
                                                      spirvCode, sizeInBytes, entry);
+                m_callableShaderIndices.push_back(index);
+                return *this;
+            }
+
+            Builder& addCallableShaderFromSource(const std::string& source,
+                                                 ShadingLanguage lang = ShadingLanguage::eGLSL,
+                                                 const std::string& entry = "main") {
+                int32_t index = addShaderFromSource(vk::ShaderStageFlagBits::eCallableKHR, source, lang, entry);
                 m_callableShaderIndices.push_back(index);
                 return *this;
             }
@@ -465,10 +524,14 @@ namespace LavaCake {
                     if (info.fromBytecode) {
                         module = std::make_unique<ShaderModule>(
                             m_vkDevice, info.spirvCode, info.spirvSizeInBytes, info.stage);
+                    } else if (info.fromSource) {
+                        module = std::make_unique<ShaderModule>(
+                            m_vkDevice, info.sourceCode, info.lang, info.stage,
+                            false, info.optimize, info.macros);
                     } else {
                         module = std::make_unique<ShaderModule>(
                             m_vkDevice, info.filepath, info.lang, info.stage,
-                            info.optimize, info.macros);
+                            true, info.optimize, info.macros);
                     }
 
                     entryPointStrings.push_back(info.entryPoint);
@@ -580,6 +643,23 @@ namespace LavaCake {
                 info.optimize = m_optimize;
                 info.macros = m_macros;
                 info.fromBytecode = false;
+                m_shaderInfos.push_back(info);
+                return static_cast<int32_t>(m_shaderInfos.size() - 1);
+            }
+
+            /**
+             * \brief Adds a shader from source code
+             */
+            int32_t addShaderFromSource(vk::ShaderStageFlagBits stage, const std::string& source,
+                                        ShadingLanguage lang, const std::string& entry) {
+                ShaderInfo info;
+                info.sourceCode = source;
+                info.lang = lang;
+                info.stage = stage;
+                info.entryPoint = entry;
+                info.optimize = m_optimize;
+                info.macros = m_macros;
+                info.fromSource = true;
                 m_shaderInfos.push_back(info);
                 return static_cast<int32_t>(m_shaderInfos.size() - 1);
             }

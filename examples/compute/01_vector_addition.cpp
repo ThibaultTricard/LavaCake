@@ -19,6 +19,29 @@
 
 std::string root = PROJECT_ROOT;
 
+const std::string vectorAdditionShader = R"glsl(
+#version 450
+
+layout( local_size_x = 1) in;
+
+layout(std430, set = 0, binding = 0 )  buffer A{
+    float _a[];
+};
+layout(std430, set = 0, binding = 1 )  buffer B{
+    float _b[];
+};
+layout(std430, set = 0, binding = 2 )  buffer C{
+    float _c[];
+};
+
+void main() {
+    uint Lxid = gl_GlobalInvocationID.x;
+    float a = _a[Lxid];
+    float b = _b[Lxid];
+    _c[Lxid] = a+b;
+}
+)glsl";
+
 
 int main() {
     // Create a headless device (no window needed for compute)
@@ -84,7 +107,7 @@ int main() {
 
         // Create compute pipeline from shader code
         LavaCake::ComputePipeline pipeline = LavaCake::ComputePipeline::Builder(device)
-            .setShaderFromFile(root+"shaders/vector_addition.comp", LavaCake::ShadingLanguage::eGLSL)
+            .setShaderFromSource(vectorAdditionShader, LavaCake::ShadingLanguage::eGLSL)
             .addDescriptorSetLayout(descriptorLayout)
             .build();
 
