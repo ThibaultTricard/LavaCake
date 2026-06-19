@@ -307,18 +307,19 @@ int main() {
 
         // === Create Pipelines ===
         // Shadow pipeline (depth-only)
-        LavaCake::GraphicsPipeline shadowPipeline = LavaCake::GraphicsPipeline::Builder(device)
+        LavaCake::GraphicsPipeline::Builder shadowBuilder(device);
+        shadowBuilder
             .addShaderFromFile(root + "shaders/shadow_depth.vert", vk::ShaderStageFlagBits::eVertex, LavaCake::ShadingLanguage::eGLSL)
             .addShaderFromFile(root + "shaders/shadow_depth.frag", vk::ShaderStageFlagBits::eFragment, LavaCake::ShadingLanguage::eGLSL)
             .setDepthAttachmentFormat(shadowFormat)
             .setDepthTest(true, true, vk::CompareOp::eLess)
             .setBindlessVertexInput()
             .addDescriptorSetLayout(shadowDescLayout)
-            .setCullMode(vk::CullModeFlagBits::eFront)  // Front-face culling reduces shadow acne
-            .build();
+            .setCullMode(vk::CullModeFlagBits::eFront);  // Front-face culling reduces shadow acne
 
         // Scene pipeline
-        LavaCake::GraphicsPipeline scenePipeline = LavaCake::GraphicsPipeline::Builder(device)
+        LavaCake::GraphicsPipeline::Builder sceneBuilder(device);
+        sceneBuilder
             .addShaderFromFile(root + "shaders/shadow_scene.vert", vk::ShaderStageFlagBits::eVertex, LavaCake::ShadingLanguage::eGLSL)
             .addShaderFromFile(root + "shaders/shadow_scene.frag", vk::ShaderStageFlagBits::eFragment, LavaCake::ShadingLanguage::eGLSL)
             .addColorAttachmentFormat(device.getSwapchainFormat())
@@ -327,10 +328,12 @@ int main() {
             .setBindlessVertexInput()
             .addDescriptorSetLayout(sceneDescLayout0)
             .addDescriptorSetLayout(sceneDescLayout1)
-            .setCullMode(vk::CullModeFlagBits::eBack)
-            .build();
+            .setCullMode(vk::CullModeFlagBits::eBack);
 
-        std::cout << "Pipelines created\n";
+        LavaCake::GraphicsPipeline shadowPipeline = shadowBuilder.build();
+        LavaCake::GraphicsPipeline scenePipeline = sceneBuilder.build();
+
+        std::cout << "Pipelines created (press F5 to hot-reload shaders)\n";
 
         // Create semaphores
         size_t swapchainImageCount = device.getSwapChainImagesNumber();
@@ -369,10 +372,28 @@ int main() {
 
         std::cout << "Starting render loop...\n";
 
+        bool f5WasPressed = false;
+
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
 
             cmdBuffer.waitForCompletion();
+
+            // Hot reload shaders on F5
+            bool f5IsPressed = glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS;
+            if (f5IsPressed && !f5WasPressed) {
+                std::cout << "Reloading shaders...\n";
+                device.waitForAllCommands();
+                try {
+                    shadowPipeline = shadowBuilder.build();
+                    scenePipeline = sceneBuilder.build();
+                    std::cout << "Shaders reloaded successfully!\n";
+                } catch (const std::exception& e) {
+                    std::cerr << "Shader reload failed: " << e.what() << "\n";
+                }
+            }
+            f5WasPressed = f5IsPressed;
+
             cmdBuffer.reset();
 
             angle += 0.005f;
