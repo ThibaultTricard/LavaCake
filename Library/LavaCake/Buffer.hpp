@@ -39,6 +39,10 @@ namespace LavaCake {
         {
             if (this != &b)
             {
+            if (m_mapped) unmap();
+            if (m_buffer != VK_NULL_HANDLE) {
+                vmaDestroyBuffer(m_allocator, m_buffer, m_allocation);
+            }
             m_buffer =std::exchange(b.m_buffer, VK_NULL_HANDLE);
             m_allocation =std::exchange(b.m_allocation, {});
             m_size=std::exchange(b.m_size, 0);

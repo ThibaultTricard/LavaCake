@@ -42,7 +42,7 @@ namespace LavaCake {
          */
         Image& operator=(Image&& img) noexcept {
             if (this != &img) {
-                
+                cleanup();
                 m_image = std::exchange(img.m_image, VK_NULL_HANDLE);
                 m_allocation = std::exchange(img.m_allocation, {});
                 m_width = std::exchange(img.m_width, 0);
@@ -543,7 +543,9 @@ namespace LavaCake {
          */
         ImageView& operator=(ImageView&& other) noexcept {
             if (this != &other) {
-                // Clean up existing resources
+                if (m_imageView) {
+                    m_device.destroyImageView(m_imageView);
+                }
                 m_imageView = std::exchange(other.m_imageView, VK_NULL_HANDLE);
                 m_device = other.m_device;
             }
