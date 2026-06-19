@@ -56,6 +56,9 @@ namespace LavaCake {
         {
             if (this != &m)
             {
+            if (m_shaderModule) {
+                m_device.destroyShaderModule(m_shaderModule);
+            }
             m_shaderModule =std::exchange(m.m_shaderModule, {});
             m_stage =std::exchange(m.m_stage, vk::ShaderStageFlagBits::eAll);
             m_filePath=std::exchange(m.m_filePath, "");
