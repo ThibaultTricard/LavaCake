@@ -144,6 +144,11 @@ namespace LavaCake {
      *
      * LavaCake::ImGuiRenderer imgui(device, device.getSwapchainFormat());
      *
+     * // Or, when rendering ImGui in the same dynamic rendering pass as a
+     * // depth-tested scene, pass that pass's depth format so the ImGui
+     * // pipeline's VkPipelineRenderingCreateInfo matches it:
+     * // LavaCake::ImGuiRenderer imgui(device, device.getSwapchainFormat(), vk::Format::eD32Sfloat);
+     *
      * // Initialize your platform backend
      * ImGui::SetCurrentContext(imgui.getContext());
      * ImGui_ImplGlfw_InitForVulkan(window, true);
@@ -171,9 +176,14 @@ namespace LavaCake {
          * \brief Constructs an ImGuiRenderer
          * \param device The LavaCake device
          * \param colorFormat The swapchain color format
+         * \param depthFormat Depth attachment format of the dynamic rendering pass
+         *        ImGui will be rendered in, if any. Leave as eUndefined when
+         *        rendering ImGui in a pass with no depth attachment. When set,
+         *        it is only used to satisfy VkPipelineRenderingCreateInfo -
+         *        depth testing/writing remain disabled either way.
          */
-        ImGuiRenderer(LavaCake::Device& device, vk::Format colorFormat)
-            : m_device(device), m_colorFormat(colorFormat)
+        ImGuiRenderer(LavaCake::Device& device, vk::Format colorFormat, vk::Format depthFormat = vk::Format::eUndefined)
+            : m_device(device), m_colorFormat(colorFormat), m_depthFormat(depthFormat)
         {
             // Create ImGui context
             IMGUI_CHECKVERSION();
@@ -227,6 +237,7 @@ namespace LavaCake {
         ImGuiRenderer(ImGuiRenderer&& other) noexcept
             : m_device(other.m_device)
             , m_colorFormat(other.m_colorFormat)
+            , m_depthFormat(other.m_depthFormat)
             , m_imguiContext(std::exchange(other.m_imguiContext, nullptr))
             , m_fontImage(std::move(other.m_fontImage))
             , m_fontImageView(std::move(other.m_fontImageView))
@@ -251,6 +262,7 @@ namespace LavaCake {
 
                 m_device = other.m_device;
                 m_colorFormat = other.m_colorFormat;
+                m_depthFormat = other.m_depthFormat;
                 m_imguiContext = std::exchange(other.m_imguiContext, nullptr);
                 m_fontImage = std::move(other.m_fontImage);
                 m_fontImageView = std::move(other.m_fontImageView);
@@ -425,6 +437,7 @@ namespace LavaCake {
     private:
         LavaCake::Device m_device;
         vk::Format m_colorFormat = vk::Format::eUndefined;
+        vk::Format m_depthFormat = vk::Format::eUndefined;
 
         // ImGui context
         ImGuiContext* m_imguiContext = nullptr;
@@ -560,6 +573,7 @@ namespace LavaCake {
                                                 detail::imgui_frag_spv_size,
                                                 vk::ShaderStageFlagBits::eFragment)
                     .addColorAttachmentFormat(m_colorFormat)
+                    .setDepthAttachmentFormat(m_depthFormat)
                     .setVertexInput(vertexInputInfo)
                     .setTopology(vk::PrimitiveTopology::eTriangleList)
                     .setCullMode(vk::CullModeFlagBits::eNone)
